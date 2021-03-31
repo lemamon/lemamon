@@ -1,24 +1,24 @@
 {
   "files": {
     "main.css": "/lemamon/static/css/main.34405667.chunk.css",
-    "main.js": "/lemamon/static/js/main.be36eff8.chunk.js",
-    "main.js.map": "/lemamon/static/js/main.be36eff8.chunk.js.map",
+    "main.js": "/lemamon/static/js/main.ad479637.chunk.js",
+    "main.js.map": "/lemamon/static/js/main.ad479637.chunk.js.map",
     "runtime-main.js": "/lemamon/static/js/runtime-main.19469dfd.js",
     "runtime-main.js.map": "/lemamon/static/js/runtime-main.19469dfd.js.map",
-    "static/js/2.6bbb72b0.chunk.js": "/lemamon/static/js/2.6bbb72b0.chunk.js",
-    "static/js/2.6bbb72b0.chunk.js.map": "/lemamon/static/js/2.6bbb72b0.chunk.js.map",
+    "static/js/2.9ab57743.chunk.js": "/lemamon/static/js/2.9ab57743.chunk.js",
+    "static/js/2.9ab57743.chunk.js.map": "/lemamon/static/js/2.9ab57743.chunk.js.map",
     "static/js/3.b8b91a7b.chunk.js": "/lemamon/static/js/3.b8b91a7b.chunk.js",
     "static/js/3.b8b91a7b.chunk.js.map": "/lemamon/static/js/3.b8b91a7b.chunk.js.map",
     "index.html": "/lemamon/index.html",
     "static/css/main.34405667.chunk.css.map": "/lemamon/static/css/main.34405667.chunk.css.map",
-    "static/js/2.6bbb72b0.chunk.js.LICENSE.txt": "/lemamon/static/js/2.6bbb72b0.chunk.js.LICENSE.txt",
+    "static/js/2.9ab57743.chunk.js.LICENSE.txt": "/lemamon/static/js/2.9ab57743.chunk.js.LICENSE.txt",
     "static/media/banner_home.6c196330.png": "/lemamon/static/media/banner_home.6c196330.png",
     "static/media/App.scss": "/lemamon/static/media/ic_work.a01e0df5.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.19469dfd.js",
-    "static/js/2.6bbb72b0.chunk.js",
+    "static/js/2.9ab57743.chunk.js",
     "static/css/main.34405667.chunk.css",
-    "static/js/main.be36eff8.chunk.js"
+    "static/js/main.ad479637.chunk.js"
   ]
 }
