@@ -248,13 +248,15 @@ section {
   flex-wrap: wrap;
   height: 100%;
   padding-top: 100px;
+
   .item {
     width: 310px;
     height: 278px;
     margin: 20px 20px;
     padding: 10px 20px;
     overflow: scroll;
-
+    border-radius: 10px;
+    
     h3 {
       font-size: 18px;
       line-height: 1.57;
