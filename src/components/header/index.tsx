@@ -11,15 +11,15 @@ function Header() {
     });
   }, [history]);
 
-  const isSelected =(option:string) => {
-    if(selected === "/" && option === "home") return  "selected"
-    else return selected.includes(option) ? "selected": ""
-  }
+  const isSelected = (option: string) => {
+    if (selected === "/" && option === "home") return "selected";
+    else return selected.includes(option) ? "selected" : "";
+  };
 
   return (
     <header>
       <nav>
-        <ul>
+        <ul style={selected === "/" ? { backgroundColor: "transparent" } : {}}>
           <li className={isSelected("home")}>
             <Link to="/" aria-label="home">
               Home
