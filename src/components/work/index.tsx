@@ -42,7 +42,9 @@ function Item({
   return (
     <div className="item" style={{ backgroundColor: background }}>
       <h3> {title}</h3>
-      <h5>{jobTitle} - {company} - {client}</h5>
+      <h5>
+        {jobTitle} - {company} - {client}
+      </h5>
       <p>{description}</p>
     </div>
   );
@@ -51,26 +53,12 @@ function Item({
 function Work() {
   return (
     <section className="work">
-      <div className="list">
-        {shuffle(projects).map((item, index) => (
-          <Item key={index} {...item} />
-        ))}
-        {/* 
-        Item color="#26ff92"/>
-        <Item color="transparent" />
-        <Item color="#88f3ec" />
-        <Item color="#7de9c1" />
-
-        <Item color="#7de0ff" />
-        <Item color="#ac64ff" />
-        <Item color="transparent" />
-        <Item color="#fb7ff2" />
-
-        <Item color="#ffff63" />
-
-        <Item color="#ffaf68" />
-        <Item color="transparent" />
-        <Item color="#ff8888" /> */}
+      <div className="container">
+        <div className="list">
+          {shuffle(projects).map((item, index) => (
+            <Item key={index} {...item} />
+          ))}
+        </div>
       </div>
     </section>
   );
