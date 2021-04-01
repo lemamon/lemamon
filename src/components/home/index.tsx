@@ -1,5 +1,3 @@
-import homeBanner from "../../assets/images/banner_home.png";
-
 function Home() {
   return (
     <section className="home">
@@ -11,7 +9,9 @@ function Home() {
           <h5 className="subtitle">Software Engineer</h5>
         </div>
 
-        <img className="banner" alt="cat banner" src={homeBanner} />
+        <video autoPlay muted loop className=" home-video">
+          <source src="/videos/home-video2.mp4" type="video/mp4" />
+        </video>
       </div>
     </section>
   );
