@@ -191,16 +191,6 @@
       "images": ["blabla.png", "blabla2.png"]
     },
     {
-      "title": "1075 App",
-      "description": "The 1075 App it's created for LPG commerce. The app provides a way to connect the local seller and the distributor. I worked on the mobile app. We use the latest android patterns. Main technologies: Android, Kotlin.",
-      "client": "Fogás",
-      "company": "Fogás",
-      "jobTitle": "Developer",
-      "date": "03/2017- 02/2019",
-      "background": "#7de0ff",
-      "images": ["blabla.png", "blabla2.png"]
-    },
-    {
       "title": "Felt Game",
       "description": "Felt is a mobile game to help the kids to get knowledge about their own emotions. I worked to integrate firebase on that project, which we use to manage users, and their actions and choices. Main technologies: Unity 3D, C#, Firebase.",
       "client": "Dreamkid Studio",
