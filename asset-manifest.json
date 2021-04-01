@@ -1,24 +1,24 @@
 {
   "files": {
-    "main.css": "/lemamon/static/css/main.27ce7e7a.chunk.css",
-    "main.js": "/lemamon/static/js/main.eb7017b3.chunk.js",
-    "main.js.map": "/lemamon/static/js/main.eb7017b3.chunk.js.map",
-    "runtime-main.js": "/lemamon/static/js/runtime-main.18a6d4d0.js",
-    "runtime-main.js.map": "/lemamon/static/js/runtime-main.18a6d4d0.js.map",
-    "static/js/2.b1e99a83.chunk.js": "/lemamon/static/js/2.b1e99a83.chunk.js",
-    "static/js/2.b1e99a83.chunk.js.map": "/lemamon/static/js/2.b1e99a83.chunk.js.map",
-    "static/js/3.cd5c72e8.chunk.js": "/lemamon/static/js/3.cd5c72e8.chunk.js",
-    "static/js/3.cd5c72e8.chunk.js.map": "/lemamon/static/js/3.cd5c72e8.chunk.js.map",
-    "index.html": "/lemamon/index.html",
-    "static/css/main.27ce7e7a.chunk.css.map": "/lemamon/static/css/main.27ce7e7a.chunk.css.map",
-    "static/js/2.b1e99a83.chunk.js.LICENSE.txt": "/lemamon/static/js/2.b1e99a83.chunk.js.LICENSE.txt",
-    "static/media/banner_home.6c196330.png": "/lemamon/static/media/banner_home.6c196330.png",
-    "static/media/App.scss": "/lemamon/static/media/ic_work.a01e0df5.svg"
+    "main.css": "/static/css/main.d24a82fc.chunk.css",
+    "main.js": "/static/js/main.eb7017b3.chunk.js",
+    "main.js.map": "/static/js/main.eb7017b3.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.8b902c73.js",
+    "runtime-main.js.map": "/static/js/runtime-main.8b902c73.js.map",
+    "static/js/2.b1e99a83.chunk.js": "/static/js/2.b1e99a83.chunk.js",
+    "static/js/2.b1e99a83.chunk.js.map": "/static/js/2.b1e99a83.chunk.js.map",
+    "static/js/3.cd5c72e8.chunk.js": "/static/js/3.cd5c72e8.chunk.js",
+    "static/js/3.cd5c72e8.chunk.js.map": "/static/js/3.cd5c72e8.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.d24a82fc.chunk.css.map": "/static/css/main.d24a82fc.chunk.css.map",
+    "static/js/2.b1e99a83.chunk.js.LICENSE.txt": "/static/js/2.b1e99a83.chunk.js.LICENSE.txt",
+    "static/media/banner_home.6c196330.png": "/static/media/banner_home.6c196330.png",
+    "static/media/App.scss": "/static/media/ic_work.a01e0df5.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.18a6d4d0.js",
+    "static/js/runtime-main.8b902c73.js",
     "static/js/2.b1e99a83.chunk.js",
-    "static/css/main.27ce7e7a.chunk.css",
+    "static/css/main.d24a82fc.chunk.css",
     "static/js/main.eb7017b3.chunk.js"
   ]
 }
