@@ -134,15 +134,16 @@ section {
 
   .home-video {
     object-fit: cover;
-    width: 112vw;
+    width: 100%;
     position: fixed;
-    height: 100vh;
-    top: -100px;
+    height: 100%;
+    top: -50px;
     left: 0;
     z-index: -1;
 
     @media (min-width: 1024px) {
       height: auto;
+      top: -100px;
     }
   }
 
@@ -256,7 +257,7 @@ section {
     padding: 10px 20px;
     overflow: scroll;
     border-radius: 10px;
-    
+
     h3 {
       font-size: 18px;
       line-height: 1.57;
