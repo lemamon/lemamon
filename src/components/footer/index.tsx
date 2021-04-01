@@ -1,19 +1,7 @@
-import { useHistory } from "react-router-dom";
-import { useEffect, useState } from "react";
-
 function Footer() {
-  const [isAbout, setIsAbout] = useState(false);
-
-  const history = useHistory();
-
-  useEffect(() => {
-    return history.listen((location) => {
-      setIsAbout(location.pathname?.includes("about"));
-    });
-  }, [history]);
 
   return (
-    <footer style={{ backgroundColor: isAbout ? "#fe5454" : "transparent" }}>
+    <footer >
       <nav>
         <ul>
           <li>
