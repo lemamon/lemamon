@@ -8,6 +8,15 @@ main {
   padding: 50px 0;
 }
 
+.selected::before {
+  content: "";
+  width: 36px;
+  height: 2px;
+  position: absolute;
+  bottom: 9px;
+  background: #707070;
+}
+
 // header >
 nav > ul {
   display: flex;
@@ -106,12 +115,12 @@ section {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  @media (min-width:1024px) {
+  @media (min-width: 1024px) {
     overflow: hidden;
   }
 }
 
-.home { 
+.home {
   padding: 20px 60px 10px;
 
   .title-container {
