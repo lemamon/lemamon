@@ -1,18 +1,6 @@
-import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
-
-function Footer() {
-  const [selected, select] = useState(window.location.pathname);
-  const history = useHistory();
-
-  useEffect(() => {
-    return history.listen((location) => {
-      select(location.pathname);
-    });
-  }, [history]);
-
+function Footer({isHome}:{isHome:boolean}) {
   return (
-    <footer style={selected === "/" ? { backgroundColor: "transparent" } : {}}>
+    <footer style={isHome ? { backgroundColor: "transparent" } : {}}>
       <nav>
         <ul>
           <li>
