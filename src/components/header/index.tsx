@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { HashLink as Link } from "react-router-hash-link";
 
 interface IItem {
   isSelected: Function;
@@ -9,7 +10,7 @@ interface IItem {
 const items = ["home", "about", "work"];
 
 const Item = ({ isSelected, itemName }: IItem) => {
-  const path = "/" + (itemName === items[0] ? "" : itemName);
+  const path = "#" + (itemName === items[0] ? "" : itemName);
 
   return (
     <li className={isSelected(itemName)}>
@@ -26,19 +27,26 @@ function Header() {
 
   useEffect(() => {
     return history.listen((location) => {
-      select(location.pathname);
+      select(location.hash);
     });
   }, [history]);
 
   const isSelected = (option: string) => {
-    if (selected === "/" && option === "home") return "selected";
+    if ((selected === "" || selected === "/") && option === "home")
+      return "selected";
     else return selected.includes(option) ? "selected" : "";
   };
 
   return (
     <header>
       <nav>
-        <ul style={selected === "/" ? { backgroundColor: "transparent" } : {}}>
+        <ul
+          style={
+            selected === "/" || selected === ""
+              ? { backgroundColor: "transparent" }
+              : {}
+          }
+        >
           {items.map((i) => (
             <Item isSelected={isSelected} itemName={i} />
           ))}
