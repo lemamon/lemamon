@@ -134,7 +134,7 @@ section {
   .home-video {
     object-fit: cover;
     width: 100%;
-    position: relative;
+    position: fixed;
     height: 100%;
     top: -50px;
     left: 0;
@@ -143,6 +143,7 @@ section {
     @media (min-width: 1024px) {
       height: auto;
       top: -100px;
+      position: relative;
     }
   }
 
