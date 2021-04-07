@@ -10,7 +10,6 @@ function App() {
   const [isHome, setIsHome] = useState(true);
   useEffect(() => {
     window.onscroll = function () {
-      console.log(window.pageYOffset);
       setIsHome(window.pageYOffset < 400);
     };
 
