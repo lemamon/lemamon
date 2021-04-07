@@ -1,7 +1,8 @@
 import banner from "./../../assets/images/banner_about.png";
+
 function About() {
   return (
-    <section className="about">
+    <section id={'about'} className="about">
       <div className="container">
         <div className="text-container">
           <div className="resume">
@@ -43,7 +44,7 @@ function About() {
           </div>
         </div>
         <figure className={`image-container`}>
-        {/* <figure className={`frame`}> */}
+          {/* <figure className={`frame`}> */}
           <img src={banner} alt="lemamon" />
           <figcaption>Deyvid Marinho</figcaption>
         </figure>
