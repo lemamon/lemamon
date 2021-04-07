@@ -52,7 +52,7 @@ function Item({
 
 function Work() {
   return (
-    <section className="work">
+    <section id={"work"} className="work">
       <div className="container">
         <div className="list">
           {shuffle(projects).map((item, index) => (

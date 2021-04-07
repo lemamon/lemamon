@@ -125,7 +125,6 @@ section {
 
 .home {
   padding: 20px 60px 10px;
-  position: absolute;
 
   .container {
     justify-content: flex-start;
@@ -135,7 +134,7 @@ section {
   .home-video {
     object-fit: cover;
     width: 100%;
-    position: fixed;
+    position: relative;
     height: 100%;
     top: -50px;
     left: 0;
