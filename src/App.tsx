@@ -1,17 +1,29 @@
 import "./App.scss";
-import { BrowserRouter as Router } from "react-router-dom";
+import { HashRouter as Router } from "react-router-dom";
 
 import Footer from "./components/footer";
 import Header from "./components/header";
 import Switcher from "./components/switcher";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [isHome, setIsHome] = useState(true);
+  useEffect(() => {
+    window.onscroll = function () {
+      console.log(window.pageYOffset);
+      setIsHome(window.pageYOffset < 400);
+    };
+
+    return () => {
+      window.onscroll = null;
+    };
+  }, []);
   return (
     <main>
       <Router>
-        <Header />
+        <Header isHome={isHome} />
         <Switcher />
-        <Footer />
+        <Footer isHome={isHome} />
       </Router>
     </main>
   );
