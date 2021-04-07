@@ -2,11 +2,11 @@ import banner from "./../../assets/images/banner_about.png";
 
 function About() {
   return (
-    <section id={'about'} className="about">
+    <section id={"about"} className="about">
       <div className="container">
         <div className="text-container">
           <div className="resume">
-            <h3>About me</h3>
+            <h3>About me 📝</h3>
             <p>
               Proactive and responsible professional, with the ability to learn
               with easy. Knowledgeable with web and mobile technologies. And
@@ -16,7 +16,7 @@ function About() {
           </div>
 
           <div className="contact">
-            <h3>Contact</h3>
+            <h3>Contact 📬</h3>
             <p>
               Interested in working together? Let's chat! Email me
               <b>
@@ -29,7 +29,7 @@ function About() {
           </div>
 
           <div className="skills">
-            <h3>Skills (aka alphabet soup)</h3>
+            <h3>Skills (aka alphabet soup) 🍜</h3>
             <p>
               JavaScript, React, Android, iOS, ReactNative, Axe, Pyhton,C/C++,
               Java, Python, C#, PHP, Clojure, Office Package, AutoCad, Unity 3D,

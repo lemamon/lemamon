@@ -142,7 +142,7 @@ section {
 
     @media (min-width: 1024px) {
       height: auto;
-      top: -100px;
+      top: -300px;
       position: relative;
     }
   }
@@ -242,13 +242,26 @@ section {
   }
 }
 
+.work {
+  .title {
+    width: 80%;
+    font-size: 50px;
+    line-height: 1.2;
+    text-align: left;
+    color: #000000;
+    margin: 0;
+    font-weight: normal;
+    padding-top: 100px;
+  }
+}
+
 .list {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   height: 100%;
-  padding-top: 100px;
+  padding-top: 50px;
 
   .item {
     width: 310px;

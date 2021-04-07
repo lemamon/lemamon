@@ -6,7 +6,7 @@ function Home() {
           <h2 className="title">
             Deyvid <b>Marinho</b>
           </h2>
-          <h5 className="subtitle">Software Engineer</h5>
+          <h5 className="subtitle">Software Engineer 👨🏻‍💻</h5>
         </div>
 
         <video autoPlay muted loop className=" home-video">
