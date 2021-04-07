@@ -21,7 +21,7 @@ const Item = ({ isSelected, itemName }: IItem) => {
   );
 };
 
-function Header() {
+function Header({ isHome }: { isHome: boolean }) {
   const [selected, select] = useState(window.location.pathname);
   const history = useHistory();
 
