@@ -10,7 +10,7 @@ function Home() {
         </div>
 
         <video autoPlay muted loop className=" home-video">
-          <source src="/videos/home-video2.mp4" type="video/mp4" />
+          <source src="/assets/videos/home-video2.mp4" type="video/mp4" />
         </video>
       </div>
     </section>
