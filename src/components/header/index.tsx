@@ -28,6 +28,7 @@ function Header({ isHome }: { isHome: boolean }) {
   useEffect(() => {
     return history.listen((location) => {
       select(location.hash);
+      console.log(location.hash);
     });
   }, [history]);
 
@@ -37,18 +38,17 @@ function Header({ isHome }: { isHome: boolean }) {
     else return selected.includes(option) ? "selected" : "";
   };
 
+  const toolBarTransparentStyle =
+    isHome && (selected === "/" || selected === "")
+      ? { backgroundColor: "transparent" }
+      : {};
+
   return (
     <header>
       <nav>
-        <ul
-          style={
-            selected === "/" || selected === ""
-              ? { backgroundColor: "transparent" }
-              : {}
-          }
-        >
+        <ul style={toolBarTransparentStyle}>
           {items.map((i) => (
-            <Item isSelected={isSelected} itemName={i} />
+            <Item key={i} isSelected={isSelected} itemName={i} />
           ))}
         </ul>
       </nav>
