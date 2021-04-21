@@ -90,6 +90,7 @@ header {
     background: #fff;
     margin: 0;
     top: 0;
+    z-index: 1;
   }
 }
 
@@ -262,7 +263,7 @@ section {
     padding: 10px 20px;
     overflow: hidden;
     border-radius: 10px;
-    transition: 0.5s;
+    transition: 0.2s;
 
     @media (min-width: 1024px) {
       height: 278px;
