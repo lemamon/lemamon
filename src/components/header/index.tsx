@@ -28,7 +28,6 @@ function Header({ isHome }: { isHome: boolean }) {
   useEffect(() => {
     return history.listen((location) => {
       select(location.hash);
-      console.log(location.hash);
     });
   }, [history]);
 
