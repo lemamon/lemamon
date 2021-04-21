@@ -5,8 +5,10 @@ function About() {
     <section id={"about"} className="about">
       <div className="container">
         <div className="text-container">
+          <div className="title-container">
+            <h3 className="title">About me 📝</h3>
+          </div>
           <div className="resume">
-            <h3>About me 📝</h3>
             <p>
               Proactive and responsible professional, with the ability to learn
               with easy. Knowledgeable with web and mobile technologies. And
@@ -16,7 +18,7 @@ function About() {
           </div>
 
           <div className="contact">
-            <h3>Contact 📬</h3>
+            <h4>Contact 📬</h4>
             <p>
               Interested in working together? Let's chat! Email me
               <b>
@@ -29,7 +31,7 @@ function About() {
           </div>
 
           <div className="skills">
-            <h3>Skills (aka alphabet soup) 🍜</h3>
+            <h4>Skills (aka alphabet soup) 🍜</h4>
             <p>
               JavaScript, React, Android, iOS, ReactNative, Axe, Pyhton,C/C++,
               Java, Python, C#, PHP, Clojure, Office Package, AutoCad, Unity 3D,
@@ -41,6 +43,12 @@ function About() {
               ReactJS, GraphQL, Prisma, Apollo, Relay, Relay Modern, BulmaCSS,
               Firebase Firestore.
             </p>
+          </div>
+
+          <div className="skills">
+            <a href="/assets/pdf/deyvid_marinho_resume.pdf" download>
+              {`--> `}Get my resume as pdf 📜{` <--`}
+            </a>
           </div>
         </div>
         <figure className={`image-container`}>

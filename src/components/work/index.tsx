@@ -1,15 +1,5 @@
 import { projects } from "../../data/index.json";
-
-interface IProject {
-  title: string;
-  description: string;
-  client: string;
-  company: string;
-  jobTitle: string;
-  date: string;
-  background: string;
-  images: string[];
-}
+import Card from "../card";
 
 function shuffle(array: any[]) {
   let currentIndex = array.length,
@@ -31,33 +21,16 @@ function shuffle(array: any[]) {
   return array;
 }
 
-function Item({
-  title,
-  description,
-  jobTitle,
-  company,
-  client,
-  background,
-}: IProject) {
-  return (
-    <div className="item" style={{ backgroundColor: background }}>
-      <h3> {title}</h3>
-      <h5>
-        {jobTitle} - {company} - {client}
-      </h5>
-      <p>{description}</p>
-    </div>
-  );
-}
-
 function Work() {
   return (
     <section id={"work"} className="work">
-      <h3 className="title">Work 💼</h3>
       <div className="container">
+        <div className="title-container">
+          <h3 className="title">Work 💼</h3>
+        </div>
         <div className="list">
           {shuffle(projects).map((item, index) => (
-            <Item key={index} {...item} />
+            <Card key={index} {...item} />
           ))}
         </div>
       </div>
