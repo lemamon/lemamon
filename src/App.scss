@@ -218,6 +218,7 @@ section {
   }
 
   .container {
+    padding: 50px 0;
     flex-direction: column-reverse;
     @media (min-width: 1024px) {
       flex-direction: row;
