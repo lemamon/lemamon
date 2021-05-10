@@ -10,7 +10,7 @@ function App() {
   const [isHome, setIsHome] = useState(true);
   useEffect(() => {
     window.onscroll = function () {
-      setIsHome(window.pageYOffset < 45);
+      setIsHome(window.pageYOffset < 5);
     };
 
     return () => {
