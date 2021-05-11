@@ -1,4 +1,4 @@
-import banner from "./../../assets/images/banner_about.png";
+import banner from "./../../assets/image/banner_about.webp";
 
 function About() {
   return (

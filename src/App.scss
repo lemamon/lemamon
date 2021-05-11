@@ -44,39 +44,39 @@ nav > ul {
   }
 
   a[aria-label="home"]::before {
-    @include item-base(url(./assets/images/ic_home.svg));
+    @include item-base(url(./assets/icon/ic_home.svg));
   }
 
   a[aria-label="about"]::before {
-    @include item-base(url(./assets/images/ic_about.svg));
+    @include item-base(url(./assets/icon/ic_about.svg));
   }
 
   a[aria-label="work"]::before {
-    @include item-base(url(./assets/images/ic_work.svg));
+    @include item-base(url(./assets/icon/ic_work.svg));
   }
 
   a[aria-label="work"]::before {
-    @include item-base(url(./assets/images/ic_work.svg));
+    @include item-base(url(./assets/icon/ic_work.svg));
   }
 
   a[href="https://github.com/lemamon"]::before
   {
-    @include item-base(url(./assets/images/ic_github.svg));
+    @include item-base(url(./assets/icon/ic_github.svg));
   }
 
   a[href="https://linkedin.com/in/lemamon"]::before
   {
-    @include item-base(url(./assets/images/ic_linkedin.svg));
+    @include item-base(url(./assets/icon/ic_linkedin.svg));
   }
 
   a[href="https://instagram.com/lemamon"]::before
   {
-    @include item-base(url(./assets/images/ic_instagram.svg));
+    @include item-base(url(./assets/icon/ic_instagram.svg));
   }
 
   a[href="https://twitter.com/lemamon"]::before
   {
-    @include item-base(url(./assets/images/ic_twitter.svg));
+    @include item-base(url(./assets/icon/ic_twitter.svg));
   }
 }
 
@@ -129,7 +129,7 @@ section {
 
 .home {
   padding: 20px 60px 10px;
-  max-height: 90vh;
+  max-height: cal;
 
   .container {
     justify-content: flex-start;
