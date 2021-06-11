@@ -2,7 +2,7 @@ import { FC } from "react";
 import styled from "styled-components";
 import { footerItems } from "../../data";
 
-const Contianer = styled.footer`
+const Container = styled.footer`
   position: fixed;
   bottom: 0;
   min-width: 100vw;
@@ -33,7 +33,7 @@ const Item: FC<ItemProps> = ({ name, link }) => {
 
 const Footer = () => {
   return (
-    <Contianer>
+    <Container>
       <nav>
         <List>
           {footerItems.map((item) => (
@@ -41,7 +41,7 @@ const Footer = () => {
           ))}
         </List>
       </nav>
-    </Contianer>
+    </Container>
   );
 };
 
