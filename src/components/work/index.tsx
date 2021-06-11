@@ -1,40 +1,40 @@
-import { projects } from "../../data/index.json";
-import Card from "../card";
+import styled from "styled-components";
+import { projects } from "../../data/projects.json";
+import useSelection from "../../hooks/useSelection";
+import { shuffle } from "../../utils";
+import Card from "../Card";
+import Container from "../Container";
+import Section from "../Section";
+import Title from "../Title";
 
-function shuffle(array: any[]) {
-  let currentIndex = array.length,
-    temporaryValue,
-    randomIndex;
+const WorkSection = styled(Section)<{ ref: any }>`
+  padding: 20px 60px 10px;
+`;
 
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-}
+const List = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  height: 100%;
+  padding-top: 50px;
+`;
 
 function Work() {
+  const id = "work";
+  const { setRefs } = useSelection({ threshold: 0.1, id });
+
   return (
-    <section id={"work"} className="work">
-      <div className="container">
-        <div className="title-container">
-          <h3 className="title">Work 💼</h3>
-        </div>
-        <div className="list">
+    <WorkSection id={id} ref={setRefs}>
+      <Container>
+        <Title> Work 💼</Title>
+        <List>
           {shuffle(projects).map((item, index) => (
             <Card key={index} {...item} />
           ))}
-        </div>
-      </div>
-    </section>
+        </List>
+      </Container>
+    </WorkSection>
   );
 }
 

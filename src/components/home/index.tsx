@@ -1,19 +1,36 @@
+import styled from "styled-components";
+import useSelection from "../../hooks/useSelection";
+import Container from "../Container";
+import HomeBackground from "../HomeBackground";
+import Section from "../Section";
+import Subtitle from "../Subtitle";
+import Title from "../Title";
+
+const HomeSection = styled(Section)<{ ref: any }>`
+  padding: 20px 60px 10px;
+  height: 50%;
+  max-height: 90vh;
+`;
+
+const HomeContainer = styled(Container)`
+  justify-content: flex-start;
+  align-items: flex-start;
+`;
+
 function Home() {
+  const id = "";
+  const { setRefs } = useSelection({ threshold: 0.7, id });
+
   return (
-    <section className="home">
-      <div className="container">
-        <div className="title-container">
-          <h2 className="title">
-            Deyvid <b>Marinho</b>
-          </h2>
-          <h5 className="subtitle">Software Engineer 👨🏻‍💻</h5>
-          {/* <p className="subsubtitle">(a.k.a. dev de applicativozinho)</p> */}
-        </div>
-        <video autoPlay muted loop className=" home-video">
-          <source src="/assets/videos/home-video2.mp4" type="video/mp4" />
-        </video>
-      </div>
-    </section>
+    <HomeSection ref={setRefs}>
+      <HomeContainer>
+        <Title>
+          Deyvid <br /> <b>Marinho</b>
+        </Title>
+        <Subtitle>Software Engineer 👨🏻‍💻</Subtitle>
+        <HomeBackground />
+      </HomeContainer>
+    </HomeSection>
   );
 }
 
