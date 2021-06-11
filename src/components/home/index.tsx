@@ -10,6 +10,8 @@ const HomeSection = styled(Section)<{ ref: any }>`
   padding: 20px 60px 10px;
   height: 50%;
   max-height: 90vh;
+  min-height: 90vh;
+  justify-content: flex-start;
 `;
 
 const HomeContainer = styled(Container)`
