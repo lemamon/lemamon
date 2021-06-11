@@ -1,30 +1,26 @@
-import "./App.scss";
-import { HashRouter as Router } from "react-router-dom";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import Switcher from "./components/Switcher";
+import styled from "styled-components";
+import { SelectProvider } from "./context";
 
-import Footer from "./components/footer";
-import Header from "./components/header";
-import Switcher from "./components/switcher";
-import { useEffect, useState } from "react";
+const Main = styled.main`
+  width: 100vw;
+  max-width: 100vw;
+  overflow: hidden;
+  font-family: "Overpass", sans-serif;
+  padding: 50px 0;
+`;
 
 function App() {
-  const [isHome, setIsHome] = useState(true);
-  useEffect(() => {
-    window.onscroll = function () {
-      setIsHome(window.pageYOffset < 5);
-    };
-
-    return () => {
-      window.onscroll = null;
-    };
-  }, []);
   return (
-    <main>
-      <Router>
-        <Header isHome={isHome} />
+    <Main>
+      <SelectProvider>
+        <Header />
         <Switcher />
-        <Footer isHome={isHome} />
-      </Router>
-    </main>
+        <Footer />
+      </SelectProvider>
+    </Main>
   );
 }
 
