@@ -30,8 +30,6 @@ function countReducer(state: State, action: Action) {
 function SelectProvider({ children }: SelectProviderProps) {
   const { Provider } = SelectStateContext;
   const [state, dispatch] = useReducer(countReducer, { selected: "" });
-  // NOTE: you *might* need to memoize this value
-  // Learn more in http://kcd.im/optimize-context
   const value = { state, dispatch };
   return <Provider value={value}>{children}</Provider>;
 }
