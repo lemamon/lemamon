@@ -1,35 +1,55 @@
-import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { HashLink as Link } from "react-router-hash-link";
+import { FC } from "react";
+import styled from "styled-components";
+import { useSelect } from "../../context";
+import { headerItems } from "../../data";
+
+const Container = styled.header`
+  z-index: 1;
+  & > nav > ul {
+    position: fixed;
+    align-items: center;
+    width: 100%;
+    height: 65px;
+    background: #fff;
+    margin: 0;
+    top: 0;
+    z-index: 1;
+  }
+
+  .selected::before {
+    content: "";
+    width: 36px;
+    height: 2px;
+    position: absolute;
+    bottom: 5px;
+    background: #707070;
+  }
+`;
 
 interface IItem {
   isSelected: Function;
   itemName: string;
 }
 
-const items = ["home", "about", "work"];
-
-const Item = ({ isSelected, itemName }: IItem) => {
-  const path = "#" + (itemName === items[0] ? "" : itemName);
+const Item: FC<IItem> = ({ isSelected, itemName }) => {
+  const path = "#" + (itemName === headerItems[0] ? "" : itemName);
 
   return (
     <li className={isSelected(itemName)}>
-      <Link title={itemName} to={path} aria-label={itemName}>
+      <a href={path} aria-label={itemName}>
+        {itemName}
+      </a>
+      {/* <Link title={itemName} to={path} aria-label={itemName}>
         Home
-      </Link>
+      </Link> */}
     </li>
   );
 };
 
-function Header({ isHome }: { isHome: boolean }) {
-  const [selected, select] = useState(window.location.pathname);
-  const history = useHistory();
-
-  useEffect(() => {
-    return history.listen((location) => {
-      select(location.hash);
-    });
-  }, [history]);
+function Header() {
+  const {
+    state: { selected },
+  } = useSelect();
 
   const isSelected = (option: string) => {
     if ((selected === "" || selected === "/") && option === "home")
@@ -37,21 +57,16 @@ function Header({ isHome }: { isHome: boolean }) {
     else return selected.includes(option) ? "selected" : "";
   };
 
-  const toolBarTransparentStyle =
-    isHome && (selected === "/" || selected === "")
-      ? { backgroundColor: "transparent" }
-      : {};
-
   return (
-    <header>
-      <nav>
-        <ul style={toolBarTransparentStyle}>
-          {items.map((i) => (
+    <Container>
+      <nav className="navbar">
+        <ul>
+          {headerItems.map((i) => (
             <Item key={i} isSelected={isSelected} itemName={i} />
           ))}
         </ul>
       </nav>
-    </header>
+    </Container>
   );
 }
 
