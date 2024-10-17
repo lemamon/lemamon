@@ -1,15 +1,15 @@
 {
-  "title": "Light, fast & responsive",
-  "text": "This template is ready to use, so you don't need to change anything at a component level, unless you want to customize the default styling.",
+  "title": "Transformação Digital",
+  "text": "Na lemamon.dev, ajudamos empresas a crescer por meio de soluções tecnológicas de alta qualidade e inovação. Criamos ferramentas que facilitam o desenvolvimento.",
   "section": [
     {
-      "title": "Why Antd?",
-      "content": "Ant Design is a React UI library that has a lot of easy-to-use components for building elegant UI.",
+      "title": "Inovação Constante",
+      "content": "Estamos sempre à frente, explorando e implementando as mais recentes tecnologias para garantir que nossos clientes recebam soluções modernas, eficientes e adaptáveis ao seu contexto.",
       "icon": "notes.svg"
     },
     {
-      "title": "Why styled-components?",
-      "content": "Styled Components gives you total control over your components.",
+      "title": "Atendimento Personalizado",
+      "content": "Priorizamos um atendimento individualizado, trabalhando lado a lado com nossos clientes para entender suas necessidades e oferecer soluções sob medida que realmente agreguem valor ao negócio.",
       "icon": "notes.svg"
     }
   ]
