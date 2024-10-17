@@ -12,12 +12,16 @@ const Router = () => {
       <Header />
       <Switch>
         {routes.map((routeItem) => {
+          const Component = lazy(
+            () => import(`../pages/${routeItem.component}`)
+          );
+
           return (
             <Route
               key={routeItem.component}
               path={routeItem.path}
               exact={routeItem.exact}
-              component={lazy(() => import(`../pages/${routeItem.component}`))}
+              render={(props) => <Component {...props} />}
             />
           );
         })}
