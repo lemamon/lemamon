@@ -4,13 +4,13 @@ export const Styles = createGlobalStyle`
 
     @font-face {
         font-family: "Motiva Sans Light";
-        src: url("/lemamon/assets/fonts/Motiva-Sans-Light.ttf") format("truetype");
+        src: url("/assets/fonts/Motiva-Sans-Light.ttf") format("truetype");
         font-style: normal;
     }
 
     @font-face {
         font-family: "Motiva Sans Bold";
-        src: url("/lemamon/assets/fonts/Motiva-Sans-Bold.ttf") format("truetype");
+        src: url("/assets/fonts/Motiva-Sans-Bold.ttf") format("truetype");
         font-style: normal;
     }
 
