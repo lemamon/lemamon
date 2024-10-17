@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { MenuOutlined } from "@ant-design/icons";
 
-export const HeaderSection = styled("header")`
+export const HeaderSection = styled.header`
   padding: 3rem 0 1rem;
 
   .ant-row-space-between {
@@ -20,12 +20,12 @@ export const LogoContainer = styled(Link)`
   }
 `;
 
-export const NavLink = styled("div")`
+export const NavLink = styled.div`
   display: inline-block;
   text-align: center;
 `;
 
-export const CustomNavLink = styled("div")`
+export const CustomNavLink = styled.div`
   width: 203px;
   display: inline-block;
 
@@ -38,7 +38,7 @@ export const CustomNavLink = styled("div")`
   }
 `;
 
-export const Burger = styled("div")`
+export const Burger = styled.div`
   display: block;
 
   svg {
@@ -46,7 +46,7 @@ export const Burger = styled("div")`
   }
 `;
 
-export const NotHidden = styled("div")`
+export const NotHidden = styled.div`
   @media only screen and (max-width: 890px) {
     display: none;
   }
@@ -69,7 +69,7 @@ export const CustomNavLinkSmall = styled(NavLink)`
   }
 `;
 
-export const Label = styled("span")`
+export const Label = styled.span`
   font-weight: 500;
   color: #404041;
   text-align: right;
@@ -82,7 +82,7 @@ export const Outline = styled(MenuOutlined)`
   font-size: 22px;
 `;
 
-export const Span = styled("span")`
+export const Span = styled.span`
   cursor: pointer;
   transition: all 0.3s ease-in-out;
 
