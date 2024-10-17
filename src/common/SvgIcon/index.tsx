@@ -6,7 +6,7 @@ export const SvgIcon = ({ src, width, height }: SvgIconProps) => {
 
   useEffect(() => {
     const basePath = import.meta.env.BASE_URL || "";
-    const iconPath = `${basePath}src/assets/img/svg/${src}`;
+    const iconPath = `${basePath}assets/img/svg/${src}`; 
     setIconSrc(iconPath);
   }, [src]);
 
