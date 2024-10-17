@@ -166,5 +166,5 @@ export const LanguageSwitch = styled.div`
 export const LanguageSwitchContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  width: 85px;
+  width: 120px;
 `;
