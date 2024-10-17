@@ -1,7 +1,7 @@
 import { BrowserRouter } from "react-router-dom";
-import ReactDOM from "react-dom";
 import { I18nextProvider } from "react-i18next";
 import "antd/dist/antd.css";
+import { createRoot } from "react-dom/client";
 
 import Router from "./router";
 import i18n from "./translation";
@@ -13,5 +13,7 @@ const App = () => (
     </I18nextProvider>
   </BrowserRouter>
 );
+const container = document.getElementById("root");
+const root = createRoot(container!!);
 
-ReactDOM.render(<App />, document.getElementById("root"));
+root.render(<App />);
