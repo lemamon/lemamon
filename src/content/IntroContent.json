@@ -1,13 +1,15 @@
 {
-  "title": "Landing page template for developers & startups",
-  "text": "Beautifully designed templates using React.js, ant design and styled-components! Save weeks of time and build your landing page in minutes.",
+  "title": "Soluções Tecnológicas Personalizadas para o Seu Negócio",
+  "text": "Impulsione o crescimento da sua empresa com softwares, websites e aplicativos móveis sob medida. Na lemamon.dev, oferecemos inovação e qualidade em cada projeto.",
   "button": [
     {
-      "title": "Explore"
+      "title": "Conheça Mais",
+      "path": "about"
     },
     {
-      "title": "Learn more",
-      "color": "#fff"
+      "title": "Fale Conosco",
+      "color": "#fff",
+      "path": "contact"
     }
   ]
 }
