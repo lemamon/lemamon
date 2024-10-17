@@ -51,31 +51,15 @@ const Footer = ({ t }: { t: TFunction }) => {
         <Container>
           <Row justify="space-between">
             <Col lg={10} md={10} sm={12} xs={12}>
-              <Language>{t("Contact")}</Language>
-              <Large to="/">{t("Tell us everything")}</Large>
-              <Para>
-                {t(`Do you have any question? Feel free to reach out.`)}
-              </Para>
-              <a href="mailto:lemamon.dev@gmail.com">
-                <Chat>{t(`Let's Chat`)}</Chat>
-              </a>
-            </Col>
-            <Col lg={8} md={8} sm={12} xs={12}>
-              <Title>{t("Policy")}</Title>
-              <Large to="/">{t("Application Security")}</Large>
-              <Large to="/">{t("Software Principles")}</Large>
-            </Col>
-            <Col lg={6} md={6} sm={12} xs={12}>
-              <Empty />
-              <Large to="/">{t("Support Center")}</Large>
-              <Large to="/">{t("Customer Support")}</Large>
-            </Col>
-          </Row>
-          <Row justify="space-between">
-            <Col lg={10} md={10} sm={12} xs={12}>
-              <Empty />
-              <Language>{t("Address")}</Language>
-              <Para>Florianópolis, SC - Brasil</Para>
+              <Col lg={10} md={10} sm={12} xs={12}>
+                <Language>{t("Contact")}</Language>
+                <Para>
+                  {t(`Do you have any question? Feel free to reach out.`)}
+                </Para>
+                <a href="mailto:lemamon.dev@gmail.com">
+                  <Chat>{t(`Let's Chat`)}</Chat>
+                </a>
+              </Col>
             </Col>
             <Col lg={8} md={8} sm={12} xs={12}>
               <Title>{t("Company")}</Title>
@@ -85,8 +69,20 @@ const Footer = ({ t }: { t: TFunction }) => {
               <Large to="/">{t("Careers & Culture")}</Large>
             </Col>
             <Col lg={6} md={6} sm={12} xs={12}>
+              <Language>{t("Address")}</Language>
+              <Para>Florianópolis, SC - Brasil</Para>
+              <Empty />
+
               <Label htmlFor="select-lang">{t("Language")}</Label>
               <LanguageSwitchContainer>
+                <LanguageSwitch onClick={() => handleChange("pt")}>
+                  <SvgIcon
+                    src="brasil.svg"
+                    aria-label="homepage"
+                    width="30px"
+                    height="30px"
+                  />
+                </LanguageSwitch>
                 <LanguageSwitch onClick={() => handleChange("en")}>
                   <SvgIcon
                     src="united-states.svg"
