@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const ContactContainer = styled("div")`
+export const ContactContainer = styled.div`
   padding: 5rem 0;
 
   @media only screen and (max-width: 1024px) {
@@ -8,7 +8,7 @@ export const ContactContainer = styled("div")`
   }
 `;
 
-export const FormGroup = styled("form")`
+export const FormGroup = styled.form`
   width: 100%;
   max-width: 520px;
 
@@ -18,7 +18,7 @@ export const FormGroup = styled("form")`
   }
 `;
 
-export const Span = styled("span")`
+export const Span = styled.span`
   display: block;
   font-weight: 600;
   color: rgb(255, 130, 92);
@@ -26,7 +26,7 @@ export const Span = styled("span")`
   padding: 0 0.675rem;
 `;
 
-export const ButtonContainer = styled("div")`
+export const ButtonContainer = styled.div`
   text-align: end;
   position: relative;
 
