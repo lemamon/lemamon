@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Row, Col, Drawer } from "antd";
-import { withTranslation, TFunction } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import Container from "../../common/Container";
 import { SvgIcon } from "../../common/SvgIcon";
 import { Button } from "../../common/Button";
@@ -15,8 +15,10 @@ import {
   Span,
 } from "./styles";
 
-const Header = ({ t }: { t: TFunction }) => {
+const Header: React.FC = () => {
   const [visible, setVisibility] = useState(false);
+
+  const { t } = useTranslation();
 
   const toggleButton = () => {
     setVisibility(!visible);
@@ -82,5 +84,5 @@ const Header = ({ t }: { t: TFunction }) => {
   );
 };
 
-export default withTranslation()(Header);
+export default Header;
 
