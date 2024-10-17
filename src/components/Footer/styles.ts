@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-export const FooterSection = styled("footer")`
+export const FooterSection = styled.footer`
   background: rgb(241, 242, 243);
   padding: 2.5rem 0;
 `;
@@ -29,7 +29,7 @@ export const NavLink = styled(Link)`
   }
 `;
 
-export const Extra = styled("section")`
+export const Extra = styled.section`
   background: rgb(241, 242, 243);
   position: relative;
   width: 100%;
@@ -38,12 +38,12 @@ export const Extra = styled("section")`
   padding-bottom: 2rem;
 `;
 
-export const LogoContainer = styled("div")`
+export const LogoContainer = styled.div`
   display: flex;
   position: relative;
 `;
 
-export const Para = styled("div")`
+export const Para = styled.div`
   color: #18216d;
   font-size: 14px;
   width: 70%;
@@ -68,7 +68,7 @@ export const Large = styled(Link)`
   }
 `;
 
-export const Chat = styled("p")`
+export const Chat = styled.p`
   color: #18216d;
   max-width: fit-content;
   border-bottom: 1px solid #18216d;
@@ -82,12 +82,12 @@ export const Chat = styled("p")`
   }
 `;
 
-export const Empty = styled("div")`
+export const Empty = styled.div`
   position: relative;
   height: 53px;
 `;
 
-export const FooterContainer = styled("div")`
+export const FooterContainer = styled.div`
   max-width: 510px;
   width: 100%;
   display: flex;
@@ -136,7 +136,7 @@ export const Language = styled("h4")`
   }
 `;
 
-export const Label = styled("label")`
+export const Label = styled.label`
   font-size: 22px;
   text-transform: capitalize;
   color: #18216d;
@@ -150,7 +150,7 @@ export const Label = styled("label")`
   }
 `;
 
-export const LanguageSwitch = styled("div")`
+export const LanguageSwitch = styled.div`
   cursor: pointer;
   transition: all 0.1s ease-in-out;
 
@@ -163,7 +163,7 @@ export const LanguageSwitch = styled("div")`
   }
 `;
 
-export const LanguageSwitchContainer = styled("div")`
+export const LanguageSwitchContainer = styled.div`
   display: flex;
   justify-content: space-between;
   width: 85px;
