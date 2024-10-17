@@ -5,6 +5,10 @@ import Header from "../components/Header";
 import routes from "./config";
 import { Styles } from "../styles/styles";
 
+const componentMap: { [key: string]: () => Promise<any> } = {
+  Home: () => import("../pages/Home"),
+};
+
 const Router = () => {
   return (
     <Suspense fallback={null}>
@@ -12,9 +16,7 @@ const Router = () => {
       <Header />
       <Switch>
         {routes.map((routeItem) => {
-          const Component = lazy(
-            () => import(`../pages/${routeItem.component}`)
-          );
+          const Component = lazy(componentMap[routeItem.component]);
 
           return (
             <Route
