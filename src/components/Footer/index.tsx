@@ -129,7 +129,7 @@ const Footer: React.FC = () => {
                 src="github.svg"
               />
               <SocialLink
-                href="https://www.linkedin.com/in/lemamon.dev/"
+                href="https://www.linkedin.com/in/lemamon-dev/"
                 src="linkedin.svg"
               />
               <SocialLink
