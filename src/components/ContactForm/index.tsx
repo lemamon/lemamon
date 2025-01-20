@@ -19,10 +19,10 @@ const Contact = ({ title, content, id, t }: ContactProps) => {
         <Col lg={12} md={12} sm={24} xs={24}>
           <Slide direction="right" triggerOnce>
             <>
-              <SvgIcon src="contact-us.webp" width="100%" height="100%" />
+              <SvgIcon src="contact-us.png" width="100%" height="100%" />
               <ButtonContainer>
                 <a href="mailto:lemamon.dev@gmail.com?subject=Contact%20From%20Website">
-                  <Button name="submit">{t("Contact Us")}</Button>
+                  <Button name="submit">{t("contactUs")}</Button>
                 </a>
               </ButtonContainer>
             </>
