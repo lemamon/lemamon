@@ -11,12 +11,10 @@ i18n
   .use(LanguageDetector)
   .init({
     debug: false,
-    lng: "en",
     fallbackLng: "en",
     interpolation: {
       escapeValue: false,
     },
-
     resources: {
       en: {
         translations: translationEn,
