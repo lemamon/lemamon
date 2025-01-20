@@ -1,5 +1,5 @@
 import { Row, Col } from "antd";
-import { withTranslation, TFunction, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { SvgIcon } from "../../common/SvgIcon";
 import Container from "../../common/Container";
 
@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
               <Col lg={10} md={10} sm={12} xs={12}>
                 <Language>{t("Contact")}</Language>
                 <Para>
-                  {t(`Do you have any question? Feel free to reach out.`)}
+                  {t("anyQuestions")}
                 </Para>
                 <a href="mailto:lemamon.dev@gmail.com">
                   <Chat>{t(`Let's Chat`)}</Chat>
@@ -125,12 +125,8 @@ const Footer: React.FC = () => {
             </NavLink>
             <FooterContainer>
               <SocialLink
-                href="https://github.com/lemamon.dev"
+                href="https://github.com/lemamon-dev"
                 src="github.svg"
-              />
-              <SocialLink
-                href="https://twitter.com/lemamon.dev"
-                src="twitter.svg"
               />
               <SocialLink
                 href="https://www.linkedin.com/in/lemamon.dev/"
