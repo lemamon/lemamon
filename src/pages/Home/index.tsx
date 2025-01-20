@@ -1,10 +1,5 @@
 import { lazy } from "react";
-import IntroContent from "../../content/IntroContent.json";
-import MiddleBlockContent from "../../content/MiddleBlockContent.json";
-import AboutContent from "../../content/AboutContent.json";
-import MissionContent from "../../content/MissionContent.json";
-import ProductContent from "../../content/ProductContent.json";
-import ContactContent from "../../content/ContactContent.json";
+import { useTranslation } from "react-i18next";
 
 const Contact = lazy(() => import("../../components/ContactForm"));
 const MiddleBlock = lazy(() => import("../../components/MiddleBlock"));
@@ -13,46 +8,48 @@ const ScrollToTop = lazy(() => import("../../common/ScrollToTop"));
 const ContentBlock = lazy(() => import("../../components/ContentBlock"));
 
 const Home = () => {
+  const { t } = useTranslation();
+
   return (
     <Container>
       <ScrollToTop />
       <ContentBlock
         direction="right"
-        title={IntroContent.title}
-        content={IntroContent.text}
-        button={IntroContent.button}
+        title="introContent.title"
+        content="introContent.text"
+        button={t("introContent.button", { returnObjects: true })}
         icon="developer.svg"
         id="intro"
       />
       <MiddleBlock
-        title={MiddleBlockContent.title}
-        content={MiddleBlockContent.text}
+        title="middleBlockContent.title"
+        content="middleBlockContent.text"
       />
       <ContentBlock
         direction="left"
-        title={AboutContent.title}
-        content={AboutContent.text}
-        section={AboutContent.section}
+        title="aboutContent.title"
+        content="aboutContent.text"
+        section={t("aboutContent.section", { returnObjects: true })}
         icon="graphs.svg"
         id="about"
       />
       <ContentBlock
         direction="right"
-        title={MissionContent.title}
-        content={MissionContent.text}
+        title="missionContent.title"
+        content="missionContent.text"
         icon="product-launch.svg"
         id="mission"
       />
       <ContentBlock
         direction="left"
-        title={ProductContent.title}
-        content={ProductContent.text}
+        title="productContent.title"
+        content="productContent.text"
         icon="waving.svg"
         id="product"
       />
       <Contact
-        title={ContactContent.title}
-        content={ContactContent.text}
+        title="contactContent.title"
+        content="contactContent.text"
         id="contact"
       />
     </Container>
