@@ -2,27 +2,77 @@
   "About": "About",
   "Policy": "Policy",
   "Mission": "Mission",
-  "Product": "Services",
+  "Product": "Product",
   "Tell us everything": "Tell us everything",
   "Contact": "Contact",
-  "Do you have any question? Feel free to reach out.": "Do you have any questions? Feel free to reach out.",
   "Let's Chat": "Let's Chat",
   "Application Security": "Application Security",
   "Software Principles": "Software Principles",
   "Support Center": "Support Center",
   "Customer Support": "Customer Support",
   "Address": "Address",
+  "Company": "Company",
   "Press": "Press",
   "Careers & Culture": "Careers & Culture",
   "Language": "Language",
-  "Explore": "Learn More",
-  "Learn more": "Contact Us",
-  "Get started": "Get Started",
+  "Explore": "Explore",
+  "Learn more": "Learn more",
+  "Get started": "Get started",
   "Submit": "Submit",
   "Message": "Message",
   "Your Message": "Your Message",
   "Name": "Name",
   "Your Name": "Your Name",
   "Email": "Email",
-  "Your Email": "Your Email"
+  "Your Email": "Your Email",
+  "contactUs": "Contact Us",
+  "anyQuestions": "Do you have any question? Feel free to reach out.",
+  "aboutContent": {
+    "title": "Digital Transformation",
+    "text": "At lemamon.dev, we help companies grow through high-quality technological solutions and innovation. We create tools that facilitate development.",
+    "section": [
+      {
+        "title": "Constant Innovation",
+        "content": "We are always ahead, exploring and implementing the latest technologies to ensure our clients receive modern, efficient, and adaptable solutions to their context.",
+        "icon": "notes.svg"
+      },
+      {
+        "title": "Personalized Service",
+        "content": "We prioritize individualized service, working closely with our clients to understand their needs and offer tailored solutions that truly add value to their business.",
+        "icon": "notes.svg"
+      }
+    ]
+  },
+  "contactContent": {
+    "title": "Get in Touch",
+    "text": "Do you have any questions? Feel free to reach out. Our team is ready to help and clarify all your questions."
+  },
+  "introContent": {
+    "title": "Customized Technological Solutions for Your Business",
+    "text": "Boost your company's growth with custom software, websites, and mobile apps. At lemamon.dev, we offer innovation and quality in every project.",
+    "button": [
+      {
+        "title": "Learn More",
+        "path": "about"
+      },
+      {
+        "title": "Contact Us",
+        "color": "#fff",
+        "path": "contact"
+      }
+    ]
+  },
+  "middleBlockContent": {
+    "title": "Turn Ideas into Reality",
+    "text": "We develop customized solutions, tailored to the specific needs of each client, using best practices and technologies to ensure software that perfectly meets your business objectives.",
+    "button": "Learn More"
+  },
+  "missionContent": {
+    "title": "Our Mission",
+    "text": "Drive the digital transformation of companies by offering high-quality technological solutions and innovation. We help our clients grow through technology."
+  },
+  "productContent": {
+    "title": "Our Services",
+    "text": "We offer custom software development, website and mobile app creation, technology consulting, and system integration to maximize your business's productivity and efficiency."
+  }
 }

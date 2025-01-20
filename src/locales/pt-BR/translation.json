@@ -1,28 +1,78 @@
 {
-    "About": "Acerca de",
-    "Policy": "Política",
-    "Mission": "Misión",
-    "Product": "Servicios",
-    "Tell us everything": "Cuéntanos todo",
-    "Contact": "Contacto",
-    "Do you have any question? Feel free to reach out.": "¿Tienes alguna pregunta? No dudes en contactarnos.",
-    "Let's Chat": "Charlemos",
-    "Application Security": "Seguridad de la aplicación",
-    "Software Principles": "Principios de software",
-    "Support Center": "Centro de Apoyo",
-    "Customer Support": "Atención al cliente",
-    "Address": "Dirección",
-    "Press": "Prensa",
-    "Careers & Culture": "Carreras y Cultura",
-    "Language": "Idioma",
-    "Explore": "Más Información",
-    "Learn more": "Contáctanos",
-    "Get started": "Comenzar",
-    "Submit": "Enviar",
-    "Message": "Mensaje",
-    "Your Message": "Tu Mensaje",
-    "Name": "Nombre",
-    "Your Name": "Tu Nombre",
-    "Email": "Correo Electrónico",
-    "Your Email": "Tu Correo Electrónico"
+  "About": "Sobre",
+  "Policy": "Política",
+  "Mission": "Missão",
+  "Product": "Serviços",
+  "Tell us everything": "Conte-nos tudo",
+  "Contact": "Contato",
+  "Let's Chat": "Vamos Conversar",
+  "Application Security": "Segurança da Aplicação",
+  "Software Principles": "Princípios de Software",
+  "Support Center": "Centro de Suporte",
+  "Customer Support": "Atendimento ao Cliente",
+  "Address": "Endereço",
+  "Company": "Empresa",
+  "Press": "Imprensa",
+  "Careers & Culture": "Carreiras e Cultura",
+  "Language": "Idioma",
+  "Explore": "Explorar",
+  "Learn more": "Saiba mais",
+  "Get started": "Começar",
+  "Submit": "Enviar",
+  "Message": "Mensagem",
+  "Your Message": "Sua Mensagem",
+  "Name": "Nome",
+  "Your Name": "Seu Nome",
+  "Email": "Email",
+  "Your Email": "Seu Email",
+  "contactUs": "Entre em Contato",
+  "anyQuestions": "Tem alguma dúvida? Sinta-se à vontade para entrar em contato.",
+  "aboutContent": {
+    "title": "Transformação Digital",
+    "text": "Na lemamon.dev, ajudamos empresas a crescer por meio de soluções tecnológicas de alta qualidade e inovação. Criamos ferramentas que facilitam o desenvolvimento.",
+    "section": [
+      {
+        "title": "Inovação Constante",
+        "content": "Estamos sempre à frente, explorando e implementando as mais recentes tecnologias para garantir que nossos clientes recebam soluções modernas, eficientes e adaptáveis ao seu contexto.",
+        "icon": "notes.svg"
+      },
+      {
+        "title": "Atendimento Personalizado",
+        "content": "Priorizamos um atendimento individualizado, trabalhando lado a lado com nossos clientes para entender suas necessidades e oferecer soluções sob medida que realmente agreguem valor ao negócio.",
+        "icon": "notes.svg"
+      }
+    ]
+  },
+  "contactContent": {
+    "title": "Entre em Contato",
+    "text": "Tem alguma dúvida? Sinta-se à vontade para entrar em contato. Nossa equipe está pronta para ajudar e esclarecer todas as suas questões."
+  },
+  "introContent": {
+    "title": "Soluções Tecnológicas Personalizadas para o Seu Negócio",
+    "text": "Impulsione o crescimento da sua empresa com softwares, websites e aplicativos móveis sob medida. Na lemamon.dev, oferecemos inovação e qualidade em cada projeto.",
+    "button": [
+      {
+        "title": "Conheça Mais",
+        "path": "about"
+      },
+      {
+        "title": "Fale Conosco",
+        "color": "#fff",
+        "path": "contact"
+      }
+    ]
+  },
+  "middleBlockContent": {
+    "title": "Transforme Ideias em Realidade",
+    "text": "Desenvolvemos soluções personalizadas, adaptadas às necessidades específicas de cada cliente, utilizando as melhores práticas e tecnologias para garantir um software que atenda perfeitamente aos objetivos do seu negócio.",
+    "button": "Saiba Mais"
+  },
+  "missionContent": {
+    "title": "Nossa Missão",
+    "text": "Impulsionar a transformação digital de empresas, oferecendo soluções tecnológicas de alta qualidade e inovação. Ajudamos nossos clientes a crescer por meio da tecnologia."
+  },
+  "productContent": {
+    "title": "Nossos Serviços",
+    "text": "Oferecemos desenvolvimento de software sob medida, criação de websites e aplicativos móveis, consultoria tecnológica e integração de sistemas para maximizar a produtividade e eficiência do seu negócio."
+  }
 }

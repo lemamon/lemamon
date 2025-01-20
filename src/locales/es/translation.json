@@ -5,24 +5,74 @@
   "Product": "Servicios",
   "Tell us everything": "Cuéntanos todo",
   "Contact": "Contacto",
-  "Do you have any question? Feel free to reach out.": "¿Tienes alguna pregunta? No dudes en contactarnos.",
-  "Let's Chat": "Charlemos",
-  "Application Security": "Seguridad de la aplicación",
-  "Software Principles": "Principios de software",
-  "Support Center": "Centro de Apoyo",
-  "Customer Support": "Atención al cliente",
+  "Let's Chat": "Vamos a charlar",
+  "Application Security": "Seguridad de la Aplicación",
+  "Software Principles": "Principios de Software",
+  "Support Center": "Centro de Soporte",
+  "Customer Support": "Atención al Cliente",
   "Address": "Dirección",
+  "Company": "Empresa",
   "Press": "Prensa",
   "Careers & Culture": "Carreras y Cultura",
   "Language": "Idioma",
-  "Explore": "Más Información",
-  "Learn more": "Contáctanos",
-  "Get started": "Comenzar",
+  "Explore": "Explorar",
+  "Learn more": "Aprender más",
+  "Get started": "Empezar",
   "Submit": "Enviar",
   "Message": "Mensaje",
   "Your Message": "Tu Mensaje",
   "Name": "Nombre",
   "Your Name": "Tu Nombre",
   "Email": "Correo Electrónico",
-  "Your Email": "Tu Correo Electrónico"
+  "Your Email": "Tu Correo Electrónico",
+  "contactUs": "Contáctanos",
+  "anyQuestions": "¿Tienes alguna pregunta? No dudes en ponerte en contacto.",
+  "aboutContent": {
+    "title": "Transformación Digital",
+    "text": "En lemamon.dev, ayudamos a las empresas a crecer a través de soluciones tecnológicas de alta calidad e innovación. Creamos herramientas que facilitan el desarrollo.",
+    "section": [
+      {
+        "title": "Innovación Constante",
+        "content": "Siempre estamos a la vanguardia, explorando e implementando las últimas tecnologías para garantizar que nuestros clientes reciban soluciones modernas, eficientes y adaptables a su contexto.",
+        "icon": "notes.svg"
+      },
+      {
+        "title": "Servicio Personalizado",
+        "content": "Priorizamos un servicio individualizado, trabajando estrechamente con nuestros clientes para entender sus necesidades y ofrecer soluciones a medida que realmente agreguen valor a su negocio.",
+        "icon": "notes.svg"
+      }
+    ]
+  },
+  "contactContent": {
+    "title": "Ponte en Contacto",
+    "text": "¿Tienes alguna pregunta? No dudes en ponerte en contacto. Nuestro equipo está listo para ayudar y aclarar todas tus dudas."
+  },
+  "introContent": {
+    "title": "Soluciones Tecnológicas Personalizadas para tu Negocio",
+    "text": "Impulsa el crecimiento de tu empresa con software, sitios web y aplicaciones móviles a medida. En lemamon.dev, ofrecemos innovación y calidad en cada proyecto.",
+    "button": [
+      {
+        "title": "Conoce Más",
+        "path": "about"
+      },
+      {
+        "title": "Contáctanos",
+        "color": "#fff",
+        "path": "contact"
+      }
+    ]
+  },
+  "middleBlockContent": {
+    "title": "Transforma Ideas en Realidad",
+    "text": "Desarrollamos soluciones personalizadas, adaptadas a las necesidades específicas de cada cliente, utilizando las mejores prácticas y tecnologías para garantizar un software que cumpla perfectamente con los objetivos de tu negocio.",
+    "button": "Aprender Más"
+  },
+  "missionContent": {
+    "title": "Nuestra Misión",
+    "text": "Impulsar la transformación digital de las empresas, ofreciendo soluciones tecnológicas de alta calidad e innovación. Ayudamos a nuestros clientes a crecer a través de la tecnología."
+  },
+  "productContent": {
+    "title": "Nuestros Servicios",
+    "text": "Ofrecemos desarrollo de software a medida, creación de sitios web y aplicaciones móviles, consultoría tecnológica e integración de sistemas para maximizar la productividad y eficiencia de tu negocio."
+  }
 }
