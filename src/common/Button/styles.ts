@@ -1,10 +1,15 @@
 import styled from "styled-components";
 
-export const StyledButton = styled("button")<{ color?: string }>`
+export const StyledButton = styled("button")<{
+  color?: string;
+  disabled?: boolean;
+}>`
   background: ${(p) => p.color || "#2e186a"};
   color: ${(p) => (p.color ? "#2E186A" : "#fff")};
   font-size: 1rem;
   font-weight: 700;
+  opacity: ${(p) => (p.disabled ? 0.5 : 1)};
+  pointer-events: ${(p) => (p.disabled ? "none" : "auto")};
   width: 100%;
   border: 1px solid #edf3f5;
   border-radius: 4px;
@@ -23,3 +28,4 @@ export const StyledButton = styled("button")<{ color?: string }>`
     background-color: #ff0000;
   }
 `;
+
