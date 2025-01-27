@@ -3,7 +3,16 @@ import { Link } from "react-router-dom";
 import { MenuOutlined } from "@ant-design/icons";
 
 export const HeaderSection = styled.header`
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   padding: 3rem 0 1rem;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  @media only screen and (max-width: 768px) {
+    padding: 1rem 0;
+  }
 
   .ant-row-space-between {
     align-items: center;
@@ -52,7 +61,7 @@ export const NotHidden = styled.div`
   }
 `;
 
-export const Menu = styled("h5")`
+export const Menu = styled.h5`
   font-size: 1.5rem;
   font-weight: 600;
   text-align: center;
