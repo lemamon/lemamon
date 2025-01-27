@@ -7,6 +7,7 @@ import { Styles } from "../styles/styles";
 
 const componentMap: { [key: string]: () => Promise<any> } = {
   Home: () => import("../pages/Home"),
+  Projects: () => import("../pages/Projects"),
 };
 
 const Router = () => {
