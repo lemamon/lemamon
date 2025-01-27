@@ -1,0 +1,179 @@
+[
+  {
+    "title": "Qual serviço você ou sua empresa precisam agora?",
+    "question": "Escolha entre as nossas opções: UX/UI, Front-end, Back-end ou a Solução Completa para ter seu projeto pronto para uso.",
+    "options": [
+      {
+        "title": "Solução Completa",
+        "text": "Vamos cuidar de tudo para você! Criamos o design, desenvolvemos e lançamos seu produto, pronto para impressionar.",
+        "icon": "RocketOutlined"
+      },
+      {
+        "title": "UX/UI",
+        "text": "Planejamos a interface e a jornada do usuário com carinho para que seu produto digital encante seus clientes.",
+        "icon": "HighlightOutlined"
+      },
+      {
+        "title": "Front-end",
+        "text": "Damos vida ao visual do seu produto, seja para aplicativos ou sites, garantindo uma experiência incrível.",
+        "icon": "LayoutOutlined"
+      },
+      {
+        "title": "Back-end",
+        "text": "Criamos toda a estrutura por trás do seu produto, com infraestrutura robusta e APIs inteligentes.",
+        "icon": "DatabaseOutlined"
+      }
+    ]
+  },
+  {
+    "title": "Que tipo de projeto você deseja criar?",
+    "question": "Você pode escolher mais de uma opção, fique à vontade!",
+    "options": [
+      {
+        "title": "Aplicativo",
+        "text": "Os aplicativos são indispensáveis hoje em dia. Vamos criar algo incrível para destacar sua empresa!",
+        "icon": "MobileOutlined"
+      },
+      {
+        "title": "Website",
+        "text": "Transforme sua presença digital com um site bonito e funcional, feito sob medida para você.",
+        "icon": "GlobalOutlined"
+      },
+      {
+        "title": "Dashboard",
+        "text": "Tenha um painel poderoso para gerenciar operações e descobrir insights valiosos sobre o seu negócio.",
+        "icon": "PieChartOutlined"
+      }
+    ]
+  },
+  {
+    "title": "Escolha o segmento do seu projeto",
+    "question": "Selecione uma das opções abaixo que melhor descreve o que você precisa.",
+    "options": [
+      {
+        "title": "Aplicativo",
+        "question": "Qual tipo de aplicativo você gostaria de criar?",
+        "options": [
+          {
+            "title": "Guia & Reservas",
+            "text": "Um aplicativo prático para guias de viagens, locais ou atividades com opções de reservas.",
+            "icon": "CompassOutlined"
+          },
+          {
+            "title": "Transporte & Delivery",
+            "text": "Uma solução integrada para transporte ou entrega, perfeita para conectar serviços.",
+            "icon": "CarOutlined"
+          },
+          {
+            "title": "E-commerce & Marketplace",
+            "text": "Crie um espaço seguro e eficiente para vender seus produtos ou reunir diversos vendedores.",
+            "icon": "ShoppingCartOutlined"
+          },
+          {
+            "title": "Empresarial",
+            "text": "Um app que resolve as demandas da sua empresa e ajuda a melhorar processos.",
+            "icon": "SolutionOutlined"
+          },
+          {
+            "title": "Social",
+            "text": "Conecte pessoas com um aplicativo voltado para interações sociais e comunidades.",
+            "icon": "TeamOutlined"
+          }
+        ]
+      },
+      {
+        "title": "Website",
+        "question": "Qual estilo de site atende melhor à sua necessidade?",
+        "options": [
+          {
+            "title": "E-commerce & Marketplace",
+            "text": "Venda produtos online com um site seguro e feito para conversão.",
+            "icon": "ShopOutlined"
+          },
+          {
+            "title": "Landing Page",
+            "text": "Promova seus serviços ou produtos com uma página otimizada para SEO e conversões.",
+            "icon": "FileTextOutlined"
+          },
+          {
+            "title": "Institucional",
+            "text": "Mostre a força da sua marca com um site que transmite profissionalismo e confiança.",
+            "icon": "BankOutlined"
+          },
+          {
+            "title": "Guia & Reservas",
+            "text": "Um site prático e intuitivo para guias e reservas, perfeito para turismo e lazer.",
+            "icon": "CompassOutlined"
+          }
+        ]
+      },
+      {
+        "title": "Dashboard",
+        "question": "Qual tipo de painel atende às suas necessidades?",
+        "options": [
+          {
+            "title": "Empresarial",
+            "text": "Controle operações, automatize tarefas e obtenha informações importantes para decisões estratégicas.",
+            "icon": "BarChartOutlined"
+          },
+          {
+            "title": "Gestão",
+            "text": "Gerencie seu negócio com uma visão ampla e organizada, tudo em um só lugar.",
+            "icon": "ProjectOutlined"
+          },
+          {
+            "title": "Admin",
+            "text": "Tenha total controle do seu sistema com um painel administrativo fácil de usar.",
+            "icon": "SettingOutlined"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Escolha as opções adicionais para o seu projeto",
+    "question": "Selecione as funcionalidades extras que gostaria de incluir no seu projeto.",
+    "options": [
+      {
+        "icon": "DashboardOutlined",
+        "title": "Painel Administrativo",
+        "text": "Quer um painel para gerenciar seu aplicativo ou sistema?"
+      },
+      {
+        "icon": "SearchOutlined",
+        "title": "Pesquisa de UX",
+        "text": "Gostaria de insights para melhorar a experiência dos seus usuários?"
+      },
+      {
+        "icon": "PictureOutlined",
+        "title": "Identidade Visual",
+        "text": "Precisando de um visual incrível para sua marca ou produto?"
+      },
+      {
+        "icon": "CloudUploadOutlined",
+        "title": "Publicar na Google e Apple",
+        "text": "Deseja que cuidemos da publicação do seu aplicativo nas lojas Google e Apple?"
+      },
+      {
+        "icon": "ApiOutlined",
+        "title": "Integração com API",
+        "text": "Gostaria de integrar seu produto com APIs externas, como pagamento ou marketing?"
+      },
+      {
+        "icon": "NotificationOutlined",
+        "title": "Notificação Push",
+        "text": "Quer enviar notificações em tempo real para seus usuários?"
+      },
+      {
+        "icon": "LinkOutlined",
+        "title": "Integração com Serviços Externos",
+        "text": "Gostaria de conectar seu produto com outros serviços do mercado?"
+      },
+      {
+        "icon": "CloudServerOutlined",
+        "title": "Configurar Infraestrutura",
+        "text": "Precisa de suporte para servidores, performance e segurança?"
+      }
+    ]
+  }
+]
