@@ -74,5 +74,15 @@
   "productContent": {
     "title": "Nossos Serviços",
     "text": "Oferecemos desenvolvimento de software sob medida, criação de websites e aplicativos móveis, consultoria tecnológica e integração de sistemas para maximizar a produtividade e eficiência do seu negócio."
+  },
+  "projectsContent": {
+    "intro": {
+      "title": "Bem-vindo à Área de Projetos",
+      "text": "Aqui, transformamos suas ideias em realidade! Entendemos que cada projeto é único, e é por isso que estamos aqui para ajudá-lo a criar algo incrível. Preparamos uma experiência simples e interativa para você selecionar todas as opções necessárias e construir o projeto perfeito juntos.\n\nEscolha os serviços, tipos de projeto e recursos que melhor atendam às suas necessidades. Não se preocupe, estaremos com você em cada etapa, desde o início até o lançamento do seu produto. Vamos criar algo extraordinário, juntos! Explore as opções abaixo e comece a planejar seu projeto. 🚀",
+      "button": {
+        "title": "Começar",
+        "path": "start"
+      }
+    }
   }
 }

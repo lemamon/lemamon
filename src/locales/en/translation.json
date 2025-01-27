@@ -74,5 +74,15 @@
   "productContent": {
     "title": "Our Services",
     "text": "We offer custom software development, website and mobile app creation, technology consulting, and system integration to maximize your business's productivity and efficiency."
+  },
+  "projectsContent": {
+    "intro": {
+      "title": "Welcome to the Projects Area",
+      "text": "Here, we turn your ideas into reality! We understand that every project is unique, and that’s why we’re here to help you create something amazing. We’ve prepared a simple and interactive experience for you to select all the necessary options and build the perfect project together. Choose the services, project types, and features that best suit your needs. Don’t worry, we’ll be with you every step of the way, from the start to the launch of your product. Let’s create something extraordinary, together! Explore the options below and start planning your project. 🚀",
+      "button": {
+        "title": "Get Started",
+        "path": "start"
+      }
+    }
   }
 }
