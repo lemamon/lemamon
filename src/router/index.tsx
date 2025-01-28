@@ -8,6 +8,8 @@ import { Styles } from "../styles/styles";
 const componentMap: { [key: string]: () => Promise<any> } = {
   Home: () => import("../pages/Home"),
   Projects: () => import("../pages/Projects"),
+  Blog: () => import("../pages/Blog"),
+  Post: () => import("../pages/Post"),
 };
 
 const Router = () => {
