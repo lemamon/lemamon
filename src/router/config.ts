@@ -9,6 +9,16 @@ const routes = [
     exact: true,
     component: "Projects",
   },
+  {
+    path: ["/blog"],
+    exact: true,
+    component: "Blog",
+  },
+  {
+    path: ["/post/:id"],
+    exact: true,
+    component: "Post",
+  },
 ];
 
 export default routes;
