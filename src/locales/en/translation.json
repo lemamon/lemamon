@@ -84,5 +84,13 @@
         "path": "start"
       }
     }
+  },
+  "blogContent": {
+    "title": "Our Blog",
+    "text": "Check out the latest news, tips, and trends in the world of technology and software development. Stay up to date on everything happening in the digital universe and discover how technology can drive your business growth.",
+    "button": "Read More"
+  },
+  "postContent": {
+    "byAuthor": "By {{author}}"
   }
 }

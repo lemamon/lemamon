@@ -84,5 +84,13 @@
         "path": "start"
       }
     }
+  },
+  "blogContent": {
+    "title": "Nosso Blog",
+    "text": "Confira as últimas notícias, dicas e tendências do mundo da tecnologia e do desenvolvimento de software. Fique por dentro de tudo o que acontece no universo digital e descubra como a tecnologia pode impulsionar o crescimento do seu negócio.",
+    "button": "Leia Mais"
+  },
+  "postContent": {
+    "byAuthor": "Por {{author}}"
   }
 }
