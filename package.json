@@ -2,6 +2,7 @@
   "name": "lemamon.dev",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@types/node": "^18.0.0",
     "@types/prismjs": "^1.26.5",
