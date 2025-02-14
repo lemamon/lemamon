@@ -4,6 +4,7 @@ import { withTranslation } from "react-i18next";
 import { ContentBlockProps } from "./types";
 import { Button } from "../../common/Button";
 import { SvgIcon } from "../../common/SvgIcon";
+import { useHistory } from "react-router-dom";
 import {
   ContentSection,
   Content,
@@ -25,7 +26,14 @@ const ContentBlock = ({
   id,
   direction,
 }: ContentBlockProps) => {
+  const navigate = useHistory();
+
   const scrollTo = (id: string) => {
+    if (id.includes("/")) {
+      navigate.push(id);
+      return;
+    }
+
     const element = document.getElementById(id) as HTMLDivElement;
     element.scrollIntoView({
       behavior: "smooth",
