@@ -1,11 +1,13 @@
-import { TFunction } from "react-i18next";
-export interface ContactProps {
-  title: string;
-  content: string;
-  id: string;
-  t: TFunction;
-}
-
-export interface ValidationTypeProps {
-  type: string;
-}
+export type ContactFormProps = {
+  email: string;
+  phone: string;
+  description: string;
+  name: string;
+  onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBack: () => void;
+  onSubmit: () => void;
+  isValidEmail: boolean;
+};

@@ -1,41 +1,14 @@
 import styled from "styled-components";
+import { Card } from "antd";
 
-export const ContactContainer = styled.div`
-  padding: 5rem 0;
-
-  @media only screen and (max-width: 1024px) {
-    padding: 3rem 0;
-  }
+export const FormCard = styled(Card as any)`
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
 `;
 
-export const FormGroup = styled.form`
-  width: 100%;
-  max-width: 520px;
-
-  @media only screen and (max-width: 1045px) {
-    max-width: 100%;
-    margin-top: 2rem;
-  }
-`;
-
-export const Span = styled.span`
-  display: block;
-  font-weight: 600;
-  color: #ff0000;
-  height: 0.775rem;
-  padding: 0 0.675rem;
-`;
-
-export const ButtonContainer = styled.div`
-  position: relative;
+export const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: center;
-
-  & button {
-    width: 180px;
-  }
-
-  @media only screen and (max-width: 414px) {
-    padding-top: 0.75rem;
-  }
+  gap: 1rem;
+  justify-content: space-between;
 `;
