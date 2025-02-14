@@ -6,7 +6,7 @@ export const HeaderSection = styled.header`
   position: sticky;
   top: 0;
   z-index: 1000;
-  padding: 3rem 0 1rem;
+  padding: 1rem 0 1rem;
   background: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
@@ -22,7 +22,6 @@ export const HeaderSection = styled.header`
 
 export const LogoContainer = styled(Link)`
   display: flex;
-  height: 64px;
 
   @media only screen and (max-width: 768px) {
     width: 70%;
@@ -101,5 +100,23 @@ export const Span = styled.span`
     color: #ff0000;
     text-underline-position: under;
     text-decoration: #ff0000 wavy underline;
+  }
+`;
+
+export const Logo = styled.p`
+  font-family: "Barriecito Regular", serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2e186a;
+  line-height: normal;
+  text-align: start;
+  margin: 0;
+
+  @media (min-width: 578px) {
+    font-size: 3rem;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 4rem;
   }
 `;

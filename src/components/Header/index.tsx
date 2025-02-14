@@ -60,7 +60,7 @@ const Header: React.FC = () => {
       <Container>
         <Row justify="space-between">
           <LogoContainer to="/" aria-label="homepage">
-            <SvgIcon src="logo.svg" width="100%" height="100%" />
+            <SvgIcon src="logo.png" width="70%" height="100%" />
           </LogoContainer>
           <Burger onClick={toggleButton}>
             <Outline />
