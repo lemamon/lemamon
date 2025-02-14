@@ -53,7 +53,7 @@
     "button": [
       {
         "title": "Learn More",
-        "path": "about"
+        "path": "/projects"
       },
       {
         "title": "Contact Us",
