@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { useTranslation } from "react-i18next";
 
-const Contact = lazy(() => import("../../components/ContactForm"));
+const Contact = lazy(() => import("../../components/Contact"));
 const MiddleBlock = lazy(() => import("../../components/MiddleBlock"));
 const Container = lazy(() => import("../../common/Container"));
 const ScrollToTop = lazy(() => import("../../common/ScrollToTop"));
