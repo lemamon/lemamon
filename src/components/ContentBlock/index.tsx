@@ -1,7 +1,7 @@
 import { Row, Col } from "antd";
 import { Fade } from "react-awesome-reveal";
 import { withTranslation } from "react-i18next";
-import { ContentBlockProps } from "./types";
+import { ContentBlockProps, ButttonType } from "./types";
 import { Button } from "../../common/Button";
 import { SvgIcon } from "../../common/SvgIcon";
 import { useHistory } from "react-router-dom";
@@ -59,26 +59,23 @@ const ContentBlock = ({
               {direction === "right" ? (
                 <ButtonWrapper>
                   {typeof button === "object" &&
-                    button.map(
-                      (
-                        item: {
-                          color?: string;
-                          title: string;
-                          path: string;
-                        },
-                        id: number
-                      ) => {
-                        return (
-                          <Button
-                            key={id}
-                            color={item.color}
-                            onClick={() => scrollTo(item.path)}
-                          >
-                            {t(item.title)}
-                          </Button>
-                        );
-                      }
-                    )}
+                    button.map((item: ButttonType, id: number) => {
+                      return (
+                        <Button
+                          key={id}
+                          color={item.color}
+                          onClick={() => {
+                            if (item.onClick) {
+                              item.onClick();
+                              return;
+                            }
+                            scrollTo(item.path);
+                          }}
+                        >
+                          {t(item.title)}
+                        </Button>
+                      );
+                    })}
                 </ButtonWrapper>
               ) : (
                 <ServiceWrapper>
