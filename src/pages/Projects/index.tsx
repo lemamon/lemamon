@@ -2,7 +2,7 @@ import { lazy } from "react";
 import questions from "./project-questions.json";
 import ScrollToTop from "../../common/ScrollToTop";
 import Container from "../../common/Container";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import styled from "styled-components";
 import { Button } from "../../common/Button";
 import { useTranslation } from "react-i18next";
@@ -37,10 +37,6 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  useEffect(() => {
-    console.log(selectedOptions);
-  }, [selectedOptions]);
 
   const toggleSelection = (questionId: string, optionId: string) => {
     setSelectedOptions((prev) => {
@@ -157,19 +153,28 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
 
 const Projects = () => {
   const { t } = useTranslation();
+  const [isInitial, setIsInitial] = useState(true);
 
   return (
     <Container>
       <ScrollToTop />
-      <ContentBlock
-        direction="left"
-        title="projectsContent.intro.title"
-        content="projectsContent.intro.text"
-        button={t("projectsContent.intro.button", { returnObjects: true })}
-        icon="developer.svg"
-        id="intro"
-      />
-      <QuestionsPage questions={questions} />
+      {isInitial ? (
+        <ContentBlock
+          direction="right"
+          title="projectsContent.intro.title"
+          content="projectsContent.intro.text"
+          button={[
+            {
+              ...t("projectsContent.intro.button", { returnObjects: true }),
+              onClick: () => setIsInitial(false),
+            },
+          ]}
+          icon="developer.svg"
+          id="intro"
+        />
+      ) : (
+        <QuestionsPage questions={questions} />
+      )}
     </Container>
   );
 };
