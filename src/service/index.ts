@@ -7,7 +7,7 @@ interface EmailData {
 }
 
 export const sendEmail = async (data: EmailData): Promise<any> => {
-  const baseUrl = "https://lemamon-email-service-eac435b5f8e8.herokuapp.com/";
+  const baseUrl = "https://lemamon-email-service-eac435b5f8e8.herokuapp.com";
 
   try {
     const response = await fetch(`${baseUrl}/send-email`, {
