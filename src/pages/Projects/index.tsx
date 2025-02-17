@@ -27,6 +27,8 @@ const ButtonWrapper = styled.div`
 `;
 
 const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
+  const { t } = useTranslation();
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, string[]>
@@ -73,6 +75,12 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
     !selectedOptions[questions[currentQuestion].id] ||
     selectedOptions[questions[currentQuestion].id].length === 0;
 
+  const getTitle = (id?: string) => {
+    if (!id) return "";
+
+    return t(`projectsContent.questions.${id}.title`);
+  };
+
   const handleSubmit = async () => {
     const optionsSummaryText = Object.entries(selectedOptions).map(
       ([questionId, optionIds]) => {
@@ -87,7 +95,9 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
           );
         }
 
-        return `${question?.title}: ${options?.map((o) => o.title).join(", ")}`;
+        return `${getTitle(question?.id)}: ${options
+          ?.map((o) => getTitle(o?.id))
+          .join(", ")}`;
       }
     );
 
@@ -110,10 +120,7 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
               {index === currentQuestion && (
                 <Fade triggerOnce duration={700}>
                   <QuestionItem
-                    questionIndex={index}
                     questionId={q.id}
-                    title={q.title}
-                    question={q.question}
                     options={q.options}
                     selectedOptions={selectedOptions}
                     toggleSelection={toggleSelection}
@@ -124,13 +131,13 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
                       onClick={handleBack}
                       disabled={currentQuestion === 0}
                     >
-                      Back
+                      {t("projectsContent.intro.back")}
                     </Button>
                     <Button
                       onClick={handleNext}
                       disabled={currentQuestionNotSelected}
                     >
-                      Next
+                      {t("projectsContent.intro.next")}
                     </Button>
                   </ButtonWrapper>
                 </Fade>
@@ -139,22 +146,24 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
           ))}
         </>
       ) : (
-        <ContactForm
-          email={email}
-          phone={phone}
-          description={description}
-          name={name}
-          onEmailChange={(e) => setEmail(e.target.value)}
-          onPhoneChange={(e) => setPhone(e.target.value)}
-          onDescriptionChange={(e) => setDescription(e.target.value)}
-          onNameChange={(e) => setName(e.target.value)}
-          onBack={() => {
-            setShowFinalForm(false);
-            setCurrentQuestion(questions.length - 1);
-          }}
-          onSubmit={handleSubmit}
-          isValidEmail={isValidEmail(email)}
-        />
+        <Fade triggerOnce duration={700}>
+          <ContactForm
+            email={email}
+            phone={phone}
+            description={description}
+            name={name}
+            onEmailChange={(e) => setEmail(e.target.value)}
+            onPhoneChange={(e) => setPhone(e.target.value)}
+            onDescriptionChange={(e) => setDescription(e.target.value)}
+            onNameChange={(e) => setName(e.target.value)}
+            onBack={() => {
+              setShowFinalForm(false);
+              setCurrentQuestion(questions.length - 1);
+            }}
+            onSubmit={handleSubmit}
+            isValidEmail={isValidEmail(email)}
+          />
+        </Fade>
       )}
     </StyledPage>
   );
