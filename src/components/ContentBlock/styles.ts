@@ -10,7 +10,7 @@ export const Content = styled.p`
   margin: 1.5rem 0 2rem 0;
 `;
 
-export const StyledRow = styled(Row)`
+export const StyledRow = styled(Row as any)`
   flex-direction: ${({ direction }: { direction: string }) =>
     direction === "left" ? "row" : "row-reverse"};
 `;
@@ -43,7 +43,7 @@ export const MinPara = styled.p`
   font-size: 13px;
 `;
 
-export const ButtonWrapper = styled.div`
+export const ButtonWrapper = styled.div<{ onlyOneButton?: boolean }>`
   display: flex;
   justify-content: space-between;
   max-width: 100%;
@@ -53,6 +53,6 @@ export const ButtonWrapper = styled.div`
   }
 
   button:last-child {
-    margin-left: 20px;
+    ${({ onlyOneButton }) => !onlyOneButton && "margin-left: 20px"};
   }
 `;
