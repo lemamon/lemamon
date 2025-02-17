@@ -77,11 +77,233 @@
   },
   "projectsContent": {
     "intro": {
-      "title": "Bienvenido al Área de Proyectos",
-      "text": "¡Aquí, convertimos tus ideas en realidad! Entendemos que cada proyecto es único, y por eso estamos aquí para ayudarte a crear algo increíble. Hemos preparado una experiencia simple e interactiva para que selecciones todas las opciones necesarias y construyamos juntos el proyecto perfecto. Elige los servicios, tipos de proyectos y características que mejor se adapten a tus necesidades. No te preocupes, estaremos contigo en cada paso del camino, desde el inicio hasta el lanzamiento de tu producto. ¡Creemos algo extraordinario, juntos! Explora las opciones a continuación y comienza a planificar tu proyecto. 🚀",
+      "title": "🌟 ¡Bienvenido al Área de Proyectos! 🚀",
+      "text": "Transformamos tus ideas en realidad. Aquí, cada proyecto es único, y nuestro objetivo es ayudarte a crear algo increíble de forma simple e interactiva.",
+      "instructions": "Personaliza tu experiencia eligiendo los servicios, tipos de proyecto y recursos que mejor se adapten a tus necesidades. Y no te preocupes, estaremos a tu lado en cada etapa, desde la planificación hasta el lanzamiento de tu producto.",
+      "invite": "¿Vamos juntos a crear algo extraordinario? Explora las opciones a continuación y comienza a dar vida a tu proyecto.",
       "button": {
-        "title": "Empezar",
+        "title": "¡Comienza tu proyecto!",
         "path": "start"
+      },
+      "next": "Siguiente",
+      "back": "Atrás"
+    },
+    "questions": {
+      "b47f2h6r": {
+        "title": "¿Qué servicio necesita usted o su empresa ahora mismo?",
+        "question": "Elija entre nuestras opciones: UX/UI, Front-end, Back-end o la Solución Completa para tener su proyecto listo para usar."
+      },
+      "c914f8a7": {
+        "title": "Solución Completa",
+        "text": "¡Nos encargamos de todo por usted! Creamos el diseño, desarrollamos y lanzamos su producto, listo para impresionar."
+      },
+      "f4b29e1d": {
+        "title": "UX/UI",
+        "text": "Planificamos cuidadosamente la interfaz y el recorrido del usuario para que su producto digital encante a sus clientes."
+      },
+      "a3876e92": {
+        "title": "Front-end",
+        "text": "Damos vida al aspecto visual de su producto, tanto para aplicaciones como para sitios web, garantizando una experiencia increíble."
+      },
+      "e1539154": {
+        "title": "Back-end",
+        "text": "Construimos toda la estructura detrás de su producto, con una infraestructura robusta y APIs inteligentes."
+      },
+      "a5eb108e": {
+        "title": "¿Qué tipo de proyecto desea crear?",
+        "question": "Puede elegir más de una opción, ¡siéntase libre!"
+      },
+      "b05b73d9": {
+        "title": "App",
+        "text": "Las aplicaciones son indispensables hoy en día. ¡Creemos algo asombroso para destacar su empresa!"
+      },
+      "d8c7a109": {
+        "title": "Sitio web",
+        "text": "Transforme su presencia digital con un sitio web hermoso y funcional, diseñado a su medida."
+      },
+      "cf8a5d17": {
+        "title": "Dashboard",
+        "text": "Disponga de un panel de control poderoso para gestionar operaciones y descubrir información valiosa sobre su negocio."
+      },
+      "c74a9215": {
+        "title": "Chatbot inteligente",
+        "text": "Automatice las interacciones con los clientes a través de un chatbot eficiente y personalizado."
+      },
+      "d8421b67": {
+        "title": "Plataforma con IA",
+        "text": "Cree un sistema que utilice inteligencia artificial para la automatización, el análisis y la personalización."
+      },
+      "e94f6712": {
+        "title": "Sistema de Gestión (ERP/CRM)",
+        "text": "Desarrolle un sistema completo para gestionar clientes, ventas, finanzas y procesos internos."
+      },
+      "a58d947b": {
+        "title": "E-learning y Cursos en línea",
+        "text": "Construya una plataforma para capacitaciones, cursos en línea y aprendizaje interactivo."
+      },
+      "d0a431fb": {
+        "title": "Elija el segmento de su proyecto",
+        "question": "Seleccione una de las siguientes opciones que mejor describa lo que necesita."
+      },
+      "dd384459": {
+        "title": "Aplicación",
+        "question": "¿Qué tipo de aplicación le gustaría crear?"
+      },
+      "bd046301": {
+        "title": "Guía y Reservas",
+        "text": "Una aplicación práctica para guías de viaje, lugares o actividades con opciones de reserva."
+      },
+      "e582cd36": {
+        "title": "Transporte y Delivery",
+        "text": "Una solución integrada para el transporte o la entrega, perfecta para conectar servicios."
+      },
+      "bd1f4ab6": {
+        "title": "E-commerce y Marketplace",
+        "text": "Cree un espacio seguro y eficiente para vender sus productos o reunir a diversos vendedores."
+      },
+      "d99c75e4": {
+        "title": "Empresarial",
+        "text": "Una aplicación que resuelve las demandas de su empresa y ayuda a mejorar procesos."
+      },
+      "aa07cffb": {
+        "title": "Social",
+        "text": "Conecte a las personas con una aplicación enfocada en interacciones sociales y comunidades."
+      },
+      "ae6c2ed5": {
+        "title": "Sitio web",
+        "question": "¿Qué estilo de sitio web se ajusta mejor a sus necesidades?"
+      },
+      "f8779dfc": {
+        "title": "E-commerce y Marketplace",
+        "text": "Venda productos en línea con un sitio web seguro y diseñado para la conversión."
+      },
+      "cabb4837": {
+        "title": "Landing Page",
+        "text": "Promocione sus servicios o productos con una página optimizada para SEO y conversiones."
+      },
+      "e2d0a5ff": {
+        "title": "Institucional",
+        "text": "Muestre la fortaleza de su marca con un sitio web que transmita profesionalismo y confianza."
+      },
+      "bdf410b1": {
+        "title": "Guía y Reservas",
+        "text": "Un sitio práctico e intuitivo para guías y reservas, perfecto para el turismo y el ocio."
+      },
+      "dfc915c9": {
+        "title": "Dashboard",
+        "question": "¿Qué tipo de panel de control se ajusta a sus necesidades?"
+      },
+      "b0f4c1ed": {
+        "title": "Empresarial",
+        "text": "Controle operaciones, automatice tareas y obtenga información importante para decisiones estratégicas."
+      },
+      "fed821b3": {
+        "title": "Gestión",
+        "text": "Gestione su negocio con una visión amplia y organizada, todo en un solo lugar."
+      },
+      "c6406df2": {
+        "title": "Admin",
+        "text": "Tenga un control total sobre su sistema con un panel administrativo fácil de usar."
+      },
+      "dd384459xZ": {
+        "title": "Chatbot inteligente",
+        "question": "¿Qué tipo de chatbot le gustaría crear?"
+      },
+      "bd046301xZ": {
+        "title": "Chatbot para Atención",
+        "text": "Automatice las interacciones con los clientes y el soporte técnico."
+      },
+      "e582cd36xZ": {
+        "title": "Chatbot para E-commerce",
+        "text": "Ayude a los clientes con compras, recomendaciones y consultas."
+      },
+      "bd1f4ab6xZ": {
+        "title": "Chatbot Interno para Empresas",
+        "text": "Automatice los procesos internos y el soporte para los empleados."
+      },
+      "ae6c2ed5xZ": {
+        "title": "Plataforma con IA",
+        "question": "¿Qué tipo de inteligencia artificial le gustaría implementar?"
+      },
+      "f8779dfcxZ": {
+        "title": "IA para Automatización de Procesos",
+        "text": "Automatice tareas repetitivas y obtenga eficiencia."
+      },
+      "cabb4837xZ": {
+        "title": "IA para Análisis de Datos",
+        "text": "Genere información poderosa a través del procesamiento de datos."
+      },
+      "e2d0a5ffxZ": {
+        "title": "IA para Personalización de la Experiencia",
+        "text": "Cree recomendaciones inteligentes basadas en el usuario."
+      },
+      "dfc915c9xZ": {
+        "title": "Sistema de Gestión (ERP/CRM)",
+        "question": "¿Qué área de su empresa le gustaría gestionar?"
+      },
+      "b0f4c1edxZ": {
+        "title": "Gestión Financiera",
+        "text": "Gestione pagos, flujo de caja e informes financieros."
+      },
+      "fed821b3xZ": {
+        "title": "Gestión de Clientes (CRM)",
+        "text": "Realice el seguimiento de leads, negociaciones y relaciones con los clientes."
+      },
+      "c6406df2xZ": {
+        "title": "Gestión de Inventario",
+        "text": "Controle su inventario, pedidos y logística de productos."
+      },
+      "e1f94f23": {
+        "title": "E-learning y Cursos en línea",
+        "question": "¿Qué tipo de plataforma de aprendizaje le gustaría crear?"
+      },
+      "b58f9c11": {
+        "title": "Plataforma para Capacitación Corporativa",
+        "text": "Cree un entorno de aprendizaje para empresas y empleados."
+      },
+      "a67d4b22": {
+        "title": "Plataforma para Aprendizaje Académico",
+        "text": "Cree un espacio para que escuelas y universidades ofrezcan cursos."
+      },
+      "f31e7d33": {
+        "title": "Plataforma de Cursos Independientes",
+        "text": "Ofrezca cursos independientes y capacitación para diferentes áreas."
+      },
+      "ad1b837a": {
+        "title": "Elija las opciones adicionales para su proyecto",
+        "question": "Seleccione las funcionalidades adicionales que le gustaría incluir en su proyecto."
+      },
+      "aadc827f": {
+        "title": "Panel Administrativo",
+        "text": "¿Desea un panel para gestionar su aplicación o sistema?"
+      },
+      "fe245b71": {
+        "title": "Investigación UX",
+        "text": "¿Le gustaría obtener insights para mejorar la experiencia de sus usuarios?"
+      },
+      "ca3f91e8": {
+        "title": "Identidad Visual",
+        "text": "¿Necesita un aspecto visual asombroso para su marca o producto?"
+      },
+      "a2b68013": {
+        "title": "Publicar en Google y Apple",
+        "text": "¿Desea que nos encarguemos de publicar su aplicación en las tiendas de Google y Apple?"
+      },
+      "e7c49f84": {
+        "title": "Integración con API",
+        "text": "¿Le gustaría integrar su producto con APIs externas, como de pago o marketing?"
+      },
+      "d38e23a9": {
+        "title": "Notificación Push",
+        "text": "¿Desea enviar notificaciones en tiempo real a sus usuarios?"
+      },
+      "bc5f41d6": {
+        "title": "Integración con Servicios Externos",
+        "text": "¿Le gustaría conectar su producto con otros servicios del mercado?"
+      },
+      "aa9e9902": {
+        "title": "Configurar Infraestructura",
+        "text": "¿Necesita soporte para servidores, rendimiento y seguridad?"
       }
     }
   },
@@ -92,5 +314,21 @@
   },
   "postContent": {
     "byAuthor": "Por {{author}}"
+  },
+  "contactForm": {
+    "creatingProjectTitle": "Creando tu proyecto",
+    "creatingProjectSubTitle": "Por favor, espera un momento.",
+    "successTitle": "¡Proyecto creado con éxito!",
+    "successSubTitle": "Nuestro equipo se pondrá en contacto contigo pronto.",
+    "createAnotherProject": "Crear otro proyecto",
+    "goHome": "Volver al inicio",
+    "errorTitle": "Error al crear el proyecto",
+    "fillFormTitle": "Completa tu información",
+    "labelName": "Nombre",
+    "labelEmail": "Correo Electrónico",
+    "labelPhone": "Teléfono",
+    "labelDescription": "Describe tu idea",
+    "backButton": "Volver",
+    "sendButton": "Enviar"
   }
 }

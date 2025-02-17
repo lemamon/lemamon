@@ -77,11 +77,233 @@
   },
   "projectsContent": {
     "intro": {
-      "title": "Welcome to the Projects Area",
-      "text": "Here, we turn your ideas into reality! We understand that every project is unique, and that’s why we’re here to help you create something amazing. We’ve prepared a simple and interactive experience for you to select all the necessary options and build the perfect project together. Choose the services, project types, and features that best suit your needs. Don’t worry, we’ll be with you every step of the way, from the start to the launch of your product. Let’s create something extraordinary, together! Explore the options below and start planning your project. 🚀",
+      "title": "🌟 Welcome to the Projects Area! 🚀",
+      "text": "We turn your ideas into reality. Here, each project is unique, and our goal is to help you create something amazing in a simple and interactive way.",
+      "instructions": "Customize your experience by choosing the services, project types, and resources that best suit your needs. And don't worry, we'll be with you every step of the way—from planning to launching your product.",
+      "invite": "Shall we create something extraordinary together? Explore the options below and start bringing your project to life!",
       "button": {
-        "title": "Get Started",
+        "title": "Start your project!",
         "path": "start"
+      },
+      "next": "Next",
+      "back": "Back"
+    },
+    "questions": {
+      "b47f2h6r": {
+        "title": "Which service do you or your company need right now?",
+        "question": "Choose from our options: UX/UI, Front-end, Back-end, or the Complete Solution to have your project ready for use."
+      },
+      "c914f8a7": {
+        "title": "Complete Solution",
+        "text": "We take care of everything for you! We create the design, develop, and launch your product, ready to impress."
+      },
+      "f4b29e1d": {
+        "title": "UX/UI",
+        "text": "We carefully plan the interface and the user journey so that your digital product delights your customers."
+      },
+      "a3876e92": {
+        "title": "Front-end",
+        "text": "We bring your product's visuals to life, whether for apps or websites, ensuring an incredible experience."
+      },
+      "e1539154": {
+        "title": "Back-end",
+        "text": "We build the entire structure behind your product, with robust infrastructure and intelligent APIs."
+      },
+      "a5eb108e": {
+        "title": "What type of project do you want to create?",
+        "question": "You can choose more than one option, feel free!"
+      },
+      "b05b73d9": {
+        "title": "App",
+        "text": "Apps are indispensable nowadays. Let's create something amazing to make your company stand out!"
+      },
+      "d8c7a109": {
+        "title": "Website",
+        "text": "Transform your digital presence with a beautiful and functional website, tailored for you."
+      },
+      "cf8a5d17": {
+        "title": "Dashboard",
+        "text": "Have a powerful dashboard to manage operations and discover valuable insights about your business."
+      },
+      "c74a9215": {
+        "title": "Smart Chatbot",
+        "text": "Automate interactions with customers through an efficient and personalized chatbot."
+      },
+      "d8421b67": {
+        "title": "AI Platform",
+        "text": "Create a system that uses artificial intelligence for automation, analysis, and personalization."
+      },
+      "e94f6712": {
+        "title": "Management System (ERP/CRM)",
+        "text": "Develop a complete system for managing customers, sales, finances, and internal processes."
+      },
+      "a58d947b": {
+        "title": "E-learning & Online Courses",
+        "text": "Build a platform for training, online courses, and interactive learning."
+      },
+      "d0a431fb": {
+        "title": "Choose the segment of your project",
+        "question": "Select one of the options below that best describes what you need."
+      },
+      "dd384459": {
+        "title": "App",
+        "question": "What type of app would you like to create?"
+      },
+      "bd046301": {
+        "title": "Guide & Reservations",
+        "text": "A practical app for travel guides, places, or activities with booking options."
+      },
+      "e582cd36": {
+        "title": "Transport & Delivery",
+        "text": "An integrated solution for transportation or delivery, perfect for connecting services."
+      },
+      "bd1f4ab6": {
+        "title": "E-commerce & Marketplace",
+        "text": "Create a secure and efficient space to sell your products or bring together various sellers."
+      },
+      "d99c75e4": {
+        "title": "Business",
+        "text": "An app that addresses your company's demands and helps improve processes."
+      },
+      "aa07cffb": {
+        "title": "Social",
+        "text": "Connect people with an app focused on social interactions and communities."
+      },
+      "ae6c2ed5": {
+        "title": "Website",
+        "question": "What style of website best meets your needs?"
+      },
+      "f8779dfc": {
+        "title": "E-commerce & Marketplace",
+        "text": "Sell products online with a secure website designed for conversion."
+      },
+      "cabb4837": {
+        "title": "Landing Page",
+        "text": "Promote your services or products with a page optimized for SEO and conversions."
+      },
+      "e2d0a5ff": {
+        "title": "Institutional",
+        "text": "Showcase your brand's strength with a website that conveys professionalism and trust."
+      },
+      "bdf410b1": {
+        "title": "Guide & Reservations",
+        "text": "A practical and intuitive site for guides and reservations, perfect for tourism and leisure."
+      },
+      "dfc915c9": {
+        "title": "Dashboard",
+        "question": "Which type of dashboard meets your needs?"
+      },
+      "b0f4c1ed": {
+        "title": "Business",
+        "text": "Control operations, automate tasks, and obtain important information for strategic decisions."
+      },
+      "fed821b3": {
+        "title": "Management",
+        "text": "Manage your business with a broad and organized view, all in one place."
+      },
+      "c6406df2": {
+        "title": "Admin",
+        "text": "Have complete control over your system with an easy-to-use administrative panel."
+      },
+      "dd384459xZ": {
+        "title": "Smart Chatbot",
+        "question": "What type of chatbot would you like to create?"
+      },
+      "bd046301xZ": {
+        "title": "Chatbot for Support",
+        "text": "Automate interactions with customers and technical support."
+      },
+      "e582cd36xZ": {
+        "title": "Chatbot for E-commerce",
+        "text": "Assist customers with purchases, recommendations, and inquiries."
+      },
+      "bd1f4ab6xZ": {
+        "title": "Internal Chatbot for Companies",
+        "text": "Automate internal processes and support for employees."
+      },
+      "ae6c2ed5xZ": {
+        "title": "AI Platform",
+        "question": "What type of artificial intelligence would you like to implement?"
+      },
+      "f8779dfcxZ": {
+        "title": "AI for Process Automation",
+        "text": "Automate repetitive tasks and gain efficiency."
+      },
+      "cabb4837xZ": {
+        "title": "AI for Data Analysis",
+        "text": "Generate powerful insights through data processing."
+      },
+      "e2d0a5ffxZ": {
+        "title": "AI for Experience Personalization",
+        "text": "Create intelligent recommendations based on the user."
+      },
+      "dfc915c9xZ": {
+        "title": "Management System (ERP/CRM)",
+        "question": "Which area of your company would you like to manage?"
+      },
+      "b0f4c1edxZ": {
+        "title": "Financial Management",
+        "text": "Manage payments, cash flow, and financial reports."
+      },
+      "fed821b3xZ": {
+        "title": "Customer Management (CRM)",
+        "text": "Track leads, negotiations, and customer relationships."
+      },
+      "c6406df2xZ": {
+        "title": "Inventory Management",
+        "text": "Control your inventory, orders, and product logistics."
+      },
+      "e1f94f23": {
+        "title": "E-learning & Online Courses",
+        "question": "What type of learning platform would you like to create?"
+      },
+      "b58f9c11": {
+        "title": "Corporate Training Platform",
+        "text": "Create a learning environment for companies and employees."
+      },
+      "a67d4b22": {
+        "title": "Academic Learning Platform",
+        "text": "Create a space for schools and universities to offer courses."
+      },
+      "f31e7d33": {
+        "title": "Independent Courses Platform",
+        "text": "Offer independent courses and training for different fields."
+      },
+      "ad1b837a": {
+        "title": "Choose additional options for your project",
+        "question": "Select the extra features you would like to include in your project."
+      },
+      "aadc827f": {
+        "title": "Administrative Dashboard",
+        "text": "Do you want a panel to manage your app or system?"
+      },
+      "fe245b71": {
+        "title": "UX Research",
+        "text": "Would you like insights to improve your users' experience?"
+      },
+      "ca3f91e8": {
+        "title": "Visual Identity",
+        "text": "Need an amazing visual for your brand or product?"
+      },
+      "a2b68013": {
+        "title": "Publish on Google and Apple",
+        "text": "Would you like us to handle the publication of your app on Google and Apple stores?"
+      },
+      "e7c49f84": {
+        "title": "API Integration",
+        "text": "Would you like to integrate your product with external APIs, such as payment or marketing?"
+      },
+      "d38e23a9": {
+        "title": "Push Notification",
+        "text": "Do you want to send real-time notifications to your users?"
+      },
+      "bc5f41d6": {
+        "title": "Integration with External Services",
+        "text": "Would you like to connect your product with other market services?"
+      },
+      "aa9e9902": {
+        "title": "Set Up Infrastructure",
+        "text": "Need support for servers, performance, and security?"
       }
     }
   },
@@ -92,5 +314,21 @@
   },
   "postContent": {
     "byAuthor": "By {{author}}"
+  },
+  "contactForm": {
+    "creatingProjectTitle": "Creating your project",
+    "creatingProjectSubTitle": "Please wait a moment.",
+    "successTitle": "Project successfully created!",
+    "successSubTitle": "Our team will reach out to you soon.",
+    "createAnotherProject": "Create another project",
+    "goHome": "Go back home",
+    "errorTitle": "Error creating project",
+    "fillFormTitle": "Fill out your information",
+    "labelName": "Name",
+    "labelEmail": "Email",
+    "labelPhone": "Phone",
+    "labelDescription": "Describe your idea",
+    "backButton": "Back",
+    "sendButton": "Send"
   }
 }
