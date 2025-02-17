@@ -15,6 +15,7 @@ import {
   StyledRow,
   ButtonWrapper,
 } from "./styles";
+import { useMemo } from "react";
 
 const ContentBlock = ({
   icon,
@@ -40,6 +41,12 @@ const ContentBlock = ({
     });
   };
 
+  const currentContent = useMemo(() => {
+    if (!content) return [];
+
+    return typeof content === "string" ? [content] : content;
+  }, [content]);
+
   return (
     <ContentSection>
       <Fade direction={direction} triggerOnce>
@@ -55,9 +62,11 @@ const ContentBlock = ({
           <Col lg={11} md={11} sm={11} xs={24}>
             <ContentWrapper>
               <h6>{t(title)}</h6>
-              <Content>{t(content, { escapeValue: true })}</Content>
+              {currentContent.map((item: string, id: number) => {
+                return <Content key={id}>{t(item)}</Content>;
+              })}
               {direction === "right" ? (
-                <ButtonWrapper>
+                <ButtonWrapper onlyOneButton={button?.length === 1}>
                   {typeof button === "object" &&
                     button.map((item: ButttonType, id: number) => {
                       return (
