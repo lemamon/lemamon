@@ -29,7 +29,7 @@
   "anyQuestions": "Tem alguma dúvida? Sinta-se à vontade para entrar em contato.",
   "aboutContent": {
     "title": "Transformação Digital",
-    "text": "Na lemamon.dev, ajudamos empresas a crescer por meio de soluções tecnológicas de alta qualidade e inovação. Criamos ferramentas que facilitam o desenvolvimento.",
+    "text": "Na lemamon.dev, ajudamos empresas a crescer por meio de soluções tecnológicas de alta qualidade e inovação.",
     "section": [
       {
         "title": "Inovação Constante",
@@ -77,10 +77,12 @@
   },
   "projectsContent": {
     "intro": {
-      "title": "Bem-vindo à Área de Projetos",
-      "text": "Aqui, transformamos suas ideias em realidade! Entendemos que cada projeto é único, e é por isso que estamos aqui para ajudá-lo a criar algo incrível. Preparamos uma experiência simples e interativa para você selecionar todas as opções necessárias e construir o projeto perfeito juntos.\n\nEscolha os serviços, tipos de projeto e recursos que melhor atendam às suas necessidades. Não se preocupe, estaremos com você em cada etapa, desde o início até o lançamento do seu produto. Vamos criar algo extraordinário, juntos! Explore as opções abaixo e comece a planejar seu projeto. 🚀",
+      "title": "🌟 Bem-vindo à Área de Projetos! 🚀",
+      "text": "Transformamos suas ideias em realidade. Aqui, cada projeto é único, e nosso objetivo é ajudá-lo a criar algo incrível de forma simples e interativa.",
+      "instructions": "Personalize sua experiência escolhendo os serviços, tipos de projeto e recursos que melhor atendem às suas necessidades. E não se preocupe, estaremos ao seu lado em cada etapa – do planejamento ao lançamento do seu produto.",
+      "invite": "Vamos juntos criar algo extraordinário? Explore as opções abaixo e comece a dar vida ao seu projeto!",
       "button": {
-        "title": "Começar",
+        "title": "Comece seu projeto!",
         "path": "start"
       }
     }
