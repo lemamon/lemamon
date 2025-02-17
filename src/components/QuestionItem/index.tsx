@@ -10,15 +10,15 @@ import {
   QuestionText,
 } from "./styles";
 import type { Option, QuestionItemProps } from "./types";
+import { useTranslation } from "react-i18next";
 
 const QuestionItem: React.FC<QuestionItemProps> = ({
   questionId,
-  title,
-  question,
   options,
   selectedOptions,
   toggleSelection,
 }) => {
+  const { t } = useTranslation();
   const renderOptions = (opts: Option[]) =>
     opts.map((option) => {
       if (
@@ -42,8 +42,14 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
                 <Icon iconKey={option.icon} />
               </GridIcon>
             )}
-            <GridTitle>{option.title}</GridTitle>
-            <GridText>{option.text}</GridText>
+            <GridTitle>
+              {t(`projectsContent.questions.${option.id}.title`)}
+            </GridTitle>
+            <GridText>
+              {t(`projectsContent.questions.${option.id}.text`, {
+                defaultValue: "",
+              })}
+            </GridText>
           </StyledGrid>
           {option.options && (
             <OptionsContainer>{renderOptions(option.options)}</OptionsContainer>
@@ -54,8 +60,10 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
 
   return (
     <StyledCard>
-      <h6>{title}</h6>
-      <QuestionText>{question}</QuestionText>
+      <h6>{t(`projectsContent.questions.${questionId}.title`)}</h6>
+      <QuestionText>
+        {t(`projectsContent.questions.${questionId}.question`)}
+      </QuestionText>
       <OptionsContainer>{renderOptions(options || [])}</OptionsContainer>
     </StyledCard>
   );
