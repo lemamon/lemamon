@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "../../common/Button";
 import { FormCard, ButtonWrapper } from "./styles";
 import { ContactFormProps } from "./types";
+import { Result } from "antd";
+import { useHistory } from "react-router-dom";
 
 const ContactForm: React.FC<ContactFormProps> = ({
   email,
@@ -16,6 +18,79 @@ const ContactForm: React.FC<ContactFormProps> = ({
   name,
   onNameChange,
 }) => {
+  const [error, setError] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useHistory();
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      await onSubmit();
+      setError(false);
+      setSuccess(true);
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <FormCard>
+        <Result
+          status="info"
+          title="Criando seu projeto"
+          subTitle="Aguarde um momento."
+        />
+      </FormCard>
+    );
+  }
+
+  if (success) {
+    return (
+      <FormCard>
+        <Result
+          status="success"
+          title="Projeto criado com sucesso!"
+          subTitle="Em breve nossa equipe entrará em contato."
+          extra={[
+            <Button
+              key="back"
+              color="#fff"
+              onClick={() => navigate.push("/projects")}
+            >
+              Criar outro projeto
+            </Button>,
+            <Button key="home" onClick={() => navigate.push("/")}>
+              Voltar ao início
+            </Button>,
+          ]}
+        />
+      </FormCard>
+    );
+  }
+
+  if (error) {
+    return (
+      <FormCard>
+        <Result
+          status="error"
+          title="Erro ao criar projeto"
+          extra={[
+            <Button key="back" color="#fff" onClick={() => handleSubmit()}>
+              Tentar novamente
+            </Button>,
+            <Button key="home" onClick={() => navigate.push("/")}>
+              Voltar ao início
+            </Button>,
+          ]}
+        />
+      </FormCard>
+    );
+  }
+
   return (
     <FormCard>
       <h6>Preencha suas informações</h6>
@@ -44,7 +119,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
           <Button color="#fff" onClick={onBack}>
             Voltar
           </Button>
-          <Button disabled={!isValidEmail} onClick={onSubmit}>
+          <Button disabled={!isValidEmail} onClick={handleSubmit}>
             Enviar
           </Button>
         </ButtonWrapper>
