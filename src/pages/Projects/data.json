@@ -181,25 +181,25 @@
         ]
       },
       {
-        "id": "dd384459",
+        "id": "dd384459xZ",
         "parent": "c74a9215",
         "title": "Chatbot Inteligente",
         "question": "Qual tipo de chatbot você deseja criar?",
         "options": [
           {
-            "id": "bd046301",
+            "id": "bd046301xZ",
             "title": "Chatbot para Atendimento",
             "text": "Automatize interações com clientes e suporte técnico.",
             "icon": "CustomerServiceOutlined"
           },
           {
-            "id": "e582cd36",
+            "id": "e582cd36xZ",
             "title": "Chatbot para E-commerce",
             "text": "Auxilie clientes em compras, recomendações e dúvidas.",
             "icon": "ShoppingOutlined"
           },
           {
-            "id": "bd1f4ab6",
+            "id": "bd1f4ab6xZ",
             "title": "Chatbot Interno para Empresas",
             "text": "Automatize processos internos e suporte a funcionários.",
             "icon": "TeamOutlined"
@@ -207,25 +207,25 @@
         ]
       },
       {
-        "id": "ae6c2ed5",
+        "id": "ae6c2ed5xZ",
         "parent": "d8421b67",
         "title": "Plataforma com AI",
         "question": "Qual tipo de inteligência artificial você deseja implementar?",
         "options": [
           {
-            "id": "f8779dfc",
+            "id": "f8779dfcxZ",
             "title": "AI para Automação de Processos",
             "text": "Automatize tarefas repetitivas e ganhe eficiência.",
             "icon": "SyncOutlined"
           },
           {
-            "id": "cabb4837",
+            "id": "cabb4837xZ",
             "title": "AI para Análise de Dados",
             "text": "Gere insights poderosos com processamento de dados.",
             "icon": "LineChartOutlined"
           },
           {
-            "id": "e2d0a5ff",
+            "id": "e2d0a5ffxZ",
             "title": "AI para Personalização de Experiência",
             "text": "Crie recomendações inteligentes baseadas no usuário.",
             "icon": "UserOutlined"
@@ -233,25 +233,25 @@
         ]
       },
       {
-        "id": "dfc915c9",
+        "id": "dfc915c9xZ",
         "parent": "e94f6712",
         "title": "Sistema de Gestão (ERP/CRM)",
         "question": "Que área da sua empresa você deseja gerenciar?",
         "options": [
           {
-            "id": "b0f4c1ed",
+            "id": "b0f4c1edxZ",
             "title": "Gestão Financeira",
             "text": "Gerencie pagamentos, fluxo de caixa e relatórios financeiros.",
             "icon": "DollarOutlined"
           },
           {
-            "id": "fed821b3",
+            "id": "fed821b3xZ",
             "title": "Gestão de Clientes (CRM)",
             "text": "Acompanhe leads, negociações e relacionamento com clientes.",
             "icon": "ContactsOutlined"
           },
           {
-            "id": "c6406df2",
+            "id": "c6406df2xZ",
             "title": "Gestão de Estoque",
             "text": "Controle seu estoque, pedidos e logística de produtos.",
             "icon": "ShoppingCartOutlined"
