@@ -8,6 +8,7 @@ import { Button } from "../../common/Button";
 import { useTranslation } from "react-i18next";
 import { Option } from "../../components/QuestionItem/types";
 import { sendEmail } from "../../service";
+import { Fade } from "react-awesome-reveal";
 
 const QuestionItem = lazy(() => import("../../components/QuestionItem"));
 const ContactForm = lazy(() => import("../../components/ContactForm"));
@@ -107,7 +108,7 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
           {questions.map((q, index) => (
             <Fragment key={index}>
               {index === currentQuestion && (
-                <>
+                <Fade triggerOnce duration={700}>
                   <QuestionItem
                     questionIndex={index}
                     questionId={q.id}
@@ -132,7 +133,7 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
                       Next
                     </Button>
                   </ButtonWrapper>
-                </>
+                </Fade>
               )}
             </Fragment>
           ))}
