@@ -1,26 +1,14 @@
 import { lazy } from "react";
 import { Fragment, useState } from "react";
-import styled from "styled-components";
 import { Button } from "../../common/Button";
 import { useTranslation } from "react-i18next";
 import { Option } from "../../components/QuestionItem/types";
 import { sendEmail } from "../../service";
 import { Fade } from "react-awesome-reveal";
+import { ButtonWrapper, StyledPage } from "./styles";
 
 const QuestionItem = lazy(() => import("./../QuestionItem"));
 const ContactForm = lazy(() => import("./../ContactForm"));
-
-const StyledPage = styled.div`
-  background: #f9f9f9;
-  padding: 2rem;
-  margin: 2rem 0;
-`;
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  gap: 1rem;
-  justify-content: space-between;
-`;
 
 const ProjectBuilder: React.FC<{ questions: Option[] }> = ({ questions }) => {
   const { t } = useTranslation();
