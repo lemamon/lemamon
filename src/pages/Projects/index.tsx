@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import questions from "./project-questions.json";
+import questions from "./data.json";
 import ScrollToTop from "../../common/ScrollToTop";
 import Container from "../../common/Container";
 import { Fragment, useState } from "react";
@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { Button } from "../../common/Button";
 import { useTranslation } from "react-i18next";
 import { Option } from "../../components/QuestionItem/types";
+import { sendEmail } from "../../service";
 
 const QuestionItem = lazy(() => import("../../components/QuestionItem"));
 const ContactForm = lazy(() => import("../../components/ContactForm"));
@@ -69,10 +70,11 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
 
   const currentQuestionNotSelected =
     !selectedOptions[questions[currentQuestion].id] ||
-    selectedOptions[questions[currentQuestion].id].length === 0;
+    selectedOptions[questions[currentQuestion].id].length === 0 ||
+    currentQuestion === questions.length - 1;
 
   const handleSubmit = () => {
-    const textFromSelectedOptions = Object.entries(selectedOptions).map(
+    const optionsSummaryText = Object.entries(selectedOptions).map(
       ([questionId, optionIds]) => {
         const question = questions.find((q) => q.id === questionId);
         let options = question?.options?.filter((o) =>
@@ -88,8 +90,14 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
         return `${question?.title}: ${options?.map((o) => o.title).join(", ")}`;
       }
     );
-    console.log(textFromSelectedOptions);
-    console.log({ email, phone, description, name });
+
+    sendEmail({
+      email,
+      phone,
+      description,
+      name,
+      optionsSummaryText,
+    });
   };
 
   return (
@@ -162,14 +170,17 @@ const Projects = () => {
         <ContentBlock
           direction="right"
           title="projectsContent.intro.title"
-          content="projectsContent.intro.text"
+          content={[
+            "projectsContent.intro.text",
+            "projectsContent.intro.instructions",
+          ]}
           button={[
             {
               ...t("projectsContent.intro.button", { returnObjects: true }),
               onClick: () => setIsInitial(false),
             },
           ]}
-          icon="developer.svg"
+          icon="product-launch.svg"
           id="intro"
         />
       ) : (
