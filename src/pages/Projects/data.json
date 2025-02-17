@@ -52,6 +52,30 @@
         "title": "Dashboard",
         "text": "Tenha um painel poderoso para gerenciar operações e descobrir insights valiosos sobre o seu negócio.",
         "icon": "PieChartOutlined"
+      },
+      {
+        "id": "c74a9215",
+        "title": "Chatbot Inteligente",
+        "text": "Automatize interações com clientes através de um chatbot eficiente e personalizado.",
+        "icon": "MessageOutlined"
+      },
+      {
+        "id": "d8421b67",
+        "title": "Plataforma com AI",
+        "text": "Crie um sistema que utiliza inteligência artificial para automação, análise e personalização.",
+        "icon": "RobotOutlined"
+      },
+      {
+        "id": "e94f6712",
+        "title": "Sistema de Gestão (ERP/CRM)",
+        "text": "Desenvolva um sistema completo para gestão de clientes, vendas, finanças e processos internos.",
+        "icon": "DatabaseOutlined"
+      },
+      {
+        "id": "a58d947b",
+        "title": "E-learning & Cursos Online",
+        "text": "Construa uma plataforma para treinamentos, cursos online e aprendizado interativo.",
+        "icon": "ReadOutlined"
       }
     ]
   },
@@ -153,6 +177,110 @@
             "title": "Admin",
             "text": "Tenha total controle do seu sistema com um painel administrativo fácil de usar.",
             "icon": "SettingOutlined"
+          }
+        ]
+      },
+      {
+        "id": "dd384459",
+        "parent": "c74a9215",
+        "title": "Chatbot Inteligente",
+        "question": "Qual tipo de chatbot você deseja criar?",
+        "options": [
+          {
+            "id": "bd046301",
+            "title": "Chatbot para Atendimento",
+            "text": "Automatize interações com clientes e suporte técnico.",
+            "icon": "CustomerServiceOutlined"
+          },
+          {
+            "id": "e582cd36",
+            "title": "Chatbot para E-commerce",
+            "text": "Auxilie clientes em compras, recomendações e dúvidas.",
+            "icon": "ShoppingOutlined"
+          },
+          {
+            "id": "bd1f4ab6",
+            "title": "Chatbot Interno para Empresas",
+            "text": "Automatize processos internos e suporte a funcionários.",
+            "icon": "TeamOutlined"
+          }
+        ]
+      },
+      {
+        "id": "ae6c2ed5",
+        "parent": "d8421b67",
+        "title": "Plataforma com AI",
+        "question": "Qual tipo de inteligência artificial você deseja implementar?",
+        "options": [
+          {
+            "id": "f8779dfc",
+            "title": "AI para Automação de Processos",
+            "text": "Automatize tarefas repetitivas e ganhe eficiência.",
+            "icon": "SyncOutlined"
+          },
+          {
+            "id": "cabb4837",
+            "title": "AI para Análise de Dados",
+            "text": "Gere insights poderosos com processamento de dados.",
+            "icon": "LineChartOutlined"
+          },
+          {
+            "id": "e2d0a5ff",
+            "title": "AI para Personalização de Experiência",
+            "text": "Crie recomendações inteligentes baseadas no usuário.",
+            "icon": "UserOutlined"
+          }
+        ]
+      },
+      {
+        "id": "dfc915c9",
+        "parent": "e94f6712",
+        "title": "Sistema de Gestão (ERP/CRM)",
+        "question": "Que área da sua empresa você deseja gerenciar?",
+        "options": [
+          {
+            "id": "b0f4c1ed",
+            "title": "Gestão Financeira",
+            "text": "Gerencie pagamentos, fluxo de caixa e relatórios financeiros.",
+            "icon": "DollarOutlined"
+          },
+          {
+            "id": "fed821b3",
+            "title": "Gestão de Clientes (CRM)",
+            "text": "Acompanhe leads, negociações e relacionamento com clientes.",
+            "icon": "ContactsOutlined"
+          },
+          {
+            "id": "c6406df2",
+            "title": "Gestão de Estoque",
+            "text": "Controle seu estoque, pedidos e logística de produtos.",
+            "icon": "ShoppingCartOutlined"
+          }
+        ]
+      },
+      {
+        "id": "e1f94f23",
+        "parent": "a58d947b",
+        "title": "E-learning & Cursos Online",
+        "question": "Que tipo de plataforma de ensino você deseja criar?",
+        "options": [
+          {
+            "id": "b58f9c11",
+            "title": "Plataforma para Treinamentos Corporativos",
+            "text": "Crie um ambiente de aprendizado para empresas e colaboradores.",
+            "icon": "SolutionOutlined"
+          },
+          {
+            "id": "a67d4b22",
+            "title": "Plataforma para Ensino Acadêmico",
+            "text": "Crie um espaço para escolas e universidades oferecerem cursos.",
+            "icon": "BookOutlined"
+          },
+          {
+            "id": "f31e7d33",
+            "title": "Plataforma de Cursos Livres",
+            "text": "Ofereça cursos independentes e treinamento para diferentes áreas.",
+            "icon": "PlaySquareOutlined"
           }
         ]
       }
