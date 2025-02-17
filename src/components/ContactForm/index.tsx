@@ -4,6 +4,7 @@ import { FormCard, ButtonWrapper } from "./styles";
 import { ContactFormProps } from "./types";
 import { Result } from "antd";
 import { useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ContactForm: React.FC<ContactFormProps> = ({
   email,
@@ -22,6 +23,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
   const [success, setSuccess] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useHistory();
+  const { t } = useTranslation();
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -41,8 +43,8 @@ const ContactForm: React.FC<ContactFormProps> = ({
       <FormCard>
         <Result
           status="info"
-          title="Criando seu projeto"
-          subTitle="Aguarde um momento."
+          title={t("contactForm.creatingProjectTitle")}
+          subTitle={t("contactForm.creatingProjectSubTitle")}
         />
       </FormCard>
     );
@@ -53,19 +55,13 @@ const ContactForm: React.FC<ContactFormProps> = ({
       <FormCard>
         <Result
           status="success"
-          title="Projeto criado com sucesso!"
-          subTitle="Em breve nossa equipe entrará em contato."
+          title={t("contactForm.successTitle")}
+          subTitle={t("contactForm.successSubTitle")}
           extra={[
-            <Button
-              key="back"
-              color="#fff"
-              onClick={() => navigate.push("/projects")}
-            >
-              Criar outro projeto
+            <Button key="back" color="#fff">
+              {t("contactForm.createAnotherProject")}
             </Button>,
-            <Button key="home" onClick={() => navigate.push("/")}>
-              Voltar ao início
-            </Button>,
+            <Button key="home">{t("contactForm.goHome")}</Button>,
           ]}
         />
       </FormCard>
@@ -77,7 +73,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
       <FormCard>
         <Result
           status="error"
-          title="Erro ao criar projeto"
+          title={t("contactForm.errorTitle")}
           extra={[
             <Button key="back" color="#fff" onClick={() => handleSubmit()}>
               Tentar novamente
@@ -93,22 +89,24 @@ const ContactForm: React.FC<ContactFormProps> = ({
 
   return (
     <FormCard>
-      <h6>Preencha suas informações</h6>
+      <h6>{t("contactForm.fillFormTitle")}</h6>
       <form onSubmit={(e) => e.preventDefault()}>
         <div>
-          <label htmlFor="name">Nome</label>
+          <label htmlFor="name">{t("contactForm.labelName")}</label>
           <input id="name" value={name} onChange={onNameChange} />
         </div>
         <div>
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">{t("contactForm.labelEmail")}</label>
           <input id="email" value={email} onChange={onEmailChange} />
         </div>
         <div>
-          <label htmlFor="phone">Telefone</label>
+          <label htmlFor="phone">{t("contactForm.labelPhone")}</label>
           <input id="phone" value={phone} onChange={onPhoneChange} />
         </div>
         <div>
-          <label htmlFor="description">Descreva sua ideia</label>
+          <label htmlFor="description">
+            {t("contactForm.labelDescription")}
+          </label>
           <textarea
             id="description"
             value={description}
@@ -117,10 +115,10 @@ const ContactForm: React.FC<ContactFormProps> = ({
         </div>
         <ButtonWrapper>
           <Button color="#fff" onClick={onBack}>
-            Voltar
+            {t("contactForm.backButton")}
           </Button>
           <Button disabled={!isValidEmail} onClick={handleSubmit}>
-            Enviar
+            {t("contactForm.sendButton")}
           </Button>
         </ButtonWrapper>
       </form>
