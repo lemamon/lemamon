@@ -16,7 +16,7 @@ export type Section = {
 export interface ContentBlockProps {
   icon: string;
   title: string;
-  content: string;
+  content: string | string[];
   section?: Section[];
   button?: ButttonType[];
   t: TFunction;
