@@ -8,6 +8,6 @@ export type ContactFormProps = {
   onDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBack: () => void;
-  onSubmit: () => void;
+  onSubmit: () => Promise<void>;
   isValidEmail: boolean;
 };
