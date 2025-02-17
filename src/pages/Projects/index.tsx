@@ -70,10 +70,9 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
 
   const currentQuestionNotSelected =
     !selectedOptions[questions[currentQuestion].id] ||
-    selectedOptions[questions[currentQuestion].id].length === 0 ||
-    currentQuestion === questions.length - 1;
+    selectedOptions[questions[currentQuestion].id].length === 0;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const optionsSummaryText = Object.entries(selectedOptions).map(
       ([questionId, optionIds]) => {
         const question = questions.find((q) => q.id === questionId);
@@ -91,13 +90,14 @@ const QuestionsPage: React.FC<{ questions: Option[] }> = ({ questions }) => {
       }
     );
 
-    sendEmail({
+    const response = await sendEmail({
       email,
       phone,
       description,
       name,
       optionsSummaryText,
     });
+    return response;
   };
 
   return (
