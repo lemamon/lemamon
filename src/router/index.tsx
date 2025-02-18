@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import routes from "./config";
 import { Styles } from "../styles/styles";
+import NotFound from "../pages/NotFound";
 
 const componentMap: { [key: string]: () => Promise<any> } = {
   Home: () => import("../pages/Home"),
@@ -30,6 +31,7 @@ const Router = () => {
             />
           );
         })}
+        <Route path="*" component={NotFound} />
       </Switch>
       <Footer />
     </Suspense>
