@@ -4,9 +4,8 @@ import ScrollToTop from "../../common/ScrollToTop";
 import Container from "../../common/Container";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-
+import ProjectBuilder from "../../components/ProjectBuilder";
 const ContentBlock = lazy(() => import("../../components/ContentBlock"));
-const ProjectBuilder = lazy(() => import("../../components/ProjectBuilder"));
 
 const Projects = () => {
   const { t } = useTranslation();
