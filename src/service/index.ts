@@ -28,7 +28,9 @@ export const sendEmail = async (data: EmailData): Promise<any> => {
       throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
 
-    window.gtag_report_conversion();
+    if (typeof window.gtag_report_conversion === "function") {
+      window.gtag_report_conversion();
+    }
 
     return await response.json();
   } catch (error) {
