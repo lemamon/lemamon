@@ -40,6 +40,22 @@
   function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
 
-      gtag('config', 'AW-16881353870');
+    gtag('config', 'AW-16881353870');
   </script>
+<!-- Event snippet for Solicitar cotação conversion page In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+<script>
+  window.gtag_report_conversion = (url) => {
+    var callback = function () {
+      if (typeof url != "undefined") {
+        window.location = url;
+      }
+    };
+    gtag("event", "conversion", {
+      send_to: "AW-16881353870/cEi0CLmh9Z8aEI6J1PE-",
+      event_callback: callback,
+    });
+    return false;
+  }
+</script>
+
 </html>
