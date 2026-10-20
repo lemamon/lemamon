@@ -28,8 +28,6 @@ test.describe("(g) redirects do Netlify", () => {
     ["/lemamon", "/", 301],
     ["/home", "/", 301],
     ["/post/1", "/", 301],
-    ["/?lng=en", "/en/", 301],
-    ["/?lng=es", "/es/", 301],
     ["/blog", "/", 302],
   ];
 
@@ -39,6 +37,20 @@ test.describe("(g) redirects do Netlify", () => {
       expect(response.status()).toBe(status);
       const location = new URL(response.headers().location ?? "", NETLIFY);
       expect(`${location.pathname}${location.search}`).toBe(to);
+    });
+  }
+
+  // ?lng= do detector antigo: o Netlify repassa a query string em todo 301/302
+  // (sem opção documentada para tirar), então o destino é /en/?lng=en. O que
+  // importa é o caminho do idioma; o canonical da página continua /en/.
+  for (const [from, to] of [
+    ["/?lng=en", "/en/"],
+    ["/?lng=es", "/es/"],
+  ] as const) {
+    test(`${from} → ${to} (301, query repassada pelo Netlify)`, async ({ request }) => {
+      const response = await request.get(from, { maxRedirects: 0 });
+      expect(response.status()).toBe(301);
+      expect(new URL(response.headers().location ?? "", NETLIFY).pathname).toBe(to);
     });
   }
 

@@ -12,6 +12,10 @@
  *
  *   E2E_NETLIFY_URL=https://lemamon.dev yarn test:e2e shell-csp --project=desktop
  *
+ * No deploy preview, o Netlify injeta a barra de colaboração
+ * (/.netlify/scripts/cdp, que abre um iframe de app.netlify.com): as violações
+ * que vêm dela são ignoradas, porque ela não existe em produção.
+ *
  * Não envia nada: abre as páginas, começa o wizard e para antes do envio.
  * Sem E2E_NETLIFY_URL, é pulado (o astro preview não manda os headers).
  */
@@ -37,7 +41,7 @@ test.describe("CSP: nenhuma violação (B254)", () => {
         await page.waitForLoadState("networkidle");
       }
       const violations = await page.evaluate(() => (window as unknown as { __csp: string[] }).__csp);
-      expect(violations).toEqual([]);
+      expect(violations.filter((violation) => !violation.includes("/.netlify/scripts/"))).toEqual([]);
     });
   }
 });
