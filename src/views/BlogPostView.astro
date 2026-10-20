@@ -1,0 +1,89 @@
+---
+/**
+ * Post /blog/[slug] (BLUEPRINT §6.12) — só pt-BR, when_data hasPosts. Dono: gated.
+ * Corpo em components/gated/PostArticle.astro. Aqui ficam o <head> (title,
+ * description, og:image = capa do post, obrigatória no schema), o JSON-LD Article
+ * (com `image` = a mesma capa), o
+ * <CtaMeio /> ligado ao componente (CTA contextual no meio, sempre o
+ * diagnóstico) e o CTA do fim (blog.post.end_cta).
+ */
+import type { CollectionEntry } from "astro:content";
+import { render } from "astro:content";
+import { getImage } from "astro:assets";
+
+import { POST_MID_CTA_LOCAL, isoDate, type PostMidCtaContext } from "@/components/gated/blog";
+import PostArticle from "@/components/gated/PostArticle.astro";
+import PostMidCta from "@/components/gated/PostMidCta.astro";
+import CtaFinal from "@/components/shared/CtaFinal.astro";
+import { LIMITS } from "@/config/features";
+import { absoluteUrl, SITE_URL, urlFor } from "@/config/routes";
+import { t } from "@/i18n";
+import { relatedPosts, truncateAtWord } from "@/lib/content";
+import { pageMessage } from "@/lib/whatsapp-messages";
+import Base from "@/layouts/Base.astro";
+
+interface Props {
+  entry: CollectionEntry<"posts">;
+}
+
+const { entry } = Astro.props;
+const locale = "pt" as const;
+const data = entry.data;
+const slug = entry.id;
+const title = data.seoTitle
+  ? `${data.seoTitle} | ${t(locale, "meta.site_name")}`
+  : t(locale, "meta.blog_post_template.title", { titulo_do_post: truncateAtWord(data.titulo, 50) });
+const description =
+  data.seoDescription ?? truncateAtWord(t(locale, "meta.blog_post_template.description", { resumo: data.resumo }), 155);
+
+const [{ Content }, related, cover] = await Promise.all([
+  render(entry),
+  relatedPosts(entry, LIMITS.relatedPosts),
+  getImage({ src: data.capa.src, width: 1200, height: 630, fit: "cover", format: "jpg" }),
+]);
+
+(Astro.locals as Record<string, unknown>)[POST_MID_CTA_LOCAL] = {
+  text: data.midCtaText ?? t(locale, "blog.post.mid_cta.text"),
+  origem: "blog-meio",
+} satisfies PostMidCtaContext;
+
+const canonical = absoluteUrl(urlFor("blog_post", locale, { slug }));
+const article = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: data.titulo,
+  description,
+  inLanguage: "pt-BR",
+  datePublished: isoDate(data.publicadoEm),
+  dateModified: isoDate(data.atualizadoEm ?? data.publicadoEm),
+  mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+  url: canonical,
+  author: { "@type": "Person", name: data.autor.nome, url: data.autor.link, jobTitle: data.autor.papelTecnico },
+  publisher: { "@type": "Organization", name: t(locale, "meta.site_name"), url: SITE_URL },
+  image: absoluteUrl(cover.src),
+};
+const whatsappMessage = pageMessage(locale, t(locale, "shared.breadcrumb.blog"));
+---
+
+<Base
+  locale={locale}
+  route="blog_post"
+  params={{ slug }}
+  title={title}
+  description={description}
+  ogImage={{ src: cover.src, alt: data.capa.alt, width: 1200, height: 630 }}
+  jsonLd={[article]}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="blog-barra"
+>
+  <PostArticle entry={entry} related={related}>
+    <Content components={{ CtaMeio: PostMidCta }} />
+  </PostArticle>
+  <CtaFinal
+    locale={locale}
+    origem="blog-final"
+    title={t(locale, "blog.post.end_cta.title")}
+    text={t(locale, "blog.post.end_cta.text")}
+    whatsappMessage={whatsappMessage}
+  />
+</Base>

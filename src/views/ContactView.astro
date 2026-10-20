@@ -1,0 +1,39 @@
+---
+/**
+ * Contato /contato (BLUEPRINT §6.9) — view dos 3 idiomas. Dono: conversion.
+ * Hero (diagnóstico + WhatsApp) · canais · formulário "contato", que funciona
+ * sem JS (Netlify Forms) e é aprimorado com JS (validação, envio por fetch).
+ */
+import ContactChannels from "@/components/contact/ContactChannels.astro";
+import ContactForm from "@/components/contact/ContactForm.astro";
+import ContactHero from "@/components/contact/ContactHero.astro";
+import { getFeatures } from "@/config/features";
+import Base from "@/layouts/Base.astro";
+import { t, type Locale } from "@/i18n";
+import { contactMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+const whatsappMessage = contactMessage(locale);
+// Sem WhatsApp, o <head> não cita o canal (i18n shared._notes.whatsapp).
+const description = features.hasWhatsapp
+  ? t(locale, "meta.contact.description")
+  : t(locale, "meta.contact.description_no_whatsapp");
+---
+
+<Base
+  locale={locale}
+  route="contact"
+  title={t(locale, "meta.contact.title")}
+  description={description}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="contato-barra"
+>
+  <ContactHero locale={locale} whatsappMessage={whatsappMessage} />
+  <ContactChannels locale={locale} whatsappMessage={whatsappMessage} />
+  <ContactForm locale={locale} />
+</Base>

@@ -1,0 +1,498 @@
+---
+/**
+ * Header (todas as páginas, exceto /orcamento*) — BLUEPRINT §8.1; 03-ui §3.6
+ * Seção 0. Dono: shell.
+ *
+ * Sticky, 64px no mobile e 72px no desktop (--header-height). Três larguras:
+ *  - desktop ≥ 1024: logo · Serviços ▾ (<details>) · Como trabalhamos · Quanto
+ *    custa · Cases* · Sobre* · Contato · PT·EN·ES · WhatsApp (ghost) · CTA
+ *    (de 1024 a 1279px o WhatsApp fica só com o ícone e o header compacta
+ *    espaçamentos, mas o CTA mantém o rótulo COMPLETO, o mesmo do hero e de
+ *    todo CTA primário: BLUEPRINT §8.6, B167; o tema escuro fica no rodapé e
+ *    no menu, ThemeToggle);
+ *  - tablet 768–1023: logo · Como trabalhamos · CTA · Menu;
+ *  - mobile < 768: logo · Menu (drawer em tela cheia).
+ * (*) só quando a página existe (features.ts, via nav.ts).
+ *
+ * O CTA primário vira "Continuar meu pedido" com rascunho (ResumeLabel + script
+ * inline do <head>), sem layout shift. Item ativo com aria-current="page".
+ * Sem JS: o <details> funciona nativo e "Menu" é um link para o rodapé.
+ * Scripts: src/scripts/header.ts (dropdown, estado rolado) e drawer.ts.
+ */
+import Button from "@/components/ui/Button.astro";
+import Icon from "@/components/ui/Icon.astro";
+import { getFeatures } from "@/config/features";
+import { quoteHref, urlFor, type QuoteAttribution, type RouteKey, type RouteParams } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+import { whatsappHref } from "@/lib/whatsapp";
+
+import LanguageSelector from "./LanguageSelector.astro";
+import Logo from "./Logo.astro";
+import MobileDrawer from "./MobileDrawer.astro";
+import {
+  discoveryLink,
+  isServicesRoute,
+  mainLinks,
+  navRouteFor,
+  serviceLinks,
+  servicesHubLink,
+  type NavLink,
+} from "./nav";
+import ResumeLabel from "./ResumeLabel.astro";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+  params?: RouteParams;
+  whatsappMessage: string;
+  /** ?origem= do CTA do header ("home-header", "metodo-header"...). */
+  ctaOrigin: string;
+  /** ?origem= do CTA do drawer. */
+  menuOrigin: string;
+  /** Atribuição além do ?origem= (servico, ref, entrada; Base.astro, B166; vale também para o drawer). */
+  quoteAttribution?: Omit<QuoteAttribution, "origem">;
+}
+
+const { locale, route, params, whatsappMessage, ctaOrigin, menuOrigin, quoteAttribution } = Astro.props;
+const features = await getFeatures();
+const services = serviceLinks(locale);
+const servicesExtra: NavLink[] = [discoveryLink(locale), servicesHubLink(locale)];
+const links = mainLinks(locale, features);
+const section = navRouteFor(route);
+const current = (key: RouteKey) => (key === route ? "page" : undefined);
+const active = (key: RouteKey) => (key === section ? "true" : undefined);
+const servicesActive = isServicesRoute(route) ? "true" : undefined;
+const wa = whatsappHref(whatsappMessage);
+const quoteUrl = urlFor("quote", locale);
+// Com Cases e Sobre no menu (when_data), 1024–1279px não comporta tudo: o
+// seletor de idioma sai do header nessa faixa (continua no rodapé).
+const crowded = links.length > 3 ? "true" : undefined;
+---
+
+<div class="scroll-sentinel" data-scroll-sentinel aria-hidden="true"></div>
+<header class="site-header" data-site-header data-scrolled="false" data-crowded={crowded}>
+  <div class="container site-header__inner">
+    <a href={urlFor("home", locale)} class="site-header__logo" aria-label={t(locale, "shared.header.logo_label")}>
+      <Logo locale={locale} />
+    </a>
+
+    <nav class="site-header__nav" aria-label={t(locale, "shared.a11y.main_nav")}>
+      <ul role="list" class="nav-list">
+        <li class="only-desktop">
+          <details class="nav-dropdown" data-nav-dropdown>
+            <summary class="nav-link" data-active={servicesActive}>
+              {t(locale, "shared.header.nav.services")}
+              <Icon name="chevron-down" size={16} class="nav-dropdown__chevron" />
+            </summary>
+            <div class="nav-dropdown__panel">
+              <ul role="list">
+                {
+                  services.map((link) => (
+                    <li>
+                      <a class="nav-dropdown__link" href={link.href} aria-current={current(link.route)}>
+                        {link.label}
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+              <ul role="list" class="nav-dropdown__extra">
+                {
+                  servicesExtra.map((link) => (
+                    <li>
+                      <a class="nav-dropdown__link" href={link.href} aria-current={current(link.route)}>
+                        {link.label}
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </details>
+        </li>
+        {
+          links.map((link) => (
+            <li class={link.route === "how_we_work" ? "from-tablet" : "only-desktop"}>
+              <a class="nav-link" href={link.href} aria-current={current(link.route)} data-active={active(link.route)}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <LanguageSelector locale={locale} route={route} params={params} variant="compact" class="only-desktop" />
+      {
+        wa && (
+          <a
+            class="header-whatsapp only-desktop"
+            href={wa}
+            target="_blank"
+            rel="noopener"
+            data-track="whatsapp_click"
+            data-source="header"
+          >
+            <Icon name="whatsapp" size={18} />
+            <span class="header-whatsapp__label">{t(locale, "shared.header.whatsapp")}</span>
+            <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
+          </a>
+        )
+      }
+      <Button
+        href={quoteHref(locale, { ...quoteAttribution, origem: ctaOrigin })}
+        variant="primary"
+        size="md"
+        class="site-header__cta from-tablet"
+        data-track="cta_click"
+        data-cta-id="diagnosis"
+        data-origem={ctaOrigin}
+        data-resume-cta=""
+        data-resume-href={quoteUrl}
+      >
+        <ResumeLabel locale={locale} />
+      </Button>
+      <button
+        type="button"
+        class="menu-toggle until-desktop js-only"
+        aria-expanded="false"
+        aria-controls="menu-drawer"
+        data-drawer-open
+      >
+        <Icon name="menu" size={22} />
+        <span>{t(locale, "shared.header.menu_button")}</span>
+      </button>
+      <a class="menu-toggle until-desktop no-js-only" href="#rodape">
+        <Icon name="menu" size={22} />
+        <span>{t(locale, "shared.header.menu_button")}</span>
+      </a>
+    </div>
+  </div>
+</header>
+<MobileDrawer
+  locale={locale}
+  route={route}
+  params={params}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin={menuOrigin}
+  quoteAttribution={quoteAttribution}
+/>
+
+<script>
+  import "@/scripts/header";
+  import "@/scripts/drawer";
+</script>
+
+<style>
+  .scroll-sentinel {
+    position: absolute;
+    inset-block-start: 80px;
+    inset-inline-start: 0;
+    inline-size: 1px;
+    block-size: 1px;
+    pointer-events: none;
+  }
+
+  .site-header {
+    /* Espaçamentos do header em variáveis: a faixa 1024–1279 com Cases e Sobre
+       (data-crowded) só troca os valores, numa regra só (o CSS da Home tem
+       folga de poucos bytes no orçamento de 15 KiB, B094/B097). */
+    --header-gap: var(--space-2);
+    --nav-gap: var(--space-1);
+    --nav-pad: calc(var(--space-1) * 1.5);
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    background-color: var(--color-bg-canvas);
+    border-block-end: 1px solid var(--color-border-subtle);
+    transition: var(--transition-shadow), background-color var(--duration-normal) var(--ease-out);
+  }
+  .site-header[data-scrolled="true"] {
+    box-shadow: var(--shadow-sm);
+  }
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .site-header[data-scrolled="true"] {
+      background-color: color-mix(in srgb, var(--color-bg-canvas) 86%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--header-gap);
+    min-block-size: var(--header-height);
+  }
+
+  .site-header__logo {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-min);
+    margin-inline-end: auto;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+  }
+
+  .site-header__nav {
+    display: none;
+  }
+  .nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--nav-gap);
+  }
+  .nav-list > li {
+    display: flex;
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-block-size: var(--target-min);
+    padding-inline: var(--nav-pad);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition-colors);
+  }
+  .nav-link:hover {
+    color: var(--color-text-primary);
+  }
+  .nav-link[aria-current="page"],
+  .nav-link[data-active="true"] {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+  }
+  .nav-link[aria-current="page"]::after,
+  .nav-link[data-active="true"]::after {
+    content: "";
+    position: absolute;
+    inset-inline: var(--nav-pad);
+    inset-block-end: var(--space-1);
+    block-size: 2px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-brand);
+  }
+
+  /* Dropdown "Serviços" — <details> nativo (abre por clique e teclado, nunca por hover). */
+  .nav-dropdown {
+    position: relative;
+  }
+  .nav-dropdown > summary {
+    list-style: none;
+  }
+  .nav-dropdown > summary::-webkit-details-marker {
+    display: none;
+  }
+  /* A seta nunca encolhe: é o único sinal de que o item abre um menu (es a 1024px). */
+  .nav-dropdown :global(.nav-dropdown__chevron) {
+    flex-shrink: 0;
+    transition: var(--transition-transform);
+  }
+  .nav-dropdown[open] :global(.nav-dropdown__chevron) {
+    transform: rotate(180deg);
+  }
+  .nav-dropdown[open] > summary {
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-subtle);
+  }
+  .nav-dropdown__panel {
+    position: absolute;
+    inset-block-start: calc(100% + var(--space-2));
+    inset-inline-start: 0;
+    z-index: var(--z-raised);
+    min-inline-size: 19rem;
+    padding: var(--space-2);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-surface);
+    box-shadow: var(--shadow-lg);
+  }
+  .nav-dropdown__extra {
+    margin-block-start: var(--space-2);
+    padding-block-start: var(--space-2);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+  .nav-dropdown__link {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--target-min);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    text-decoration: none;
+    transition: var(--transition-colors);
+  }
+  .nav-dropdown__link:hover {
+    background-color: var(--color-bg-surface-hover);
+    color: var(--color-text-primary);
+  }
+  .nav-dropdown__link[aria-current="page"] {
+    background-color: var(--color-brand-subtle);
+    color: var(--color-brand-on-subtle);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--header-gap);
+  }
+
+  .header-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-block-size: var(--target-min);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-sm);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: var(--transition-colors);
+  }
+  .header-whatsapp:hover {
+    background-color: var(--color-bg-subtle);
+    color: var(--color-text-primary);
+  }
+  .header-whatsapp :global(svg) {
+    color: var(--color-whatsapp);
+  }
+
+  .site-header :global(.site-header__cta) {
+    white-space: nowrap;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--target-min);
+    min-inline-size: var(--target-min);
+    padding-inline: var(--space-3);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-sm);
+    text-decoration: none;
+  }
+  .menu-toggle:hover {
+    background-color: var(--color-bg-subtle);
+    color: var(--color-text-primary);
+  }
+
+  /* Visibilidade por largura (BLUEPRINT §8.1). :global porque a classe também
+     chega a componentes filhos (Button, LanguageSelector) pela prop class. */
+  .site-header :global(.only-desktop),
+  .site-header :global(.from-tablet) {
+    display: none !important;
+  }
+  :global(html.js) .no-js-only,
+  :global(html:not(.js)) .js-only {
+    display: none !important;
+  }
+
+  @media (min-width: 768px) {
+    .site-header__nav {
+      display: block;
+    }
+    .site-header :global(.from-tablet) {
+      display: flex !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .site-header__nav {
+      margin-inline-end: auto;
+    }
+    .site-header__logo {
+      margin-inline-end: var(--space-2);
+    }
+    /* Desktop: CTA mais compacto, altura de toque mantida. Os idiomas (PT · EN ·
+       ES) ficam com o alvo de 44×44 do LanguageSelector: ≥ 1024px também é
+       tablet em paisagem, com toque (B084). */
+    .site-header :global(.site-header__cta) {
+      padding-inline: var(--space-4);
+      font-size: var(--text-sm);
+      line-height: var(--leading-sm);
+    }
+    .site-header :global(.only-desktop) {
+      display: flex !important;
+    }
+    .until-desktop {
+      display: none !important;
+    }
+    /* Com Cases e Sobre (data-crowded), os links do menu se aproximam em todo
+       desktop (10px entre os textos em vez de 16px): em es, com agenda e um
+       item ativo em negrito, sobravam só 8px entre o menu e o seletor de idioma
+       a partir de 1280px. */
+    .site-header[data-crowded="true"] {
+      --nav-gap: var(--space-0-5);
+      --nav-pad: var(--space-1);
+    }
+  }
+
+  /* 1024–1279: o CTA mantém o rótulo COMPLETO (shared.cta.primary ou, com
+     agenda, primary_schedule), o mesmo do hero ao lado: todo CTA primário usa
+     um texto só, em qualquer largura (BLUEPRINT §8.6, B167). Para caber, como
+     manda o _notes.cta (compactar antes de trocar o rótulo): o WhatsApp fica só
+     com o ícone (o nome acessível continua "WhatsApp") e o CTA perde 4px de
+     padding de cada lado; com Cases e Sobre no menu (data-crowded), o seletor
+     de idioma sai (continua no rodapé), o espaço entre os blocos cai para 4px
+     e os links do menu ficam a 10px (regra de ≥ 1024px acima). Pior caso, es a 1024px com Cases, Sobre,
+     agenda ("Agenda tu diagnóstico gratuito", 239px) e um item ativo em negrito:
+     ~20px livres entre o menu e as ações, sem rolagem horizontal, header em 72px.
+     tests/e2e/shell-header-cta.spec.ts confere 1024, 1100 e 1279px nos 3 idiomas. */
+  @media (min-width: 1024px) and (max-width: 1279.98px) {
+    .site-header :global(.site-header__cta) {
+      padding-inline: var(--space-3);
+    }
+    .site-header[data-crowded="true"] {
+      --header-gap: var(--space-1);
+    }
+    .site-header__logo :global(.logo) {
+      font-size: var(--text-lg);
+      line-height: 1;
+    }
+    .site-header[data-crowded="true"] :global(.language-selector) {
+      display: none !important;
+    }
+    .header-whatsapp__label {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+    .header-whatsapp {
+      min-inline-size: var(--target-min);
+      justify-content: center;
+    }
+  }
+
+  /* Impressão / PDF (case "Salvar em PDF", B114): o header, o menu e o CTA não
+     vão para o papel. */
+  @media print {
+    .site-header,
+    .scroll-sentinel {
+      display: none !important;
+    }
+  }
+</style>

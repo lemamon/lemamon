@@ -1,0 +1,51 @@
+---
+/**
+ * Como trabalhamos §6.2 #10 `comparison` — always. Dono: pages.
+ * Tabela "Como costuma ser × Com o método da Lemamon", 5 linhas (preço, prazo,
+ * escopo, acompanhamento, depois do lançamento). Nunca nomeia concorrente.
+ * Acessível e legível no mobile (cartões, sem scroll horizontal).
+ *
+ * A linha `how_we_work.engineering.profiles_fallback` ("Perfil público: a
+ * Lemamon no GitHub.") NÃO é renderizada aqui: o dono único é
+ * src/components/gated/EngineeringSection.astro (B134). Hoje a view nem a
+ * pede (só renderiza o EngineeringSection com hasEngineering; ver
+ * HowWeWorkView). Se ela voltar logo depois desta seção, esta seção abre mão
+ * do respiro de baixo para a linha ficar presa à tabela.
+ */
+import ComparisonTable from "@/components/services/kit/ComparisonTable.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import Section from "@/components/ui/Section.astro";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const rows = Object.entries(getSection(locale, "how_we_work.comparison.rows")).map(([id, row]) => ({
+  id,
+  dimension: row.dimension,
+  without: row.without,
+  with: row.with,
+}));
+---
+
+<Section id="comparacao" labelledby="comparacao-title" class="hww-comparison">
+  <SectionHeader id="comparacao-title" title={t(locale, "how_we_work.comparison.title")} />
+  <ComparisonTable
+    id="comparacao-tabela"
+    caption={t(locale, "how_we_work.comparison.caption")}
+    colDimension={t(locale, "how_we_work.comparison.col_dimension")}
+    colWithout={t(locale, "how_we_work.comparison.col_without")}
+    colWith={t(locale, "how_we_work.comparison.col_with")}
+    rows={rows}
+  />
+</Section>
+
+<style>
+  /* Linha do GitHub (gated/EngineeringSection, .engineering-fallback) logo
+     depois: o respiro fica no padding dela, não no fim desta seção. */
+  :global(.section.hww-comparison:has(+ .engineering-fallback)) {
+    padding-block-end: 0;
+  }
+</style>

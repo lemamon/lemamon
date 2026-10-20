@@ -1,0 +1,504 @@
+---
+/**
+ * Corpo da página de case /cases/[slug] (BLUEPRINT §6.10), sem o layout.
+ * Dono: gated. A CaseView carrega os dados e passa o corpo MDX no <slot />.
+ *
+ *  1. hero: breadcrumb; cliente (autorizado) ou setor + porte; H1 orientado ao
+ *     problema; ficha em <dl> só com dados fornecidos; imagem real.
+ *  2. problem · 3. agreed · 4. built (resumo + MDX + imagens reais com alt)
+ *  5. how_it_went (linha do tempo real nas etapas do método)
+ *  6. result (até 3 métricas antes → depois, opcional e autorizado)
+ *  7. testimonial (nominal, quando ligado ao case)
+ *  8. tech_sheet (stack + produto no ar, se público). Cada tecnologia é um
+ *     <Badge variant="mono"> (B212) com o logo de techIcon(), quando o
+ *     Icon.astro tem o desenho; sem logo, o badge sai só com o nome.
+ *  9. related (até 2 cases) — o CTA final fica na CaseView.
+ *
+ * Versão para imprimir ou salvar em PDF (B114: o comprador leva o case ao sócio
+ * ou ao chefe): botão "Salvar este case em PDF" no hero (window.print(),
+ * data-cta-id="case_print") e um bloco @media print aqui. Na impressão: fundo
+ * branco, sem quebra no meio da ficha, das métricas e das imagens, URL visível
+ * depois dos links externos, sem o botão e sem o CTA final da CaseView. O
+ * header, a faixa de idioma, a barra fixa e o rodapé ficam com o @media print do
+ * layout (shell). O botão só sai com o rótulo no i18n (cases.case.print.button)
+ * e aparece quando o JavaScript liga (sem JS, o Ctrl+P continua valendo).
+ * Como o header inteiro some na impressão, o case leva o próprio cabeçalho e
+ * fecho, que só existem no papel (display:none na tela, fora da árvore de
+ * acessibilidade): no topo, o logo e o endereço do case (para o sócio abrir a
+ * página); no fim, razão social e CNPJ (shared.footer.company_id), só com
+ * features.hasCompanyData, como no rodapé. O breadcrumb não vai para o papel.
+ *
+ * Primitivos (B214): cada métrica do resultado é um <Card as="li">; aqui fica só
+ * o layout interno. Os valores antes → depois usam a mono com algarismos
+ * tabulares, como o CaseCard (decisão B385). Blocos ``` do MDX: painel de
+ * código de @/styles/code.css (03-ui §3.5.3, B218), importado SÓ aqui e no
+ * PostArticle (B256: página sem MDX não carrega `pre.astro-code`).
+ */
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+
+import Breadcrumb from "@/components/shell/Breadcrumb.astro";
+import Logo from "@/components/shell/Logo.astro";
+import TestimonialCard from "@/components/shared/TestimonialCard.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Button from "@/components/ui/Button.astro";
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { empresa } from "@/config/empresa";
+import { getFeatures } from "@/config/features";
+import { absoluteUrl, urlFor } from "@/config/routes";
+import { getSection, hasText, t, tDynamic, type Locale } from "@/i18n";
+import { caseDisplayName, caseStages, type CaseItem } from "@/lib/content";
+import "@/styles/code.css";
+
+import CaseGrid from "./CaseGrid.astro";
+import FieldList from "./FieldList.astro";
+import StageTimeline from "./StageTimeline.astro";
+import { techIcon } from "./tech-icon";
+import TestimonialVideo from "./TestimonialVideo.astro";
+
+interface Props {
+  locale: Locale;
+  slug: string;
+  entry: CollectionEntry<"cases">;
+  testimonial: CollectionEntry<"depoimentos"> | null;
+  related: CaseItem[];
+}
+
+const { locale, slug, entry, testimonial, related } = Astro.props;
+const data = entry.data;
+const name = caseDisplayName(entry);
+const sheet = getSection(locale, "cases.case.fact_sheet");
+const serviceLabels = getSection(locale, "cases.hub.filters");
+const stages = getSection(locale, "shared.method_timeline.stages");
+const factSheet = [
+  { label: sheet.sector, value: data.setor },
+  ...(data.porte ? [{ label: sheet.size, value: data.porte }] : []),
+  { label: sheet.service, value: data.servicos.map((key) => serviceLabels[key]).join(" · ") },
+  { label: sheet.stages, value: caseStages(entry).map((stage) => stages[stage].name).join(" · ") },
+  ...(data.periodo ? [{ label: sheet.period, value: data.periodo }] : []),
+];
+const agreed = [
+  { label: t(locale, "cases.case.agreed_labels.scope"), value: data.combinado.escopo },
+  ...(data.combinado.foraDoEscopo ? [{ label: t(locale, "cases.case.agreed_labels.out_of_scope"), value: data.combinado.foraDoEscopo }] : []),
+  ...(data.combinado.prazoEPreco
+    ? [{ label: t(locale, "cases.case.agreed_labels.timeline_and_price"), value: data.combinado.prazoEPreco }]
+    : []),
+];
+/** Rótulo do botão de PDF (i18n do shell/copy). Sem ele, o botão não sai. */
+const PRINT_KEY = "cases.case.print.button";
+const printLabel = hasText(locale, PRINT_KEY) ? tDynamic(locale, PRINT_KEY) : null;
+/** Só no papel: endereço do case sem o protocolo (ex.: lemamon.dev/cases/slug) e, com dado real, razão social + CNPJ. */
+const printUrl = absoluteUrl(urlFor("case", locale, { slug })).replace(/^https?:\/\//, "");
+const features = await getFeatures();
+const printCompanyId = features.hasCompanyData
+  ? t(locale, "shared.footer.company_id", { razao_social: empresa.razaoSocial, cnpj: empresa.cnpj })
+  : null;
+const crumbs = [
+  { label: t(locale, "shared.breadcrumb.home"), href: urlFor("home", locale) },
+  { label: t(locale, "shared.breadcrumb.cases"), href: urlFor("cases_hub", locale) },
+  { label: name },
+];
+---
+
+<article aria-labelledby="case-title" data-case={slug}>
+  <div class="container case-print-only" aria-hidden="true">
+    <div class="case-print-masthead">
+      <Logo locale={locale} size="sm" />
+      <span class="case-print-masthead__url">{printUrl}</span>
+    </div>
+  </div>
+  <Section spacing="default" labelledby="case-title">
+    <Breadcrumb locale={locale} items={crumbs} />
+    <header class="case-hero">
+      <p class="eyebrow">{name}</p>
+      <h1 id="case-title">{data.titulo}</h1>
+      <div class="case-hero__sheet">
+        <h2 class="case-hero__sheet-title">{sheet.title}</h2>
+        <FieldList items={factSheet} />
+      </div>
+      {
+        printLabel && (
+          <p class="case-print" data-case-print hidden>
+            <Button variant="outline" size="sm" data-track="cta_click" data-cta-id="case_print" data-origem="case-pdf">
+              <Icon name="arrow-down" size={16} />
+              {printLabel}
+            </Button>
+          </p>
+        )
+      }
+    </header>
+    <figure class="case-cover">
+      <Image
+        src={data.capa.src}
+        alt={data.capa.alt}
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 1280px) 1200px, 100vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </figure>
+  </Section>
+
+  <Section id="problema" spacing="compact" width="prose" labelledby="problema-title">
+    <h2 id="problema-title">{t(locale, "cases.case.problem_title")}</h2>
+    <p class="case-text">{data.problema}</p>
+  </Section>
+
+  <Section id="combinado" spacing="compact" labelledby="combinado-title">
+    <SectionHeader id="combinado-title" title={t(locale, "cases.case.agreed_title")} />
+    <FieldList items={agreed} layout="rows" />
+  </Section>
+
+  <Section id="entregue" spacing="compact" width="prose" labelledby="entregue-title">
+    <h2 id="entregue-title">{t(locale, "cases.case.built_title")}</h2>
+    <p class="case-text">{data.entregue}</p>
+    <div class="case-body prose">
+      <slot />
+    </div>
+    {
+      data.imagens.length > 0 && (
+        <ul role="list" class="case-gallery">
+          {data.imagens.map((image) => (
+            <li>
+              <figure>
+                <Image src={image.src} alt={image.alt} widths={[480, 800]} sizes="(min-width: 768px) 680px, 100vw" />
+                {image.legenda && <figcaption>{image.legenda}</figcaption>}
+              </figure>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </Section>
+
+  <Section id="como-foi" spacing="compact" width="prose" labelledby="como-foi-title">
+    <h2 id="como-foi-title">{t(locale, "cases.case.how_it_went_title")}</h2>
+    <div class="case-timeline">
+      <StageTimeline locale={locale} steps={data.comoFoi} />
+    </div>
+  </Section>
+
+  {
+    data.resultado && data.resultado.length > 0 && (
+      <Section id="resultado" spacing="compact" surface="subtle" labelledby="resultado-title">
+        <SectionHeader id="resultado-title" title={t(locale, "cases.case.result_title")} />
+        <ul role="list" class="case-results">
+          {data.resultado.map((metric) => (
+            <Card as="li" padding="md" class="case-result">
+              <p class="case-result__metric">{metric.metrica}</p>
+              <dl class="case-result__values">
+                <div>
+                  <dt>{t(locale, "cases.case.result_labels.before")}</dt>
+                  <dd>{metric.antes}</dd>
+                </div>
+                <div>
+                  <dt>{t(locale, "cases.case.result_labels.after")}</dt>
+                  <dd class="case-result__after">{metric.depois}</dd>
+                </div>
+              </dl>
+            </Card>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  {
+    testimonial && (
+      <Section id="depoimento" spacing="compact" width="prose" labelledby="case-depoimento-title">
+        <h2 id="case-depoimento-title" class="sr-only">
+          {t(locale, "shared.proof.testimonial_hidden_title")}
+        </h2>
+        <div class="case-testimonial">
+          <TestimonialCard locale={locale} entry={testimonial} />
+          {/* Só com vídeo (sem ele, nem o script da fachada). sizes: coluna de texto do case (68ch ≈ 667px, medido) ou a tela menos o gutter. */}
+          {testimonial.data.video && <TestimonialVideo locale={locale} entry={testimonial} sizes="min(calc(100vw - 40px), 667px)" />}
+        </div>
+      </Section>
+    )
+  }
+
+  <Section id="ficha-tecnica" spacing="compact" labelledby="ficha-tecnica-title">
+    <SectionHeader id="ficha-tecnica-title" title={t(locale, "cases.case.tech_sheet.title")} />
+    <p class="case-stack__label">{t(locale, "cases.case.tech_sheet.stack")}</p>
+    <ul role="list" class="case-stack">
+      {
+        data.fichaTecnica.stack.map((tech) => (
+          <li>
+            <Badge variant="mono" icon={techIcon(tech)}>
+              {tech}
+            </Badge>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      data.fichaTecnica.link && (
+        <p class="case-live">
+          <a href={data.fichaTecnica.link} rel="noopener" target="_blank">
+            {t(locale, "cases.case.tech_sheet.live_link")}
+            <span class="sr-only"> {t(locale, "shared.a11y.opens_new_tab")}</span>
+          </a>
+        </p>
+      )
+    }
+  </Section>
+
+  {
+    related.length > 0 && (
+      <Section id="outros-projetos" spacing="compact" labelledby="outros-projetos-title">
+        <SectionHeader id="outros-projetos-title" title={t(locale, "cases.case.related_title")} />
+        <CaseGrid locale={locale} items={related} columns={2} />
+      </Section>
+    )
+  }
+  {
+    printCompanyId && (
+      <div class="container case-print-only" aria-hidden="true">
+        <p class="case-print-colophon">{printCompanyId}</p>
+      </div>
+    )
+  }
+</article>
+
+<script>
+  // "Salvar este case em PDF": a caixa de impressão do navegador tem "Salvar como PDF".
+  // O clique já é medido pelo listener global (data-track="cta_click", cta_id case_print).
+  // Antes de abrir a impressão, as imagens com lazy-load do case são carregadas
+  // (até 3 s), para nenhuma sair em branco no PDF.
+  function carregarImagens(article: Element): Promise<unknown> {
+    const imagens = [...article.querySelectorAll("img")];
+    for (const imagem of imagens) imagem.loading = "eager";
+    const prontas = Promise.all(imagens.map((imagem) => (imagem.complete ? null : imagem.decode().catch(() => null))));
+    return Promise.race([prontas, new Promise((resolve) => setTimeout(resolve, 3000))]);
+  }
+  for (const wrapper of document.querySelectorAll<HTMLElement>("[data-case-print]")) {
+    const article = wrapper.closest("article");
+    wrapper.hidden = false;
+    wrapper.querySelector("button")?.addEventListener("click", async () => {
+      if (article) await carregarImagens(article);
+      window.print();
+    });
+  }
+  // Ctrl+P também: pede as imagens com lazy-load assim que a impressão começa.
+  addEventListener("beforeprint", () => {
+    for (const imagem of document.querySelectorAll<HTMLImageElement>("article[data-case] img[loading='lazy']")) imagem.loading = "eager";
+  });
+</script>
+
+<style>
+  .case-hero {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-start: var(--space-6);
+  }
+  .case-hero h1 {
+    max-inline-size: 24ch;
+  }
+  .case-hero__sheet {
+    margin-block-start: var(--space-4);
+  }
+  .case-hero__sheet-title {
+    margin-block-end: var(--space-3);
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+  .case-cover {
+    margin: var(--space-8) 0 0;
+  }
+  .case-cover :global(img),
+  .case-gallery :global(img) {
+    inline-size: 100%;
+    block-size: auto;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+  }
+  .case-text {
+    margin-block-start: var(--space-4);
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    color: var(--color-text-secondary);
+  }
+  .case-body,
+  .case-timeline {
+    margin-block-start: var(--space-6);
+  }
+  .case-gallery {
+    display: grid;
+    gap: var(--space-6);
+    margin-block-start: var(--space-8);
+  }
+  .case-gallery figure {
+    margin: 0;
+  }
+  .case-gallery figcaption {
+    margin-block-start: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+  .case-results {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+  @media (min-width: 768px) {
+    .case-results {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  /* Raiz = <Card as="li">: borda, raio, fundo e padding vêm de lá. */
+  .case-results :global(li.case-result) {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+  .case-result__metric {
+    font-weight: var(--font-weight-bold);
+  }
+  .case-result__values {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+  .case-result__values div {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+  .case-result__values dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-secondary);
+  }
+  /* Valores de métrica (antes → depois) na mono, decisão B385, como o
+     .case-card__delta do CaseCard. */
+  .case-result__values dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .case-result__after {
+    font-family: var(--font-mono);
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+    font-weight: var(--font-weight-bold);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Depoimento e, quando autorizado, o vídeo logo abaixo: o mesmo respiro da Home. */
+  .case-testimonial {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .case-stack__label {
+    margin-block-end: var(--space-3);
+    color: var(--color-text-secondary);
+  }
+  .case-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .case-live {
+    margin-block-start: var(--space-6);
+  }
+  .case-live a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-min);
+    font-weight: var(--font-weight-bold);
+  }
+  .case-print {
+    margin-block-start: var(--space-2);
+  }
+  /* Cabeçalho e fecho que só existem no papel. */
+  .case-print-only {
+    display: none;
+  }
+
+  /* --- impressão / "Salvar como PDF" (B114) ---------------------------------- */
+  @media print {
+    article[data-case] {
+      color: var(--color-text-primary);
+    }
+    /* Fundo branco em toda seção do case (inclusive as de superfície escura ou sutil). */
+    article[data-case] :global(.section),
+    article[data-case] :global([data-surface="inverse"]) {
+      background: none;
+      background-color: var(--neutral-0);
+      color: var(--ink-900);
+      padding-block: var(--space-6);
+    }
+    .case-print,
+    article[data-case] :global(.breadcrumb) {
+      display: none;
+    }
+    /* No papel, todas as seções começam na mesma margem: as de texto corrido
+       (largura "prose") mantêm a medida de leitura, mas sem centralizar. */
+    article[data-case] :global(.container[data-width="prose"]) {
+      margin-inline-start: 0;
+    }
+    .case-print-only {
+      display: block;
+    }
+    .case-print-masthead {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2) var(--space-6);
+      align-items: center;
+      justify-content: space-between;
+      padding-block-end: var(--space-3);
+      border-block-end: 1px solid var(--color-border-default);
+    }
+    .case-print-masthead__url,
+    .case-print-colophon {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      line-height: var(--leading-xs);
+      color: var(--ink-900);
+    }
+    .case-print-colophon {
+      margin-block-start: var(--space-6);
+      padding-block-start: var(--space-3);
+      border-block-start: 1px solid var(--color-border-default);
+    }
+    /* Nada partido entre duas páginas: ficha, métricas, imagens, depoimento, itens
+       da linha do tempo. A seção inteira não entra na lista: uma seção que não cabe
+       no resto da página pularia inteira e deixaria meia página em branco. */
+    article[data-case] :global(figure),
+    .case-hero__sheet,
+    article[data-case] :global(dl),
+    article[data-case] :global(li) {
+      break-inside: avoid;
+    }
+    article[data-case] :global(h2),
+    article[data-case] :global(h3) {
+      break-after: avoid;
+    }
+    .case-cover :global(img),
+    .case-gallery :global(img) {
+      max-block-size: 12cm;
+      inline-size: auto;
+      max-inline-size: 100%;
+    }
+    .case-results {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .case-results :global(li.case-result) {
+      padding: var(--space-4);
+    }
+    /* No papel o link não é clicável: o endereço aparece depois do texto. */
+    article[data-case] :global(a[href^="http"])::after {
+      content: " (" attr(href) ")";
+      font-weight: var(--font-weight-regular);
+      word-break: break-all;
+    }
+    /* CTA final da página (CaseView) e cards de outros cases não vão para o PDF. */
+    :global(body:has(article[data-case]) #cta-final),
+    article[data-case] :global(#outros-projetos) {
+      display: none;
+    }
+  }
+</style>

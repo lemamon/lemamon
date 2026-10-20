@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500" role="img" aria-label="Avatar de exemplo AE">
+  <rect width="400" height="500" fill="#18216d"/>
+  <circle cx="200" cy="210" r="120" fill="#ffffff" fill-opacity="0.14"/>
+  <text x="200" y="250" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="120" font-weight="700" fill="#ffffff">AE</text>
+  <rect x="0" y="420" width="400" height="80" fill="#f59e0b"/>
+  <text x="200" y="472" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="6" fill="#18216d">EXEMPLO</text>
+</svg>

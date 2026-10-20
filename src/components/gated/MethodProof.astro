@@ -1,0 +1,118 @@
+---
+/**
+ * Como trabalhamos §6.2 #11 `proof` — "O método na prática". when_data
+ * hasMethodProof: ≥ 1 case publicado nos 3 idiomas OU ≥ 1 depoimento nominal
+ * sobre o processo (sobreProcesso: true). Mostra 1–2 cases com a linha do tempo
+ * real (nas etapas do método) e/ou 1 depoimento sobre o processo. Dono: gated.
+ *
+ * Com 1 case só, /cases/[slug] ainda não existe (hasCases exige 2): a linha do
+ * tempo aparece aqui sem link; "Ler o case" só existe com a página no ar.
+ *
+ * Cada case é um <Card as="article"> (B214): borda, raio, fundo e respiro vêm
+ * do Card; aqui fica só o layout interno.
+ *
+ * AUTO-GATED: sem a flag não renderiza NADA. `data` existe só para os testes.
+ */
+import type { CollectionEntry } from "astro:content";
+
+import TestimonialCard from "@/components/shared/TestimonialCard.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Card from "@/components/ui/Card.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { getFeatures, LIMITS, type Features } from "@/config/features";
+import { ANCHORS, urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+import { caseDisplayName, caseItems, testimonialItems, type CaseItem } from "@/lib/content";
+
+import StageTimeline from "./StageTimeline.astro";
+
+interface Props {
+  locale: Locale;
+  /** Só testes: flags, cases e depoimento injetados (tests/fixtures/). */
+  data?: {
+    features: Pick<Features, "hasMethodProof" | "hasCases">;
+    items: CaseItem[];
+    testimonial: CollectionEntry<"depoimentos"> | null;
+  };
+}
+
+const { locale, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const items = features.hasMethodProof ? (data?.items ?? (await caseItems(locale))).slice(0, LIMITS.methodProofCases) : [];
+const testimonial = features.hasMethodProof
+  ? data
+    ? data.testimonial
+    : ((await testimonialItems()).find((entry) => entry.data.sobreProcesso) ?? null)
+  : null;
+const processTestimonial = testimonial?.data.sobreProcesso ? testimonial : null;
+const linkable = features.hasCases;
+---
+
+{
+  features.hasMethodProof && (items.length > 0 || processTestimonial) && (
+    <Section id={ANCHORS.methodProof} surface="subtle" labelledby={`${ANCHORS.methodProof}-title`}>
+      <SectionHeader id={`${ANCHORS.methodProof}-title`} title={t(locale, "how_we_work.proof.title")} intro={t(locale, "how_we_work.proof.intro")} />
+      {items.length > 0 && (
+        <ul role="list" class="proof-cases" data-count={items.length}>
+          {items.map((item) => (
+            <li>
+              <Card as="article" padding="md" class="proof-case" aria-labelledby={`na-pratica-${item.slug}`}>
+                <p class="eyebrow">{caseDisplayName(item.entry)}</p>
+                <h3 id={`na-pratica-${item.slug}`} class="proof-case__title">
+                  {item.entry.data.titulo}
+                </h3>
+                <StageTimeline locale={locale} steps={item.entry.data.comoFoi} level={4} />
+                {linkable && (
+                  <ArrowLink
+                    class="proof-case__link"
+                    href={urlFor("case", locale, { slug: item.slug })}
+                    aria-label={t(locale, "shared.cta.read_case_aria", { case: item.entry.data.titulo })}
+                    text={t(locale, "shared.cta.read_case")}
+                  />
+                )}
+              </Card>
+            </li>
+          ))}
+        </ul>
+      )}
+      {processTestimonial && (
+        <div class="proof-testimonial">
+          <TestimonialCard locale={locale} entry={processTestimonial} />
+        </div>
+      )}
+    </Section>
+  )
+}
+
+<style>
+  .proof-cases {
+    display: grid;
+    gap: var(--grid-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 1024px) {
+    .proof-cases[data-count="2"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  /* Raiz = <Card as="article">: borda, raio, fundo e padding vêm de lá. */
+  .proof-cases :global(.proof-case) {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    block-size: 100%;
+  }
+  .proof-case__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+  /* Raiz = <ArrowLink> (texto + seta, B214): aqui só o lugar na grade. */
+  .proof-cases :global(.proof-case__link) {
+    justify-self: start;
+  }
+  .proof-testimonial {
+    margin-block-start: var(--space-10);
+    max-inline-size: var(--measure-prose);
+  }
+</style>

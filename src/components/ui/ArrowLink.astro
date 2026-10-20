@@ -1,0 +1,89 @@
+---
+/**
+ * Link de texto com seta — degrau 0 da escada de CTA (BLUEPRINT §8.6). Dono:
+ * home (promovido de services/kit/ArrowLink, B214; o kit reexporta este).
+ * O ÚNICO lugar do site que desenha "texto + seta" (B214).
+ *
+ *   <ArrowLink href={urlFor("how_we_work", locale)} text={…} />
+ *   <ArrowLink text={…} size="sm" />   ← sem href: <span>, a indicação visual
+ *                                          dentro de um card que já é o <a>
+ *
+ * Atributos data-* (medição, CONTRACT §8) vão para o <a>. Alvo de toque ≥ 44px
+ * no link. Cores dos tokens de link: em data-surface="inverse" já viram as do
+ * fundo escuro, sem variante própria. A seta anda 4px no hover só com
+ * ponteiro fino; num card, o card liga a mesma animação com
+ * `:hover :global(.arrow-link__icon)`.
+ */
+import Icon from "./Icon.astro";
+
+interface Props {
+  /** Sem href: <span> (indicação dentro de um card-link). */
+  href?: string;
+  /** Texto do link. Sem `text`, usa o conteúdo do slot. */
+  text?: string;
+  size?: "sm" | "md" | "lg";
+  icon?: "arrow-right" | "arrow-down";
+  "aria-label"?: string;
+  hreflang?: string;
+  target?: "_blank";
+  rel?: string;
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+
+const { href, text, size = "md", icon = "arrow-right", class: className, ...rest } = Astro.props;
+const iconSize = size === "sm" ? 16 : 18;
+const Tag = href ? "a" : "span";
+---
+
+<Tag href={href} class:list={["arrow-link", className]} data-size={size} data-static={href ? undefined : "true"} {...rest}>
+  <span>{text}<slot /></span>
+  <Icon name={icon} size={iconSize} class="arrow-link__icon" />
+</Tag>
+
+<style>
+  .arrow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+  .arrow-link[data-size="sm"] {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+  .arrow-link[data-size="lg"] {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+  a.arrow-link {
+    min-block-size: var(--target-min);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+  }
+  a.arrow-link:hover {
+    text-decoration-color: currentColor;
+  }
+  /* Indicação dentro de card: cor de link, sem sublinhado (o card é o alvo). */
+  .arrow-link[data-static] {
+    color: var(--color-text-link);
+  }
+  /* Rótulo que quebra (ex.: 375px) divide as linhas por igual, sem
+     "Schedule your free / assessment". */
+  .arrow-link > span {
+    text-wrap: balance;
+  }
+  .arrow-link :global(.arrow-link__icon) {
+    flex: none;
+    transition: var(--transition-transform);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    a.arrow-link:hover :global(.arrow-link__icon) {
+      transform: translateX(var(--space-1));
+    }
+  }
+</style>

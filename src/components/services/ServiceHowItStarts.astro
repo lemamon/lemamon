@@ -1,0 +1,62 @@
+---
+/**
+ * Serviço sustentação — seção `how_it_starts` ("Por onde começa"). Dono: pages.
+ * Pelo diagnóstico gratuito de 45 minutos; depois da devolutiva por escrito,
+ * você decide o próximo passo (é o ponto de decisão desta página, no lugar da
+ * faixa shared.decision_points — services._notes.decision_points).
+ * CTA primário → /orcamento?servico=sustentacao&origem=sustentacao-comeco
+ * (pré-marca a P1 = maintain_live_system, BLUEPRINT §6.5 e §7.1).
+ * O destaque vem do <Card surface="brand" padding="lg"> (B214), sem borda própria.
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import Card from "@/components/ui/Card.astro";
+import Section from "@/components/ui/Section.astro";
+import { SERVICE_PARAM } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<Section id="por-onde-comeca" labelledby="por-onde-comeca-title" spacing="compact">
+  <div class="starts">
+    <Card surface="brand" padding="lg">
+      <SectionHeader
+        id="por-onde-comeca-title"
+        title={t(locale, "services.support.how_it_starts.title")}
+        intro={t(locale, "services.support.how_it_starts.text")}
+      />
+      <div>
+        <CtaDiagnosis locale={locale} origem={`${SERVICE_PARAM.support}-comeco`} servico="support" />
+      </div>
+    </Card>
+  </div>
+</Section>
+
+<style>
+  .starts :global(.section-header) {
+    margin-block-end: var(--space-6);
+  }
+
+  /* Abaixo de sm (640px, escala única de breakpoints.ts, B079) o card (borda +
+     padding) tira ~50px da largura do botão e "Pedir diagnóstico gratuito"
+     quebrava em 2 linhas (en/es em 375px). Menos padding no card e no botão, e
+     corpo 16px: os 6 rótulos possíveis (com e sem agenda, pt/en/es) cabem em 1
+     linha a partir de 360px. O botão continua com largura total e 48px de
+     altura (full="mobile", size="lg"). */
+  @media (max-width: 639.98px) {
+    .starts :global(.card[data-card-padding]) {
+      padding-inline: var(--space-4);
+    }
+
+    .starts :global(.btn) {
+      padding-inline: var(--space-4);
+      font-size: var(--text-base);
+    }
+  }
+</style>

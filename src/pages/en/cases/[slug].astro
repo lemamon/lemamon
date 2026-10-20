@@ -1,0 +1,28 @@
+---
+/**
+ * Case /cases/[slug] (en) — when_data: um por case publicado nos 3 idiomas,
+ * e só com hasCases. Sem dado, getStaticPaths devolve [] e nada é gerado. Dono: gated.
+ */
+import type { CollectionEntry } from "astro:content";
+import type { GetStaticPaths } from "astro";
+
+import { getFeatures } from "@/config/features";
+import { caseItems } from "@/lib/content";
+import CaseView from "@/views/CaseView.astro";
+
+export const getStaticPaths = (async () => {
+  const features = await getFeatures();
+  if (!features.hasCases) return [];
+  const items = await caseItems("en");
+  return items.map((item) => ({ params: { slug: item.slug }, props: { entry: item.entry } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  entry: CollectionEntry<"cases">;
+}
+
+const { slug } = Astro.params;
+const { entry } = Astro.props;
+---
+
+<CaseView locale="en" slug={slug as string} entry={entry} />

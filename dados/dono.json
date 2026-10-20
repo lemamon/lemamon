@@ -1,0 +1,126 @@
+{
+  "$schema": "./dono.schema.json",
+  "empresa": {
+    "email": "lemamon.dev@gmail.com",
+    "razaoSocial": "Lemamon.dev LTDA",
+    "cnpj": "69.700.690/0001-98",
+    "anoFundacao": null,
+    "responsavel": "",
+    "apresentacao": null,
+    "historia": null
+  },
+  "privacidade": {
+    "baseAnuncios": null,
+    "encarregado": null,
+    "mecanismoTransferencia": null,
+    "prazos": {
+      "retencaoPedidos": null,
+      "ga4": null,
+      "googleAds": null,
+      "conversoesGoogleAds": null,
+      "newRelic": null,
+      "logsHospedagem": null
+    },
+    "atualizadaEm": "",
+    "remarketing": false,
+    "emailWorkspace": false,
+    "classificacaoDefineAtendimento": false,
+    "naoVendemosConfirmado": false,
+    "ferramentas": {
+      "agenda": null,
+      "crm": null,
+      "emailAcompanhamento": null,
+      "automacao": null,
+      "chatEquipe": null
+    },
+    "pixels": { "linkedin": null, "meta": null }
+  },
+  "time": [],
+  "perfis": {
+    "github": { "url": "https://github.com/lemamon-dev", "publicar": true },
+    "linkedin": { "url": "https://www.linkedin.com/in/lemamon-dev", "publicar": true },
+    "medium": { "url": "https://medium.com/@lemamon.dev", "publicar": true }
+  },
+  "confirmacoes": {
+    "escopoMudanca": true,
+    "codigoProprietario": "answer_draft",
+    "notaFiscal": false,
+    "outrasCidades": false,
+    "nda": true,
+    "sistemaTerceiros": false,
+    "semDescoberta": false,
+    "duracaoDescoberta": false,
+    "planoDoCliente": false,
+    "descobertaAbatida": false,
+    "descobertaUnicoCusto": false,
+    "migracaoDados": false,
+    "ligacao": false,
+    "valoresNoDiagnostico": false,
+    "timeDoCliente": false,
+    "scoreDRecebeDiagnostico": false,
+    "devolutivaConteudo": null,
+    "formatoDiagnostico": null,
+    "pagamento": null
+  },
+  "qualificacao": {
+    "moeda": "BRL",
+    "faixas": [
+      {
+        "id": "tier_1",
+        "rotulo": { "pt": "Até R$ 30 mil", "en": "Up to BRL 30k", "es": "Hasta BRL 30 mil" }
+      },
+      {
+        "id": "tier_2",
+        "rotulo": { "pt": "R$ 30–80 mil", "en": "BRL 30k–80k", "es": "BRL 30–80 mil" }
+      },
+      {
+        "id": "tier_3",
+        "rotulo": { "pt": "R$ 80–200 mil", "en": "BRL 80k–200k", "es": "BRL 80–200 mil" }
+      },
+      {
+        "id": "tier_4",
+        "rotulo": { "pt": "Acima de R$ 200 mil", "en": "Over BRL 200k", "es": "Más de BRL 200 mil" }
+      }
+    ],
+    "faixasMensais": [],
+    "corteMql": "tier_2",
+    "corteMqlMensal": null,
+    "scoreD": { "ativo": false }
+  },
+  "precos": {
+    "descoberta": null,
+    "desenvolvimento": {
+      "sistemas": null,
+      "aplicativos": null,
+      "integracoes": null,
+      "mvp": null
+    },
+    "sustentacao": null
+  },
+  "agenda": { "url": "" },
+  "descoberta": {
+    "formato": null,
+    "participantes": null,
+    "ritmo": null,
+    "duracao": null,
+    "naoInclui": null
+  },
+  "sustentacao": {
+    "inclui": null,
+    "contratacao": null,
+    "canais": null,
+    "urgencias": null
+  },
+  "engenharia": {
+    "tests": null,
+    "ci_cd": null,
+    "code_review": null,
+    "repository": null,
+    "documentation": null,
+    "handover": null,
+    "people": null,
+    "security": null
+  },
+  "depoimentos": [],
+  "logos": []
+}

@@ -1,0 +1,207 @@
+---
+/**
+ * Sobre /sobre (BLUEPRINT §6.11) — when_data hasTeam (≥ 1 pessoa completa que
+ * atua em projetos). Dono: gated. Só é gerada pelo pages/[gated].astro com a
+ * flag: sem pessoas, a página confirmaria a suspeita "é freelancer?".
+ *
+ *  1. hero: eyebrow, H1, subtítulo do dono (empresa.apresentacao, hasAboutIntro)
+ *     ou, sem ele, a linha "São Paulo, SP" (i18n about.hero._subtitle_note).
+ *  2. beliefs: 4 pares crença → prática ligados ao método.
+ *  3. story: when_data hasAboutStory (empresa.historia).
+ *  4. team: cards completos (só quem atua em projetos).
+ *  5. company: when_data hasCompanyData (razão social, CNPJ, cidade, ano).
+ *  6. profiles: when_data hasProfiles (só os perfis com publicar: true; um
+ *     perfil vazio prova o contrário — i18n _notes.profiles).
+ *  7. cta_final.
+ *
+ * `data` existe só para os testes (flags, configs e pessoas injetados).
+ */
+import type { CollectionEntry } from "astro:content";
+
+import FieldList from "@/components/gated/FieldList.astro";
+import CtaFinal from "@/components/shared/CtaFinal.astro";
+import Profiles from "@/components/shared/Profiles.astro";
+import TeamCard from "@/components/shared/TeamCard.astro";
+import Card from "@/components/ui/Card.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { empresa, formatCnpj, type Empresa } from "@/config/empresa";
+import { getFeatures, type Features } from "@/config/features";
+import { getSection, t, type Locale } from "@/i18n";
+import { teamItems } from "@/lib/content";
+import { pageMessage } from "@/lib/whatsapp-messages";
+import Base from "@/layouts/Base.astro";
+
+interface Props {
+  locale: Locale;
+  /** Só testes: flags, config da empresa e pessoas injetados (tests/fixtures/). */
+  data?: {
+    features: Pick<Features, "hasAboutIntro" | "hasAboutStory" | "hasCompanyData" | "hasProfiles">;
+    empresa: Empresa;
+    people: CollectionEntry<"time">[];
+  };
+}
+
+const { locale, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const company = data?.empresa ?? empresa;
+const people = (data?.people ?? (await teamItems())).filter((person) => person.data.atuaEmProjetos);
+const beliefs = Object.values(getSection(locale, "about.beliefs.items"));
+const companyLabels = getSection(locale, "about.company");
+const subtitle = features.hasAboutIntro ? company.apresentacao?.[locale] : undefined;
+const story = features.hasAboutStory ? (company.historia?.[locale] ?? []) : [];
+const companyFields = features.hasCompanyData
+  ? [
+      { label: companyLabels.legal_name, value: company.razaoSocial.trim() },
+      { label: companyLabels.cnpj, value: formatCnpj(company.cnpj) },
+      { label: companyLabels.city, value: t(locale, "shared.footer.location") },
+      ...(company.anoFundacao ? [{ label: companyLabels.founded, value: String(company.anoFundacao) }] : []),
+    ]
+  : [];
+const whatsappMessage = pageMessage(locale, t(locale, "shared.footer.links.about"));
+---
+
+<Base
+  locale={locale}
+  route="about"
+  title={t(locale, "meta.about.title")}
+  description={t(locale, "meta.about.description")}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="sobre-barra"
+>
+  <Section spacing="spacious" labelledby="about-title">
+    <div class="about-hero">
+      <p class="eyebrow">{t(locale, "about.hero.eyebrow")}</p>
+      <h1 id="about-title">{t(locale, "about.hero.title")}</h1>
+      {subtitle ? <p class="lead">{subtitle}</p> : <p class="about-hero__city">{t(locale, "shared.cta_final.location")}</p>}
+    </div>
+  </Section>
+
+  <Section id="no-que-acreditamos" surface="subtle" labelledby="beliefs-title">
+    <SectionHeader id="beliefs-title" title={t(locale, "about.beliefs.title")} />
+    <ul role="list" class="beliefs">
+      {
+        beliefs.map((item) => (
+          <Card as="li" padding="md" class="belief">
+            <p class="belief__belief">{item.belief}</p>
+            <p class="belief__practice">{item.practice}</p>
+          </Card>
+        ))
+      }
+    </ul>
+  </Section>
+
+  {
+    story.length > 0 && (
+      <Section id="historia" width="prose" labelledby="story-title">
+        <h2 id="story-title">{t(locale, "about.story.title")}</h2>
+        <div class="story">
+          {story.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  {
+    people.length > 0 && (
+      <Section id="time" labelledby="about-team-title">
+        <SectionHeader id="about-team-title" title={t(locale, "about.team.title")} />
+        <ul role="list" class="team-grid">
+          {people.map((person) => (
+            <li>
+              <TeamCard locale={locale} entry={person} />
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+
+  {
+    companyFields.length > 0 && (
+      <Section id="dados-da-empresa" spacing="compact" labelledby="company-title">
+        <SectionHeader id="company-title" title={companyLabels.title} />
+        <FieldList items={companyFields} />
+      </Section>
+    )
+  }
+
+  {
+    features.hasProfiles && (
+      <Section id="perfis" spacing="compact" labelledby="about-profiles-title">
+        <SectionHeader id="about-profiles-title" title={t(locale, "about.profiles.title")} />
+        <Profiles locale={locale} headingLevel={3} />
+      </Section>
+    )
+  }
+
+  <CtaFinal
+    locale={locale}
+    origem="sobre-final"
+    title={t(locale, "about.cta_final.title")}
+    text={t(locale, "about.cta_final.text")}
+    whatsappMessage={whatsappMessage}
+  />
+</Base>
+
+<style>
+  .about-hero {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+  .about-hero__city {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+  .beliefs {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+  @media (min-width: 768px) {
+    .beliefs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  /* Raiz = <Card as="li">: borda, raio, fundo e padding vêm de lá (B214). */
+  .beliefs :global(.belief) {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+  .belief__belief {
+    font-family: var(--font-display);
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+    font-weight: var(--font-weight-bold);
+  }
+  .belief__practice {
+    color: var(--color-text-secondary);
+  }
+  .story {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-start: var(--space-6);
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    color: var(--color-text-secondary);
+  }
+  .team-grid {
+    display: grid;
+    gap: var(--grid-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 640px) {
+    .team-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .team-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

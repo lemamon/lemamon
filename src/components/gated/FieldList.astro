@@ -1,0 +1,61 @@
+---
+/**
+ * Lista rótulo → texto do dono (interno do gated), em <dl>: formato da
+ * Descoberta, formato da sustentação, práticas de engenharia, dados da empresa,
+ * ficha do case. Recebe só pares já filtrados (dado parcial nunca chega aqui).
+ */
+interface Props {
+  items: { label: string; value: string }[];
+  /** "grid": 2 colunas a partir de 768px; "rows": rótulo à esquerda no desktop. */
+  layout?: "grid" | "rows";
+}
+
+const { items, layout = "grid" } = Astro.props;
+---
+
+<dl class="field-list" data-layout={layout}>
+  {
+    items.map((item) => (
+      <div class="field-list__item">
+        <dt class="field-list__label">{item.label}</dt>
+        <dd class="field-list__value">{item.value}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .field-list {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .field-list__item {
+    display: grid;
+    gap: var(--space-1);
+    padding-block-start: var(--space-4);
+    border-block-start: 1px solid var(--color-border-default);
+  }
+  .field-list__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    letter-spacing: 0.02em;
+    color: var(--color-text-secondary);
+  }
+  .field-list__value {
+    margin: 0;
+    color: var(--color-text-primary);
+    max-inline-size: var(--measure-prose);
+  }
+  @media (min-width: 768px) {
+    .field-list[data-layout="grid"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--grid-gap);
+      row-gap: var(--space-6);
+    }
+    .field-list[data-layout="rows"] .field-list__item {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      column-gap: var(--grid-gap);
+    }
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+/**
+ * Quanto custa (BLUEPRINT §6.6) — view dos 3 idiomas. Dono: pages.
+ *
+ * Ordem: hero → ranges* (§5.4 com todas as linhas, logo no topo; só com
+ * hasPricing) → factors → why_not_by_form → how_price_closes →
+ * how_to_compare → faq → cta_final. Funciona inteira sem números.
+ *
+ * FAQ (pricing._notes.faq_composition e COPY.md §7a): free_estimate ·
+ * why_discovery_paid · no_price_table · reference_before_talking (variantes
+ * pelo hasPricing, no faq.ts do home) · obliged_to_continue · [scope_change] ·
+ * [discovery_plan_ownership] · [payment_terms] · [invoice]. Teto de 9 com a
+ * ordem de remoção obliged_to_continue → discovery_plan_ownership →
+ * reference_before_talking.
+ */
+import PricingFactors from "@/components/pricing/PricingFactors.astro";
+import PricingHero from "@/components/pricing/PricingHero.astro";
+import PricingHowPriceCloses from "@/components/pricing/PricingHowPriceCloses.astro";
+import PricingHowToCompare from "@/components/pricing/PricingHowToCompare.astro";
+import PricingWhyNotByForm from "@/components/pricing/PricingWhyNotByForm.astro";
+import { orderedFaq } from "@/components/services/kit/faq-compose";
+import CtaFinal from "@/components/shared/CtaFinal.astro";
+import Faq from "@/components/shared/Faq.astro";
+import Investment from "@/components/shared/Investment.astro";
+import { getFeatures } from "@/config/features";
+import { PRICE_LINE_IDS } from "@/config/precos";
+import Base from "@/layouts/Base.astro";
+import { t, type Locale } from "@/i18n";
+import { pageMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const whatsappMessage = pageMessage(locale, t(locale, "shared.header.nav.pricing"));
+const features = await getFeatures();
+const faqItems = orderedFaq(
+  locale,
+  [
+    { bank: "free_estimate" },
+    { bank: "why_discovery_paid" },
+    { bank: "no_price_table" },
+    { bank: "reference_before_talking" },
+    { bank: "obliged_to_continue" },
+    { cond: "scope_change" },
+    { cond: "discovery_plan_ownership" },
+    { cond: "payment_terms" },
+    { cond: "invoice" },
+  ],
+  features,
+  { removalOrder: ["obliged_to_continue", "discovery_plan_ownership", "reference_before_talking"] },
+);
+---
+
+<Base
+  locale={locale}
+  route="pricing"
+  title={t(locale, "meta.pricing.title")}
+  description={t(locale, "meta.pricing.description")}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="preco-barra"
+>
+  <PricingHero locale={locale} whatsappMessage={whatsappMessage} />
+  <Investment locale={locale} lines={PRICE_LINE_IDS} origem="preco" title={t(locale, "pricing.ranges.title")} />
+  <PricingFactors locale={locale} />
+  <PricingWhyNotByForm locale={locale} />
+  <PricingHowPriceCloses locale={locale} />
+  <PricingHowToCompare locale={locale} />
+  <Faq locale={locale} title={t(locale, "pricing.faq.title")} items={faqItems} />
+  <CtaFinal
+    locale={locale}
+    origem="preco-final"
+    title={t(locale, "pricing.cta_final.title")}
+    text={t(locale, "pricing.cta_final.text")}
+    whatsappMessage={whatsappMessage}
+  />
+</Base>

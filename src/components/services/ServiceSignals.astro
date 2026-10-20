@@ -1,0 +1,78 @@
+---
+/**
+ * Serviço §6.5 #2 `signals` — always. Dono: pages. "Faz sentido quando…":
+ * 4–5 sinais na voz do cliente (services.{key}.signals). Fecha com o link de
+ * texto "Reconheceu o seu caso? Pedir diagnóstico gratuito" →
+ * /orcamento?servico={slug}&origem={slug}-sinais (services._notes.mid_page_ctas).
+ * Superfície pelo <Card padding="none"> (B214); o gap de 1px dentro dele é a
+ * divisória entre as linhas. Ícone na 1ª linha por --offset-first-line (B182).
+ */
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { SERVICE_PARAM, type ServiceKey } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import TextCta from "./kit/TextCta.astro";
+
+interface Props {
+  locale: Locale;
+  service: ServiceKey;
+}
+
+const { locale, service } = Astro.props;
+const signals: readonly string[] = getSection(locale, `services.${service}.signals` as const);
+---
+
+<Section id="sinais" labelledby="sinais-title">
+  <SectionHeader id="sinais-title" title={t(locale, "services.template.signals_title")} />
+  <Card surface="subtle" padding="none" class="signals-card">
+    <ul role="list" class="signals">
+      {
+        signals.map((signal) => (
+          <li class="signals__item">
+            <Icon name="check" size={18} class="signals__icon" />
+            <span>{signal}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </Card>
+  <TextCta
+    locale={locale}
+    origem={`${SERVICE_PARAM[service]}-sinais`}
+    servico={service}
+    lead={t(locale, "services.template.signals_cta_lead")}
+  />
+</Section>
+
+<style>
+  :global(.signals-card) {
+    max-inline-size: 56rem;
+  }
+
+  /* Dentro do <Card padding="none">: o fundo da lista é a cor da linha e o
+     gap de 1px desenha as divisórias. */
+  .signals {
+    display: grid;
+    gap: var(--space-px);
+    background-color: var(--color-border-subtle);
+  }
+
+  .signals__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    background-color: var(--color-bg-surface);
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+  }
+
+  .signals :global(.signals__icon) {
+    flex: none;
+    margin-block-start: var(--offset-first-line);
+    color: var(--color-success);
+  }
+</style>

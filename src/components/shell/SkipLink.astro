@@ -1,0 +1,14 @@
+---
+/** Skip link — primeiro elemento focável (BLUEPRINT §8.1, §11). Dono: shell. */
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  /** id do <main>. */
+  target?: string;
+}
+
+const { locale, target = "conteudo" } = Astro.props;
+---
+
+<a class="skip-link" href={`#${target}`}>{t(locale, "shared.skip_link")}</a>

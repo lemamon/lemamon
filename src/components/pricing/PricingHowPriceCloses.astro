@@ -1,0 +1,134 @@
+---
+/**
+ * Quanto custa §6.6 #5 `how_price_closes` — always. Dono: pages.
+ * As 4 etapas com o custo de cada uma: diagnóstico gratuito · Descoberta paga
+ * (valor combinado antes; link → /sprint-de-descoberta) · desenvolvimento com
+ * preço fechado no plano · sustentação com valor combinado antes. CTA
+ * "Começar pelo diagnóstico gratuito".
+ *
+ * Com confirmacoes.descobertaAbatida, o abatimento entra no fim do texto da
+ * Descoberta, e só aqui nesta página (pricing._notes.how_price_closes).
+ * Nomes das etapas: shared.method_timeline (fonte única por idioma).
+ *
+ * Cada etapa é um <Card as="li"> (B214); o diagnóstico, a porta gratuita, usa
+ * a superfície da marca em vez de uma borda própria. Gutter = --grid-gap
+ * (B222); 2 colunas no tablet e 3+3+3+3 a partir de 1280px.
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Card from "@/components/ui/Card.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures } from "@/config/features";
+import { urlFor, type StageId } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+const names = getSection(locale, "shared.method_timeline.stages");
+const copy = getSection(locale, "pricing.how_price_closes.stages");
+const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
+const credit = features.confirm.descobertaAbatida ? ` ${t(locale, "faq.conditional.discovery_credit.cost_suffix")}` : "";
+const stages = order.map((id) => ({
+  id,
+  name: names[id].name,
+  cost: copy[id].cost,
+  text: id === "discovery" ? `${copy[id].text}${credit}` : copy[id].text,
+}));
+---
+
+<Section id="como-o-preco-fecha" labelledby="como-o-preco-fecha-title">
+  <SectionHeader id="como-o-preco-fecha-title" title={t(locale, "pricing.how_price_closes.title")} />
+  <ol role="list" class="closes">
+    {
+      stages.map((stage, index) => (
+        <Card as="li" surface={stage.id === "diagnosis" ? "brand" : "canvas"} class="closes__item" data-stage={stage.id}>
+          <span class="closes__index" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <h3 class="closes__name">{stage.name}</h3>
+          <dl class="closes__cost">
+            <dt>{t(locale, "pricing.how_price_closes.cost_label")}</dt>
+            <dd>{stage.cost}</dd>
+          </dl>
+          <p class="closes__text">{stage.text}</p>
+          {stage.id === "discovery" && (
+            <ArrowLink href={urlFor("discovery_sprint", locale)} text={t(locale, "pricing.how_price_closes.stages.discovery.link")} />
+          )}
+        </Card>
+      ))
+    }
+  </ol>
+  <div class="closes__cta">
+    <CtaDiagnosis locale={locale} origem="preco-como-fecha" label="method" />
+  </div>
+</Section>
+
+<style>
+  .closes {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+
+  /* Raiz = <Card as="li">: borda, raio, fundo e padding vêm de lá. */
+  .closes :global(.closes__item) {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+  }
+
+  .closes__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .closes__name {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .closes__cost {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-subtle);
+  }
+
+  .closes__cost dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .closes__cost dd {
+    margin: 0;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .closes__text {
+    color: var(--color-text-secondary);
+  }
+
+  .closes__cta {
+    margin-block-start: var(--space-8);
+  }
+
+  @media (min-width: 768px) {
+    .closes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .closes {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

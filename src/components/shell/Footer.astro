@@ -1,0 +1,421 @@
+---
+/**
+ * Footer (todas as páginas, exceto o footer mínimo do wizard) — BLUEPRINT §8.5;
+ * 03-ui §3.6 Seção 10; backlog B080, B082, B088, B157, B163. Dono: shell.
+ *
+ *  1. Marca: logo, "Software sob medida com escopo, prazo e preço combinados
+ *     antes de começar.", "São Paulo, SP, Brasil".
+ *  2. Serviços: os 5 + Sprint de Descoberta.
+ *  3. Lemamon: Como trabalhamos · Quanto custa · Cases* · Sobre* · Blog* · Contato.
+ *  4. Fale com a gente: CTA · WhatsApp · e-mail com "Copiar" · LinkedIn ·
+ *     GitHub · Medium (visíveis também no mobile).
+ *  Barra: © {ano} Lemamon · São Paulo, SP · CNPJ* · Política de
+ *  Privacidade · Preferências de cookies* · seletor "Português · English ·
+ *  Español" · botão "Tema escuro" (ThemeToggle, B208). Abaixo de 1024px os
+ *  itens da linha legal ficam um por linha, sem
+ *  "·" pendurado. (*) só com privacidade.baseAnuncios = "consentimento" (B344).
+ *
+ * (*) when_data via features.ts. Nenhum link aponta para "/" como placeholder.
+ * Perfis: BLUEPRINT §8.5 lista os três sempre (CONTRACT.md §15.1, decisão aberta).
+ * id="rodape": destino do link "Menu" quando o JS não roda.
+ */
+import Button from "@/components/ui/Button.astro";
+import Icon from "@/components/ui/Icon.astro";
+import { empresa } from "@/config/empresa";
+import { getFeatures, primaryCtaKey } from "@/config/features";
+import { PROFILE_IDS, perfis } from "@/config/perfis";
+import { privacidade } from "@/config/privacidade";
+import { quoteHref, SITE_URL, urlFor, type QuoteAttribution, type RouteKey, type RouteParams } from "@/config/routes";
+import { t, tDynamic, type Locale } from "@/i18n";
+import { whatsappHref } from "@/lib/whatsapp";
+
+import CopyEmail from "./CopyEmail.astro";
+import LanguageSelector from "./LanguageSelector.astro";
+import Logo from "./Logo.astro";
+import { companyLinks, discoveryLink, serviceLinks } from "./nav";
+import ThemeToggle from "./ThemeToggle.astro";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+  params?: RouteParams;
+  whatsappMessage: string;
+  /** ?origem= do CTA do rodapé ("home-footer"...). */
+  ctaOrigin?: string;
+  /** Atribuição além do ?origem= (servico, ref, entrada; Base.astro, B166). */
+  quoteAttribution?: Omit<QuoteAttribution, "origem">;
+}
+
+const { locale, route, params, whatsappMessage, ctaOrigin = "footer", quoteAttribution } = Astro.props;
+const features = await getFeatures();
+const services = [...serviceLinks(locale), discoveryLink(locale, "footer")];
+const company = companyLinks(locale, features);
+const wa = whatsappHref(whatsappMessage);
+const year = new Date().getFullYear();
+const current = (key: RouteKey) => (key === route ? "page" : undefined);
+/** "Preferências de cookies" reabre o aviso de cookies (só com baseAnuncios = "consentimento", B344). */
+const consent = privacidade.baseAnuncios === "consentimento";
+/** Linha única do rodapé impresso (case em PDF, B114): domínio e e-mail, sem texto traduzível. */
+const printLine = `${new URL(SITE_URL).hostname} · ${empresa.email}`;
+---
+
+<footer class="site-footer" id="rodape" data-sticky-hide>
+  <div class="container">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <a href={urlFor("home", locale)} class="site-footer__logo" aria-label={t(locale, "shared.header.logo_label")}>
+          <Logo locale={locale} />
+        </a>
+        <p class="site-footer__tagline">{t(locale, "shared.footer.tagline")}</p>
+        <p class="site-footer__location">{t(locale, "shared.footer.location")}</p>
+      </div>
+
+      <nav class="site-footer__col" aria-labelledby="footer-services">
+        <h2 class="site-footer__title" id="footer-services">{t(locale, "shared.footer.col_services")}</h2>
+        <ul role="list">
+          {
+            services.map((link) => (
+              <li>
+                <a href={link.href} aria-current={current(link.route)}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-labelledby="footer-company">
+        <h2 class="site-footer__title" id="footer-company">{t(locale, "shared.footer.col_company")}</h2>
+        <ul role="list">
+          {
+            company.map((link) => (
+              <li>
+                <a href={link.href} aria-current={current(link.route)}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="site-footer__col site-footer__contact">
+        <h2 class="site-footer__title">{t(locale, "shared.footer.col_contact")}</h2>
+        <div class="site-footer__actions">
+          <Button
+            href={quoteHref(locale, { ...quoteAttribution, origem: ctaOrigin })}
+            variant="primary"
+            size="md"
+            full="mobile"
+            data-track="cta_click"
+            data-cta-id="diagnosis"
+            data-origem={ctaOrigin}
+          >
+            {t(locale, primaryCtaKey(features))}
+          </Button>
+          {
+            wa && (
+              <Button href={wa} variant="outline" size="md" full="mobile" target="_blank" rel="noopener" data-track="whatsapp_click" data-source="footer">
+                <Icon name="whatsapp" />
+                {t(locale, "shared.cta.whatsapp")}
+                <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
+              </Button>
+            )
+          }
+        </div>
+        <p class="site-footer__email">
+          <span class="site-footer__email-label">{t(locale, "shared.footer.email_label")}</span>
+          <CopyEmail locale={locale} source="footer" />
+        </p>
+        <ul role="list" class="site-footer__profiles">
+          {
+            PROFILE_IDS.map((id) => (
+              <li>
+                <a href={perfis[id].url} target="_blank" rel="noopener" data-track="profile_click" data-profile={id}>
+                  {t(locale, `shared.footer.profiles.${id}`)}
+                  <Icon name="external" size={14} />
+                  <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__legal">
+        <span class="site-footer__legal-item">{t(locale, "shared.footer.copyright", { ano: year })}</span>
+        <span class="site-footer__legal-item">{t(locale, "shared.cta_final.location")}</span>
+        {
+          features.hasCompanyData && (
+            <span class="site-footer__legal-item">
+              {t(locale, "shared.footer.company_id", { razao_social: empresa.razaoSocial, cnpj: empresa.cnpj })}
+            </span>
+          )
+        }
+        <span class="site-footer__legal-item">
+          <a href={urlFor("privacy", locale)} aria-current={current("privacy")}>
+            {t(locale, "shared.footer.links.privacy")}
+          </a>
+        </span>
+        {
+          consent && (
+            <span class="site-footer__legal-item">
+              <button type="button" class="site-footer__consent" data-consent-open>
+                {tDynamic(locale, "shared.consent.preferences_link")}
+              </button>
+            </span>
+          )
+        }
+      </p>
+      <div class="site-footer__prefs">
+        <LanguageSelector locale={locale} route={route} params={params} variant="full" as="nav" />
+        <ThemeToggle locale={locale} />
+      </div>
+    </div>
+    <p class="site-footer__print">{printLine}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--section-compact) var(--space-8);
+    border-block-start: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-10) var(--space-8);
+  }
+
+  .site-footer__logo {
+    display: inline-flex;
+    min-block-size: var(--target-min);
+    align-items: center;
+    text-decoration: none;
+  }
+  .site-footer__tagline {
+    max-inline-size: 32ch;
+    margin-block-start: var(--space-3);
+    color: var(--color-text-primary);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+  .site-footer__location {
+    margin-block-start: var(--space-2);
+  }
+
+  .site-footer__title {
+    margin-block-end: var(--space-3);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--tracking-overline);
+    line-height: var(--leading-xs);
+    text-transform: uppercase;
+  }
+
+  /* Alvo de 44×44 mesmo em rótulos curtos ("Blog", "Cases"; B084). O
+     padding-block separa um item que quebrou em 2 linhas do próximo ("Support
+     and continuous / improvement"): sem ele a lista vira um parágrafo só. */
+  .site-footer__col ul a,
+  .site-footer__legal a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-block-size: var(--target-min);
+    min-inline-size: var(--target-min);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .site-footer__col ul a {
+    padding-block: var(--space-2);
+  }
+  .site-footer__consent {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-min);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-text-primary);
+    font: inherit;
+    cursor: pointer;
+  }
+  .site-footer__consent:hover {
+    color: var(--color-text-link-hover);
+    text-decoration: underline;
+  }
+  .site-footer__col ul a:hover,
+  .site-footer__legal a:hover {
+    color: var(--color-text-link-hover);
+    text-decoration: underline;
+  }
+  .site-footer__col ul a[aria-current="page"] {
+    font-weight: var(--font-weight-bold);
+  }
+
+  .site-footer__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  /* Botões de conversão nunca quebram em 2 linhas ("Agenda tu / diagnóstico
+     gratuito"): a partir de 640px a coluna de contato tem largura para o maior
+     rótulo (ver a grade de 1024–1279px). Abaixo disso os botões ocupam a
+     largura toda e, a 320px, o rótulo longo de es pode quebrar em vez de vazar. */
+  @media (min-width: 640px) {
+    .site-footer__actions > :global(*) {
+      white-space: nowrap;
+    }
+  }
+  .site-footer__email {
+    display: grid;
+    gap: var(--space-1);
+    margin-block-start: var(--space-5);
+  }
+  .site-footer__email-label {
+    color: var(--color-text-tertiary);
+  }
+  .site-footer__profiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-5);
+    margin-block-start: var(--space-3);
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+    margin-block-start: var(--space-12);
+    padding-block-start: var(--space-4);
+    border-block-start: 1px solid var(--color-border-subtle);
+    color: var(--color-text-tertiary);
+  }
+  /* Linha legal: empilhada abaixo de 1024px (sem separador; com razão social e
+     CNPJ ela não cabe numa linha nem no tablet); a partir de 1024px numa linha
+     com "·" gerado pelo CSS ANTES de cada item, grudado nele: o separador nunca
+     fica sozinho no fim ou no começo de uma linha. O "·" é decorativo (texto
+     alternativo vazio). */
+  .site-footer__legal {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: var(--space-1);
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+  .site-footer__legal-item {
+    display: block;
+    max-inline-size: 100%;
+    overflow-wrap: anywhere;
+  }
+  /* Preferências de tela: idioma e tema, lado a lado (quebram juntos).
+     Os links de idioma e o ThemeToggle têm padding-inline de var(--space-1)
+     para o alvo de 44px; a margem negativa do mesmo tamanho devolve o texto à
+     linha do rodapé (B082): no mobile, "Português" e o ícone do tema começam
+     na borda do gutter, como o copyright; do tablet em diante, o interruptor
+     termina na borda direita da grade. O alvo de toque não muda. */
+  .site-footer__prefs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-4);
+    margin-inline: calc(-1 * var(--space-1));
+  }
+
+  @media (min-width: 1024px) {
+    .site-footer__legal {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      column-gap: var(--space-2);
+    }
+    .site-footer__legal-item {
+      display: inline-flex;
+      align-items: center;
+      overflow-wrap: normal;
+    }
+    .site-footer__legal-item + .site-footer__legal-item::before {
+      content: "·";
+      content: "·" / "";
+      margin-inline-end: var(--space-2);
+      color: var(--color-text-tertiary);
+    }
+  }
+
+  @media (min-width: 640px) {
+    .site-footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .site-footer__brand,
+    .site-footer__contact {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* A partir de 1024px o rodapé fica na mesma grade de 12 colunas das seções
+     (--grid-columns, gutter --grid-gap; B222, 03-ui §3.6 Seção 10), e as
+     colunas alinham com as trilhas de cima.
+     1024–1279px (tablet na horizontal, notebook pequeno): 4 colunas não cabem
+     ("Escríbenos / por WhatsApp", "Agenda tu / diagnóstico gratuito"). A marca
+     ocupa a linha de cima (12) e Serviços · Lemamon · Contato ficam lado a
+     lado embaixo (4+4+4). */
+  @media (min-width: 1024px) {
+    .site-footer__grid {
+      grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+      column-gap: var(--grid-gap);
+    }
+    .site-footer__brand {
+      grid-column: 1 / -1;
+    }
+    .site-footer__col {
+      grid-column: span 4;
+    }
+  }
+
+  /* ≥ 1280px: uma linha só, 4+2+2+4 (marca · Serviços · Lemamon · Contato). */
+  @media (min-width: 1280px) {
+    .site-footer__brand,
+    .site-footer__contact {
+      grid-column: span 4;
+    }
+    .site-footer__col:not(.site-footer__contact) {
+      grid-column: span 2;
+    }
+  }
+
+  /* Impressão / PDF (case "Salvar em PDF", B114): sem colunas, sem botões e sem
+     seletor de idioma; fica uma linha só, "lemamon.dev · e-mail". */
+  .site-footer__print {
+    display: none;
+  }
+  @media print {
+    .site-footer {
+      padding-block: var(--space-3) 0;
+      border-block-start: 1px solid var(--color-border-default);
+      background: none;
+    }
+    .site-footer__grid,
+    .site-footer__bottom {
+      display: none !important;
+    }
+    .site-footer__print {
+      display: block;
+      color: var(--color-text-secondary);
+      font-size: var(--text-xs);
+      line-height: var(--leading-xs);
+    }
+  }
+</style>

@@ -1,0 +1,165 @@
+---
+/**
+ * Serviços (hub) §6.4 #2 `list` — always. Dono: pages.
+ * 5 cards: nome, "Para quando…", 3 exemplos curtos e "Ver como funciona".
+ *
+ * Um único link por card (shared._notes.cta, services._notes.internal_links):
+ * o nome do serviço (H2 do card; o H1 é o do hero) é o <a> para /servicos/{slug}, com âncora descritiva
+ * para o SEO interno, e a área do link se estende ao card inteiro (alvo de
+ * toque grande, sem <a> envolvendo blocos). "Ver como funciona" é reforço
+ * visual (aria-hidden), não um segundo link.
+ * Grid de 12 colunas (.grid-12, gutter --grid-gap, B222): 1 card por linha no
+ * mobile, 6+6 no tablet e, no desktop, 4+4+4 e 6+6 (3 + 2 cards). Cada card é
+ * um <Card as="li" interactive> (B214: borda, raio, fundo e hover vêm de lá).
+ */
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { SERVICE_KEYS, SERVICE_ROUTE, urlFor } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const items = getSection(locale, "services.hub.list.items");
+const forWhenLabel = t(locale, "services.hub.list.for_when_label");
+---
+
+<Section id="lista" label={t(locale, "shared.header.nav.services")} spacing="compact">
+  <ul role="list" class="services grid-12">
+    {
+      SERVICE_KEYS.map((key, index) => {
+        const item = items[key];
+        return (
+          <Card as="li" interactive class="service-card" data-service={key}>
+            <span class="service-card__index" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h2 class="service-card__title">
+              <a href={urlFor(SERVICE_ROUTE[key], locale)} class="service-card__link">
+                {item.name}
+              </a>
+            </h2>
+            <p class="service-card__for-when">
+              <span class="service-card__label">{forWhenLabel}</span>{" "}{item.for_when}
+            </p>
+            <ul role="list" class="service-card__examples">
+              {item.examples.map((example) => (
+                <li>{example}</li>
+              ))}
+            </ul>
+            <span class="service-card__more" aria-hidden="true">
+              {t(locale, "shared.cta.see_service")}
+              <Icon name="arrow-right" size={18} />
+            </span>
+          </Card>
+        );
+      })
+    }
+  </ul>
+</Section>
+
+<style>
+  .services {
+    row-gap: var(--grid-gap);
+  }
+
+  /* Raiz = <Card as="li" interactive>: borda, raio, fundo, padding e hover vêm de lá. */
+  .services :global(.service-card) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .service-card__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .service-card__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  .service-card__link {
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+
+  /* O link cobre o card inteiro (alvo de toque grande). */
+  .service-card__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  /* Foco: o anel vai para o card inteiro onde há :has(); sem suporte, fica o
+     anel padrão no próprio link (nunca some). */
+  @supports selector(:has(*)) {
+    .service-card__link:focus-visible {
+      outline: none;
+    }
+
+    .services :global(.service-card:has(.service-card__link:focus-visible)) {
+      outline: var(--focus-ring-width) solid var(--color-focus-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+
+  .service-card__for-when {
+    color: var(--color-text-secondary);
+  }
+
+  .service-card__label {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .service-card__examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .service-card__examples li {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+
+  /* Sempre no pé do card, alinhado entre cards da mesma linha. */
+  .service-card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-block-start: auto;
+    padding-block-start: var(--space-2);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-link);
+  }
+
+  @media (min-width: 768px) {
+    .services :global(.service-card) {
+      --span: 6;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .services :global(.service-card) {
+      --span-lg: 4;
+    }
+
+    .services :global(.service-card:nth-child(n + 4)) {
+      --span-lg: 6;
+    }
+  }
+</style>

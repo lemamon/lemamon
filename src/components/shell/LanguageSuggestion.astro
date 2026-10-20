@@ -1,0 +1,116 @@
+---
+/**
+ * Aviso discreto de idioma — BLUEPRINT §9 ("no máximo um aviso discreto");
+ * backlog B296. Dono: shell.
+ *
+ * Renderiza, ESCONDIDO, um aviso para cada outro idioma em que a página existe,
+ * escrito NAQUELE idioma ("This page is also available in English."). O script
+ * inline do <head> grava <html data-lang-suggest="en"> antes da pintura quando
+ * o navegador prefere outro idioma do site, e o CSS mostra só o aviso certo:
+ * sem layout shift, sem redirecionamento. "Fechar" vale para as próximas
+ * páginas (localStorage; src/scripts/language-suggestion.ts).
+ * O link troca o idioma como o seletor e emite o mesmo language_change
+ * {from_lang, to_lang} pelo listener delegado (backlog B329). O rótulo do link
+ * nunca quebra no meio ("View" / "in English"): desce inteiro para a linha seguinte.
+ */
+import Icon from "@/components/ui/Icon.astro";
+import { hasLocale, urlFor, type RouteKey, type RouteParams } from "@/config/routes";
+import { LOCALE_META, LOCALES, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+  params?: RouteParams;
+}
+
+const { locale, route, params } = Astro.props;
+const targets =
+  route === "not_found"
+    ? []
+    : LOCALES.filter((target) => target !== locale && hasLocale(route, target)).flatMap((target) => {
+        try {
+          return [{ target, href: urlFor(route, target, params) }];
+        } catch {
+          return [];
+        }
+      });
+---
+
+{
+  targets.map(({ target, href }) => (
+    <div class="lang-suggest" data-lang-target={target} lang={LOCALE_META[target].htmlLang}>
+      <div class="container lang-suggest__inner">
+        <p class="lang-suggest__text">
+          {t(target, "shared.language.suggestion_banner")}{" "}
+          <a
+            href={href}
+            hreflang={LOCALE_META[target].htmlLang}
+            data-track="language_change"
+            data-from-lang={locale}
+            data-to-lang={target}
+          >
+            {t(target, "shared.language.suggestion_link")}
+          </a>
+        </p>
+        <button type="button" class="lang-suggest__close" data-lang-suggest-dismiss aria-label={t(target, "shared.language.suggestion_dismiss")}>
+          <Icon name="close" size={18} />
+        </button>
+      </div>
+    </div>
+  ))
+}
+
+<script>
+  import "@/scripts/language-suggestion";
+</script>
+
+<style>
+  .lang-suggest {
+    display: none;
+    border-block-end: 1px solid var(--color-border-subtle);
+    background-color: var(--color-brand-subtle);
+    color: var(--color-brand-on-subtle);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+  :global(html[data-lang-suggest="pt"]) .lang-suggest[data-lang-target="pt"],
+  :global(html[data-lang-suggest="en"]) .lang-suggest[data-lang-target="en"],
+  :global(html[data-lang-suggest="es"]) .lang-suggest[data-lang-target="es"] {
+    display: block;
+  }
+  .lang-suggest__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .lang-suggest__text {
+    padding-block: var(--space-2);
+  }
+  .lang-suggest__text a {
+    color: inherit;
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+  }
+  .lang-suggest__close {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--target-min);
+    block-size: var(--target-min);
+    border: 0;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: inherit;
+  }
+  .lang-suggest__close:hover {
+    background-color: var(--color-bg-canvas);
+  }
+
+  /* Impressão / PDF (B114): o aviso de idioma não vai para o papel. */
+  @media print {
+    .lang-suggest {
+      display: none !important;
+    }
+  }
+</style>

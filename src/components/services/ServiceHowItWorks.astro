@@ -1,0 +1,198 @@
+---
+/**
+ * Serviço §6.5 #4 `how_it_works` — always. Dono: pages.
+ * "Como funciona um projeto de {serviço}": linha do método compacta (home) com
+ * a linha contextualizada de cada etapa (services.{key}.method_steps) na
+ * própria etapa (prop `notes` do MethodTimeline);
+ * bloco "O que a Sprint de Descoberta define neste tipo de projeto"
+ * (sustentação: "O que a gente combina antes de começar").
+ *
+ * Nas 4 páginas de projeto (services._notes.decision_points e mid_page_ctas):
+ * faixa shared.decision_points completa (DecisionPoints do home), link
+ * "Começar pelo diagnóstico gratuito" → ?servico={slug}&origem={slug}-metodo
+ * e, depois, "Ver como trabalhamos". Em sustentação, a faixa NÃO renderiza
+ * (afirmaria a Descoberta como passo seguinte) e fica só "Ver como trabalhamos".
+ * engineering_link → /como-trabalhamos#{ANCHORS.engineering} só com hasEngineering.
+ *
+ * Um destaque só por seção (§8.6, painel de design): o diagnóstico é o único
+ * link com seta e peso da marca. "Ver como trabalhamos" e "Ver como a gente
+ * constrói" são links de saída TERCIÁRIOS (link de texto simples, cor
+ * secundária, peso regular, sem seta), numa linha própria abaixo do CTA. Em
+ * sustentação, sem o CTA do método, "Ver como trabalhamos" continua sendo o
+ * degrau 0 com seta (é a única ação da seção).
+ *
+ * O bloco "O que a Sprint de Descoberta define" é um <Card surface="subtle">
+ * (B214); a lista em 2 colunas usa o gutter do grid (B222).
+ * Na linha do método, a etapa "Sprint de Descoberta" leva a
+ * /sprint-de-descoberta (a página que justifica a etapa paga), como na Home
+ * (stageHref); as outras etapas, a /como-trabalhamos#{etapa} (painel de design).
+ *
+ * Termo explicado (§5.9) na primeira menção da página, que cai nas linhas das
+ * etapas: "protótipo" (sistemas, apps, MVP) ou "escopo priorizado"
+ * (integrações, sustentação).
+ */
+import DecisionPoints from "@/components/shared/DecisionPoints.astro";
+import MethodTimeline from "@/components/shared/MethodTimeline.astro";
+import Term from "@/components/shared/Term.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures } from "@/config/features";
+import { ANCHORS, anchorFor, SERVICE_PARAM, urlFor, type ServiceKey, type StageId } from "@/config/routes";
+import { getSection, t, tDynamic, type Locale } from "@/i18n";
+
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Card from "@/components/ui/Card.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import TextCta from "./kit/TextCta.astro";
+
+interface Props {
+  locale: Locale;
+  service: ServiceKey;
+}
+
+const { locale, service } = Astro.props;
+const features = await getFeatures();
+const isSupport = service === "support";
+const title = isSupport
+  ? t(locale, "services.support.how_it_works_title")
+  : t(locale, "services.template.how_it_works_title", {
+      servico_frase: tDynamic(locale, `services.${service}.name_in_sentence`),
+    });
+const steps: Record<StageId, string> = getSection(locale, `services.${service}.method_steps` as const);
+const term = service === "integrations" || service === "support" ? "prioritized_scope" : "prototype";
+const box = isSupport
+  ? { title: t(locale, "services.support.agreed_before_title"), items: getSection(locale, "services.support.agreed_before") }
+  : {
+      title: t(locale, "services.template.discovery_defines_title"),
+      items: getSection(locale, `services.${service}.discovery_defines` as const) as readonly string[],
+    };
+---
+
+<Section id="como-funciona" labelledby="como-funciona-title">
+  <SectionHeader id="como-funciona-title" title={title} />
+  <MethodTimeline locale={locale} variant="compact" notes={steps} stageHref={{ discovery: urlFor("discovery_sprint", locale) }} />
+  <p class="term-note"><Term locale={locale} term={term} /></p>
+
+  <div class="defines">
+    <Card surface="subtle">
+      <div class="defines__body">
+        <h3 class="defines__title">{box.title}</h3>
+        <ul role="list" class="defines__list">
+          {box.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    </Card>
+  </div>
+
+  {
+    !isSupport && (
+      <div class="decision">
+        <DecisionPoints locale={locale} level={3} />
+      </div>
+    )
+  }
+
+  {
+    isSupport ? (
+      <div class="links">
+        <ArrowLink href={urlFor("how_we_work", locale)} text={t(locale, "shared.cta.see_how_we_work")} />
+        {features.hasEngineering && (
+          <ArrowLink href={anchorFor("how_we_work", locale, ANCHORS.engineering)} text={t(locale, "services.template.engineering_link")} />
+        )}
+      </div>
+    ) : (
+      <Fragment>
+        <TextCta locale={locale} origem={`${SERVICE_PARAM[service]}-metodo`} servico={service} label="method" />
+        <p class="exit-links">
+          <a href={urlFor("how_we_work", locale)}>{t(locale, "shared.cta.see_how_we_work")}</a>
+          {features.hasEngineering && (
+            <a href={anchorFor("how_we_work", locale, ANCHORS.engineering)}>{t(locale, "services.template.engineering_link")}</a>
+          )}
+        </p>
+      </Fragment>
+    )
+  }
+</Section>
+
+<style>
+  .term-note {
+    margin-block-start: var(--space-6);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-prose);
+  }
+
+  .defines {
+    margin-block-start: var(--space-8);
+  }
+
+  .defines__body {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .defines__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .defines__list {
+    display: grid;
+    row-gap: var(--space-2);
+  }
+
+  .defines__list li {
+    position: relative;
+    padding-inline-start: var(--space-5);
+  }
+
+  .defines__list li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0.6em;
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    background-color: var(--color-accent);
+  }
+
+  .decision {
+    margin-block-start: var(--space-8);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-8);
+    margin-block-start: var(--space-8);
+  }
+
+  /* Links de saída terciários: texto simples (estilo global de <a>), cor
+     secundária, peso regular, sem seta; alvo de toque de 44px. */
+  .exit-links {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--space-6);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .exit-links a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-min);
+    color: var(--color-text-secondary);
+  }
+
+  .exit-links a:hover {
+    color: var(--color-text-primary);
+  }
+
+  @media (min-width: 768px) {
+    .defines__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--grid-gap);
+    }
+  }
+</style>

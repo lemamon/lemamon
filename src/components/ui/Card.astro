@@ -1,0 +1,102 @@
+---
+/**
+ * Card — superfície de cartão do site (03-ui §3.4.2, B214). Dono: home.
+ * Borda de 1px, raio --radius-lg e fundo pela superfície; o conteúdo e o
+ * layout interno ficam com quem usa (classes próprias dentro do slot).
+ *
+ *   <Card as="a" href={url} interactive>…</Card>          card inteiro clicável
+ *   <Card as="li" padding="none">…</Card>                 card com divisões internas
+ *   <Card surface="brand" padding="lg">…</Card>           destaque da marca
+ *
+ * surface: canvas (padrão, borda default) · subtle (fundo sutil, borda sutil)
+ *          · brand (fundo brand-subtle, sem borda visível)
+ * padding: none · sm (space-5) · md (space-6) · lg (space-6 → space-8 a partir de 1024)
+ * interactive: hover = borda da marca, -2px e sombra média, SÓ com ponteiro
+ *   fino (no toque, o hover ficaria preso, B192); foco pelo anel global.
+ * Para estilizar a raiz por fora, passe `class` e use :global(.minha-classe)
+ * (o escopo do Astro não atravessa a raiz de outro componente).
+ */
+interface Props {
+  as?: "article" | "li" | "a" | "div" | "figure";
+  href?: string;
+  surface?: "canvas" | "subtle" | "brand";
+  padding?: "none" | "sm" | "md" | "lg";
+  interactive?: boolean;
+  class?: string;
+  target?: "_blank";
+  rel?: string;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+
+const {
+  as: Tag = "div",
+  href,
+  surface = "canvas",
+  padding = "md",
+  interactive = false,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<Tag
+  href={Tag === "a" ? href : undefined}
+  class:list={["card", className]}
+  data-card-surface={surface}
+  data-card-padding={padding}
+  data-interactive={interactive ? "true" : undefined}
+  {...rest}
+>
+  <slot />
+</Tag>
+
+<style>
+  .card {
+    display: block;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-primary);
+  }
+  a.card {
+    text-decoration: none;
+  }
+  a.card:hover {
+    color: var(--color-text-primary);
+  }
+  .card[data-card-surface="subtle"] {
+    border-color: var(--color-border-subtle);
+    background-color: var(--color-bg-subtle);
+  }
+  .card[data-card-surface="brand"] {
+    border-color: transparent;
+    background-color: var(--color-brand-subtle);
+  }
+  .card[data-card-padding="none"] {
+    overflow: hidden;
+  }
+  .card[data-card-padding="sm"] {
+    padding: var(--space-5);
+  }
+  .card[data-card-padding="md"],
+  .card[data-card-padding="lg"] {
+    padding: var(--space-6);
+  }
+  @media (min-width: 1024px) {
+    .card[data-card-padding="lg"] {
+      padding: var(--space-8);
+    }
+  }
+  .card[data-interactive] {
+    transition: var(--transition-colors), var(--transition-shadow), var(--transition-transform);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card[data-interactive]:hover {
+      border-color: var(--color-brand);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+  }
+</style>

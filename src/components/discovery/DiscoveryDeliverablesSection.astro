@@ -1,0 +1,27 @@
+---
+/**
+ * Sprint de Descoberta §6.3 #3 `deliverables` — always. Dono: pages.
+ * "O que você recebe": os 4 entregáveis (§5.2) com 1 frase cada, do
+ * componente compartilhado DiscoveryDeliverables (home). Exatamente 4;
+ * nada além disso até o dono confirmar.
+ */
+import DiscoveryDeliverables from "@/components/shared/DiscoveryDeliverables.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import Section from "@/components/ui/Section.astro";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<Section id="entregaveis" labelledby="entregaveis-title" surface="subtle">
+  <SectionHeader
+    id="entregaveis-title"
+    title={t(locale, "discovery_sprint.deliverables.title")}
+    intro={t(locale, "discovery_sprint.deliverables.intro")}
+  />
+  <DiscoveryDeliverables locale={locale} level={3} />
+</Section>

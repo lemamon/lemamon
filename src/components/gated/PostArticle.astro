@@ -1,0 +1,173 @@
+---
+/**
+ * Corpo do post /blog/[slug] (BLUEPRINT §6.12), sem o layout. Dono: gated.
+ * Breadcrumb (Início › Blog › post), H1, autor real (nome, foto, link, papel
+ * técnico), datas de publicação e atualização, corpo MDX no <slot /> (com o
+ * <CtaMeio /> que o autor coloca no meio do texto), link para o serviço ou para
+ * o método e 2–3 posts relacionados. O CTA do fim fica na BlogPostView.
+ * Blocos ``` do MDX: painel de código de @/styles/code.css (barra de janela,
+ * mono 14px, respiro e raio; 03-ui §3.5.3, B218), importado SÓ aqui e no
+ * CaseArticle, para as páginas sem MDX não carregarem `pre.astro-code` (B256).
+ * Primitivos (B214): <Divider> entre o resumo e o autor, <ArrowLink> no
+ * próximo passo.
+ */
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+
+import Breadcrumb from "@/components/shell/Breadcrumb.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Divider from "@/components/ui/Divider.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { SERVICE_ROUTE, urlFor } from "@/config/routes";
+import { t, tDynamic } from "@/i18n";
+import "@/styles/code.css";
+
+import PostCard from "./PostCard.astro";
+import { formatPostDate, isoDate } from "./blog";
+
+interface Props {
+  entry: CollectionEntry<"posts">;
+  related: CollectionEntry<"posts">[];
+}
+
+const { entry, related } = Astro.props;
+const locale = "pt" as const;
+const { titulo, resumo, autor, publicadoEm, atualizadoEm, servico, capa } = entry.data;
+const crumbs = [
+  { label: t(locale, "shared.breadcrumb.home"), href: urlFor("home", locale) },
+  { label: t(locale, "shared.breadcrumb.blog"), href: urlFor("blog_hub", locale) },
+  { label: titulo },
+];
+const nextStep = servico
+  ? {
+      href: urlFor(SERVICE_ROUTE[servico], locale),
+      label: t(locale, "blog.post.service_link_label", { servico: tDynamic(locale, `services.${servico}.name`) }),
+    }
+  : { href: urlFor("how_we_work", locale), label: t(locale, "shared.cta.see_how_we_work") };
+---
+
+<article aria-labelledby="post-title">
+  <Section spacing="default" width="prose" labelledby="post-title">
+    <Breadcrumb locale={locale} items={crumbs} />
+    <header class="post-header">
+      <h1 id="post-title">{titulo}</h1>
+      <p class="lead">{resumo}</p>
+      <Divider spacing="none" />
+      <div class="post-author">
+        <Image
+          src={autor.foto}
+          alt={t(locale, "shared.proof.team_card.photo_alt", { nome: autor.nome, papel: autor.papelTecnico })}
+          width={56}
+          height={56}
+          class="post-author__photo"
+        />
+        <div class="post-author__text">
+          <p class="post-author__name">
+            <a href={autor.link} rel="noopener author" target="_blank">
+              {t(locale, "blog.post.by", { autor: autor.nome })}
+              <span class="sr-only"> {t(locale, "shared.a11y.opens_new_tab")}</span>
+            </a>
+          </p>
+          <p class="post-author__role">{autor.papelTecnico}</p>
+          <p class="post-dates">
+            <time datetime={isoDate(publicadoEm)}>{t(locale, "blog.post.published", { data: formatPostDate(publicadoEm) })}</time>
+            {
+              atualizadoEm && atualizadoEm.getTime() !== publicadoEm.getTime() && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <time datetime={isoDate(atualizadoEm)}>{t(locale, "blog.post.updated", { data: formatPostDate(atualizadoEm) })}</time>
+                </>
+              )
+            }
+          </p>
+        </div>
+      </div>
+    </header>
+    <figure class="post-cover">
+      <Image src={capa.src} alt={capa.alt} widths={[480, 800, 1200]} sizes="(min-width: 768px) 680px, 100vw" />
+    </figure>
+    <div class="post-body prose">
+      <slot />
+    </div>
+    <p class="post-next">
+      <ArrowLink href={nextStep.href} text={nextStep.label} />
+    </p>
+  </Section>
+
+  {
+    related.length > 0 && (
+      <Section id="leia-tambem" spacing="compact" labelledby="related-title">
+        <SectionHeader id="related-title" title={t(locale, "blog.post.related_title")} />
+        <ul role="list" class="post-related">
+          {related.map((post) => (
+            <li>
+              <PostCard entry={post} level={3} />
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+</article>
+
+<style>
+  .post-header {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-start: var(--space-6);
+  }
+  .post-author {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  .post-author :global(.post-author__photo) {
+    flex: none;
+    inline-size: var(--space-12);
+    block-size: var(--space-12);
+    border-radius: var(--radius-full);
+    object-fit: cover;
+  }
+  .post-author__text {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .post-author__name {
+    font-weight: var(--font-weight-bold);
+  }
+  .post-author__role,
+  .post-dates {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+  .post-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .post-cover {
+    margin: var(--space-8) 0 0;
+  }
+  .post-cover :global(img) {
+    inline-size: 100%;
+    block-size: auto;
+    border-radius: var(--radius-lg);
+  }
+  .post-body {
+    margin-block-start: var(--space-8);
+  }
+  .post-next {
+    margin-block-start: var(--space-10);
+  }
+  .post-related {
+    display: grid;
+    gap: var(--grid-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 768px) {
+    .post-related {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

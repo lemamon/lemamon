@@ -1,0 +1,320 @@
+---
+/**
+ * CTA final — BLUEPRINT §5.5. Dono: home. API estável:
+ *   locale, origem, title?, text?, whatsappMessage, showHowItWorks?,
+ *   servico?/entrada?/ref? (atribuição), + opcionais showDeadlineLine e slot.
+ *
+ * Fundo escuro (data-surface="inverse"), fechando o arco visual aberto pela
+ * seção do método. Título, 1–2 frases, CTA primário, WhatsApp (some sem
+ * número), e-mail em texto com "Copiar" (nunca mailto como ação principal),
+ * "São Paulo, SP" e a microcopy "Gratuito e sem compromisso de contratar".
+ * Cada página pode sobrescrever título e texto (chaves da página).
+ *
+ * showHowItWorks (Home): "Como funciona" em 3 passos; o 2º usa a variante com
+ * agenda (hasAgenda) e o 3º a variante com formato (confirmacoes.formatoDiagnostico),
+ * conforme i18n shared._notes.cta_final.
+ * showDeadlineLine: linha opcional sobre data travante, logo acima do botão.
+ * Slot padrão: linha terciária abaixo do e-mail (ex.: services.template.profiles_line).
+ * eyebrow/index (opcionais): rótulo numerado acima do título ("07 / …", Home).
+ *
+ * Título no papel "display" (tokens.css): maior que o h2 das seções e sempre
+ * menor que o H1 da página. "45 minutos"/"45-minute" não quebra no meio
+ * (NoBreakText). Desktop: grade de 12 colunas, 7 + 5 com o "Como funciona".
+ */
+import CopyEmail from "@/components/shell/CopyEmail.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { confirmacoes } from "@/config/confirmacoes";
+import { getFeatures } from "@/config/features";
+import type { QuoteAttribution } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+import CtaDiagnosis from "./CtaDiagnosis.astro";
+import NoBreakText from "./NoBreakText.astro";
+import WhatsAppCta from "./WhatsAppCta.astro";
+
+interface Props extends QuoteAttribution {
+  locale: Locale;
+  /** ?origem= do CTA (ex.: "home-final"). */
+  origem: string;
+  title?: string;
+  text?: string;
+  /** Mensagem de WhatsApp da página (§7.7). */
+  whatsappMessage: string;
+  /** Bloco "Como funciona" em 3 passos (Home). */
+  showHowItWorks?: boolean;
+  /** shared.cta_final.deadline_line, logo acima do botão. */
+  showDeadlineLine?: boolean;
+  id?: string;
+  /** Rótulo curto acima do título (ex.: home.cta_final.eyebrow). */
+  eyebrow?: string;
+  /** Numeração da seção na eyebrow (só sai com `eyebrow`). */
+  index?: number;
+}
+
+const {
+  locale,
+  origem,
+  title,
+  text,
+  whatsappMessage,
+  servico,
+  entrada,
+  ref,
+  showHowItWorks = false,
+  showDeadlineLine = false,
+  id = "cta-final",
+  eyebrow,
+  index,
+} = Astro.props;
+
+const features = await getFeatures();
+const format = confirmacoes.formatoDiagnostico;
+const steps = showHowItWorks
+  ? [
+      t(locale, "shared.cta_final.how_it_works_steps.answer"),
+      features.hasAgenda
+        ? t(locale, "shared.cta_final.how_it_works_steps.contact_with_agenda")
+        : t(locale, "shared.cta_final.how_it_works_steps.contact"),
+      features.confirm.formatoDiagnostico && format
+        ? t(locale, "shared.cta_final.how_it_works_steps.diagnosis_with_format", {
+            formato_diagnostico: format.formato[locale],
+            participantes_diagnostico: format.participantes[locale],
+          })
+        : t(locale, "shared.cta_final.how_it_works_steps.diagnosis"),
+    ]
+  : [];
+const titleId = `${id}-title`;
+const hasExtra = Astro.slots.has("default");
+const indexLabel = eyebrow && index && index > 0 ? `${String(index).padStart(2, "0")} /` : undefined;
+---
+
+<Section id={id} surface="inverse" spacing="spacious" labelledby={titleId}>
+  <div class:list={["ctaf", { "grid-12": steps.length > 0 }]} data-steps={steps.length > 0 ? "true" : undefined}>
+    <div class="ctaf__main">
+      {
+        eyebrow && (
+          <p class="eyebrow">
+            {indexLabel && <span class="eyebrow__index" aria-hidden="true">{indexLabel}</span>}
+            {eyebrow}
+          </p>
+        )
+      }
+      <h2 id={titleId} class="ctaf__title">
+        <NoBreakText text={title ?? t(locale, "shared.cta_final.title_default")} />
+      </h2>
+      <p class="ctaf__text"><NoBreakText text={text ?? t(locale, "shared.cta_final.text_default")} /></p>
+      {showDeadlineLine && <p class="ctaf__deadline">{t(locale, "shared.cta_final.deadline_line")}</p>}
+      <div class="ctaf__actions">
+        <CtaDiagnosis locale={locale} origem={origem} servico={servico} entrada={entrada} ref={ref} />
+        <WhatsAppCta locale={locale} message={whatsappMessage} source={origem} />
+      </div>
+      <p class="ctaf__micro">
+        <Icon name="check" size={16} strokeWidth={2.5} />
+        {t(locale, "shared.cta.microcopy_no_commitment")}
+      </p>
+    </div>
+
+    {
+      steps.length > 0 && (
+        <div class="ctaf__how">
+          <h3 class="ctaf__how-title">{t(locale, "shared.cta_final.how_it_works_title")}</h3>
+          <ol class="ctaf__steps">
+            {steps.map((step, index) => (
+              <li>
+                <span class="ctaf__step-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <p>
+                  <NoBreakText text={step} />
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="ctaf__contact">
+    <p class="ctaf__email">
+      <span>{t(locale, "shared.cta_final.email_line_label")}</span>
+      <CopyEmail locale={locale} source={origem} />
+    </p>
+    <p class="ctaf__location">
+      <Icon name="map-pin" size={16} strokeWidth={1.75} />
+      {t(locale, "shared.cta_final.location")}
+    </p>
+  </div>
+  {
+    hasExtra && (
+      <div class="ctaf__extra">
+        <slot />
+      </div>
+    )
+  }
+</Section>
+
+<style>
+  .ctaf {
+    position: relative;
+    display: grid;
+    row-gap: var(--space-12);
+  }
+  /* Grade de pontos que se dissolve nas bordas (03-ui §3.6 seção 9). */
+  .ctaf::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--space-12)) calc(-1 * var(--gutter));
+    z-index: 0;
+    pointer-events: none;
+    background-image: radial-gradient(
+      circle,
+      var(--pattern-dot-color) var(--pattern-dot-size),
+      transparent calc(var(--pattern-dot-size) + 0.5px)
+    );
+    background-size: var(--pattern-gap) var(--pattern-gap);
+    mask-image: radial-gradient(ellipse at 30% 40%, var(--mask-opaque), transparent 70%);
+  }
+  .ctaf > * {
+    position: relative;
+    z-index: 1;
+  }
+  .ctaf__main {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+  .ctaf__title {
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    max-inline-size: var(--measure-title);
+  }
+  .ctaf__text {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-lead);
+  }
+  .ctaf__deadline {
+    padding-inline-start: var(--space-4);
+    border-inline-start: var(--track-width) solid var(--color-accent);
+    color: var(--color-text-primary);
+    max-inline-size: var(--measure-lead);
+  }
+  .ctaf__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    inline-size: 100%;
+    margin-block-start: var(--space-3);
+  }
+  .ctaf__micro {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+  .ctaf__micro :global(svg) {
+    color: var(--color-accent);
+  }
+
+  /* Exceção ao <Card> (B214): painel do CTA final, sobre a grade de pontos. */
+  .ctaf__how {
+    align-self: start;
+    padding: var(--space-6);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xl);
+    background-color: var(--color-bg-subtle);
+  }
+  .ctaf__how-title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+    margin-block-end: var(--space-5);
+  }
+  .ctaf__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .ctaf__steps li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+  .ctaf__step-index {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: var(--leading-base);
+    color: var(--color-accent);
+  }
+  .ctaf__steps p {
+    color: var(--color-text-secondary);
+  }
+
+  .ctaf__contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-8);
+    margin-block-start: var(--space-12);
+    padding-block-start: var(--space-6);
+    border-block-start: 1px solid var(--color-border-subtle);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+  .ctaf__email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+  /* O CopyEmail (shell) já segue os tokens da superfície; aqui só o
+     endereço ganha a mono, com especificidade zero. */
+  :global(:where(.ctaf__email .copy-email__address)) {
+    font-family: var(--font-mono);
+    color: var(--color-text-primary);
+  }
+  .ctaf__location {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+  }
+  .ctaf__extra {
+    margin-block-start: var(--space-6);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 768px) {
+    .ctaf__actions {
+      inline-size: auto;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .ctaf[data-steps] {
+      align-items: center;
+    }
+    .ctaf[data-steps] .ctaf__main {
+      --span-lg: 7;
+    }
+    .ctaf[data-steps] .ctaf__how {
+      --span-lg: 5;
+    }
+    .ctaf__how {
+      padding: var(--space-8);
+    }
+  }
+</style>

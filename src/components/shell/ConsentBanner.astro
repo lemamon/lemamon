@@ -1,0 +1,125 @@
+---
+/**
+ * Aviso de cookies (Consent Mode v2) — backlog B344; i18n
+ * _notes.privacy_conditionals. Dono: shell.
+ *
+ * Só existe com dados/dono.json › privacidade.baseAnuncios = "consentimento"
+ * (decisão D05 do dono). Com "legitimo_interesse" ou vazio, não renderiza NADA:
+ * o Base.astro nem inclui o componente (então o script dele também não vai à
+ * página), e a checagem aqui dentro é a segunda garantia.
+ *
+ * Não modal: nada fica inerte e o foco não é capturado. "Recusar" e "Aceitar"
+ * com o MESMO peso visual, link para a Política. Nasce [hidden];
+ * src/scripts/consent.ts mostra quando não há escolha salva e reabre por
+ * "Preferências de cookies" (rodapé) e pelo link {preferencias_de_cookies} da
+ * Política.
+ *   placement="fixed" (padrão): preso ao pé da tela, acima de tudo; enquanto
+ *     aberto, a barra fixa mobile e o WhatsApp flutuante saem de cena e o
+ *     <body> reserva a altura dele.
+ *   placement="inline" (wizard, /orcamento*): no fluxo, antes do rodapé
+ *     mínimo, para nunca cobrir as opções nem a barra de ações do wizard.
+ * O New Relic só carrega depois do aceite (data-nr-src, só em produção). Os
+ * pixels opcionais (LinkedIn Insight Tag e Meta Pixel, B346/B347; desligados
+ * por padrão) também: data-linkedin-partner-id / data-meta-pixel-id só saem em
+ * produção, com o ID em dados/dono.json › privacidade.pixels e baseAnuncios =
+ * "consentimento" (activePixels), e src/scripts/consent.ts só injeta o script
+ * depois do "Aceitar".
+ *
+ * Textos em shared.consent.* (pedido ao redator; tDynamic porque a seção só é
+ * lida com o consentimento ligado: chave faltando derruba o build nesse caso).
+ * O texto do aviso diz exatamente o que o aceite libera (consentTextKey): sem
+ * PUBLIC_GA4_ID ele não cita o Google Analytics (text_no_ga4), e com
+ * privacidade.remarketing = true ele diz que o Google Ads também mostra
+ * anúncios a quem já visitou o site (*_with_remarketing, B348), a finalidade
+ * de legal_basis.items.remarketing da Política. Remarketing ligado sem essa
+ * chave no i18n derruba o build: o aceite nunca é pedido sem informar a finalidade.
+ * Pixels no texto (B346/B347): com algum pixel publicado, o aviso diz que o
+ * mesmo aceite libera o LinkedIn Insight Tag e/ou o Meta Pixel
+ * (shared.consent.text_pixels_both / _linkedin / _meta, depois do texto
+ * principal). O texto descreve o que o aceite libera NO SITE TODO (a escolha
+ * vale para todas as páginas), então ele cita a Meta também nas páginas sem
+ * o Meta Pixel.
+ * Meta Pixel fora das páginas com formulário (B347): em PIXEL_FREE_ROUTES
+ * (/orcamento*, /contato e equivalentes en/es) o atributo
+ * data-meta-pixel-id não sai e o pixel não carrega. Os eventos automáticos da
+ * Meta (cliques em botão, metadados da página) e a correspondência avançada
+ * automática leriam rótulos das respostas do wizard e o e-mail ou telefone
+ * digitado; a Política promete que nenhuma resposta do pedido vai para a Meta.
+ * Estilo em ./consent-banner.css: o Base.astro o embute no <head> só quando o
+ * aviso vai à página (fora do bundle global, backlog B094).
+ */
+import { activePixels, META_PIXEL_FREE_ROUTES, privacidade } from "@/config/privacidade";
+import { urlFor, type RouteKey } from "@/config/routes";
+import { PIXEL_ATTRIBUTES } from "@/scripts/pixels";
+import { GA4_ID, isProductionDeploy, NEW_RELIC_SCRIPT } from "@/config/site";
+import { t, tDynamic, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  /** Rota da página (Base.astro): o Meta Pixel não carrega nas rotas com formulário (META_PIXEL_FREE_ROUTES). */
+  route?: RouteKey;
+  placement?: "fixed" | "inline";
+}
+
+const { locale, route, placement = "fixed" } = Astro.props;
+const enabled = privacidade.baseAnuncios === "consentimento";
+const copy = (key: string) => tDynamic(locale, `shared.consent.${key}`);
+/** Chave do texto: com ou sem GA4, com ou sem remarketing (B348). */
+function consentTextKey(hasGa4: boolean, remarketing: boolean): string {
+  return `${hasGa4 ? "text" : "text_no_ga4"}${remarketing ? "_with_remarketing" : ""}`;
+}
+const production = isProductionDeploy();
+/** Pixels opcionais (B346/B347): só em produção, só com ID e consentimento; carregam depois do aceite. */
+const pixels = production ? activePixels(privacidade) : { linkedin: "", meta: "" };
+/** Página com formulário (o wizard sempre: placement "inline"): sem Meta Pixel (B347). */
+const metaPixelFree = placement === "inline" || (route !== undefined && META_PIXEL_FREE_ROUTES.includes(route));
+const pixelAttributes = {
+  ...(pixels.linkedin ? { [PIXEL_ATTRIBUTES.linkedin]: pixels.linkedin } : {}),
+  ...(pixels.meta && !metaPixelFree ? { [PIXEL_ATTRIBUTES.meta]: pixels.meta } : {}),
+};
+/** Frase dos pixels no aviso (B346/B347): o que o mesmo aceite libera no site todo. */
+const pixelTextKey = pixels.linkedin && pixels.meta ? "text_pixels_both" : pixels.linkedin ? "text_pixels_linkedin" : pixels.meta ? "text_pixels_meta" : null;
+const consentText = enabled
+  ? [copy(consentTextKey(Boolean(GA4_ID), privacidade.remarketing)), pixelTextKey ? copy(pixelTextKey) : ""].filter(Boolean).join(" ")
+  : "";
+---
+
+{
+  enabled && (
+    <div
+      class="consent"
+      role="region"
+      aria-labelledby="consent-title"
+      data-consent-banner
+      data-placement={placement}
+      data-personalization={privacidade.remarketing ? "true" : "false"}
+      data-nr-src={production ? NEW_RELIC_SCRIPT : undefined}
+      {...pixelAttributes}
+      data-surface="inverse"
+      hidden
+    >
+      <div class="container consent__inner">
+        <div class="consent__text">
+          <p class="consent__title" id="consent-title">
+            {copy("title")}
+          </p>
+          <p>
+            {consentText} <a href={urlFor("privacy", locale)}>{t(locale, "shared.footer.links.privacy")}</a>
+          </p>
+        </div>
+        <div class="consent__actions">
+          <button type="button" class="consent__button" data-consent-choice="decline">
+            {copy("decline")}
+          </button>
+          <button type="button" class="consent__button" data-consent-choice="accept">
+            {copy("accept")}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<script>
+  import "@/scripts/consent";
+</script>

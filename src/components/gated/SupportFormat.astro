@@ -1,0 +1,48 @@
+---
+/**
+ * Serviço sustentação §6.5 `format` — "Formato e contratação". when_data
+ * hasSupportFormat: inclui + contratacao + canais de sustentacao.ts completos
+ * nos 3 idiomas. `urgencias` é opcional e só aparece com texto: o rótulo
+ * "Como erros urgentes são tratados" nunca aparece sozinho (sugeriria um
+ * atendimento de urgência não confirmado). Sem SLA, horas ou monitoramento
+ * além do que o dono escreveu. Âncora: #formato. Dono: gated.
+ *
+ * AUTO-GATED. `data` existe só para os testes (flag e config injetados).
+ */
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { getFeatures, type Features } from "@/config/features";
+import { SUPPORT_FIELDS, sustentacao, type Sustentacao } from "@/config/sustentacao";
+import { isFilledText } from "@/config/types";
+import { getSection, t, type Locale } from "@/i18n";
+
+import FieldList from "./FieldList.astro";
+import { ANCHORS } from "@/config/routes";
+
+interface Props {
+  locale: Locale;
+  /** Só testes: flag e config injetados (tests/fixtures/). */
+  data?: { features: Pick<Features, "hasSupportFormat">; sustentacao: Sustentacao };
+}
+
+const { locale, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const source = data?.sustentacao ?? sustentacao;
+const labels = getSection(locale, "services.support.format.fields");
+const items = features.hasSupportFormat
+  ? SUPPORT_FIELDS.flatMap(([field, label]) => {
+      const value = source[field];
+      // Campo opcional (urgencias) só com os 3 idiomas preenchidos: dado parcial não renderiza.
+      return isFilledText(value) ? [{ label: labels[label], value: value[locale].trim() }] : [];
+    })
+  : [];
+---
+
+{
+  features.hasSupportFormat && items.length > 0 && (
+    <Section id={ANCHORS.supportFormat} labelledby={`${ANCHORS.supportFormat}-title`}>
+      <SectionHeader id={`${ANCHORS.supportFormat}-title`} title={t(locale, "services.support.format.title")} intro={t(locale, "services.support.format.intro")} />
+      <FieldList items={items} />
+    </Section>
+  )
+}

@@ -1,0 +1,67 @@
+---
+/**
+ * Quanto custa §6.6 #4 `why_not_by_form` — always. Dono: pages.
+ * Um preço dado antes de entender o problema é chute. O trecho "pedido de
+ * diagnóstico" é link → /orcamento?origem=preco-formulario
+ * (pricing._notes.why_not_by_form). Vale com e sem hasPricing.
+ * Desktop: grade de 12 colunas, 5 (título) + 7 (texto), o 7 + 5 espelhado (B222).
+ */
+import LinkedText from "@/components/services/kit/LinkedText.astro";
+import Section from "@/components/ui/Section.astro";
+import { quoteHref } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const origem = "preco-formulario";
+---
+
+<Section id="por-que-nao-por-formulario" labelledby="por-que-nao-por-formulario-title" surface="subtle">
+  <div class="why-form grid-12">
+    <h2 id="por-que-nao-por-formulario-title">{t(locale, "pricing.why_not_by_form.title")}</h2>
+    <p class="why-form__text">
+      <LinkedText
+        text={t(locale, "pricing.why_not_by_form.text")}
+        phrase={t(locale, "pricing.why_not_by_form.link_phrase")}
+        href={quoteHref(locale, { origem })}
+        data-track="cta_click"
+        data-cta-id="diagnosis"
+        data-origem={origem}
+      />
+    </p>
+  </div>
+</Section>
+
+<style>
+  .why-form {
+    row-gap: var(--space-5);
+  }
+
+  .why-form__text {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-prose);
+  }
+
+  .why-form__text :global(a) {
+    font-weight: var(--font-weight-bold);
+  }
+
+  @media (min-width: 1024px) {
+    .why-form {
+      align-items: start;
+    }
+
+    .why-form > h2 {
+      --span-lg: 5;
+    }
+
+    .why-form__text {
+      --span-lg: 7;
+    }
+  }
+</style>

@@ -1,0 +1,235 @@
+---
+/**
+ * Orçamento §6.7 #2 `quick_faq` — always, ANTES do primeiro clique. Dono: conversion.
+ * Some no modo foco (QuoteView). <details>/<summary> nativo, sem JS, indexável;
+ * a primeira pergunta ("Vou sair daqui com um orçamento?") aberta.
+ *
+ * Ordem e variantes: i18n quote._notes.quick_faq e pricing_suffix. Itens
+ * condicionais (banco central faq.conditional e conversation_format) só
+ * renderizam com a flag do dono (features.confirm); o FAQPage JSON-LD leva só
+ * os itens renderizados. Depois do FAQ: scope_line + scope_items (lista).
+ * Ritmo vertical: <Section spacing="compact" trim="start"> (B211), emendada na
+ * entrada (o respiro de cima é o fim do hero).
+ */
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import JsonLd from "@/components/shell/JsonLd.astro";
+import { confirmacoes } from "@/config/confirmacoes";
+import { empresa } from "@/config/empresa";
+import { getFeatures, pricingLinesFor } from "@/config/features";
+import { urlFor } from "@/config/routes";
+import { getSection, interpolate, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+interface Item {
+  id: string;
+  question: string;
+  /** Parágrafos; "{politica}" vira o link da Política de Privacidade. */
+  paragraphs: string[];
+}
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+const confirm = features.confirm;
+const faq = getSection(locale, "quote.entry.quick_faq");
+const bank = getSection(locale, "faq.conditional");
+const scopeItems = getSection(locale, "quote.entry.scope_items");
+const privacyLabel = t(locale, "shared.lgpd.privacy_link_label");
+
+// "...e uma referência de investimento" só com faixa da Descoberta ou de desenvolvimento preenchida.
+const hasReference =
+  pricingLinesFor(features, [
+    "descoberta",
+    "desenvolvimento.sistemas",
+    "desenvolvimento.aplicativos",
+    "desenvolvimento.integracoes",
+    "desenvolvimento.mvp",
+  ]).length > 0;
+
+const items: Item[] = [];
+items.push({
+  id: "price_at_end",
+  question: faq.price_at_end.question,
+  paragraphs: [
+    hasReference ? faq.price_at_end.answer : faq.price_at_end.answer_no_pricing_variant,
+    ...(hasReference ? [faq.price_at_end.answer_with_pricing_suffix] : []),
+    confirm.semDescoberta ? faq.price_at_end.answer_2_skip_variant : faq.price_at_end.answer_2,
+    confirm.valoresNoDiagnostico ? faq.price_at_end.answer_3_with_values : faq.price_at_end.answer_3,
+  ],
+});
+if (confirm.escopoMudanca) {
+  items.push({ id: "scope_change", question: bank.scope_change.question, paragraphs: [bank.scope_change.answer_draft] });
+}
+if (confirm.semDescoberta) {
+  items.push({ id: "skip_discovery", question: bank.skip_discovery.question, paragraphs: [bank.skip_discovery.answer_draft] });
+}
+items.push({ id: "really_free", question: faq.really_free.question, paragraphs: [faq.really_free.answer] });
+items.push({ id: "off_track", question: faq.off_track.question, paragraphs: [faq.off_track.answer, faq.off_track.answer_2] });
+if (confirm.formatoDiagnostico && confirmacoes.formatoDiagnostico) {
+  items.push({
+    id: "conversation_format",
+    question: faq.conversation_format.question,
+    paragraphs: [
+      interpolate(faq.conversation_format.answer_with_format, {
+        formato_diagnostico: confirmacoes.formatoDiagnostico.formato[locale],
+        participantes_diagnostico: confirmacoes.formatoDiagnostico.participantes[locale],
+      }),
+    ],
+  });
+}
+items.push({
+  id: "need_to_know_everything",
+  question: faq.need_to_know_everything.question,
+  paragraphs: [faq.need_to_know_everything.answer],
+});
+items.push({ id: "data_use", question: faq.data_use.question, paragraphs: [faq.data_use.answer, faq.data_use.answer_2] });
+if (confirm.nda) {
+  // Mesma regra do banco central (shared/faq.ts): o e-mail vem de empresa.ts e,
+  // sem WhatsApp no ambiente, a variante cita só o e-mail.
+  const answer = features.hasWhatsapp ? bank.nda.answer_draft : bank.nda.answer_draft_no_whatsapp;
+  items.push({ id: "nda", question: bank.nda.question, paragraphs: [interpolate(answer, { email: empresa.email })] });
+}
+if (confirmacoes.codigoProprietario) {
+  items.push({
+    id: "code_ownership",
+    question: bank.code_ownership.question,
+    paragraphs: [bank.code_ownership[confirmacoes.codigoProprietario]],
+  });
+}
+if (confirm.notaFiscal) {
+  items.push(
+    features.hasCompanyData
+      ? { id: "invoice", question: bank.invoice.question_with_company_data, paragraphs: [bank.invoice.answer_with_company_data] }
+      : { id: "invoice", question: bank.invoice.question, paragraphs: [bank.invoice.answer_draft] },
+  );
+}
+
+const TOKEN = "{politica}";
+const plain = (text: string) => text.replace(TOKEN, privacyLabel);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: items.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.paragraphs.map(plain).join(" ") },
+  })),
+};
+const privacyUrl = urlFor("privacy", locale);
+const scopeOrder = ["ops_system", "client_platform", "mobile_app", "integration", "automation", "mvp", "live_system"] as const;
+---
+
+<Section id="antes-de-comecar" spacing="compact" trim="start" labelledby="quick-faq-title" class="quick-faq">
+  <div class="quick-faq__inner">
+    <h2 id="quick-faq-title" class="quick-faq__title">{faq.title}</h2>
+    <div class="quick-faq__list">
+      {
+        items.map((item, index) => (
+          <details open={index === 0} data-faq-id={item.id} class="quick-faq__item">
+            <summary>
+              <span>{item.question}</span>
+              <Icon name="chevron-down" size={20} class="quick-faq__chevron" />
+            </summary>
+            <div class="quick-faq__answer">
+              {item.paragraphs.map((paragraph) => {
+                const index = paragraph.indexOf(TOKEN);
+                return index < 0 ? (
+                  <p>{paragraph}</p>
+                ) : (
+                  <p>
+                    {paragraph.slice(0, index)}
+                    <a href={privacyUrl}>{privacyLabel}</a>
+                    {paragraph.slice(index + TOKEN.length)}
+                  </p>
+                );
+              })}
+            </div>
+          </details>
+        ))
+      }
+    </div>
+
+    <div class="quick-faq__scope">
+      <p>{t(locale, "quote.entry.scope_line")}</p>
+      <ul>
+        {scopeOrder.map((id) => <li>{scopeItems[id]}</li>)}
+      </ul>
+    </div>
+  </div>
+</Section>
+<JsonLd data={jsonLd} />
+
+<style>
+  .quick-faq__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .quick-faq__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  .quick-faq__list {
+    max-inline-size: var(--measure-prose);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+
+  .quick-faq__item {
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .quick-faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-block-size: var(--target-option);
+    padding-block: var(--space-3);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .quick-faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .quick-faq__item :global(.quick-faq__chevron) {
+    flex: none;
+    transition: var(--transition-transform);
+  }
+
+  .quick-faq__item[open] :global(.quick-faq__chevron) {
+    transform: rotate(180deg);
+  }
+
+  .quick-faq__answer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-block-end: var(--space-5);
+    color: var(--color-text-secondary);
+  }
+
+  .quick-faq__scope {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-inline-size: var(--measure-prose);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .quick-faq__scope ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-inline-start: var(--space-5);
+  }
+</style>

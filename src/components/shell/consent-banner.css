@@ -1,0 +1,97 @@
+/*
+ * Aviso de cookies — ConsentBanner.astro (backlog B344). Dono: shell.
+ *
+ * Por que um .css e não <style> no componente (backlog B094): o CSS de um
+ * componente que o layout importa vai para /_astro/Base.*.css, que TODA página
+ * baixa, e o aviso só existe com privacidade.baseAnuncios = "consentimento".
+ * O src/layouts/Base.astro importa este arquivo com ?inline e o embute como
+ * <style> no <head> só quando o aviso vai à página.
+ *
+ * Sem o escopo automático do Astro, cada seletor começa pela raiz
+ * (.consent[data-consent-banner], especificidade ≥ 0,2,0, como antes com
+ * [data-astro-cid-…]): a regra global [data-surface="inverse"] (cor do texto)
+ * e a, a:hover não passam a vencer.
+ */
+.consent[data-consent-banner] {
+  padding-block: var(--space-4);
+  background-color: var(--color-bg-canvas);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+.consent[data-consent-banner][hidden] {
+  display: none;
+}
+.consent[data-consent-banner][data-placement="fixed"] {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: var(--z-overlay);
+  padding-block-end: calc(var(--space-4) + env(safe-area-inset-bottom));
+  box-shadow: var(--shadow-xl);
+}
+.consent[data-consent-banner] .consent__inner {
+  display: grid;
+  gap: var(--space-3);
+}
+.consent[data-consent-banner] .consent__title {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+}
+.consent[data-consent-banner] a {
+  color: var(--color-text-link);
+}
+.consent[data-consent-banner] a:hover {
+  color: var(--color-text-link-hover);
+}
+.consent[data-consent-banner] .consent__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+/* Mesmo peso visual nas duas escolhas (nenhuma é "primária"). */
+.consent[data-consent-banner] .consent__button {
+  min-block-size: var(--target-cta);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+}
+.consent[data-consent-banner] .consent__button:hover {
+  background-color: var(--color-bg-surface-hover);
+}
+
+/* Enquanto o aviso fixo está aberto: espaço reservado e nada disputando o pé da tela. */
+html[data-consent-open] body {
+  padding-block-end: var(--consent-height, 0px);
+}
+html[data-consent-open] {
+  scroll-padding-block-end: calc(var(--consent-height, 0px) + var(--space-4));
+}
+html[data-consent-open] [data-sticky-bar],
+html[data-consent-open] [data-whatsapp-float] {
+  visibility: hidden;
+}
+
+@media (min-width: 768px) {
+  .consent[data-consent-banner] .consent__inner {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-6);
+  }
+  .consent[data-consent-banner] .consent__actions {
+    grid-template-columns: auto auto;
+  }
+}
+
+/* Impressão / PDF (B114): o aviso não vai para o papel. */
+@media print {
+  .consent[data-consent-banner] {
+    display: none !important;
+  }
+  html[data-consent-open] body {
+    padding-block-end: 0;
+  }
+}

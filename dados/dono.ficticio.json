@@ -1,0 +1,430 @@
+{
+  "$schema": "./dono.schema.json",
+  "empresa": {
+    "email": "contato.exemplo@example.com",
+    "razaoSocial": "Empresa Exemplo Ltda",
+    "cnpj": "00.000.000/0000-00",
+    "anoFundacao": 2020,
+    "responsavel": "Pessoa Responsável Exemplo",
+    "apresentacao": {
+      "pt": "Exemplo: a gente desenvolve software sob medida para empresas de serviço e combina escopo, prazo e preço antes de construir. São Paulo, SP.",
+      "en": "Example: we build custom software for service companies and agree on scope, timeline and price before building. São Paulo, Brazil.",
+      "es": "Ejemplo: desarrollamos software a medida para empresas de servicios y acordamos alcance, plazo y precio antes de construir. São Paulo, Brasil."
+    },
+    "historia": {
+      "pt": [
+        "Texto de exemplo: a Empresa Exemplo começou atendendo quem tinha a operação presa em planilhas e mensagens soltas.",
+        "Texto de exemplo: com o tempo, a gente percebeu que o projeto dá certo quando escopo, prazo e preço ficam claros antes da primeira linha de código."
+      ],
+      "en": [
+        "Sample text: Empresa Exemplo started by helping companies whose operations were stuck in spreadsheets and scattered messages.",
+        "Sample text: over time, we learned that a project works when scope, timeline and price are clear before the first line of code."
+      ],
+      "es": [
+        "Texto de ejemplo: Empresa Exemplo empezó ayudando a quien tenía la operación atrapada en hojas de cálculo y mensajes sueltos.",
+        "Texto de ejemplo: con el tiempo, entendimos que el proyecto funciona cuando alcance, plazo y precio están claros antes de la primera línea de código."
+      ]
+    }
+  },
+  "privacidade": {
+    "baseAnuncios": "legitimo_interesse",
+    "encarregado": { "nome": "Encarregada Exemplo da Silva", "email": "privacidade.exemplo@example.com" },
+    "mecanismoTransferencia": {
+      "pt": "cláusulas-padrão contratuais (exemplo)",
+      "en": "standard contractual clauses (example)",
+      "es": "cláusulas contractuales tipo (ejemplo)"
+    },
+    "prazos": {
+      "retencaoPedidos": { "pt": "12 meses (exemplo)", "en": "12 months (example)", "es": "12 meses (ejemplo)" },
+      "ga4": { "pt": "14 meses (exemplo)", "en": "14 months (example)", "es": "14 meses (ejemplo)" },
+      "googleAds": { "pt": "90 dias (exemplo)", "en": "90 days (example)", "es": "90 días (ejemplo)" },
+      "conversoesGoogleAds": { "pt": "90 dias (exemplo)", "en": "90 days (example)", "es": "90 días (ejemplo)" },
+      "newRelic": { "pt": "8 dias (exemplo)", "en": "8 days (example)", "es": "8 días (ejemplo)" },
+      "logsHospedagem": { "pt": "30 dias (exemplo)", "en": "30 days (example)", "es": "30 días (ejemplo)" }
+    },
+    "atualizadaEm": "2026-01-15",
+    "remarketing": false,
+    "emailWorkspace": false,
+    "classificacaoDefineAtendimento": false,
+    "naoVendemosConfirmado": false,
+    "ferramentas": {
+      "agenda": {
+        "fornecedor": "Agenda Exemplo",
+        "prazo": { "pt": "6 meses (exemplo)", "en": "6 months (example)", "es": "6 meses (ejemplo)" }
+      },
+      "crm": {
+        "fornecedor": "CRM Exemplo",
+        "prazo": { "pt": "24 meses (exemplo)", "en": "24 months (example)", "es": "24 meses (ejemplo)" }
+      },
+      "emailAcompanhamento": {
+        "fornecedor": "E-mail Exemplo",
+        "prazo": { "pt": "12 meses (exemplo)", "en": "12 months (example)", "es": "12 meses (ejemplo)" }
+      },
+      "automacao": {
+        "fornecedor": "Automação Exemplo",
+        "prazo": { "pt": "30 dias (exemplo)", "en": "30 days (example)", "es": "30 días (ejemplo)" }
+      },
+      "chatEquipe": {
+        "fornecedor": "Chat Exemplo",
+        "prazo": { "pt": "90 dias (exemplo)", "en": "90 days (example)", "es": "90 días (ejemplo)" }
+      }
+    }
+  },
+  "time": [
+    {
+      "id": "exemplo-ana-souza",
+      "nome": "Ana Exemplo Souza",
+      "foto": "ficticio/imagens/pessoa-ana-exemplo.svg",
+      "papel": { "pt": "Desenvolvedora (exemplo)", "en": "Developer (example)", "es": "Desarrolladora (ejemplo)" },
+      "linha": {
+        "pt": "Texto de exemplo: gosto de entregar cedo e conversar sobre o que mudou.",
+        "en": "Sample text: I like to ship early and talk about what changed.",
+        "es": "Texto de ejemplo: me gusta entregar temprano y conversar sobre lo que cambió."
+      },
+      "linkedin": "https://www.linkedin.com/in/exemplo-ana-souza-ficticia",
+      "github": "https://github.com/exemplo-ana-souza-ficticia",
+      "atuaEmProjetos": true,
+      "ordem": 0
+    },
+    {
+      "id": "exemplo-bruno-lima",
+      "nome": "Bruno Exemplo Lima",
+      "foto": "ficticio/imagens/pessoa-bruno-exemplo.svg",
+      "papel": { "pt": "Gestão de projetos (exemplo)", "en": "Project management (example)", "es": "Gestión de proyectos (ejemplo)" },
+      "linha": {
+        "pt": "Texto de exemplo: cuido para que cada entrega chegue no combinado.",
+        "en": "Sample text: I make sure every release lands as agreed.",
+        "es": "Texto de ejemplo: me ocupo de que cada entrega llegue según lo acordado."
+      },
+      "linkedin": "https://www.linkedin.com/in/exemplo-bruno-lima-ficticio",
+      "atuaEmProjetos": true,
+      "ordem": 1
+    }
+  ],
+  "perfis": {
+    "github": { "url": "https://github.com/empresa-exemplo-ficticia", "publicar": true },
+    "linkedin": { "url": "https://www.linkedin.com/company/empresa-exemplo-ficticia", "publicar": true },
+    "medium": { "url": "https://medium.com/@empresa-exemplo-ficticia", "publicar": true }
+  },
+  "confirmacoes": {
+    "escopoMudanca": true,
+    "codigoProprietario": "answer_draft",
+    "notaFiscal": true,
+    "outrasCidades": true,
+    "nda": true,
+    "sistemaTerceiros": true,
+    "semDescoberta": true,
+    "duracaoDescoberta": true,
+    "planoDoCliente": true,
+    "descobertaAbatida": true,
+    "descobertaUnicoCusto": true,
+    "migracaoDados": true,
+    "ligacao": true,
+    "valoresNoDiagnostico": true,
+    "timeDoCliente": true,
+    "scoreDRecebeDiagnostico": true,
+    "devolutivaConteudo": {
+      "pt": "o resumo do problema, os caminhos possíveis e o próximo passo recomendado (exemplo)",
+      "en": "a summary of the problem, the possible paths and the recommended next step (example)",
+      "es": "un resumen del problema, los caminos posibles y el siguiente paso recomendado (ejemplo)"
+    },
+    "formatoDiagnostico": {
+      "formato": { "pt": "por chamada de vídeo (exemplo)", "en": "a video call (example)", "es": "por videollamada (ejemplo)" },
+      "participantes": {
+        "pt": "quem vai conduzir o seu projeto (exemplo)",
+        "en": "the person who will lead your project (example)",
+        "es": "quien va a conducir tu proyecto (ejemplo)"
+      }
+    },
+    "pagamento": {
+      "pt": "Condições de exemplo: o pagamento é dividido em parcelas ligadas às entregas, combinadas no plano.",
+      "en": "Example terms: payment is split into instalments tied to the releases, agreed in the plan.",
+      "es": "Condiciones de ejemplo: el pago se divide en cuotas ligadas a las entregas, acordadas en el plan."
+    }
+  },
+  "qualificacao": {
+    "moeda": "BRL",
+    "faixas": [
+      { "id": "tier_1", "rotulo": { "pt": "Até R$ 20 mil (exemplo)", "en": "Up to BRL 20k (example)", "es": "Hasta BRL 20 mil (ejemplo)" } },
+      { "id": "tier_2", "rotulo": { "pt": "R$ 20–60 mil (exemplo)", "en": "BRL 20k–60k (example)", "es": "BRL 20–60 mil (ejemplo)" } },
+      { "id": "tier_3", "rotulo": { "pt": "R$ 60–150 mil (exemplo)", "en": "BRL 60k–150k (example)", "es": "BRL 60–150 mil (ejemplo)" } },
+      { "id": "tier_4", "rotulo": { "pt": "Acima de R$ 150 mil (exemplo)", "en": "Over BRL 150k (example)", "es": "Más de BRL 150 mil (ejemplo)" } }
+    ],
+    "faixasMensais": [
+      { "id": "tier_1", "rotulo": { "pt": "Até R$ 3 mil/mês (exemplo)", "en": "Up to BRL 3k/month (example)", "es": "Hasta BRL 3 mil/mes (ejemplo)" } },
+      { "id": "tier_2", "rotulo": { "pt": "R$ 3–6 mil/mês (exemplo)", "en": "BRL 3k–6k/month (example)", "es": "BRL 3–6 mil/mes (ejemplo)" } },
+      { "id": "tier_3", "rotulo": { "pt": "R$ 6–12 mil/mês (exemplo)", "en": "BRL 6k–12k/month (example)", "es": "BRL 6–12 mil/mes (ejemplo)" } },
+      { "id": "tier_4", "rotulo": { "pt": "Acima de R$ 12 mil/mês (exemplo)", "en": "Over BRL 12k/month (example)", "es": "Más de BRL 12 mil/mes (ejemplo)" } }
+    ],
+    "corteMql": "tier_2",
+    "corteMqlMensal": "tier_2",
+    "scoreD": { "ativo": false }
+  },
+  "precos": {
+    "descoberta": {
+      "faixa": { "pt": "R$ 8 mil a R$ 15 mil (exemplo)", "en": "BRL 8k–15k (example)", "es": "BRL 8 mil a 15 mil (ejemplo)" },
+      "unidade": "projeto",
+      "fatores": {
+        "pt": ["Exemplo: quantas áreas da empresa entram no plano", "Exemplo: se existe um sistema atual para entender"],
+        "en": ["Example: how many areas of the company the plan covers", "Example: whether there is a current system to understand"],
+        "es": ["Ejemplo: cuántas áreas de la empresa entran en el plan", "Ejemplo: si hay un sistema actual para entender"]
+      }
+    },
+    "desenvolvimento": {
+      "sistemas": {
+        "faixa": { "pt": "R$ 60 mil a R$ 150 mil (exemplo)", "en": "BRL 60k–150k (example)", "es": "BRL 60 mil a 150 mil (ejemplo)" },
+        "unidade": "projeto",
+        "fatores": {
+          "pt": ["Exemplo: número de telas e perfis de acesso", "Exemplo: integrações com outros sistemas"],
+          "en": ["Example: number of screens and access profiles", "Example: integrations with other systems"],
+          "es": ["Ejemplo: número de pantallas y perfiles de acceso", "Ejemplo: integraciones con otros sistemas"]
+        }
+      },
+      "aplicativos": {
+        "faixa": { "pt": "R$ 80 mil a R$ 200 mil (exemplo)", "en": "BRL 80k–200k (example)", "es": "BRL 80 mil a 200 mil (ejemplo)" },
+        "unidade": "projeto",
+        "fatores": {
+          "pt": ["Exemplo: Android, iOS ou os dois", "Exemplo: uso sem internet"],
+          "en": ["Example: Android, iOS or both", "Example: offline use"],
+          "es": ["Ejemplo: Android, iOS o los dos", "Ejemplo: uso sin internet"]
+        }
+      },
+      "integracoes": {
+        "faixa": { "pt": "R$ 20 mil a R$ 60 mil (exemplo)", "en": "BRL 20k–60k (example)", "es": "BRL 20 mil a 60 mil (ejemplo)" },
+        "unidade": "projeto",
+        "fatores": {
+          "pt": ["Exemplo: quantos sistemas conversam entre si", "Exemplo: qualidade da documentação de cada sistema"],
+          "en": ["Example: how many systems talk to each other", "Example: quality of each system's documentation"],
+          "es": ["Ejemplo: cuántos sistemas se comunican entre sí", "Ejemplo: calidad de la documentación de cada sistema"]
+        }
+      },
+      "mvp": {
+        "faixa": { "pt": "R$ 40 mil a R$ 90 mil (exemplo)", "en": "BRL 40k–90k (example)", "es": "BRL 40 mil a 90 mil (ejemplo)" },
+        "unidade": "projeto",
+        "fatores": {
+          "pt": ["Exemplo: o tamanho da primeira versão", "Exemplo: pagamentos dentro do produto"],
+          "en": ["Example: the size of the first version", "Example: in-product payments"],
+          "es": ["Ejemplo: el tamaño de la primera versión", "Ejemplo: pagos dentro del producto"]
+        }
+      }
+    },
+    "sustentacao": {
+      "faixa": { "pt": "R$ 3 mil a R$ 8 mil (exemplo)", "en": "BRL 3k–8k (example)", "es": "BRL 3 mil a 8 mil (ejemplo)" },
+      "unidade": "mes",
+      "fatores": {
+        "pt": ["Exemplo: quantos sistemas a gente cuida", "Exemplo: ritmo de melhorias por mês"],
+        "en": ["Example: how many systems we look after", "Example: pace of improvements per month"],
+        "es": ["Ejemplo: cuántos sistemas cuidamos", "Ejemplo: ritmo de mejoras por mes"]
+      }
+    }
+  },
+  "agenda": { "url": "https://example.com/agenda" },
+  "descoberta": {
+    "formato": {
+      "pt": "Exemplo: encontros remotos com quem decide e quem usa, e uma apresentação do plano no fim.",
+      "en": "Example: remote sessions with the people who decide and the people who use it, and a plan presentation at the end.",
+      "es": "Ejemplo: encuentros remotos con quien decide y quien usa, y una presentación del plan al final."
+    },
+    "participantes": {
+      "pt": "Exemplo: do seu lado, quem decide e quem usa no dia a dia; do nosso, quem vai conduzir o projeto.",
+      "en": "Example: on your side, whoever decides and whoever uses it every day; on ours, the person who will lead the project.",
+      "es": "Ejemplo: de tu lado, quien decide y quien lo usa en el día a día; del nuestro, quien va a conducir el proyecto."
+    },
+    "ritmo": {
+      "pt": "Exemplo: dois encontros por semana, com material para revisar entre eles.",
+      "en": "Example: two sessions a week, with material to review in between.",
+      "es": "Ejemplo: dos encuentros por semana, con material para revisar entre ellos."
+    },
+    "duracao": {
+      "pt": "de duas a três semanas (exemplo)",
+      "en": "two to three weeks (example)",
+      "es": "de dos a tres semanas (ejemplo)"
+    },
+    "naoInclui": {
+      "pt": [
+        "Exemplo: o desenvolvimento do sistema, que vem depois, com prazo e preço combinados no plano.",
+        "Exemplo: hospedagem, domínio e licenças de ferramentas de terceiros.",
+        "Exemplo: mudanças em sistemas que a sua empresa já usa."
+      ],
+      "en": [
+        "Example: building the software itself, which comes next, with timeline and price agreed in the plan.",
+        "Example: hosting, domain and third-party tool licenses.",
+        "Example: changes to systems your company already uses."
+      ],
+      "es": [
+        "Ejemplo: el desarrollo del software, que viene después, con plazo y precio acordados en el plan.",
+        "Ejemplo: hosting, dominio y licencias de herramientas de terceros.",
+        "Ejemplo: cambios en sistemas que tu empresa ya usa."
+      ]
+    }
+  },
+  "sustentacao": {
+    "inclui": {
+      "pt": "Exemplo: correção de erros, atualizações de segurança e pequenas melhorias combinadas a cada mês.",
+      "en": "Example: bug fixes, security updates and small improvements agreed every month.",
+      "es": "Ejemplo: corrección de errores, actualizaciones de seguridad y pequeñas mejoras acordadas cada mes."
+    },
+    "contratacao": {
+      "pt": "Exemplo: contrato mensal com escopo combinado, revisto junto com você de tempos em tempos.",
+      "en": "Example: a monthly contract with an agreed scope, reviewed with you from time to time.",
+      "es": "Ejemplo: contrato mensual con alcance acordado, revisado contigo de vez en cuando."
+    },
+    "canais": {
+      "pt": "Exemplo: WhatsApp e e-mail, com um resumo do que foi feito no mês.",
+      "en": "Example: WhatsApp and email, with a summary of what was done each month.",
+      "es": "Ejemplo: WhatsApp y correo, con un resumen de lo que se hizo en el mes."
+    },
+    "urgencias": {
+      "pt": "Exemplo: erro que para a operação entra na frente das melhorias.",
+      "en": "Example: a bug that stops your operation jumps ahead of improvements.",
+      "es": "Ejemplo: un error que detiene la operación pasa delante de las mejoras."
+    }
+  },
+  "engenharia": {
+    "tests": {
+      "pt": "Exemplo: testes automatizados nas regras de negócio, rodando a cada mudança.",
+      "en": "Example: automated tests on business rules, running on every change.",
+      "es": "Ejemplo: pruebas automatizadas en las reglas de negocio, en cada cambio."
+    },
+    "ci_cd": {
+      "pt": "Exemplo: o código chega ao ar por um processo automático, sem passo manual.",
+      "en": "Example: code goes live through an automated process, with no manual step.",
+      "es": "Ejemplo: el código sale al aire por un proceso automático, sin paso manual."
+    },
+    "code_review": {
+      "pt": "Exemplo: toda mudança passa pela revisão de outra pessoa antes de entrar.",
+      "en": "Example: every change is reviewed by someone else before it goes in.",
+      "es": "Ejemplo: todo cambio pasa por la revisión de otra persona antes de entrar."
+    },
+    "repository": {
+      "pt": "Exemplo: o repositório fica numa conta sua desde o primeiro dia.",
+      "en": "Example: the repository lives in your account from day one.",
+      "es": "Ejemplo: el repositorio queda en una cuenta tuya desde el primer día."
+    },
+    "documentation": {
+      "pt": "Exemplo: como rodar, como publicar e as decisões importantes ficam escritas.",
+      "en": "Example: how to run it, how to deploy it and the key decisions are written down.",
+      "es": "Ejemplo: cómo ejecutarlo, cómo publicarlo y las decisiones importantes quedan por escrito."
+    },
+    "handover": {
+      "pt": "Exemplo: no fim, uma sessão de passagem com quem vai cuidar do sistema.",
+      "en": "Example: at the end, a handover session with whoever will look after the system.",
+      "es": "Ejemplo: al final, una sesión de traspaso con quien va a cuidar el sistema."
+    },
+    "people": {
+      "pt": "Exemplo: quem conversa com você é quem constrói o software.",
+      "en": "Example: the people you talk to are the people who build the software.",
+      "es": "Ejemplo: quien conversa contigo es quien construye el software."
+    },
+    "security": {
+      "pt": "Exemplo: acesso aos seus dados só para quem precisa, e só enquanto precisa.",
+      "en": "Example: access to your data only for those who need it, and only while they need it.",
+      "es": "Ejemplo: acceso a tus datos solo para quien lo necesita, y solo mientras lo necesita."
+    }
+  },
+  "depoimentos": [
+    {
+      "id": "exemplo-depoimento-transportadora",
+      "citacao": {
+        "pt": "Depoimento de exemplo: na terceira semana a gente já usava uma parte do sistema e sabia o que vinha depois.",
+        "en": "Sample testimonial: by the third week we were already using part of the system and knew what came next.",
+        "es": "Testimonio de ejemplo: en la tercera semana ya usábamos una parte del sistema y sabíamos lo que venía después."
+      },
+      "nome": "Carla Exemplo Ribeiro",
+      "cargo": { "pt": "Diretora de operações (exemplo)", "en": "Operations director (example)", "es": "Directora de operaciones (ejemplo)" },
+      "empresa": "Transportadora Exemplo Ltda",
+      "foto": {
+        "src": "ficticio/imagens/depoimento-carla-exemplo.svg",
+        "alt": {
+          "pt": "Avatar de exemplo com as iniciais CE",
+          "en": "Sample avatar with the initials CE",
+          "es": "Avatar de ejemplo con las iniciales CE"
+        }
+      },
+      "video": {
+        "src": "ficticio/videos/depoimento-carla-exemplo.mp4",
+        "poster": "ficticio/imagens/poster-depoimento-carla-exemplo.png",
+        "legendas": {
+          "pt": "ficticio/videos/depoimento-carla-exemplo.pt.vtt",
+          "en": "ficticio/videos/depoimento-carla-exemplo.en.vtt",
+          "es": "ficticio/videos/depoimento-carla-exemplo.es.vtt"
+        },
+        "duracaoSegundos": 3
+      },
+      "caseSlug": "exemplo-sistema-de-fretes",
+      "sobreProcesso": true,
+      "ordem": 0,
+      "autorizacao": {
+        "porEscrito": true,
+        "autorizadoPor": "Exemplo: nenhuma pessoa real autorizou",
+        "data": "2026-01-15",
+        "registro": "Dado fictício da camada de exemplo; não existe autorização",
+        "foto": true,
+        "video": true
+      }
+    }
+  ],
+  "logos": [
+    {
+      "id": "exemplo-logo-transportadora",
+      "empresa": "Transportadora Exemplo Ltda",
+      "arquivo": "ficticio/imagens/logo-transportadora-exemplo.svg",
+      "caseSlug": "exemplo-sistema-de-fretes",
+      "ordem": 0,
+      "autorizacao": {
+        "porEscrito": true,
+        "autorizadoPor": "Exemplo: nenhuma empresa real autorizou",
+        "data": "2026-01-15",
+        "registro": "Dado fictício da camada de exemplo; não existe autorização"
+      }
+    },
+    {
+      "id": "exemplo-logo-cooperativa",
+      "empresa": "Cooperativa Exemplo",
+      "arquivo": "ficticio/imagens/logo-cooperativa-exemplo.svg",
+      "ordem": 1,
+      "autorizacao": {
+        "porEscrito": true,
+        "autorizadoPor": "Exemplo: nenhuma empresa real autorizou",
+        "data": "2026-01-15",
+        "registro": "Dado fictício da camada de exemplo; não existe autorização"
+      }
+    },
+    {
+      "id": "exemplo-logo-clinica",
+      "empresa": "Clínica Exemplo",
+      "arquivo": "ficticio/imagens/logo-clinica-exemplo.svg",
+      "ordem": 2,
+      "autorizacao": {
+        "porEscrito": true,
+        "autorizadoPor": "Exemplo: nenhuma empresa real autorizou",
+        "data": "2026-01-15",
+        "registro": "Dado fictício da camada de exemplo; não existe autorização"
+      }
+    },
+    {
+      "id": "exemplo-logo-industria",
+      "empresa": "Indústria Exemplo",
+      "arquivo": "ficticio/imagens/logo-industria-exemplo.svg",
+      "ordem": 3,
+      "autorizacao": {
+        "porEscrito": true,
+        "autorizadoPor": "Exemplo: nenhuma empresa real autorizou",
+        "data": "2026-01-15",
+        "registro": "Dado fictício da camada de exemplo; não existe autorização"
+      }
+    },
+    {
+      "id": "exemplo-logo-escola",
+      "empresa": "Escola Exemplo",
+      "arquivo": "ficticio/imagens/logo-escola-exemplo.svg",
+      "ordem": 4,
+      "autorizacao": {
+        "porEscrito": true,
+        "autorizadoPor": "Exemplo: nenhuma empresa real autorizou",
+        "data": "2026-01-15",
+        "registro": "Dado fictício da camada de exemplo; não existe autorização"
+      }
+    }
+  ]
+}

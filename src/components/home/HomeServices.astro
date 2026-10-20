@@ -1,0 +1,248 @@
+---
+/**
+ * Home §6.1 #8 `services` — always. Dono: home. Consideração + SEO interno.
+ *
+ * Eyebrow, H2 "O que a gente constrói", intro ("o mesmo método") e os 5
+ * serviços, cada um um ÚNICO <a> para /servicos/[slug] cujo texto inclui o
+ * nome do serviço ("Ver como funciona" é só a indicação visual; i18n
+ * _notes.cta). O ícone (decorativo) mora no <h3>: no mobile fica em 22px
+ * na linha do título e o texto ocupa a largura toda, só com a seta ao lado
+ * (sem a coluna do ícone, o texto não vira paredão de 5–6 linhas em 375px);
+ * linhas tocáveis ≥ 56px. Desktop: grade 3+2 de células com bordas
+ * compartilhadas e o ícone na caixa de 44px acima do título. Rodapé: "Não sabe em qual se encaixa?" + CTA de
+ * diagnóstico → ?origem=home-servicos.
+ * Hover (fundo, ícone, seta) só com ponteiro fino: no toque ficaria preso
+ * (B192); no teclado, o mesmo realce vem do :focus-visible.
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Card from "@/components/ui/Card.astro";
+import Icon, { type IconName } from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { SERVICE_KEYS, SERVICE_ROUTE, urlFor, type ServiceKey } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  /** Posição do capítulo na Home (eyebrow "04 /"). */
+  index?: number;
+  /** Linha de 1px no topo (vizinha de mesma superfície). */
+  divider?: boolean;
+}
+
+const { locale, index, divider = false } = Astro.props;
+const items = getSection(locale, "home.services.items");
+const ICON: Record<ServiceKey, IconName> = {
+  web_systems: "web",
+  mobile_apps: "mobile",
+  integrations: "integration",
+  mvp: "mvp",
+  support: "support",
+};
+const seeService = t(locale, "shared.cta.see_service");
+---
+
+<Section id="servicos" labelledby="servicos-title" divider={divider}>
+  <SectionHeader
+    id="servicos-title"
+    eyebrow={t(locale, "home.services.eyebrow")}
+    index={index}
+    title={t(locale, "home.services.title")}
+    intro={t(locale, "home.services.intro")}
+    layout="split"
+  />
+
+  <ul class="services" role="list">
+    {
+      SERVICE_KEYS.map((key) => (
+        <li class="services__item" data-service={key}>
+          <a class="service" href={urlFor(SERVICE_ROUTE[key], locale)}>
+            <div class="service__body">
+              <h3 class="service__title">
+                <span class="service__icon">
+                  <Icon name={ICON[key]} size={22} strokeWidth={1.5} />
+                </span>
+                {items[key].title}
+              </h3>
+              <p class="service__text">{items[key].text}</p>
+            </div>
+            <ArrowLink size="sm" class="service__more">
+              <span class="service__more-label">{seeService}</span>
+            </ArrowLink>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <Card surface="subtle" class="services__footer">
+    <p>{t(locale, "home.services.footer_text")}</p>
+    <CtaDiagnosis locale={locale} origem="home-servicos" variant="secondary" size="md" />
+  </Card>
+</Section>
+
+<style>
+  .services {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border-block-start: 1px solid var(--color-border-default);
+  }
+  .services__item {
+    border-block-end: 1px solid var(--color-border-default);
+  }
+  .service {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--space-3);
+    block-size: 100%;
+    min-block-size: var(--target-option);
+    padding-block: var(--space-5);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: var(--transition-colors);
+  }
+  .service__icon {
+    flex: none; /* título em 2 linhas não encolhe o ícone */
+    display: grid;
+    place-items: center;
+    color: var(--color-brand);
+    transition: var(--transition-colors);
+  }
+  .service__body {
+    display: grid;
+    gap: var(--space-1);
+  }
+  /* Mobile: ícone de 22px na linha do título. */
+  .service__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-lg);
+    line-height: var(--leading-h4); /* título curto: 1.3, não o 1.56 do texto */
+  }
+  .service__text {
+    color: var(--color-text-secondary);
+  }
+  .services :global(.service__more) {
+    align-self: center;
+  }
+  /* No mobile, a seta basta como indicação; o rótulo aparece com espaço. */
+  .service__more-label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+  .service:hover {
+    color: var(--color-text-primary);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .service:hover :global(.service__more) {
+      color: var(--color-text-link-hover);
+    }
+    .service:hover :global(.arrow-link__icon) {
+      transform: translateX(var(--space-1));
+    }
+  }
+
+  /* Raiz = <Card surface="subtle">: fundo, borda e raio vêm de lá. */
+  :global(div.card.services__footer) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-8);
+    margin-block-start: var(--space-8);
+  }
+  .services__footer p {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+    font-weight: var(--font-weight-bold);
+    max-inline-size: 40ch;
+    text-wrap: balance; /* frase de destaque curta: sem "el / diagnóstico." */
+  }
+
+  @media (min-width: 768px) {
+    .services {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      border-inline-start: 1px solid var(--color-border-default);
+    }
+    .services__item {
+      grid-column: span 3;
+      border-inline-end: 1px solid var(--color-border-default);
+    }
+    .services__item:last-child {
+      grid-column: span 6;
+    }
+    .service {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: 1fr auto;
+      gap: var(--space-5);
+      padding: var(--space-6);
+    }
+    /* Ícone na caixa de 44px, acima do título (mesmo respiro da célula). */
+    .service__title {
+      display: grid;
+      justify-items: start;
+      gap: var(--space-5);
+    }
+    .service__icon {
+      inline-size: 2.75rem;
+      block-size: 2.75rem;
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-md);
+      background-color: var(--color-bg-canvas);
+    }
+    .service__icon :global(svg) {
+      inline-size: 1.75rem;
+      block-size: 1.75rem;
+    }
+    .service:focus-visible {
+      background-color: var(--color-bg-subtle);
+    }
+    .service:focus-visible .service__icon {
+      border-color: var(--color-brand);
+      background-color: var(--color-brand);
+      color: var(--color-text-on-brand);
+    }
+    .services :global(.service__more) {
+      align-self: start;
+    }
+    .service__more-label {
+      position: static;
+      inline-size: auto;
+      block-size: auto;
+      overflow: visible;
+      clip: auto;
+    }
+  }
+
+  @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+    .service:hover {
+      background-color: var(--color-bg-subtle);
+    }
+    .service:hover .service__icon {
+      border-color: var(--color-brand);
+      background-color: var(--color-brand);
+      color: var(--color-text-on-brand);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .services__item {
+      grid-column: span 2;
+    }
+    .services__item:nth-child(n + 4),
+    .services__item:last-child {
+      grid-column: span 3;
+    }
+    .service {
+      padding: var(--space-8);
+    }
+  }
+</style>

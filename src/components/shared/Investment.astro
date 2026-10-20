@@ -1,0 +1,164 @@
+---
+/**
+ * Bloco "Investimento" — BLUEPRINT §5.4. Dono: home. when_data hasPricing.
+ *
+ * AUTO-GATED: sem nenhuma das linhas pedidas COMPLETA em precos.ts (faixa,
+ * unidade e fatores nos 3 idiomas), não renderiza nada: nem título, nem
+ * âncora, nem wrapper. A página só posiciona <Investment lines={[...]} />.
+ *
+ * Conteúdo: título, introdução que se sustenta sem números, a linha fixa
+ * "Diagnóstico: gratuito", uma linha por item preenchido (rótulo, faixa,
+ * unidade, "o que faz o valor variar"), a nota "Referência, não proposta." e
+ * o fecho com link de texto para o diagnóstico (?origem={origem}-investimento,
+ * i18n _notes.investment). Sem "plano recomendado" e sem card em destaque.
+ *
+ * Valores monetários só existem em precos.ts; este componente apenas os lê.
+ * API estável: `locale`, `lines`, `origem`, `id`, `title`; opcionais
+ * `intro`/`note`/`ctaLead` (substituem os compartilhados — discovery_sprint e
+ * serviços, i18n _notes; ctaLead na sustentação, que é mensal e não tem "preço
+ * do desenvolvimento"), `servico`/`entrada` (atribuição do link) e `level`;
+ * `eyebrow`/`index`/`divider` (rótulo numerado e linha de topo, Home).
+ *
+ * Medição (B118): o bloco leva data-pricing-view={origem} e o script manda UM
+ * pricing_view {origem} por página quando ele fica visível
+ * (./section-events.ts). Sem preço a seção não existe, então nem o evento.
+ * CSS em ./Investment.css, carregado só quando o bloco renderiza
+ * (<RenderedStyle>, B256): sem preço, nenhum byte de CSS dele vai ao ar.
+ */
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures, pricingLinesFor, primaryCtaKey } from "@/config/features";
+import { getPriceLine, PRICE_LINE_LABEL, precos, type PriceLineId } from "@/config/precos";
+import { ANCHORS, quoteHref, type ServiceKey } from "@/config/routes";
+import { t, tDynamic, type Locale } from "@/i18n";
+
+import css from "./Investment.css?inline";
+
+interface Props {
+  locale: Locale;
+  /** Linhas que esta página mostra (§6.x). Só as completas renderizam. */
+  lines: readonly PriceLineId[];
+  /** Página de origem: o link leva ?origem={origem}-investimento. */
+  origem: string;
+  id?: string;
+  /** Sobrescreve shared.investment.title (ex.: pricing.ranges.title). */
+  title?: string;
+  /** Substitui shared.investment.intro (ex.: discovery_sprint.investment.intro). */
+  intro?: string;
+  /** Substitui shared.investment.note (ex.: services.template.investment_note). */
+  note?: string;
+  /** Substitui shared.investment.cta_lead (ex.: services.support.investment_cta_lead). */
+  ctaLead?: string;
+  servico?: ServiceKey;
+  entrada?: "descoberta";
+  level?: 2 | 3;
+  surface?: "canvas" | "subtle";
+  /** Rótulo curto acima do título. */
+  eyebrow?: string;
+  /** Numeração da seção na eyebrow (só sai com `eyebrow`). */
+  index?: number;
+  divider?: boolean;
+}
+
+const {
+  locale,
+  lines,
+  origem,
+  id = ANCHORS.investment,
+  title,
+  intro,
+  note,
+  ctaLead,
+  servico,
+  entrada,
+  level = 2,
+  surface = "subtle",
+  eyebrow,
+  index,
+  divider,
+} = Astro.props;
+const features = await getFeatures();
+const visible = pricingLinesFor(features, lines);
+const rows = visible
+  .map((lineId) => ({ lineId, line: getPriceLine(precos, lineId) }))
+  .filter((row): row is { lineId: PriceLineId; line: NonNullable<typeof row.line> } => row.line !== null)
+  .map(({ lineId, line }) => ({
+    id: lineId,
+    label: tDynamic(locale, `shared.investment.row_labels.${PRICE_LINE_LABEL[lineId]}`),
+    range: line.faixa[locale],
+    unit: line.unidade === "mes" ? t(locale, "shared.investment.unit_month") : t(locale, "shared.investment.unit_project"),
+    drivers: line.fatores[locale].slice(0, 3),
+  }));
+const Heading = `h${level}` as "h2" | "h3";
+const titleId = `${id}-title`;
+const ctaOrigem = `${origem}-investimento`;
+const indexLabel = eyebrow && index && index > 0 ? `${String(index).padStart(2, "0")} /` : undefined;
+---
+
+{rows.length > 0 && <RenderedStyle css={css} name="Investment" />}
+{
+  rows.length > 0 && (
+    <Section id={id} surface={surface} labelledby={titleId} divider={divider}>
+      <div class="inv grid-12" data-pricing-view={origem}>
+        <div class="inv__head">
+          {eyebrow && (
+            <p class="eyebrow">
+              {indexLabel && <span class="eyebrow__index" aria-hidden="true">{indexLabel}</span>}
+              {eyebrow}
+            </p>
+          )}
+          <Heading id={titleId} class="inv__title">
+            {title ?? t(locale, "shared.investment.title")}
+          </Heading>
+          <p class="lead">{intro ?? t(locale, "shared.investment.intro")}</p>
+        </div>
+
+        <Card padding="none" class="inv__table">
+          <p class="inv__free">
+            <Icon name="check" size={16} strokeWidth={2.5} />
+            {t(locale, "shared.investment.diagnosis_line")}
+          </p>
+          <dl class="inv__rows">
+            {rows.map((row) => (
+              <div class="inv__row" data-line={row.id}>
+                <dt class="inv__label">{row.label}</dt>
+                <dd class="inv__value">
+                  <span class="inv__range">{row.range}</span>
+                  <span class="inv__unit">{row.unit}</span>
+                </dd>
+                <dd class="inv__drivers">
+                  <span class="inv__drivers-label">{t(locale, "shared.investment.value_drivers_label")}</span>
+                  <ul role="list">
+                    {row.drivers.map((driver) => (
+                      <li>{driver}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p class="inv__note">{note ?? t(locale, "shared.investment.note")}</p>
+        </Card>
+
+        <p class="inv__cta">
+          {ctaLead ?? t(locale, "shared.investment.cta_lead")}{" "}
+          <a
+            href={quoteHref(locale, { origem: ctaOrigem, servico, entrada })}
+            data-track="cta_click"
+            data-cta-id="diagnosis"
+            data-origem={ctaOrigem}
+          >
+            {t(locale, primaryCtaKey(features))}
+          </a>
+        </p>
+      </div>
+      <script>
+        import { observePricingView } from "./section-events";
+        observePricingView();
+      </script>
+    </Section>
+  )
+}
+

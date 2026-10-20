@@ -1,0 +1,81 @@
+---
+/**
+ * Como trabalhamos §6.2 #2 `agreement` — always. Dono: pages.
+ * Os 3 compromissos antes do detalhe: escopo, prazo e preço fechados antes do
+ * desenvolvimento · software funcionando a cada 2 semanas · você decide em
+ * dois momentos. Lista no mobile, 3 colunas a partir de 1024px.
+ * Cada compromisso é um <Card as="li"> (B214); gutter = --grid-gap (B222).
+ */
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const items = Object.entries(getSection(locale, "how_we_work.agreement.items"));
+---
+
+<Section id="combinado" labelledby="combinado-title">
+  <SectionHeader id="combinado-title" title={t(locale, "how_we_work.agreement.title")} />
+  <ol role="list" class="agreement">
+    {
+      items.map(([id, item], index) => (
+        <Card as="li" class="agreement__item" data-id={id}>
+          <span class="agreement__mark" aria-hidden="true">
+            <Icon name="check" size={18} />
+            <span>{String(index + 1).padStart(2, "0")}</span>
+          </span>
+          <h3 class="agreement__title">{item.title}</h3>
+          <p class="agreement__text">{item.text}</p>
+        </Card>
+      ))
+    }
+  </ol>
+</Section>
+
+<style>
+  .agreement {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+
+  /* Raiz = <Card as="li">: borda, raio, fundo e padding vêm de lá. */
+  .agreement :global(.agreement__item) {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+  }
+
+  .agreement__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .agreement__mark :global(svg) {
+    color: var(--color-success);
+  }
+
+  .agreement__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .agreement__text {
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 1024px) {
+    .agreement {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

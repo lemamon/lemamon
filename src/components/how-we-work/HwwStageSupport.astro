@@ -1,0 +1,42 @@
+---
+/**
+ * Como trabalhamos §6.2 #8 `stage_support` (#sustentacao) — always. Dono: pages.
+ * Etapa 4, contínua: o sistema segue cuidado e evoluindo depois que entra no
+ * ar. `live_system` responde a quem já tem sistema no ar (sem dizer se a
+ * Descoberta é necessária). Link → /servicos/sustentacao.
+ * `live_system` fica num <Card surface="subtle"> (B214).
+ */
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Card from "@/components/ui/Card.astro";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+import HwwStageBlock from "./HwwStageBlock.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<HwwStageBlock locale={locale} stage="support" title={t(locale, "how_we_work.stage_support.title")}>
+  <p slot="intro" class="stage-text">{t(locale, "how_we_work.stage_support.text")}</p>
+  <Card surface="subtle" padding="sm">
+    <p class="live-system">{t(locale, "how_we_work.stage_support.live_system")}</p>
+  </Card>
+  <div>
+    <ArrowLink href={urlFor("service_support", locale)} text={t(locale, "how_we_work.stage_support.link")} />
+  </div>
+</HwwStageBlock>
+
+<style>
+  .stage-text {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+  }
+
+  .live-system {
+    color: var(--color-text-secondary);
+  }
+</style>

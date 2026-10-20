@@ -1,0 +1,83 @@
+---
+/**
+ * Home §6.1 #11 `team` — when_data hasTeam (≥ 1 pessoa completa que atua em
+ * projetos). H2, intro, um card por pessoa (TeamCard, home: foto real, nome,
+ * papel, 1 linha, LinkedIn/GitHub) e "Conhecer a Lemamon" → /sobre.
+ * Fica imediatamente antes de `trust_profiles`. Dono: gated.
+ *
+ * Capítulo da Home (B216): eyebrow "Time" com o número do capítulo (`index`,
+ * "07 /") e `divider` (linha de 1px no topo), vindos do homeSectionPlan() da
+ * HomeView, que usa a MESMA flag (hasTeam) que esconde esta seção.
+ *
+ * AUTO-GATED: sem a flag não renderiza NADA. `data` existe só para os testes.
+ */
+import type { CollectionEntry } from "astro:content";
+
+import TeamCard from "@/components/shared/TeamCard.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { getFeatures, type Features } from "@/config/features";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+import { teamItems } from "@/lib/content";
+
+interface Props {
+  locale: Locale;
+  /** Posição do capítulo na Home (1 → "01 /"), na eyebrow. */
+  index?: number;
+  /** Linha de 1px no topo (vizinha de mesma superfície). */
+  divider?: boolean;
+  /** Só testes: flags e pessoas injetadas (tests/fixtures/). */
+  data?: { features: Pick<Features, "hasTeam">; people: CollectionEntry<"time">[] };
+}
+
+const { locale, index, divider = false, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const people = features.hasTeam ? (data?.people ?? (await teamItems())).filter((person) => person.data.atuaEmProjetos) : [];
+---
+
+{
+  features.hasTeam && people.length > 0 && (
+    <Section id="time" labelledby="time-title" divider={divider}>
+      <SectionHeader
+        id="time-title"
+        eyebrow={t(locale, "home.team.eyebrow")}
+        index={index}
+        title={t(locale, "home.team.title")}
+        intro={t(locale, "home.team.intro")}
+      />
+      <ul role="list" class="team-grid">
+        {people.map((person) => (
+          <li>
+            <TeamCard locale={locale} entry={person} />
+          </li>
+        ))}
+      </ul>
+      <p class="team-more">
+        <ArrowLink href={urlFor("about", locale)} text={t(locale, "home.team.about_link")} />
+      </p>
+    </Section>
+  )
+}
+
+<style>
+  .team-grid {
+    display: grid;
+    gap: var(--grid-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 640px) {
+    .team-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .team-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .team-more {
+    margin-block-start: var(--space-8);
+  }
+</style>

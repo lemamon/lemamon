@@ -1,0 +1,237 @@
+---
+/**
+ * Pedido enviado §7.8 #5 `summary` — <details> "Resumo do seu pedido", com
+ * código, respostas, contatos e "Copiar resumo" para repassar ao sócio
+ * (confirmação via aria-live; evento summary_copy). Dono: conversion.
+ *
+ * Fechado por padrão; ABERTO quando a pessoa decide com outros (P6 =
+ * decide_with_partners ou recommend_to_decider): é para ela que existe o
+ * "Copiar resumo" (o script da página abre, sent-page.ts). O <summary> tem o
+ * mesmo chevron do FAQ de /orcamento, que gira com [open], e cursor/hover de
+ * elemento clicável: sem isso a caixa parecia um rótulo estático.
+ *
+ * Ritmo vertical: <Section spacing="compact" trim="start"> (B211), dentro de
+ * um <div hidden> sem padding (a Section não recebe o atributo hidden).
+ *
+ * Moldura = <Card padding="none"> em volta do <details> (B214): borda, raio e
+ * fundo vêm do primitivo; o overflow:hidden do card recorta o fundo de hover
+ * do <summary> no raio. Por isso o anel de foco do <summary> é interno (senão
+ * o recorte do card o esconderia).
+ *
+ * Só existe com o resumo no sessionStorage: o HTML sai oculto e o script da
+ * página preenche e mostra. O texto copiado segue a montagem das respostas do
+ * WhatsApp, entre copy_header e copy_footer (i18n quote._notes.sent_copy).
+ * {url_metodo}: URL curta do método no idioma (METHOD_SHORT_PATH: /metodo,
+ * /en/method, /es/metodo), com 301 no netlify.toml para a página do método com
+ * utm_source=resumo_copiado&utm_medium=compartilhamento. O decisor não vê
+ * parâmetro de rastreamento e a atribuição continua.
+ */
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { absoluteUrl, METHOD_SHORT_PATH } from "@/config/routes";
+import { t, tRaw, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const methodUrl = absoluteUrl(METHOD_SHORT_PATH[locale]);
+---
+
+<div class="sent-summary" data-sent-summary hidden>
+  <Section id="resumo" spacing="compact" trim="start" labelledby="sent-summary-title">
+    <Card padding="none">
+      <details class="sent-summary__details" data-sent-summary-details>
+        <summary class="sent-summary__toggle">
+          <span id="sent-summary-title">{t(locale, "quote.sent.summary.title")}</span>
+          <Icon name="chevron-down" size={20} class="sent-summary__chevron" />
+        </summary>
+        <div class="sent-summary__body">
+          <p class="sent-summary__protocol">
+            {t(locale, "quote.sent.protocol_label")}: <strong data-sent-summary-protocol></strong>
+          </p>
+          <h3 class="sent-summary__heading">{t(locale, "quote.summary.told_us_title")}</h3>
+          <dl class="sent-summary__answers" data-sent-summary-lines></dl>
+          <h3 class="sent-summary__heading">{t(locale, "quote.sent.summary.contact_label")}</h3>
+          <ul class="sent-summary__contacts" role="list" data-sent-summary-contacts></ul>
+          <div class="sent-summary__copy">
+            <button
+              type="button"
+              class="sent-summary__button"
+              aria-describedby="sent-summary-copy-help"
+              data-sent-copy
+              data-header={tRaw(locale, "quote.sent.summary.copy_header")}
+              data-footer={t(locale, "quote.sent.summary.copy_footer", { url_metodo: methodUrl })}
+              data-line={tRaw(locale, "quote.whatsapp_messages.answer_line")}
+              data-copied={t(locale, "quote.sent.summary.copied")}
+            >
+              {t(locale, "quote.sent.summary.copy")}
+            </button>
+            <p id="sent-summary-copy-help" class="sent-summary__help">{t(locale, "quote.sent.summary.copy_help")}</p>
+            <p class="sr-only" role="status" data-sent-copy-status></p>
+          </div>
+        </div>
+      </details>
+    </Card>
+  </Section>
+</div>
+
+<style>
+  .sent-summary[hidden] {
+    display: none;
+  }
+
+  /* O <summary> com display:flex perde o marcador nativo: o chevron (o mesmo
+     do FAQ de /orcamento) mostra que a caixa abre, e gira com [open]. */
+  .sent-summary__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-block-size: var(--target-option);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-lg);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    list-style: none;
+    transition: var(--transition-colors);
+  }
+
+  .sent-summary__toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Anel por dentro: o card (padding="none") recorta o que passa da borda. */
+  .sent-summary__toggle:focus-visible {
+    outline-offset: calc(-1 * var(--focus-ring-width));
+  }
+
+  .sent-summary__toggle :global(.sent-summary__chevron) {
+    flex: none;
+    color: var(--color-text-secondary);
+    transition: var(--transition-transform);
+  }
+
+  .sent-summary__details[open] :global(.sent-summary__chevron) {
+    transform: rotate(180deg);
+  }
+
+  .sent-summary__details[open] .sent-summary__toggle {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  /* Hover só com mouse (B192); no toque, o retorno é o :active. */
+  @media (hover: hover) and (pointer: fine) {
+    .sent-summary__toggle:hover {
+      background-color: var(--color-bg-surface-hover);
+    }
+
+    .sent-summary__toggle:hover :global(.sent-summary__chevron) {
+      color: var(--color-text-primary);
+    }
+  }
+
+  .sent-summary__toggle:active {
+    background-color: var(--color-bg-surface-hover);
+  }
+
+  .sent-summary__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: 0 var(--space-5) var(--space-5);
+  }
+
+  .sent-summary__protocol {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  /* O código do pedido nunca quebra no hífen. */
+  .sent-summary__protocol strong {
+    white-space: nowrap;
+  }
+
+  .sent-summary__heading {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  /* minmax(0, 1fr) + overflow-wrap: um token sem quebra (URL ou e-mail na data
+     travante) não alarga a página a 320px (B161). */
+  .sent-summary__answers {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .sent-summary__answers :global(dt) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-secondary);
+  }
+
+  .sent-summary__answers :global(dd) {
+    margin: 0;
+    font-weight: var(--font-weight-bold);
+    overflow-wrap: anywhere;
+  }
+
+  .sent-summary__answers :global(dt) {
+    overflow-wrap: anywhere;
+  }
+
+  .sent-summary__contacts :global(li) {
+    overflow-wrap: anywhere;
+  }
+
+  .sent-summary__contacts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sent-summary__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .sent-summary__button {
+    min-block-size: var(--target-min);
+    padding-inline: var(--space-5);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    transition: var(--transition-colors);
+  }
+
+  /* Hover só com mouse (B192); no toque, o retorno é o :active. */
+  @media (hover: hover) and (pointer: fine) {
+    .sent-summary__button:hover {
+      background-color: var(--color-bg-surface-hover);
+    }
+  }
+
+  .sent-summary__button:active {
+    background-color: var(--color-bg-surface-hover);
+  }
+
+  .sent-summary__help {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+</style>

@@ -1,0 +1,257 @@
+---
+/**
+ * Layout base de TODAS as páginas (dono: shell). Ver CONTRACT.md §6.
+ *
+ *   <Base locale route title description [params] [variant] [noindex]
+ *         [ogTitle] [ogImage] [jsonLd] [alternates] [whatsappMessage] [ctaOrigin]>
+ *     …seções…
+ *     <Fragment slot="head">…extra no <head>…</Fragment>
+ *   </Base>
+ *
+ * - <html lang> pelo idioma; <head> via SEO (canonical/hreflang/OG/JSON-LD de
+ *   routes.ts e seo.ts) e Analytics (Ads/GA4/New Relic só em produção).
+ * - Script inline síncrono no topo do <head> (src/scripts/head-inline.ts):
+ *   <html class="js">, rascunho do wizard → "Continuar meu pedido" sem flash,
+ *   limpeza do rascunho vencido em qualquer página, tema escuro antes da 1ª
+ *   pintura (escolha salva ou prefers-color-scheme; B208) e o aviso discreto de
+ *   idioma (LanguageSuggestion, fora do wizard).
+ * - variant "wizard" (rotas com layout "wizard" em routes.ts): header e footer
+ *   mínimos, sem barra fixa nem WhatsApp flutuante (§8.4).
+ * - <main id="conteudo" tabindex="-1"> é o alvo do skip link (1º focável).
+ * - Aviso de cookies (ConsentBanner) só com privacidade.baseAnuncios =
+ *   "consentimento": preso ao pé da tela nas páginas comuns, no fluxo (antes do
+ *   rodapé mínimo) no wizard.
+ * - CSS só de algumas páginas fora do bundle global (backlog B094): o chrome do
+ *   wizard (wizard-chrome.css) e o aviso de cookies (consent-banner.css) não
+ *   têm <style> no componente. Vêm com ?inline (o Vite processa e minifica) e
+ *   entram como <style> no <head> só onde são desenhados; o /_astro/Base.*.css,
+ *   que toda página baixa, fica sem eles. O caminho inverso (o chrome do site
+ *   — Header, MobileDrawer, Footer, StickyBar, WhatsAppFloat… — fora das
+ *   páginas do wizard) é da integração src/integrations/wizard-css.ts: depois
+ *   do build, as páginas com <body data-layout="wizard"> linkam uma versão do
+ *   Base.*.css sem as regras desses componentes.
+ * - O <style> do aviso de cookies leva data-owner-style: só existe por decisão
+ *   do dono (baseAnuncios), e o verify-build o conta à parte da meta de 15 KiB.
+ * - ctaOrigin ("home-barra") dá o ?origem= da barra fixa; header, drawer e
+ *   rodapé usam o mesmo prefixo: "home-header", "home-menu", "home-footer".
+ * - quoteAttribution: o resto da atribuição desses 4 CTAs do chrome (backlog
+ *   B166), para o mesmo botão levar ao mesmo estado do wizard que os CTAs do
+ *   conteúdo. Padrão derivado da rota: ?servico= nas páginas de serviço (a
+ *   pré-marcação da P2, ou da P1 em sustentação), ?ref={slug} no case e
+ *   ?entrada=descoberta na Sprint de Descoberta. O data-resume-href não muda:
+ *   com rascunho, "Continuar meu pedido" leva ao rascunho (BLUEPRINT §7.1).
+ * - Camada de DADOS FICTÍCIOS ligada (MODO_FICTICIO, só fora de produção): faixa
+ *   "Dados fictícios — não publicar" (role="note") no topo de TODA página, com
+ *   estilo inline (nenhum CSS dela num build sem a camada); o SEO.astro troca o
+ *   robots por noindex,nofollow. A integração dados-ficticios confere as duas
+ *   coisas em cada HTML depois do build.
+ */
+import "@/styles/global.css";
+
+import fontBold from "@/assets/fonts/motiva-sans-bold.woff2?url";
+import fontLight from "@/assets/fonts/motiva-sans-light.woff2?url";
+import Analytics from "@/components/shell/Analytics.astro";
+import ConsentBanner from "@/components/shell/ConsentBanner.astro";
+import consentBannerCss from "@/components/shell/consent-banner.css?inline";
+import Footer from "@/components/shell/Footer.astro";
+import Header from "@/components/shell/Header.astro";
+import LanguageSuggestion from "@/components/shell/LanguageSuggestion.astro";
+import SEO, { type OgImage } from "@/components/shell/SEO.astro";
+import SkipLink from "@/components/shell/SkipLink.astro";
+import StickyBar from "@/components/shell/StickyBar.astro";
+import WhatsAppFloat from "@/components/shell/WhatsAppFloat.astro";
+import WizardFooter from "@/components/shell/WizardFooter.astro";
+import WizardHeader from "@/components/shell/WizardHeader.astro";
+import wizardChromeCss from "@/components/shell/wizard-chrome.css?inline";
+import { ATRIBUTO_FAIXA, CLASSE_FAIXA } from "@/config/camada-ficticia";
+import { MODO_FICTICIO } from "@/config/dono";
+import { privacidade } from "@/config/privacidade";
+import {
+  routeDef,
+  SERVICE_KEYS,
+  SERVICE_ROUTE,
+  type Alternate,
+  type QuoteAttribution,
+  type RouteKey,
+  type RouteParams,
+} from "@/config/routes";
+import { THEME_COLOR } from "@/config/site";
+import { LOCALE_META, t, type Locale, type TextKey } from "@/i18n";
+import { pageMessage, serviceMessage } from "@/lib/whatsapp-messages";
+import { headInlineScript } from "@/scripts/head-inline";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+  params?: RouteParams;
+  /** <title> final (as chaves meta.*.title já trazem "| Lemamon"). */
+  title: string;
+  /**
+   * og:title e twitter:title, quando o cartão de compartilhamento pede outro
+   * texto que o <title> (ex.: post e case: a frase inteira do H1, sem truncar e
+   * sem "| Lemamon"). Padrão: o title.
+   */
+  ogTitle?: string;
+  description: string;
+  /** Padrão: routes.ts (noindex/error). */
+  noindex?: boolean;
+  /** Padrão: routes.ts (layout). */
+  variant?: "default" | "wizard";
+  ogImage?: OgImage;
+  jsonLd?: Record<string, unknown>[];
+  alternates?: Alternate[];
+  /** Mensagem do WhatsApp flutuante/header/barra/rodapé (§7.7). Padrão: a da página (ver defaultMessage). */
+  whatsappMessage?: string;
+  /** ?origem= da barra fixa ("home-barra"); o prefixo também nomeia header, drawer e rodapé. */
+  ctaOrigin?: string;
+  /**
+   * Atribuição dos CTAs do chrome além do ?origem= (barra fixa, header, menu e
+   * rodapé; B166). Padrão: chromeAttribution(route, params). O case passa
+   * { ref, servico } para a P2 sair pré-marcada pela tag principal.
+   */
+  quoteAttribution?: Omit<QuoteAttribution, "origem">;
+}
+
+/**
+ * Atribuição padrão dos CTAs do chrome, pela rota (BLUEPRINT §7.1): o serviço
+ * da página de serviço, o slug do case e a entrada pela Sprint de Descoberta.
+ * Nas outras páginas, só o ?origem=.
+ */
+function chromeAttribution(route: RouteKey, params?: RouteParams): Omit<QuoteAttribution, "origem"> {
+  const servico = SERVICE_KEYS.find((key) => SERVICE_ROUTE[key] === route);
+  if (servico) return { servico };
+  if (route === "case" && typeof params?.slug === "string" && params.slug) return { ref: params.slug };
+  if (route === "discovery_sprint") return { entrada: "descoberta" };
+  return {};
+}
+
+/**
+ * Rótulo curto da página para shared.whatsapp.message_page (i18n
+ * _notes.whatsapp: o nome do menu ou do breadcrumb, nunca o title nem a URL).
+ * Home, 404 e Política usam message_home; serviços, a mensagem do serviço.
+ */
+const PAGE_LABEL: Partial<Record<RouteKey, TextKey>> = {
+  how_we_work: "shared.header.nav.how_we_work",
+  discovery_sprint: "shared.breadcrumb.discovery_sprint",
+  services_hub: "shared.header.nav.services",
+  pricing: "shared.header.nav.pricing",
+  contact: "shared.header.nav.contact",
+  cases_hub: "shared.header.nav.cases",
+  about: "shared.header.nav.about",
+  blog_hub: "shared.breadcrumb.blog",
+};
+
+function defaultMessage(locale: Locale, route: RouteKey): string {
+  const service = SERVICE_KEYS.find((key) => SERVICE_ROUTE[key] === route);
+  if (service) return serviceMessage(locale, service);
+  const label = PAGE_LABEL[route];
+  return label ? pageMessage(locale, t(locale, label)) : pageMessage(locale);
+}
+
+const { locale, route, params, title, ogTitle, description, noindex, ogImage, jsonLd, alternates } = Astro.props;
+const whatsappMessage = Astro.props.whatsappMessage ?? defaultMessage(locale, route);
+const ctaOrigin = Astro.props.ctaOrigin ?? `${route.replace(/_/g, "-")}-barra`;
+const originPrefix = ctaOrigin.replace(/-barra$/, "");
+const quoteAttribution = Astro.props.quoteAttribution ?? chromeAttribution(route, params);
+const variant = Astro.props.variant ?? routeDef(route).layout ?? "default";
+const isWizard = variant === "wizard";
+/** Aviso de cookies só com baseAnuncios = "consentimento" (B344); sem ele, nem o script vai à página. */
+const hasConsentBanner = privacidade.baseAnuncios === "consentimento";
+
+/**
+ * Estilo da faixa INLINE, só no ramo da camada ligada: sem a camada não sai nem
+ * a classe nem o CSS dela (os dois são marcadores do caçador de vazamento).
+ */
+const ESTILO_FAIXA =
+  "padding: var(--space-2) var(--space-4); background-color: var(--color-danger-bg); color: var(--color-danger); " +
+  "border-block-end: 2px solid currentColor; font-weight: 700; text-align: center;";
+---
+
+<!doctype html>
+<html lang={LOCALE_META[locale].htmlLang} dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline set:html={headInlineScript()} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content={THEME_COLOR} />
+    <link rel="preload" href={fontBold} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fontLight} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    {isWizard && <style is:inline set:html={wizardChromeCss} />}
+    {hasConsentBanner && <style is:inline data-owner-style="consent-banner" set:html={consentBannerCss} />}
+    <SEO
+      locale={locale}
+      route={route}
+      params={params}
+      title={title}
+      ogTitle={ogTitle}
+      description={description}
+      noindex={noindex}
+      ogImage={ogImage}
+      jsonLd={jsonLd}
+      alternates={alternates}
+    />
+    <Analytics />
+    <slot name="head" />
+  </head>
+  <body data-route={route} data-layout={variant}>
+    <SkipLink locale={locale} />
+    {
+      MODO_FICTICIO && (
+        <div class={CLASSE_FAIXA} role="note" {...{ [ATRIBUTO_FAIXA]: "" }} style={ESTILO_FAIXA}>
+          {t(locale, "shared.fictitious_data.banner")}
+        </div>
+      )
+    }
+    {!isWizard && <LanguageSuggestion locale={locale} route={route} params={params} />}
+    {
+      isWizard ? (
+        <WizardHeader locale={locale} whatsappMessage={whatsappMessage} />
+      ) : (
+        <Header
+          locale={locale}
+          route={route}
+          params={params}
+          whatsappMessage={whatsappMessage}
+          ctaOrigin={`${originPrefix}-header`}
+          menuOrigin={`${originPrefix}-menu`}
+          quoteAttribution={quoteAttribution}
+        />
+      )
+    }
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
+    {hasConsentBanner && isWizard && <ConsentBanner locale={locale} route={route} placement="inline" />}
+    {
+      isWizard ? (
+        <WizardFooter locale={locale} />
+      ) : (
+        <Footer
+          locale={locale}
+          route={route}
+          params={params}
+          whatsappMessage={whatsappMessage}
+          ctaOrigin={`${originPrefix}-footer`}
+          quoteAttribution={quoteAttribution}
+        />
+      )
+    }
+    {
+      !isWizard && (
+        <>
+          <StickyBar locale={locale} origem={ctaOrigin} quoteAttribution={quoteAttribution} whatsappMessage={whatsappMessage} />
+          <WhatsAppFloat locale={locale} message={whatsappMessage} />
+        </>
+      )
+    }
+    {hasConsentBanner && !isWizard && <ConsentBanner locale={locale} route={route} />}
+    <script>
+      import "@/scripts/resume";
+    </script>
+  </body>
+</html>

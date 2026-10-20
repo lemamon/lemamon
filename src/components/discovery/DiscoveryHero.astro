@@ -1,0 +1,40 @@
+---
+/**
+ * Sprint de Descoberta §6.3 #1 `hero` — always. Dono: pages. ÚNICO H1.
+ * Breadcrumb Início › Como trabalhamos › Sprint de Descoberta (BreadcrumbList,
+ * §8.7); eyebrow "Etapa 2 de 4"; CTA "Começar pelo diagnóstico gratuito" →
+ * /orcamento?entrada=descoberta&origem=descoberta-hero; secundário "Tirar
+ * dúvidas no WhatsApp"; microcopy (o primeiro passo é gratuito).
+ */
+import Breadcrumb from "@/components/shell/Breadcrumb.astro";
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
+import PageHero from "@/components/services/kit/PageHero.astro";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  whatsappMessage: string;
+}
+
+const { locale, whatsappMessage } = Astro.props;
+const crumbs = [
+  { label: t(locale, "shared.breadcrumb.home"), href: urlFor("home", locale) },
+  { label: t(locale, "shared.breadcrumb.how_we_work"), href: urlFor("how_we_work", locale) },
+  { label: t(locale, "shared.breadcrumb.discovery_sprint") },
+];
+---
+
+<PageHero
+  eyebrow={t(locale, "discovery_sprint.hero.eyebrow")}
+  title={t(locale, "discovery_sprint.hero.title")}
+  subtitle={t(locale, "discovery_sprint.hero.subtitle")}
+  microcopy={t(locale, "discovery_sprint.hero.microcopy")}
+>
+  <Breadcrumb slot="breadcrumb" locale={locale} items={crumbs} />
+  <Fragment slot="actions">
+    <CtaDiagnosis locale={locale} origem="descoberta-hero" entrada="descoberta" label="method" />
+    <WhatsAppCta locale={locale} message={whatsappMessage} source="descoberta-hero" label="whatsapp_questions" />
+  </Fragment>
+</PageHero>

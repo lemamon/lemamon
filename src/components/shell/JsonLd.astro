@@ -1,0 +1,14 @@
+---
+/**
+ * <script type="application/ld+json"> seguro (escapa "<"). Dono: shell.
+ * Qualquer componente pode emitir JSON-LD com ele (FAQPage, BreadcrumbList...).
+ */
+interface Props {
+  data: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const { data } = Astro.props;
+const json = JSON.stringify(data).replace(/</g, "\\u003c");
+---
+
+<script type="application/ld+json" is:inline set:html={json} />

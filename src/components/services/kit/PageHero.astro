@@ -1,0 +1,141 @@
+---
+/**
+ * Hero das páginas do agente pages: /como-trabalhamos, /sprint-de-descoberta,
+ * /quanto-custa, /servicos e /servicos/[slug]. Dono: pages.
+ *
+ * Renderiza o ÚNICO H1 da página com o texto exato do i18n (o verify-build
+ * confere). Mobile primeiro: H1, subtítulo e CTA cabem acima da dobra em
+ * 360×640 (BLUEPRINT §2.8); altura automática, nunca 100vh; LCP = texto.
+ *
+ * Slots:
+ *   breadcrumb — trilha (Breadcrumb do shell), antes do eyebrow;
+ *   actions    — CTA primário + WhatsApp (no máximo 1 primário, §8.6);
+ *   after      — conteúdo depois da microcopy (ex.: índice das etapas).
+ *
+ * `splitTitle` mostra a parte depois de ": " numa linha menor DENTRO do mesmo
+ * H1, sem mudar o texto (services._notes.mvp_h1).
+ *
+ * Ritmo vertical: <Section spacing="hero-compact"> (B211), como ContactHero e
+ * QuoteEntry; a raiz não declara padding-block próprio.
+ */
+import Section from "@/components/ui/Section.astro";
+
+interface Props {
+  /** Texto do H1 (chave `h1` da rota em routes.ts). */
+  title: string;
+  eyebrow?: string;
+  subtitle?: string;
+  microcopy?: string;
+  splitTitle?: boolean;
+}
+
+const { title, eyebrow, subtitle, microcopy, splitTitle = false } = Astro.props;
+const colon = splitTitle ? title.indexOf(": ") : -1;
+const head = colon > 0 ? title.slice(0, colon + 2) : title;
+const tail = colon > 0 ? title.slice(colon + 2) : "";
+const hasActions = Astro.slots.has("actions");
+---
+
+<Section spacing="hero-compact" width="full" labelledby="page-hero-title" class="page-hero">
+  <div class="container page-hero__inner">
+    <slot name="breadcrumb" />
+    <div class="page-hero__body">
+      {eyebrow && <p class="eyebrow page-hero__eyebrow">{eyebrow}</p>}
+      <h1 id="page-hero-title" class="page-hero__title">
+        {tail ? <Fragment>{head}<span class="page-hero__tail">{tail}</span></Fragment> : title}
+      </h1>
+      {subtitle && <p class="page-hero__subtitle">{subtitle}</p>}
+      {
+        hasActions && (
+          <div class="page-hero__actions">
+            <slot name="actions" />
+          </div>
+        )
+      }
+      {microcopy && <p class="page-hero__microcopy">{microcopy}</p>}
+    </div>
+    <slot name="after" />
+  </div>
+</Section>
+
+<style>
+  .page-hero {
+    position: relative;
+    border-block-end: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-canvas);
+    isolation: isolate;
+  }
+
+  /* Grade de pontos de 1px (03-ui §3.5.2, "grid explícito"), dissolvendo nas bordas. */
+  .page-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(var(--color-border-default) 1px, transparent 1px);
+    background-size: var(--space-8) var(--space-8);
+    mask-image: radial-gradient(ellipse at 85% 0%, black 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* minmax(0, 1fr): um filho rolável (índice em chips) não alarga a coluna. */
+  .page-hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  .page-hero__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    max-inline-size: 52rem;
+  }
+
+  .page-hero__eyebrow {
+    margin-block-end: calc(-1 * var(--space-1));
+  }
+
+  .page-hero__title {
+    font-size: var(--text-h1);
+    line-height: var(--leading-h1);
+    letter-spacing: -0.02em;
+    max-inline-size: 26ch;
+  }
+
+  .page-hero__tail {
+    display: block;
+    margin-block-start: var(--space-2);
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+    letter-spacing: -0.01em;
+    color: var(--color-text-secondary);
+  }
+
+  .page-hero__subtitle {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-lead);
+  }
+
+  .page-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-2);
+  }
+
+  .page-hero__microcopy {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  @media (min-width: 1024px) {
+    .page-hero__body {
+      gap: var(--space-5);
+    }
+  }
+</style>

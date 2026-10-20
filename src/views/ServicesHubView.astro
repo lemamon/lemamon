@@ -1,0 +1,44 @@
+---
+/**
+ * Serviços — hub (BLUEPRINT §6.4) — view dos 3 idiomas. Dono: pages.
+ * Ordem: hero → list (5 cards) → same_method → investment* (§5.4, todas as
+ * linhas; só com hasPricing) → cta_final.
+ */
+import ServicesHubHero from "@/components/services/ServicesHubHero.astro";
+import ServicesList from "@/components/services/ServicesList.astro";
+import ServicesSameMethod from "@/components/services/ServicesSameMethod.astro";
+import CtaFinal from "@/components/shared/CtaFinal.astro";
+import Investment from "@/components/shared/Investment.astro";
+import { PRICE_LINE_IDS } from "@/config/precos";
+import Base from "@/layouts/Base.astro";
+import { t, type Locale } from "@/i18n";
+import { pageMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const whatsappMessage = pageMessage(locale, t(locale, "shared.header.nav.services"));
+---
+
+<Base
+  locale={locale}
+  route="services_hub"
+  title={t(locale, "meta.services_hub.title")}
+  description={t(locale, "meta.services_hub.description")}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="servicos-barra"
+>
+  <ServicesHubHero locale={locale} whatsappMessage={whatsappMessage} />
+  <ServicesList locale={locale} />
+  <ServicesSameMethod locale={locale} />
+  <Investment locale={locale} lines={PRICE_LINE_IDS} origem="servicos" />
+  <CtaFinal
+    locale={locale}
+    origem="servicos-final"
+    title={t(locale, "services.hub.cta_final.title")}
+    text={t(locale, "services.hub.cta_final.text")}
+    whatsappMessage={whatsappMessage}
+  />
+</Base>

@@ -1,0 +1,136 @@
+---
+/**
+ * Seletor de idioma textual — "PT · EN · ES" (header) ou "Português · English ·
+ * Español" (drawer, footer). BLUEPRINT §8.1, §8.5, §9; backlog B076, B084.
+ * Dono: shell.
+ *
+ * - Leva à página EQUIVALENTE no outro idioma (routes.ts, mesmos params); se ela
+ *   não existir nele (blog só em pt-BR) ou na 404, leva à Home daquele idioma.
+ * - <a hreflang lang>; o idioma atual leva aria-current="true" e não é link
+ *   morto (continua apontando para a própria página).
+ * - Compacto: o nome acessível COMEÇA pelo texto visível ("PT, Português",
+ *   WCAG 2.5.3 Label in Name; backlog B076): o nome completo vai num .sr-only
+ *   depois da sigla, nunca num aria-label que a substitua (quem usa comando de
+ *   voz diz "clicar PT"). A vírgula dá a pausa no leitor de tela: "PT, Português".
+ * - Alvo de toque ≥ 44px. Sem bandeiras. Sem redirecionamento automático.
+ * - Clique em outro idioma emite language_change {from_lang, to_lang} pelo
+ *   listener delegado (data-track, backlog B329).
+ * - as="nav" (footer) cria o landmark; as="group" (header, drawer) não, para não
+ *   repetir landmarks com o mesmo nome na página.
+ */
+import { hasLocale, urlFor, type RouteKey, type RouteParams } from "@/config/routes";
+import { LOCALE_META, LOCALES, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+  params?: RouteParams;
+  variant?: "compact" | "full";
+  as?: "nav" | "group";
+  class?: string;
+}
+
+const { locale, route, params, variant = "compact", as = "group", class: className } = Astro.props;
+const isError = route === "not_found";
+const links = LOCALES.map((target) => {
+  let href = urlFor("home", target);
+  if (!isError && hasLocale(route, target)) {
+    try {
+      href = urlFor(route, target, params);
+    } catch {
+      href = urlFor("home", target);
+    }
+  }
+  return {
+    target,
+    href,
+    label: variant === "compact" ? t(target, `shared.language.${target}_short`) : t(target, `shared.language.${target}`),
+    name: t(target, `shared.language.${target}`),
+  };
+});
+const Tag = as === "nav" ? "nav" : "div";
+---
+
+<Tag
+  class:list={["language-selector", className]}
+  data-variant={variant}
+  aria-label={t(locale, "shared.language.selector_label")}
+  role={as === "group" ? "group" : undefined}
+>
+  <ul role="list">
+    {
+      links.map((link, index) => (
+        <li>
+          {index > 0 && (
+            <span class="language-selector__sep" aria-hidden="true">
+              ·
+            </span>
+          )}
+          <a
+            href={link.href}
+            hreflang={LOCALE_META[link.target].htmlLang}
+            lang={LOCALE_META[link.target].htmlLang}
+            aria-current={link.target === locale ? "true" : undefined}
+            data-track={link.target === locale ? undefined : "language_change"}
+            data-from-lang={link.target === locale ? undefined : locale}
+            data-to-lang={link.target === locale ? undefined : link.target}
+          >
+            {link.label}
+            {variant === "compact" && <span class="sr-only">, {link.name}</span>}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Tag>
+
+<style>
+  .language-selector ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+  }
+  .language-selector[data-variant="compact"] ul {
+    flex-wrap: nowrap;
+  }
+  .language-selector li {
+    display: flex;
+    align-items: center;
+  }
+  .language-selector a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--target-min);
+    min-inline-size: var(--target-min);
+    padding-inline: var(--space-1);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    text-decoration: none;
+    transition: var(--transition-colors);
+  }
+  .language-selector[data-variant="compact"] a {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    letter-spacing: var(--tracking-2xs);
+  }
+  .language-selector a:hover {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+  }
+  .language-selector a[aria-current="true"] {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.35em;
+  }
+  .language-selector__sep {
+    color: var(--color-text-tertiary);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+</style>

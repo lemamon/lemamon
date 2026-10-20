@@ -1,0 +1,91 @@
+---
+/**
+ * Home §6.1 #7 `testimonial` — when_data hasTestimonials (≥ 1 depoimento nominal
+ * autorizado). Responde "será que cumprem?" logo depois do método: 1 depoimento
+ * (de preferência sobre previsibilidade/processo), H2 visualmente oculto,
+ * <figure><blockquote><figcaption> (TestimonialCard, home) e "Ler o case" quando
+ * o case do depoimento estiver no ar. Dono: gated.
+ * Com `video` no depoimento (autorizado), o vídeo de até 90 s vem logo abaixo do
+ * card (a partir de 1024px, ao lado dele), carregando só o pôster até o play
+ * (TestimonialVideo, B287).
+ *
+ * AUTO-GATED: sem a flag não renderiza NADA. `data` existe só para os testes.
+ */
+import type { CollectionEntry } from "astro:content";
+
+import TestimonialCard from "@/components/shared/TestimonialCard.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures, type Features } from "@/config/features";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+import { caseItem, testimonialItems } from "@/lib/content";
+
+import TestimonialVideo from "./TestimonialVideo.astro";
+
+interface Props {
+  locale: Locale;
+  /** Só testes: flags, depoimento e nome do case injetados (tests/fixtures/). */
+  data?: {
+    features: Pick<Features, "hasTestimonials">;
+    testimonial: CollectionEntry<"depoimentos"> | null;
+    caseName?: string;
+    /** URLs do vídeo já resolvidas (sem ler dados/). */
+    video?: { src: string; legendas: Partial<Record<Locale, string>> };
+  };
+}
+
+const { locale, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const testimonial = features.hasTestimonials ? (data ? data.testimonial : ((await testimonialItems())[0] ?? null)) : null;
+const caseSlug = testimonial?.data.caseSlug;
+const caseName = caseSlug ? (data?.caseName ?? (await caseItem(locale, caseSlug))?.entry.data.titulo) : undefined;
+/** Com vídeo, a partir de 1024px o card e o vídeo ficam lado a lado (sem meia tela vazia à direita). */
+const withVideo = Boolean(testimonial?.data.video);
+---
+
+{
+  testimonial && (
+    <Section id="depoimento" spacing="compact" labelledby="depoimento-title">
+      <h2 id="depoimento-title" class="sr-only">
+        {t(locale, "shared.proof.testimonial_hidden_title")}
+      </h2>
+      <div class="highlight" data-with-video={withVideo ? "" : undefined}>
+        <TestimonialCard locale={locale} entry={testimonial} />
+        {/* Só com vídeo: sem ele, nem o script da fachada vai para a página. */}
+        {withVideo && <TestimonialVideo locale={locale} entry={testimonial} data={data?.video} />}
+        {caseSlug && caseName && (
+          <ArrowLink
+            class="highlight__case"
+            href={urlFor("case", locale, { slug: caseSlug })}
+            aria-label={t(locale, "shared.cta.read_case_aria", { case: caseName })}
+            text={t(locale, "shared.cta.read_case")}
+          />
+        )}
+      </div>
+    </Section>
+  )
+}
+
+<style>
+  .highlight {
+    display: grid;
+    gap: var(--space-4);
+    max-inline-size: var(--measure-prose);
+  }
+  @media (min-width: 1024px) {
+    .highlight[data-with-video] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--grid-gap);
+      align-items: center;
+      max-inline-size: none;
+    }
+    .highlight[data-with-video] :global(.highlight__case) {
+      grid-column: 1 / -1;
+    }
+  }
+  /* Raiz = <ArrowLink> (texto + seta, B214): aqui só o lugar na grade. */
+  .highlight :global(.highlight__case) {
+    justify-self: start;
+  }
+</style>

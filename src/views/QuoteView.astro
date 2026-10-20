@@ -1,0 +1,260 @@
+---
+/**
+ * Orçamento /orcamento (BLUEPRINT §6.7, §7) — view dos 3 idiomas. Dono: conversion.
+ *
+ * Casca HTML estática e indexável (entrada com o único H1, FAQ curto antes do
+ * primeiro clique, "o que acontece depois") + a ilha React do wizard
+ * (client:load). Layout "wizard" (header/footer mínimos) vem de routes.ts.
+ *
+ * Modo foco: a ilha marca <html data-wizard-mode="focus"> ao "Começar"; a casca
+ * some (o H1 fica só para leitor de tela). Um script inline no <head> faz o
+ * mesmo ANTES da pintura quando a URL já traz ?etapa= (retomada, recarga), e
+ * guarda o clique em "Começar" feito antes da hidratação.
+ *
+ * Também publica a declaração estática dos forms do Netlify (NetlifyForms).
+ *
+ * Sem JavaScript: aviso num <Card surface="subtle"> com o <ArrowLink> para o
+ * /contato (B214: sem cartão nem link desenhados aqui).
+ */
+import NetlifyForms from "@/components/quote/NetlifyForms.astro";
+import QuoteAfterSend from "@/components/quote/QuoteAfterSend.astro";
+import QuoteEntry from "@/components/quote/QuoteEntry.astro";
+import QuoteProof from "@/components/quote/QuoteProof.astro";
+import QuoteQuickFaq from "@/components/quote/QuoteQuickFaq.astro";
+import MethodTimeline from "@/components/shared/MethodTimeline.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Card from "@/components/ui/Card.astro";
+import { empresa } from "@/config/empresa";
+import { getFeatures } from "@/config/features";
+import { privacidade } from "@/config/privacidade";
+import { SERVICE_KEYS, urlFor, type ServiceKey } from "@/config/routes";
+import { deployContext } from "@/config/site";
+import type { WizardCopy } from "@/islands/wizard/copy";
+import Wizard, { type CaseRef } from "@/islands/wizard/Wizard";
+import Base from "@/layouts/Base.astro";
+import { getSection, hasText, t, tDynamic, type Locale } from "@/i18n";
+import { caseItems } from "@/lib/content";
+import { isPreviewSubmitContext } from "@/lib/forms";
+import { quoteEntryMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+const quote = getSection(locale, "quote");
+const shared = getSection(locale, "shared");
+
+/**
+ * Deploy preview / branch deploy do Netlify (backlog B277): o envio do wizard é
+ * de teste (sem POST ao form `briefing` de produção, sem conversão, sem evento
+ * de lead) e o contato avisa. Local e E2E (sem CONTEXT) e produção enviam de
+ * verdade. Regra única em lib/forms (isPreviewSubmitContext), a mesma do /contato.
+ */
+const previewSubmit = isPreviewSubmitContext(deployContext());
+
+/**
+ * Títulos do bloco de cases do resumo (B379): quote.summary.cases_title(_one).
+ * Enquanto o redator não criar essas chaves nos 3 idiomas, vale o texto
+ * equivalente do pós-envio (quote.sent.meanwhile), o mesmo tom e o mesmo
+ * sentido ("Projetos do mesmo tipo que o seu").
+ */
+const summaryCasesTitle = (key: "cases_title" | "cases_title_one"): string =>
+  hasText(locale, `quote.summary.${key}`) ? tDynamic(locale, `quote.summary.${key}`) : t(locale, `quote.sent.meanwhile.${key}`);
+
+const copy: WizardCopy = {
+  progress: quote.progress,
+  nav: quote.nav,
+  validation: quote.validation,
+  steps: quote.steps,
+  summary: quote.summary,
+  contactForm: quote.contact_form,
+  error: quote.error,
+  whatsapp: quote.whatsapp_messages,
+  resumeBanner: quote.entry.resume_banner,
+  contextService: quote.entry.context_service,
+  contextCase: quote.entry.context_case,
+  protocolLabel: quote.sent.protocol_label,
+  sentChannelLine: quote.sent.summary.channel_line,
+  summaryCases: {
+    title: summaryCasesTitle("cases_title"),
+    titleOne: summaryCasesTitle("cases_title_one"),
+    readCase: shared.cta.read_case,
+  },
+  terms: { prototype: shared.terms.prototype, prioritized_scope: shared.terms.prioritized_scope },
+  investment: {
+    row_labels: shared.investment.row_labels,
+    unit_project: shared.investment.unit_project,
+    unit_month: shared.investment.unit_month,
+  },
+  clipboard: shared.clipboard,
+  privacyLinkLabel: shared.lgpd.privacy_link_label,
+  a11y: quote.a11y,
+  loading: shared.a11y.loading,
+  opensNewTab: shared.a11y.opens_new_tab,
+  renderError: quote.render_error,
+  backHome: shared.cta.back_home,
+  whatsappCta: shared.cta.whatsapp,
+  previewNotice: previewSubmit ? shared.preview_submit.notice : "",
+};
+
+/**
+ * Modo consentimento do Google Ads (backlog B342): com baseAnuncios =
+ * "consentimento", o gclid só vai no envio de quem aceitou o aviso de cookies.
+ */
+const adsConsentRequired = privacidade.baseAnuncios === "consentimento";
+
+/** Prova no passo de contato (B140): a mesma condição do QuoteProof, para não mandar slot vazio à ilha. */
+const hasContactProof = features.hasTestimonials || features.hasLogos;
+
+/** {servico_frase} da linha de contexto: o nome da página, em minúscula (i18n quote._notes.entry_context). */
+const servicePages = Object.fromEntries(
+  SERVICE_KEYS.map((key) => [key, tDynamic(locale, `services.${key}.page_name_in_sentence`)]),
+) as Record<ServiceKey, string>;
+
+/**
+ * Cases publicados (when_data hasCases), na ordem do hub: o ?ref= ({case} =
+ * cliente ou setor, nunca o H1) e os cards do mesmo tipo no resumo (B379, com
+ * a URL do case no idioma e o tipo de sistema). Só o que o case publicado já
+ * mostra; sem cases, {} e o resumo não muda.
+ */
+const cases: Record<string, CaseRef> = features.hasCases
+  ? Object.fromEntries(
+      (await caseItems(locale)).map(({ slug, entry }) => [
+        slug,
+        {
+          name: entry.data.cliente ?? entry.data.setor,
+          services: [...entry.data.servicos],
+          url: urlFor("case", locale, { slug }),
+          tipoDeSistema: entry.data.tipoDeSistema,
+        },
+      ]),
+    )
+  : {};
+
+const entryMessage = quoteEntryMessage(locale);
+---
+
+<Base
+  locale={locale}
+  route="quote"
+  title={t(locale, "meta.quote.title")}
+  description={t(locale, "meta.quote.description")}
+  whatsappMessage={entryMessage}
+>
+  <Fragment slot="head">
+    <script is:inline>
+      (function (w, d) {
+        var root = d.documentElement;
+        try {
+          var params = new URLSearchParams(w.location.search);
+          if (params.get("etapa")) root.setAttribute("data-wizard-mode", "focus");
+          if (params.get("servico") === "sustentacao") root.setAttribute("data-wizard-live", "");
+        } catch (e) {}
+        d.addEventListener(
+          "click",
+          function (event) {
+            var target = event.target;
+            if (w.__lemamonWizardReady || !target || !target.closest) return;
+            if (target.closest("[data-wizard-start]")) w.__lemamonWizardQueued = true;
+          },
+          true,
+        );
+      })(window, document);
+    </script>
+  </Fragment>
+
+  <div class="quote-intro" data-wizard-intro>
+    <QuoteEntry locale={locale} whatsappMessage={entryMessage} />
+    <QuoteQuickFaq locale={locale} />
+    <QuoteAfterSend locale={locale} />
+  </div>
+
+  <div class="quote-wizard container">
+    <Wizard
+      client:load
+      locale={locale}
+      copy={copy}
+      flags={{
+        hasBudgetTiers: features.hasBudgetTiers,
+        hasMonthlyTiers: features.hasMonthlyTiers,
+        hasPricing: features.hasPricing,
+        hasAgenda: features.hasAgenda,
+        hasWhatsapp: features.hasWhatsapp,
+        phoneCall: features.confirm.ligacao,
+        semDescoberta: features.confirm.semDescoberta,
+        valoresNoDiagnostico: features.confirm.valoresNoDiagnostico,
+        nda: features.confirm.nda,
+      }}
+      sentUrl={urlFor("quote_sent", locale)}
+      privacyUrl={urlFor("privacy", locale)}
+      pricingLines={[...features.pricingLines]}
+      servicePages={servicePages}
+      cases={cases}
+      email={empresa.email}
+      homeUrl={urlFor("home", locale)}
+      previewSubmit={previewSubmit}
+      adsConsentRequired={adsConsentRequired}
+      hasContactProof={hasContactProof}
+    >
+      {/* Nomes de slot em camelCase: o renderer React do Astro converte kebab-case
+          no servidor mas não no cliente, e o slot sumiria na hidratação.
+          links="none": no meio do pedido, o nome da etapa não pode tirar a
+          pessoa do fluxo (o link para /como-trabalhamos#id fica fora do resumo). */}
+      <MethodTimeline
+        slot="timelineDiscovery"
+        locale={locale}
+        variant="highlight"
+        highlight="discovery"
+        badge="next_step"
+        links="none"
+      />
+      <MethodTimeline
+        slot="timelineSupport"
+        locale={locale}
+        variant="highlight"
+        highlight="support"
+        badge="next_step"
+        links="none"
+      />
+      {/* O Astro registra o slot mesmo com a condição falsa (template vazio, nada
+          visível): a ilha só desenha o bloco com hasContactProof. */}
+      {hasContactProof && <QuoteProof slot="contactProof" locale={locale} placement="contact" />}
+    </Wizard>
+    <noscript>
+      <Card surface="subtle" padding="sm" class="quote-noscript">
+        <p>{t(locale, "quote.noscript.text")}</p>
+        <ArrowLink href={urlFor("contact", locale)} text={t(locale, "quote.noscript.link")} />
+      </Card>
+    </noscript>
+  </div>
+
+  <NetlifyForms />
+</Base>
+
+<style>
+  /* Raiz = <Card surface="subtle" padding="sm">: aqui só o arranjo e o lugar. */
+  .quote-wizard :global(.quote-noscript) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    max-inline-size: var(--measure-lead);
+    margin-block-end: var(--section-compact);
+  }
+
+  /* Mobile em modo foco: a barra de ação da ilha é fixa no rodapé; a página
+     reserva o espaço dela para não cobrir o footer mínimo (§7.2). A altura é a
+     medida pela ilha (--wizard-bar-height, já com a safe-area e a nota). */
+  @media (max-width: 767.98px) {
+    :global(html[data-wizard-mode="focus"] body) {
+      padding-block-end: var(--wizard-bar-height, calc(var(--sticky-bar-height) + env(safe-area-inset-bottom, 0px)));
+    }
+  }
+
+  /* Modo foco: a casca estática sai de cena (o H1 continua para leitor de tela). */
+  :global(html[data-wizard-mode="focus"]) .quote-intro > :global(:not([data-keep-in-focus])) {
+    display: none;
+  }
+</style>

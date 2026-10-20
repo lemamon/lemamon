@@ -1,0 +1,65 @@
+---
+/**
+ * Pares rótulo → texto de uma etapa ("Para quem", "Como é", "Custo", "Depois",
+ * "Por que importa") como <dl>. Dono: pages. Mesmo desenho nas 4 etapas.
+ */
+interface Fact {
+  label: string;
+  text: string;
+  /** Destaca a linha (ex.: "Custo"). */
+  emphasis?: boolean;
+}
+
+interface Props {
+  items: Fact[];
+}
+
+const { items } = Astro.props;
+---
+
+<dl class="facts">
+  {
+    items.map((item) => (
+      <div class="facts__row" data-emphasis={item.emphasis ? "true" : undefined}>
+        <dt>{item.label}</dt>
+        <dd>{item.text}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .facts {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .facts__row {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .facts dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .facts dd {
+    margin: 0;
+    max-inline-size: var(--measure-prose);
+  }
+
+  .facts__row[data-emphasis="true"] dd {
+    font-weight: var(--font-weight-bold);
+  }
+
+  @media (min-width: 768px) {
+    .facts__row {
+      grid-template-columns: 9rem minmax(0, 1fr);
+      gap: var(--space-4);
+      align-items: baseline;
+    }
+  }
+</style>

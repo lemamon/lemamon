@@ -1,0 +1,91 @@
+---
+/**
+ * <head> de SEO por página — BLUEPRINT §10.3. Dono: shell.
+ *
+ * - <title> e description: das chaves meta.* (a view passa o texto pronto).
+ * - robots: index, ou noindex nas rotas noindex/erro de routes.ts. Com a camada
+ *   de dados fictícios ligada (só fora de produção), noindex,nofollow em todas.
+ * - canonical = canonicalUrl() e hreflang recíproco + x-default = alternates()
+ *   (routes.ts). Ninguém escreve canonical ou hreflang à mão. A 404 não tem nenhum.
+ * - Open Graph e Twitter com imagem 1200×630 por página e idioma (seo.ts →
+ *   public/assets/img/og/, gerada por scripts/build-og-image.sh). og:title e
+ *   twitter:title = ogTitle (quando a view passa) ou o title: no post e no case
+ *   o cartão do WhatsApp/LinkedIn mostra a frase inteira do H1, não o <title>
+ *   truncado para o Google.
+ * - JSON-LD por chave de rota (seo.ts): Organization/ProfessionalService na Home
+ *   e em Sobre, Service nos serviços e na Sprint; mais o que a view passar em
+ *   `jsonLd` (Article do post). FAQPage e BreadcrumbList vêm dos componentes.
+ */
+import { ROBOTS_FICTICIO } from "@/config/camada-ficticia";
+import { MODO_FICTICIO } from "@/config/dono";
+import { getFeatures } from "@/config/features";
+import { absoluteUrl, alternates as routeAlternates, canonicalUrl, routeDef, type Alternate, type RouteKey, type RouteParams } from "@/config/routes";
+import { LOCALE_META, LOCALES, t, type Locale } from "@/i18n";
+
+import JsonLd from "./JsonLd.astro";
+import { graph, ogImageFor, routeJsonLd, type OgImage } from "./seo";
+
+export type { OgImage } from "./seo";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+  params?: RouteParams;
+  title: string;
+  /** og:title/twitter:title (padrão: title). Post e case: o H1 inteiro, sem "| Lemamon". */
+  ogTitle?: string;
+  description: string;
+  noindex?: boolean;
+  /** Sobrescreve os pares hreflang (ex.: slug localizado). */
+  alternates?: Alternate[];
+  ogImage?: OgImage;
+  /** Nós JSON-LD extras da página (ex.: Article). */
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { locale, route, params, title, description, alternates, ogImage, jsonLd = [] } = Astro.props;
+const shareTitle = Astro.props.ogTitle?.trim() || title;
+const def = routeDef(route);
+const noindex = Astro.props.noindex ?? Boolean(def.noindex || def.error);
+const canonical = canonicalUrl(route, locale, params);
+const pairs = alternates ?? routeAlternates(route, params);
+const image: Required<OgImage> = { width: 1200, height: 630, ...(ogImage ?? ogImageFor(route, locale)) };
+const imageUrl = absoluteUrl(image.src);
+const IMAGE_TYPES: Record<string, string> = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp" };
+const imageType = IMAGE_TYPES[image.src.split("?")[0]?.split(".").pop()?.toLowerCase() ?? ""];
+const features = await getFeatures();
+const routeGraph = graph(routeJsonLd(route, locale, description, { hasCompanyData: features.hasCompanyData }));
+const ogType = route === "blog_post" ? "article" : "website";
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="robots" content={MODO_FICTICIO ? ROBOTS_FICTICIO : noindex ? "noindex, follow" : "index, follow"} />
+{canonical && <link rel="canonical" href={canonical} />}
+{pairs.map((pair) => <link rel="alternate" hreflang={pair.hreflang} href={pair.href} />)}
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={t(locale, "meta.site_name")} />
+<meta property="og:locale" content={LOCALE_META[locale].ogLocale} />
+{
+  pairs.length > 0 &&
+    LOCALES.filter((other) => other !== locale && pairs.some((pair) => pair.hreflang === LOCALE_META[other].hreflang)).map(
+      (other) => <meta property="og:locale:alternate" content={LOCALE_META[other].ogLocale} />,
+    )
+}
+<meta property="og:title" content={shareTitle} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:secure_url" content={imageUrl} />
+{imageType && <meta property="og:image:type" content={imageType} />}
+<meta property="og:image:width" content={String(image.width)} />
+<meta property="og:image:height" content={String(image.height)} />
+<meta property="og:image:alt" content={image.alt} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={shareTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={image.alt} />
+{routeGraph && <JsonLd data={routeGraph} />}
+{jsonLd.length > 0 && <JsonLd data={jsonLd} />}

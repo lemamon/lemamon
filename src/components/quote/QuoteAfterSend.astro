@@ -1,0 +1,138 @@
+---
+/**
+ * Orçamento §6.7 #3 `after_send` — always (some no modo foco). Dono: conversion.
+ * H2 + 3 passos (com hasAgenda, o 1º passo vira a variante "você escolhe o
+ * horário") + compromissos em linha compacta logo abaixo dos passos + próximo
+ * passo + quem decide + o botão "Começar" repetido e o link "Ver como
+ * trabalhamos" (i18n quote._notes.entry_placement).
+ *
+ * next_step_note_live_variant substitui next_step_note com ?servico=sustentacao:
+ * as duas frases estão no HTML e o CSS escolhe pela marca
+ * html[data-wizard-live], gravada pelo script inline do <head> antes da pintura.
+ *
+ * Ritmo, fundo e divisória: <Section spacing="compact" surface="subtle" divider> (B211).
+ * Grade (B222): os 3 passos são 4+4+4 a partir de 768px, com a calha do token
+ * (var(--grid-gap)). "Ver como trabalhamos" é o degrau 0 (BLUEPRINT §8.6) e
+ * usa o <ArrowLink> (B214), como no resto do site.
+ */
+import Commitments from "@/components/shared/Commitments.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Button from "@/components/ui/Button.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures } from "@/config/features";
+import { urlFor } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+const after = getSection(locale, "quote.entry.after_send");
+const steps = [
+  features.hasAgenda ? after.schedule_variant : after.steps.contact,
+  after.steps.conversation,
+  after.steps.feedback,
+];
+---
+
+<Section id="depois-de-enviar" spacing="compact" surface="subtle" divider labelledby="after-send-title" class="after-send">
+  <div class="after-send__inner">
+    <h2 id="after-send-title" class="after-send__title">{after.title}</h2>
+    <ol class="after-send__steps" role="list">
+      {
+        steps.map((step, index) => (
+          <li>
+            <span class="after-send__number" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span>{step}</span>
+          </li>
+        ))
+      }
+    </ol>
+    <Commitments locale={locale} variant="compact" />
+    <div class="after-send__notes">
+      <p data-variant="default">{after.next_step_note}</p>
+      <p data-variant="live">{after.next_step_note_live_variant}</p>
+      <p>{after.next_step_decision}</p>
+    </div>
+  </div>
+  <div class="after-send__actions">
+    <Button type="button" size="lg" full="mobile" data-wizard-start="">
+      {t(locale, "quote.entry.start")}
+    </Button>
+    <ArrowLink href={urlFor("how_we_work", locale)} text={after.link} />
+  </div>
+</Section>
+
+<style>
+  .after-send__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .after-send__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  .after-send__steps {
+    display: grid;
+    gap: var(--grid-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .after-send__steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .after-send__steps li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-block-start: var(--space-3);
+    border-block-start: 2px solid var(--color-brand);
+  }
+
+  .after-send__number {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-secondary);
+  }
+
+  .after-send__notes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-inline-size: var(--measure-prose);
+    color: var(--color-text-secondary);
+  }
+
+  [data-variant="live"] {
+    display: none;
+  }
+
+  :global(html[data-wizard-live]) [data-variant="live"] {
+    display: block;
+  }
+
+  :global(html[data-wizard-live]) [data-variant="default"] {
+    display: none;
+  }
+
+  .after-send__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    margin-block-start: var(--space-8);
+  }
+</style>

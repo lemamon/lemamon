@@ -1,0 +1,89 @@
+---
+/**
+ * Home §6.1 #6 `method` — always. Dono: home. Herói do site (âncora
+ * ANCHORS.homeMethod = #como-trabalhamos).
+ *
+ * Única seção escura além do CTA final. Eyebrow "Como trabalhamos", H2,
+ * intro; as 4 etapas na linha do método completa (stepper horizontal no
+ * desktop, vertical com conector no mobile, sempre aberto, sem acordeão),
+ * cada uma com número, nome (h3), tag, título-benefício, texto e "Você
+ * recebe"; a faixa "Onde você decide" com os 2 pontos, que aparecem no trilho
+ * como losangos numerados. Sem duração nas etapas 2 a 4.
+ *
+ * CTA primário: "Começar pelo diagnóstico gratuito" → ?origem=home-metodo.
+ * Link: "Ver cada etapa em detalhe" → /como-trabalhamos. O nome "Sprint de
+ * Descoberta" linka para /sprint-de-descoberta; as outras etapas, para o
+ * bloco delas em /como-trabalhamos.
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import DecisionPoints from "@/components/shared/DecisionPoints.astro";
+import MethodTimeline, { type StageDetail } from "@/components/shared/MethodTimeline.astro";
+import type { TermId } from "@/components/shared/terms";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { ANCHORS, urlFor, type StageId } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  /** Termos (§5.9) cuja 1ª menção na página está no texto da etapa. */
+  terms?: Partial<Record<StageId, readonly TermId[]>>;
+  /** Posição do capítulo na Home (eyebrow "03 /"). */
+  index?: number;
+}
+
+const { locale, terms = {}, index } = Astro.props;
+const stages = getSection(locale, "home.method.stages");
+const details = Object.fromEntries(
+  (Object.keys(stages) as StageId[]).map((id) => [
+    id,
+    { title: stages[id].benefit_title, text: stages[id].text, terms: terms[id] } satisfies StageDetail,
+  ]),
+) as Record<StageId, StageDetail>;
+---
+
+<Section id={ANCHORS.homeMethod} surface="inverse" labelledby="metodo-title" class="method">
+  <SectionHeader
+    id="metodo-title"
+    eyebrow={t(locale, "home.method.eyebrow")}
+    index={index}
+    title={t(locale, "home.method.title")}
+    intro={t(locale, "home.method.intro")}
+    layout="split"
+  />
+
+  <MethodTimeline
+    locale={locale}
+    variant="full"
+    details={details}
+    headingLevel={3}
+    stageHref={{ discovery: urlFor("discovery_sprint", locale) }}
+    decisionMarkers
+  />
+
+  <DecisionPoints locale={locale} level={3} markers class="method__decide" />
+
+  <div class="method__actions">
+    <CtaDiagnosis locale={locale} origem="home-metodo" label="method" />
+    <ArrowLink href={urlFor("how_we_work", locale)} text={t(locale, "shared.cta.see_method_detail")} />
+  </div>
+</Section>
+
+<style>
+  .method__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-8);
+    margin-block-start: var(--space-10);
+  }
+  :global(.method__decide) {
+    margin-block-start: var(--space-12);
+  }
+  @media (min-width: 1024px) {
+    :global(.method__decide) {
+      margin-block-start: var(--space-16);
+    }
+  }
+</style>

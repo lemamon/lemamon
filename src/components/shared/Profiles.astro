@@ -1,0 +1,159 @@
+---
+/**
+ * Perfis públicos — BLUEPRINT §5.8. Dono: home. API estável: `locale`
+ * (+ opcional `variant`, `source`).
+ *
+ * Uma entrada por perfil com publicar = true em perfis.ts (features.profiles),
+ * em linguagem de negócio (shared.profiles.*.text: "o código que a gente
+ * publica", não "repositórios"). Sem perfil publicado, não renderiza nada:
+ * um perfil vazio prova o contrário do que se quer provar.
+ * Links em nova aba, rel="noopener", aviso acessível de nova aba e evento
+ * profile_click {profile}.
+ *
+ * variant="cards" (Home "Confira antes de conversar", /contato, /sobre)
+ * variant="inline" (linha terciária dentro do CTA final dos serviços)
+ * Card = <Card as="a" interactive>: hover só com ponteiro fino (B192).
+ */
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import { getFeatures } from "@/config/features";
+import { PROFILE_IDS, perfis } from "@/config/perfis";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  variant?: "cards" | "inline";
+  /** Nível do nome do perfil nos cards (sem título, é texto forte). */
+  headingLevel?: 3 | 4;
+}
+
+const { locale, variant = "cards", headingLevel } = Astro.props;
+const features = await getFeatures();
+const copy = getSection(locale, "shared.profiles");
+const visible = PROFILE_IDS.filter((id) => features.profiles[id]);
+const newTab = t(locale, "shared.a11y.opens_new_tab");
+const NameTag = headingLevel ? (`h${headingLevel}` as "h3" | "h4") : "p";
+---
+
+{
+  visible.length > 0 &&
+    (variant === "inline" ? (
+      <ul class="profiles-inline" role="list">
+        {visible.map((id) => (
+          <li>
+            <a href={perfis[id].url} rel="noopener" target="_blank" data-track="profile_click" data-profile={id}>
+              <Icon name={id} size={16} />
+              {copy[id].name}
+              <span class="sr-only">{newTab}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <ul class="profiles" role="list">
+        {visible.map((id) => (
+          <li>
+            <Card
+              as="a"
+              interactive
+              class="profile"
+              href={perfis[id].url}
+              rel="noopener"
+              target="_blank"
+              data-track="profile_click"
+              data-profile={id}
+            >
+              <span class="profile__top">
+                <span class="profile__logo">
+                  <Icon name={id} size={22} />
+                </span>
+                <Icon name="arrow-up-right" size={18} class="profile__arrow" />
+              </span>
+              <NameTag class="profile__name">{copy[id].name}</NameTag>
+              <span class="profile__text">{copy[id].text}</span>
+              <span class="profile__url">{perfis[id].url.replace(/^https:\/\/(www\.)?/, "")}</span>
+              <span class="sr-only">{newTab}</span>
+            </Card>
+          </li>
+        ))}
+      </ul>
+    ))
+}
+
+<style>
+  .profiles {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+  }
+  /* Raiz = <Card as="a" interactive> (borda, raio, padding, hover). */
+  .profiles :global(.profile) {
+    display: grid;
+    gap: var(--space-2);
+    block-size: 100%;
+  }
+  .profile__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: var(--space-3);
+  }
+  .profile__logo {
+    display: grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    border-radius: var(--radius-md);
+    background-color: var(--color-brand-subtle);
+    color: var(--color-brand);
+  }
+  .profiles :global(.profile__arrow) {
+    color: var(--color-text-tertiary);
+    transition: var(--transition-transform), var(--transition-colors);
+  }
+  .profile__name {
+    font-size: var(--text-lg);
+    line-height: var(--leading-h4); /* título curto: 1.3, não o 1.56 do texto */
+    font-weight: var(--font-weight-bold);
+  }
+  .profile__text {
+    color: var(--color-text-secondary);
+    text-wrap: pretty; /* <span>, fora do p { text-wrap: pretty } global */
+  }
+  .profile__url {
+    margin-block-start: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+    overflow-wrap: anywhere;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .profiles :global(.profile:hover .profile__arrow) {
+      color: var(--color-brand);
+      transform: translate(var(--space-0-5), calc(-1 * var(--space-0-5)));
+    }
+  }
+  @media (min-width: 768px) {
+    .profiles {
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+      gap: var(--grid-gap);
+    }
+  }
+
+  .profiles-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+    padding: 0;
+  }
+  .profiles-inline a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--target-min);
+    font-weight: var(--font-weight-bold);
+  }
+</style>

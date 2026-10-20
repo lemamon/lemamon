@@ -1,0 +1,64 @@
+---
+/**
+ * Depoimento — BLUEPRINT §5.7 / §6.1 #7. Dono: home. API estável: `locale`,
+ * `entry` (+ opcional `variant`).
+ *
+ * <figure><blockquote><figcaption>; sempre nominal (o schema exige nome
+ * completo, cargo, empresa e autorização). Foto opcional (alt por idioma no
+ * próprio depoimento); sem foto, as iniciais. O link "Ler o case" fica com
+ * quem usa o card (ele sabe se o case está no ar).
+ * variant="featured": citação grande, largura total (Home); "card": em grade.
+ * CSS em ./TestimonialCard.css, carregado só na página que renderiza um
+ * depoimento (<RenderedStyle>, B256).
+ */
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+
+import Card from "@/components/ui/Card.astro";
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
+import type { Locale } from "@/i18n";
+
+import css from "./TestimonialCard.css?inline";
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<"depoimentos">;
+  variant?: "featured" | "card";
+}
+
+const { locale, entry, variant = "featured" } = Astro.props;
+const { citacao, nome, cargo, empresa, foto } = entry.data;
+const initials = nome
+  .split(/\s+/)
+  .filter(Boolean)
+  .map((part) => part[0])
+  .slice(0, 2)
+  .join("")
+  .toUpperCase();
+---
+
+<RenderedStyle css={css} name="TestimonialCard" />
+<Card as="figure" padding="none" class="testimonial" data-variant={variant}>
+  <span class="testimonial__mark" aria-hidden="true"></span>
+  <blockquote class="testimonial__quote">
+    <p>{citacao[locale]}</p>
+  </blockquote>
+  <figcaption class="testimonial__who">
+    {
+      foto ? (
+        <Image class="testimonial__photo" src={foto.src} alt={foto.alt[locale]} width={56} height={56} loading="lazy" />
+      ) : (
+        <span class="testimonial__initials" aria-hidden="true">
+          {initials}
+        </span>
+      )
+    }
+    <span class="testimonial__id">
+      <span class="testimonial__name">{nome}</span>
+      <span class="testimonial__role">
+        {cargo[locale]} · {empresa}
+      </span>
+    </span>
+  </figcaption>
+</Card>
+

@@ -1,0 +1,75 @@
+---
+/**
+ * Prova compacta no fluxo do pedido (backlog B140). Dono: conversion.
+ * AUTO-GATED (CONTRACT §7): sem dado, não renderiza NADA (nem wrapper).
+ *
+ * - features.hasTestimonials: o 1º depoimento (testimonialItems(): o que fala de
+ *   processo vem primeiro), nominal, com citação, nome, cargo e empresa
+ *   (TestimonialCard, variante "card").
+ * - Sem depoimento e com features.hasLogos: a grade de logos autorizados.
+ * - Nunca contagem de pedidos nem número inventado.
+ *
+ * Usado na entrada de /orcamento (abaixo dos 3 marcadores) e passado à ilha
+ * como slot `contactProof` (abaixo do envio no passo de contato). Quem passa
+ * o slot confere a mesma condição (features.hasTestimonials ||
+ * features.hasLogos), para a ilha não receber um slot vazio.
+ *
+ * CSS: TestimonialCard e LogoWall põem a folha deles UMA vez por página
+ * (<RenderedStyle>, na 1ª instância renderizada). O Astro renderiza o slot da
+ * ilha antes da entrada, e o slot do contato vai para um <template> enquanto a
+ * pessoa não chega ao contato: a folha ficava presa no <template> e o
+ * depoimento da entrada saía sem estilo (nome e cargo colados, foto solta).
+ * Por isso cada posição leva a sua cópia, com nome próprio no registro.
+ */
+import LogoWall from "@/components/shared/LogoWall.astro";
+import logoWallCss from "@/components/shared/LogoWall.css?inline";
+import TestimonialCard from "@/components/shared/TestimonialCard.astro";
+import testimonialCss from "@/components/shared/TestimonialCard.css?inline";
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
+import { getFeatures } from "@/config/features";
+import { t, type Locale } from "@/i18n";
+import { logoItems, testimonialItems } from "@/lib/content";
+
+interface Props {
+  locale: Locale;
+  /** "entry": entrada do wizard; "contact": passo de contato (dentro da ilha). */
+  placement: "entry" | "contact";
+}
+
+const { locale, placement } = Astro.props;
+const features = await getFeatures();
+const testimonial = features.hasTestimonials ? ((await testimonialItems())[0] ?? null) : null;
+const logos = !testimonial && features.hasLogos ? await logoItems() : [];
+---
+
+{
+  testimonial ? (
+    <div class="quote-proof" data-quote-proof={placement}>
+      <RenderedStyle css={testimonialCss} name={`TestimonialCard@quote-${placement}`} />
+      <TestimonialCard locale={locale} entry={testimonial} variant="card" />
+    </div>
+  ) : logos.length > 0 ? (
+    <div class="quote-proof" data-quote-proof={placement}>
+      <RenderedStyle css={logoWallCss} name={`LogoWall@quote-${placement}`} />
+      <p class="quote-proof__label">{t(locale, "shared.proof.logos_label")}</p>
+      <LogoWall locale={locale} entries={logos} />
+    </div>
+  ) : null
+}
+
+<style>
+  .quote-proof {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    inline-size: 100%;
+    max-inline-size: var(--measure-prose);
+  }
+
+  .quote-proof__label {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-secondary);
+  }
+</style>

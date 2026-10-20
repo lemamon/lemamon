@@ -1,0 +1,47 @@
+---
+/**
+ * Serviço §6.5 #1 `hero` — always. Dono: pages. ÚNICO H1 (services.{key}.h1).
+ * Breadcrumb Início › Serviços › {serviço} (BreadcrumbList, §8.7); eyebrow
+ * "Serviço"; subtítulo que une o serviço ao método; CTA →
+ * /orcamento?servico={slug}&origem={slug}-hero (pré-marca o wizard, §7.1);
+ * WhatsApp com a mensagem do serviço (§7.7); microcopy
+ * "Gratuito · 45 minutos · devolutiva por escrito".
+ * No MVP, o trecho depois dos dois-pontos vira uma linha menor dentro do
+ * mesmo H1, sem mudar o texto (services._notes.mvp_h1: CTA acima da dobra em 360×640).
+ */
+import Breadcrumb from "@/components/shell/Breadcrumb.astro";
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
+import { SERVICE_PARAM, urlFor, type ServiceKey } from "@/config/routes";
+import { t, tDynamic, type Locale } from "@/i18n";
+
+import PageHero from "./kit/PageHero.astro";
+
+interface Props {
+  locale: Locale;
+  service: ServiceKey;
+  whatsappMessage: string;
+}
+
+const { locale, service, whatsappMessage } = Astro.props;
+const origem = `${SERVICE_PARAM[service]}-hero`;
+const crumbs = [
+  { label: t(locale, "shared.breadcrumb.home"), href: urlFor("home", locale) },
+  { label: t(locale, "shared.breadcrumb.services"), href: urlFor("services_hub", locale) },
+  { label: tDynamic(locale, `services.${service}.name`) },
+];
+---
+
+<PageHero
+  eyebrow={t(locale, "services.template.eyebrow")}
+  title={tDynamic(locale, `services.${service}.h1`)}
+  subtitle={tDynamic(locale, `services.${service}.subtitle`)}
+  microcopy={t(locale, "shared.cta.microcopy_diagnosis")}
+  splitTitle={service === "mvp"}
+>
+  <Breadcrumb slot="breadcrumb" locale={locale} items={crumbs} />
+  <Fragment slot="actions">
+    <CtaDiagnosis locale={locale} origem={origem} servico={service} />
+    <WhatsAppCta locale={locale} message={whatsappMessage} source={origem} />
+  </Fragment>
+</PageHero>

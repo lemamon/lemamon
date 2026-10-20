@@ -1,0 +1,77 @@
+---
+/**
+ * Case /cases/[slug] (BLUEPRINT §6.10) — when_data: um por case publicado nos 3
+ * idiomas, só com hasCases. Dono: gated. H1 = entry.data.titulo (orientado ao
+ * problema resolvido). Corpo em components/gated/CaseArticle.astro; aqui ficam
+ * os dados, o <head> (title, description, og:image = capa do case) e o CTA final
+ * "Quer algo parecido?" → /orcamento?ref={slug}&servico={tag principal}, com
+ * WhatsApp "Vim pelo case {nome}".
+ */
+import type { CollectionEntry } from "astro:content";
+import { render } from "astro:content";
+import { getImage } from "astro:assets";
+
+import CaseArticle from "@/components/gated/CaseArticle.astro";
+import CtaFinal from "@/components/shared/CtaFinal.astro";
+import { LIMITS } from "@/config/features";
+import { t, type Locale } from "@/i18n";
+import { caseDisplayName, relatedCaseItems, testimonialById, truncateAtWord } from "@/lib/content";
+import { caseMessage } from "@/lib/whatsapp-messages";
+import Base from "@/layouts/Base.astro";
+
+interface Props {
+  locale: Locale;
+  slug: string;
+  entry: CollectionEntry<"cases">;
+}
+
+const { locale, slug, entry } = Astro.props;
+const data = entry.data;
+const name = caseDisplayName(entry);
+const title = data.seoTitle
+  ? `${data.seoTitle} | ${t(locale, "meta.site_name")}`
+  : t(locale, "meta.case_template.title", { tipo_de_sistema: data.tipoDeSistema, cliente_ou_setor: name });
+const description =
+  data.seoDescription ??
+  truncateAtWord(
+    t(locale, "meta.case_template.description", { problema_resolvido: data.titulo.replace(/[.!?]+$/, ""), cliente_ou_setor: name }),
+    155,
+  );
+
+const [{ Content }, testimonial, related, og] = await Promise.all([
+  render(entry),
+  testimonialById(data.depoimento?.id),
+  relatedCaseItems(locale, {
+    exclude: slug,
+    prefer: data.relacionados,
+    sharedWith: data.servicos,
+    limit: LIMITS.relatedCasesCase,
+  }),
+  getImage({ src: data.capa.src, width: 1200, height: 630, fit: "cover", format: "jpg" }),
+]);
+const whatsappMessage = caseMessage(locale, name);
+---
+
+<Base
+  locale={locale}
+  route="case"
+  params={{ slug }}
+  title={title}
+  description={description}
+  ogImage={{ src: og.src, alt: data.capa.alt, width: 1200, height: 630 }}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="case-barra"
+>
+  <CaseArticle locale={locale} slug={slug} entry={entry} testimonial={testimonial} related={related}>
+    <Content />
+  </CaseArticle>
+  <CtaFinal
+    locale={locale}
+    origem="case-final"
+    ref={slug}
+    servico={data.servicos[0]}
+    title={t(locale, "cases.case.cta_final.title")}
+    text={t(locale, "cases.case.cta_final.text")}
+    whatsappMessage={whatsappMessage}
+  />
+</Base>

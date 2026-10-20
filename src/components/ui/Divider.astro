@@ -1,0 +1,41 @@
+---
+/**
+ * Divider — linha de 1px em --color-border-subtle (03-ui §3.5.2, B214). Dono:
+ * home. Decorativa por padrão (aria-hidden); `semantic` vira <hr> (troca de
+ * assunto dentro da mesma seção). `spacing` = margem acima e abaixo.
+ * Entre SEÇÕES, use <Section divider>.
+ */
+interface Props {
+  semantic?: boolean;
+  spacing?: "none" | "sm" | "md" | "lg";
+  class?: string;
+}
+
+const { semantic = false, spacing = "md", class: className } = Astro.props;
+---
+
+{
+  semantic ? (
+    <hr class:list={["divider", className]} data-spacing={spacing} />
+  ) : (
+    <div class:list={["divider", className]} data-spacing={spacing} aria-hidden="true" />
+  )
+}
+
+<style>
+  .divider {
+    block-size: 0;
+    border: 0;
+    border-block-start: 1px solid var(--color-border-subtle);
+    margin-block: var(--space-6);
+  }
+  .divider[data-spacing="none"] {
+    margin-block: 0;
+  }
+  .divider[data-spacing="sm"] {
+    margin-block: var(--space-4);
+  }
+  .divider[data-spacing="lg"] {
+    margin-block: var(--space-10);
+  }
+</style>

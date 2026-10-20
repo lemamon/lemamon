@@ -1,0 +1,35 @@
+---
+/**
+ * Páginas when_data de rota única (pt): hub de cases, sobre e blog.
+ * Só gera a página com a flag ligada (features.ts + routes.ts gate): sem dado,
+ * não existe HTML, rota, sitemap nem hreflang. Dono: gated.
+ */
+import type { GetStaticPaths } from "astro";
+
+import { getFeatures } from "@/config/features";
+import { hasLocale, isRouteLive, urlFor, type RouteKey } from "@/config/routes";
+import AboutView from "@/views/AboutView.astro";
+import BlogHubView from "@/views/BlogHubView.astro";
+import CasesHubView from "@/views/CasesHubView.astro";
+
+export const getStaticPaths = (async () => {
+  const features = await getFeatures();
+  const pages: RouteKey[] = ["cases_hub", "about", "blog_hub"];
+  return pages
+    .filter((key) => hasLocale(key, "pt") && isRouteLive(key, features))
+    .map((key) => ({
+      params: { gated: urlFor(key, "pt").slice("/".length) },
+      props: { route: key },
+    }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  route: RouteKey;
+}
+
+const { route } = Astro.props;
+---
+
+{route === "cases_hub" && <CasesHubView locale="pt" />}
+{route === "about" && <AboutView locale="pt" />}
+{route === "blog_hub" && <BlogHubView />}
