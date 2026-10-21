@@ -14,6 +14,11 @@
  *  - F30: na P4, marcar um prazo traz o campo da data à tela (celular); o
  *    exemplo de produto aparece só para produto/MVP.
  *  - F45: quem recomenda a quem decide lê o motivo para enviar sob o CTA.
+ *  - F23: passar pelos campos do contato (wizard e /contato) não pinta
+ *    "obrigatório"; o erro de formato de campo preenchido aparece no blur; o
+ *    "obrigatório" só depois do envio.
+ *  - F24: recarregar a tela de contato mantém o que foi digitado (sessionStorage,
+ *    sem o honeypot).
  */
 import { expect, test, type Page } from "@playwright/test";
 
@@ -170,5 +175,65 @@ test.describe("perguntas e resumo (F22, F27, F29, F30, F45)", () => {
     // No celular o CTA do topo some (a barra fixa leva o primário): vale a nota que está à vista.
     await expect(wizardRoot(page).getByText(q.summary.below_primary_share).filter({ visible: true }).first()).toBeVisible();
     await expect(wizardRoot(page).getByText(q.summary.below_primary, { exact: true })).toHaveCount(0);
+  });
+});
+
+test.describe("contato (F23, F24)", () => {
+  test("F23 (wizard): Tab pelos campos não pinta erro; formato no blur; obrigatório só no envio", async ({ page }) => {
+    const q = COPY.pt.quote;
+    const f = q.contact_form.fields;
+    await openWithDraft(page, "pt", "contato");
+    const root = wizardRoot(page);
+    const name = root.getByRole("textbox", { name: f.name.label, exact: true });
+    const email = root.getByRole("textbox", { name: f.email.label, exact: true });
+    await name.focus();
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await expect(root.getByText(f.name.error_required)).toHaveCount(0);
+    await expect(name).not.toHaveAttribute("aria-invalid", "true");
+    await email.fill("ana@");
+    await email.blur();
+    await expect(root.getByText(f.email.error_invalid)).toBeVisible();
+    await root.getByRole("button", { name: q.contact_form.submit, exact: true }).click();
+    await expect(root.getByText(f.name.error_required)).toBeVisible();
+    await expect(name).toBeFocused();
+  });
+
+  test("F23 (/contato): passar pelos campos não pinta erro; formato no blur; obrigatório no envio", async ({ page }) => {
+    const c = COPY.pt.contact.form;
+    await page.goto("/contato");
+    const form = page.locator("form[data-contact-form]");
+    await expect(form).toHaveAttribute("data-enhanced", "");
+    const name = form.getByRole("textbox", { name: c.fields.name.label, exact: true });
+    const email = form.getByRole("textbox", { name: c.fields.email.label, exact: true });
+    await name.focus();
+    await email.focus();
+    await form.getByRole("textbox", { name: c.fields.message.label, exact: true }).focus();
+    await expect(form.locator('[data-error-for="name"]')).toBeEmpty();
+    await expect(name).not.toHaveAttribute("aria-invalid", "true");
+    await email.fill("ana@");
+    await email.blur();
+    await expect(form.locator('[data-error-for="email"]')).toHaveText(c.fields.email.error_invalid);
+    await form.getByRole("button", { name: c.submit, exact: true }).click();
+    await expect(form.locator('[data-error-for="name"]')).toHaveText(c.fields.name.error_required);
+    await expect(form.locator('input[name="subject"]').first()).toHaveAttribute("aria-describedby", "contato-subject-error");
+  });
+
+  test("F24: recarregar a tela de contato mantém o que foi digitado, sem o honeypot", async ({ page }) => {
+    const q = COPY.pt.quote;
+    const f = q.contact_form.fields;
+    await openWithDraft(page, "pt", "contato");
+    const root = wizardRoot(page);
+    await root.getByRole("textbox", { name: f.name.label, exact: true }).fill("Ana Teste");
+    await root.getByRole("textbox", { name: f.email.label, exact: true }).fill("ana.teste@example.com");
+    await root.locator('input[name="phone"]').fill("48999998888");
+    await expect
+      .poll(() => page.evaluate(() => sessionStorage.getItem("lemamon:orcamento:contato:v1") ?? ""))
+      .toContain("ana.teste@example.com");
+    expect(await page.evaluate(() => sessionStorage.getItem("lemamon:orcamento:contato:v1") ?? "")).not.toContain("bot");
+    await page.reload();
+    await expect(root.getByRole("textbox", { name: f.name.label, exact: true })).toHaveValue("Ana Teste");
+    await expect(root.getByRole("textbox", { name: f.email.label, exact: true })).toHaveValue("ana.teste@example.com");
+    await expect(root.locator('input[name="phone"]')).toHaveValue("(48) 99999-8888");
   });
 });

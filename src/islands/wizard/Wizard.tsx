@@ -21,7 +21,10 @@
  *    opcional sem botão "Pular": o helper diz que Continuar sem marcar vale
  *    (F22), e o evento continua wizard_skip.
  *  - Rascunho em localStorage (lib/draft.ts) a cada mudança; apagado só depois
- *    do sucesso confirmado. Banner de retomada acima do H1 (portal).
+ *    do sucesso confirmado. Banner de retomada acima do H1 (portal). O contato
+ *    digitado fica à parte, no sessionStorage, e volta ao recarregar (F24).
+ *  - Contato: no blur, só erro de formato de campo preenchido; "obrigatório"
+ *    só depois do envio (F23).
  *  - Progresso "Pergunta N de 6" desenhado no alvo [data-wizard-progress] do
  *    WizardHeader (portal), com a barra sobre 8 passos (perguntas, resumo e
  *    contato; 100% só depois do envio, auditoria F21); o modo foco esconde a
@@ -88,9 +91,12 @@ import {
   trackWhenOnline,
 } from "../../lib/analytics";
 import {
+  clearContactDraft,
   clearDraft,
   parseStep,
+  readContactDraft,
   readDraft,
+  writeContactDraft,
   writeDraft,
   writeSentSummary,
   type ContactChannel,
@@ -518,6 +524,8 @@ function WizardFlow(props: WizardProps) {
   /** "Começar de novo": apaga o rascunho e aplica a pré-marcação e o contexto desta visita (B166). */
   const restart = () => {
     clearDraft();
+    clearContactDraft();
+    setContact(INITIAL_CONTACT);
     updateAnswers({ ...prefillRef.current });
     setContext(contextRef.current);
     setProtocol(undefined);
@@ -582,6 +590,12 @@ function WizardFlow(props: WizardProps) {
 
     setProtocol(draft?.protocol);
     setStartedAt(draft?.startedAt);
+    // Contato digitado antes de recarregar a página (F24): volta do sessionStorage.
+    const savedContact = readContactDraft();
+    if (savedContact) {
+      setContact({ ...INITIAL_CONTACT, ...savedContact, channel: (savedContact.channel ?? INITIAL_CONTACT.channel) as ContactChannel });
+      if (savedContact.details) setDetailsOpen(true);
+    }
 
     const requested = parseStep(params.get("etapa"));
     window.history.replaceState({ wizardDepth: 0 }, "", window.location.href);
@@ -674,6 +688,16 @@ function WizardFlow(props: WizardProps) {
     if (!ready || !started || doneRef.current || view === "intro") return;
     writeDraft({ step: view, lang: locale, answers: answersToRecord(answers), attribution, protocol, startedAt });
   }, [ready, started, view, answers, attribution, protocol, startedAt, locale]);
+
+  // Contato no sessionStorage 300 ms depois da última mudança (F24). O
+  // honeypot nunca vai (writeContactDraft só grava os campos do contato).
+  useEffect(() => {
+    if (!ready) return;
+    const timer = window.setTimeout(() => {
+      if (!doneRef.current) writeContactDraft(contact);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [ready, contact]);
 
   // Código do pedido nasce ao abrir o resumo (vai na mensagem de WhatsApp dele).
   useEffect(() => {
@@ -981,7 +1005,16 @@ function WizardFlow(props: WizardProps) {
    * ---------------------------------------------------------------- */
 
   const contactErrors = useMemo(() => validateContact(contact, locale), [contact, locale]);
-  const visibleError = (field: ContactField) => (touched[field] || showAllErrors ? contactErrors[field] : undefined);
+  /**
+   * "Recompensar cedo, punir tarde" (F23): antes do 1º envio, sair de um campo
+   * só mostra erro de formato num campo preenchido; "obrigatório" só depois do
+   * envio. Antes, passar pelo Nome a caminho do E-mail já pintava o Nome.
+   */
+  const visibleError = (field: ContactField) => {
+    const error = contactErrors[field];
+    if (showAllErrors) return error;
+    return touched[field] && error === "error_invalid" ? error : undefined;
+  };
 
   const setField = (field: keyof ContactValues, value: string) => {
     setContact((current) => ({ ...current, [field]: field === "phone" ? formatPhone(value, locale) : value }));
@@ -995,15 +1028,19 @@ function WizardFlow(props: WizardProps) {
     }
   };
 
-  /** Blur de um campo do contato: marca como visitado e mede preenchimento (B337) e erro exibido (B338). */
+  /**
+   * Blur de um campo do contato: marca como visitado e mede preenchimento
+   * (B337) e erro exibido (B338). Concluído = preenchido E válido (F83: o
+   * e-mail com erro contava); erro medido só o de formato, o que aparece no
+   * blur (F23); o "obrigatório" é medido no envio.
+   */
   const onFieldBlur = (field: TrackedField) => {
+    const error = field === "company" || field === "details" ? undefined : validateContact(contact, locale)[field];
     if (field !== "company" && field !== "details") setTouched((t) => ({ ...t, [field]: true }));
-    if (isFilled(contact[field]) && fieldOnceRef.current(`complete:${field}`)) {
+    if (isFilled(contact[field]) && !error && fieldOnceRef.current(`complete:${field}`)) {
       track("form_field_complete", { form: "briefing", field_name: field });
     }
-    if (field === "company" || field === "details") return;
-    const error = validateContact(contact, locale)[field];
-    if (error) trackFieldError(field, error);
+    if (error === "error_invalid" && field !== "company" && field !== "details") trackFieldError(field, error);
   };
 
   const onSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
@@ -1080,6 +1117,7 @@ function WizardFlow(props: WizardProps) {
       writeSentSummary(buildSentSummary({ answers: current, chips, contact, protocol: code, lang: locale, measured: real }, copy));
       doneRef.current = true;
       clearDraft();
+      clearContactDraft();
       await conversion;
       window.location.assign(sentUrl);
       return;

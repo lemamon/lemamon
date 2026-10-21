@@ -10,8 +10,10 @@
  * Privacidade (i18n quote._notes.resume_banner): o rascunho guarda SÓ as
  * respostas das 6 perguntas, o passo, a atribuição, o idioma, o código do pedido
  * e o timestamp. Nome, e-mail, telefone, empresa e "Mais detalhes" nunca vão
- * para o localStorage; o que /orcamento/enviado precisa deles vai só no resumo
- * do envio, no sessionStorage (some quando a aba fecha).
+ * para o localStorage: enquanto a pessoa digita, ficam no rascunho do contato,
+ * no sessionStorage (auditoria F24: recarregar a tela de contato não apaga
+ * mais nada), e o que /orcamento/enviado precisa deles vai no resumo do envio,
+ * também no sessionStorage. Os dois somem quando a aba fecha.
  *
  * Todo acesso a storage é try/catch: sem storage (aba anônima, cota, bloqueio),
  * o fluxo funciona e só não retoma.
@@ -167,6 +169,67 @@ export function writeDraft(
 export function clearDraft(storage: Storage | null = localStore()): void {
   try {
     storage?.removeItem(DRAFT_KEY);
+  } catch {
+    // Nada a limpar.
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Rascunho do contato (sessionStorage, auditoria F24)
+ * ------------------------------------------------------------------ */
+
+/** Chave do contato digitado no wizard (privacy.sections.data_collected.draft depende disso). */
+export const CONTACT_DRAFT_KEY = "lemamon:orcamento:contato:v1";
+
+/** Campos do contato que voltam ao recarregar (nunca o honeypot). */
+export const CONTACT_DRAFT_FIELDS = ["name", "email", "channel", "phone", "company", "details"] as const;
+
+export type ContactDraft = Partial<Record<(typeof CONTACT_DRAFT_FIELDS)[number], string>>;
+
+/** Teto por campo: o maior campo do formulário ("Mais detalhes") aceita 2000 caracteres. */
+const CONTACT_DRAFT_MAX = 2000;
+
+/** Só os campos conhecidos, em texto, com teto; o canal só com um valor válido. */
+export function parseContactDraft(raw: string | null | undefined): ContactDraft | null {
+  if (!raw) return null;
+  try {
+    const data: unknown = JSON.parse(raw);
+    if (typeof data !== "object" || data === null || Array.isArray(data)) return null;
+    const draft: ContactDraft = {};
+    for (const field of CONTACT_DRAFT_FIELDS) {
+      const value = (data as Record<string, unknown>)[field];
+      if (typeof value === "string" && value !== "") draft[field] = value.slice(0, CONTACT_DRAFT_MAX);
+    }
+    if (draft.channel && !["whatsapp", "email", "phone_call"].includes(draft.channel)) delete draft.channel;
+    return Object.keys(draft).length > 0 ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
+export function readContactDraft(storage: Storage | null = sessionStore()): ContactDraft | null {
+  try {
+    return parseContactDraft(storage?.getItem(CONTACT_DRAFT_KEY));
+  } catch {
+    return null;
+  }
+}
+
+/** Grava os campos preenchidos; sem nenhum texto (só o canal, que já vem marcado), apaga a chave. */
+export function writeContactDraft(values: ContactDraft, storage: Storage | null = sessionStore()): void {
+  try {
+    const draft = parseContactDraft(JSON.stringify(values));
+    const typed = draft && CONTACT_DRAFT_FIELDS.some((field) => field !== "channel" && draft[field]);
+    if (typed) storage?.setItem(CONTACT_DRAFT_KEY, JSON.stringify(draft));
+    else storage?.removeItem(CONTACT_DRAFT_KEY);
+  } catch {
+    // Sem storage: o contato só não volta num recarregamento.
+  }
+}
+
+export function clearContactDraft(storage: Storage | null = sessionStore()): void {
+  try {
+    storage?.removeItem(CONTACT_DRAFT_KEY);
   } catch {
     // Nada a limpar.
   }

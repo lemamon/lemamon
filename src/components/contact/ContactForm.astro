@@ -8,8 +8,9 @@
  * assunto ("Projeto novo?") também é só CSS (:has).
  *
  * COM JS (contact-form.ts, carregado no ocioso ou no 1º toque/foco no form):
- * validação no blur e no envio com mensagem por campo
- * (aria-invalid + aria-describedby), máscara de telefone, envio por fetch com
+ * validação no blur (só erro de formato de campo preenchido, F23) e no envio
+ * com mensagem por campo (aria-invalid + aria-describedby, também em cada
+ * rádio do Assunto), máscara de telefone, envio por fetch com
  * timeout/retry (lib/forms), confirmação na mesma página e, no erro, os dados
  * preservados com "Tentar de novo", WhatsApp e e-mail. Botão sempre habilitado.
  * data-nr-block: fora do session replay do New Relic.
@@ -164,7 +165,7 @@ const emailSuggestion = getSection(locale, "shared.forms.email_suggestion");
           {
             subjects.map((id, index) => (
               <label class="choice">
-                <input type="radio" name="topic" value={id} required={index === 0} data-subject-line={contactSubject(locale, subjectOptionsPt[id])} />
+                <input type="radio" name="topic" value={id} required={index === 0} aria-describedby="contato-subject-error" data-subject-line={contactSubject(locale, subjectOptionsPt[id])} />
                 <span>{fields.subject.options[id]}</span>
               </label>
             ))

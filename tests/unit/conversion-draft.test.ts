@@ -1,19 +1,25 @@
 /**
  * lib/draft.ts — rascunho do wizard (TTL 30 dias, try/catch, sem dado de
- * contato) e resumo do envio no sessionStorage (BLUEPRINT §7.1).
+ * contato), rascunho do contato e resumo do envio no sessionStorage
+ * (BLUEPRINT §7.1; auditoria F24).
  */
 import { describe, expect, it } from "vitest";
 
 import {
+  clearContactDraft,
   clearDraft,
+  CONTACT_DRAFT_KEY,
   DRAFT_KEY,
   DRAFT_TTL_MS,
   parseDraft,
   parseSentSummary,
   parseStep,
+  parseContactDraft,
+  readContactDraft,
   readDraft,
   readSentSummary,
   SENT_SUMMARY_KEY,
+  writeContactDraft,
   writeDraft,
   writeSentSummary,
   type SentSummary,
@@ -117,6 +123,49 @@ describe("rascunho", () => {
     expect(parseStep("7")).toBeNull();
     expect(parseStep("0")).toBeNull();
     expect(parseStep(null)).toBeNull();
+  });
+});
+
+describe("rascunho do contato (sessionStorage, F24)", () => {
+  it("grava só os campos do contato, nunca o honeypot, e volta igual", () => {
+    const storage = new MemoryStorage();
+    writeContactDraft(
+      { name: "Ana", email: "ana@example.com", channel: "email", phone: "", company: "ACME", details: "", bot: "spam" } as never,
+      storage,
+    );
+    expect(JSON.parse(storage.getItem(CONTACT_DRAFT_KEY) ?? "{}")).toEqual({
+      name: "Ana",
+      email: "ana@example.com",
+      channel: "email",
+      company: "ACME",
+    });
+    expect(readContactDraft(storage)).toEqual({ name: "Ana", email: "ana@example.com", channel: "email", company: "ACME" });
+  });
+
+  it("só o canal (que já vem marcado) não grava; apagar tudo apaga a chave", () => {
+    const storage = new MemoryStorage();
+    writeContactDraft({ channel: "whatsapp" }, storage);
+    expect(storage.getItem(CONTACT_DRAFT_KEY)).toBeNull();
+    writeContactDraft({ name: "Ana", channel: "whatsapp" }, storage);
+    expect(storage.getItem(CONTACT_DRAFT_KEY)).not.toBeNull();
+    writeContactDraft({ name: "", channel: "whatsapp" }, storage);
+    expect(storage.getItem(CONTACT_DRAFT_KEY)).toBeNull();
+    writeContactDraft({ name: "Ana" }, storage);
+    clearContactDraft(storage);
+    expect(readContactDraft(storage)).toBeNull();
+  });
+
+  it("descarta formato errado, canal desconhecido e texto além do teto", () => {
+    expect(parseContactDraft("não é json")).toBeNull();
+    expect(parseContactDraft("[]")).toBeNull();
+    expect(parseContactDraft(JSON.stringify({ name: 1, channel: "fax" }))).toBeNull();
+    expect(parseContactDraft(JSON.stringify({ details: "x".repeat(5000) }))?.details).toHaveLength(2000);
+  });
+
+  it("sem storage, nada quebra", () => {
+    expect(readContactDraft(null)).toBeNull();
+    expect(() => writeContactDraft({ name: "Ana" }, null)).not.toThrow();
+    expect(() => clearContactDraft(null)).not.toThrow();
   });
 });
 

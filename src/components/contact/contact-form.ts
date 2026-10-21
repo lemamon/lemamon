@@ -23,6 +23,9 @@
  *    do aviso de cookies, nenhum id de clique.
  *  - F40: o Assunto é o 1º campo (a dica do wizard aparece antes de digitar);
  *    a ordem de validação segue a da tela.
+ *  - F23: antes do 1º envio, o blur só mostra (e mede) erro de formato num
+ *    campo preenchido; "obrigatório" aparece e é medido só depois do envio.
+ *  - F83: form_field_complete só com o campo preenchido E válido.
  * Este módulo sai do JS inicial da página (orçamento de peso do verify-build):
  * o ContactForm.astro o importa no ocioso ou no 1º toque/foco no formulário, e
  * um envio feito antes disso espera o módulo (initContactForm + requestSubmit).
@@ -156,6 +159,8 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
 
   const touched = new Set<FieldName>();
   const once = createOnce();
+  /** Já houve tentativa de envio: a partir daí o "obrigatório" aparece (F23). */
+  let submitted = false;
   const preview = previewSubmitActive(form.hasAttribute("data-preview-submit"));
   // Modo consentimento do Google Ads (B342): o gclid só vai com o aceite do aviso de cookies.
   const adsConsentRequired = form.hasAttribute("data-ads-consent-required");
@@ -180,17 +185,19 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
       { required: element?.dataset.required, invalid: element?.dataset.invalid },
       locale,
     );
-    if (show && message) {
+    // Antes do 1º envio, só o erro de formato de um campo preenchido (F23).
+    const visible = show && (submitted || isFilled(value)) ? message : "";
+    if (visible) {
       const error = isFilled(value) ? "invalid" : "required";
       if (once(`error:${name}:${error}`)) track("form_validation_error", { form: "contato", field_name: name, error });
     }
     if (show) {
       const slot = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
-      if (slot) slot.textContent = message;
+      if (slot) slot.textContent = visible;
       const targets =
         name === "subject" ? [...form.querySelectorAll<HTMLInputElement>('input[name="topic"]')] : element ? [element] : [];
       for (const target of targets) {
-        if (message) target.setAttribute("aria-invalid", "true");
+        if (visible) target.setAttribute("aria-invalid", "true");
         else target.removeAttribute("aria-invalid");
       }
     }
@@ -211,8 +218,8 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
     const element = control(name);
     element?.addEventListener("blur", () => {
       touched.add(name);
-      check(name, true);
-      if (isFilled(valueOf(name)) && once(`complete:${name}`)) {
+      const message = check(name, true);
+      if (isFilled(valueOf(name)) && !message && once(`complete:${name}`)) {
         track("form_field_complete", { form: "contato", field_name: name });
       }
     });
@@ -252,6 +259,7 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
     event.preventDefault();
     if (sending) return;
 
+    submitted = true;
     const invalid = ORDER.filter((name) => check(name, true) !== "");
     ORDER.forEach((name) => touched.add(name));
     if (invalid.length > 0) {
