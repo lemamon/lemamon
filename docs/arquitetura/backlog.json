@@ -8357,8 +8357,8 @@
   },
   {
     "title": "Definir o teto acima do qual a descoberta paga é obrigatória",
-    "status": "open",
-    "status_reason": "Decisão comercial.",
+    "status": "premise_invalid",
+    "status_reason": "Sem objeto desde a D44 (21/10/2026): a Sprint de Descoberta é gratuita e só acontece quando o diagnóstico mostra que é necessária, com a necessidade definida com o cliente no diagnóstico. Não existe mais descoberta paga obrigatória. O que sobra (um critério interno para recomendar a Descoberta na conversa, nunca publicado) fica na D04 de docs/playbooks/15-registro-de-decisoes.md.",
     "category": "business_offer",
     "priority": "P2",
     "needs_owner_input": "pricing",

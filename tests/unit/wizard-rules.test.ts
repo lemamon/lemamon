@@ -41,6 +41,13 @@ describe("etapa realçada e ênfase", () => {
     expect(emphasisKey({ stage: "scope_defined" })).toBe("discovery_scope_defined");
     expect(emphasisKey({ stage: "evolve_live_system" })).toBe("live_system");
   });
+
+  it("D44: a ênfase padrão não dá a Descoberta como certa (ela só acontece quando é necessária)", () => {
+    const opening = { pt: /^Quando a Sprint de Descoberta é necessária/, en: /^When a Discovery Sprint is needed/, es: /^Cuando hace falta el Sprint de Descubrimiento/ } as const;
+    for (const locale of ["pt", "en", "es"] as const) {
+      expect(getSection(locale, "quote").summary.emphasis.discovery_default, locale).toMatch(opening[locale]);
+    }
+  });
 });
 
 describe("tópicos (2 a 4, por prioridade)", () => {
@@ -173,9 +180,11 @@ describe("bloco 'E o preço?'", () => {
   it("sem faixa preenchida: bloco vazio (price_empty + price_empty_2, nenhum número)", () => {
     expect(priceBlock({ stage: "problem_unclear", build_type: ["mvp"] }, noPricing)).toEqual({ kind: "empty" });
     expect(priceBlock({ stage: "scope_defined" }, noPricing)).toEqual({ kind: "empty" });
-    // D44: só o desenvolvimento é pago, com preço fechado antes; Descoberta gratuita.
+    // D44: só o desenvolvimento é pago, com preço fechado antes; Descoberta gratuita quando necessária.
     const s = getSection("pt", "quote").summary;
-    expect(s.price_empty_2).toBe("Diagnóstico e Sprint de Descoberta são gratuitos. A primeira etapa paga é o desenvolvimento, com preço fechado antes de ele começar.");
+    expect(s.price_empty_2).toBe("A Sprint de Descoberta, quando necessária, também é gratuita. A primeira etapa paga é o desenvolvimento, com preço fechado antes de ele começar.");
+    // O bloco com faixa mostra no máximo uma linha (a de desenvolvimento): a introdução fica no singular.
+    expect(s.price_ranges_intro).toMatch(/^Faixa de referência/);
   });
 
   it("com faixa: só a linha de desenvolvimento do tipo (a Descoberta é gratuita e não tem faixa, D44)", () => {

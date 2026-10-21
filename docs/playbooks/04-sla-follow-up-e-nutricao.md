@@ -96,10 +96,22 @@ Só começa **depois da apresentação ao vivo** (playbook 02 §9). Toda mensage
 | Toque | Quando | Conteúdo |
 |---|---|---|
 | D+3 | 3 dias depois da apresentação | "Na conversa, você perguntou sobre {objeção}. A resposta é {resposta curta}. Ficou mais alguma dúvida?" |
-| D+7 | 7 dias | material ligado à objeção: `/como-trabalhamos` (entregas a cada 2 semanas), `/sprint-de-descoberta` (para levar ao sócio), um case publicado do mesmo serviço (quando houver) |
+| D+7 | 7 dias | material ligado à objeção: `/como-trabalhamos` (entregas a cada 2 semanas; para levar ao sócio) ou um case publicado do mesmo serviço (quando houver). Desde a D44, a proposta em curso é de desenvolvimento ou de sustentação, não da Descoberta: `/sprint-de-descoberta` vai no 4a |
 | D+14 | 14 dias | encerramento: "Vou considerar que agora não é o momento e encerrar esta proposta. A validade era {data}. Se mudar, é só responder." |
 
 **Automação:** na planilha, as colunas `fu_d3`, `fu_d7` e `fu_d14` (05 §5) são calculadas a partir de `proposta_apresentada_em` e ficam vermelhas a partir do dia do toque até ele ser registrado em `fu_dN_feito_em` (`fu_d3_feito_em`, `fu_d7_feito_em`, `fu_d14_feito_em`: a data em que a mensagem saiu); depois do D+14 sem resposta, mude a etapa para Perdido (com `motivo_perda`) ou Adiado (com `proximo_passo_em`). Se a linha continuar em "6 Proposta apresentada" depois do D+14, ela inteira fica vermelha até ganhar um status final. Num CRM com automação (D15), crie as três tarefas automaticamente quando a etapa vira "Proposta apresentada". **Critério de aceite:** nenhuma oportunidade fica sem status final (ganho, perdido ou adiado com data) depois do D+14.
+
+## 4a. Devolutiva enviada, Descoberta combinada e sem início marcado (D44)
+
+Desde a D44 (21/10/2026), a devolutiva já leva a Sprint de Descoberta combinada no diagnóstico ("Podemos marcar o início?", 01 §6), sem proposta. Se o cliente não responde, nenhuma das outras cadências se aplica (o §3 é para quem não respondeu ao 1º contato, o §5 para lead C ou quem não marcou o diagnóstico, o §4 só depois de proposta apresentada). Conta a partir de `devolutiva_enviada_em`, com a linha em "5 Devolutiva enviada" (05 §5). Registre cada toque em `proximo_passo` e `proximo_passo_em`; o toque enviado vai em `observacoes`.
+
+| Toque | Quando | Conteúdo |
+|---|---|---|
+| D+3 | 3 dias depois da devolutiva | retomar a data de início: "Oi, {nome}. Sobre a Sprint de Descoberta que combinamos: consigo começar em {opção 1} ou {opção 2}. Algum dos dois funciona?" |
+| D+7 | 7 dias | material para repassar a quem decide: https://lemamon.dev/sprint-de-descoberta (o que a Descoberta entrega e que ela é gratuita) |
+| D+14 | 14 dias | encerramento: "Vou considerar que agora não é o momento e encerrar por aqui. Se mudar, é só responder." Mude a etapa para Adiado (com `proximo_passo_em`) ou Perdido (com `motivo_perda`) |
+
+**Critério de aceite:** nenhuma linha fica em "5 Devolutiva enviada", com a Descoberta combinada, sem próximo passo datado ou status final depois do D+14. Marcado o início, preencha `descoberta_iniciada_em` e mude a etapa para "7 Descoberta em andamento" (05 §5).
 
 ## 5. Sequência de retomada para leads C e para quem não marcou (B044)
 
@@ -357,10 +369,10 @@ O site manda visitantes de `/en/` e `/es/` para este mesmo número, com a mensag
 | `/prazo-es` | "El plazo se cierra antes del desarrollo, junto con el alcance y el precio. En el desarrollo, recibes software funcionando cada 2 semanas." |
 | `/metodo` | "Primeiro a gente combina, depois a gente constrói: https://lemamon.dev/como-trabalhamos?utm_source=whatsapp&utm_medium=resposta-rapida" |
 | `/dados` | "Usamos seus dados para responder ao seu pedido. Os detalhes estão na Política de Privacidade: https://lemamon.dev/privacidade" |
-| `/nda` | só depois de ligar `confirmacoes.nda` (com o NDA e o documento de segurança prontos, 02 §11): "Se o seu projeto pede sigilo, a gente assina o acordo antes de você compartilhar os detalhes e também responde ao questionário de segurança da sua empresa." |
+| `/nda` | só depois de ligar `confirmacoes.nda` (com o NDA e o documento de segurança prontos, 02 §11): "Se o seu projeto pede sigilo, a gente assina o acordo antes de você compartilhar os detalhes." (sem a promessa de responder questionário de segurança, que o dono não confirmou: 15 §3, `nda`) |
 | `/agenda` | só depois de preencher `dados/dono.json › agenda.url` (00 §B6): "Se preferir, escolha o horário direto: {link}" |
 
-**Etiquetas** = etapas do pipeline (playbook 05 §5): Novo · Contatado · Diagnóstico marcado · Devolutiva enviada · Proposta · Ganho · Perdido · Retomada · Não contatar.
+**Etiquetas** = etapas do pipeline (playbook 05 §5): Novo · Contatado · Diagnóstico marcado · Devolutiva enviada · Descoberta em andamento · Proposta · Ganho · Perdido · Retomada · Não contatar.
 
 **Regras:**
 - Toda conversa que vira oportunidade entra no CRM com protocolo `WA-…` e canal `whatsapp` (B058: medir a proporção de leads por WhatsApp).

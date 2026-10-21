@@ -184,7 +184,7 @@ describe("conditionalItems", () => {
       expect(answer, locale).toBe(t(locale, "faq.conditional.discovery_duration.answer_draft"));
       expect(answer, locale).not.toMatch(/\d/);
     }
-    expect(t("pt", "faq.conditional.discovery_duration.answer_draft")).toMatch(/definidas com você no diagnóstico/);
+    expect(t("pt", "faq.conditional.discovery_duration.answer_draft")).toMatch(/Quando a Descoberta é necessária, a duração é definida com você no diagnóstico/);
     // Sem a confirmação: nada.
     const noFlag = { ...owner, confirmacoes: { ...owner.confirmacoes, duracaoDescoberta: false } };
     expect(conditionalItems("pt", ["discovery_duration"], computeFeatures(baseSources(noFlag)), noFlag)).toEqual([]);

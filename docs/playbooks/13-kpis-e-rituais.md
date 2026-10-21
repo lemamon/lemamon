@@ -19,6 +19,8 @@
 
 Os 5 ficam numa linha por mês na aba `Financeiro` (§5), atualizada no ritual mensal (§6).
 
+**Acompanhamento da D44 (fora dos 5):** desde 21/10/2026 a Sprint de Descoberta é gratuita, e as horas dela são custo de pré-venda (02 §3). Para saber quanto esse custo rende, acompanhe **Diagnóstico → Descoberta** e **Descoberta → desenvolvimento**, com as fórmulas do 05 §8 (colunas `descoberta_iniciada_em` e `descoberta_encerrada_em`), numa linha por trimestre na aba `Relatório`, revista no ritual trimestral (§6). Meta: [PREENCHER] depois de 2 trimestres de linha de base.
+
 "Medir 5 KPIs de verdade vale mais que listar 20 num painel que ninguém abre."
 
 ## 2. Linha de base e meta (B373)

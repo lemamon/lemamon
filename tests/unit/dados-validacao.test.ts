@@ -475,7 +475,7 @@ describe("texto de EXEMPLO da camada fictícia nunca vale no dado real", () => {
   it("qualquer campo do dono.json com texto de exemplo derruba a validação, com o caminho", () => {
     const doc = copia();
     doc.descoberta.formato = { pt: "encontros remotos (exemplo)", en: "remote sessions", es: "encuentros remotos" };
-    doc.confirmacoes.pagamento = { pt: "Condições de exemplo: parcelas ligadas às entregas.", en: "Payment in instalments.", es: "Pago en cuotas." };
+    doc.confirmacoes.pagamento = { pt: "Condições de exemplo: parcelas ligadas às entregas.", en: "Payment in installments.", es: "Pago en cuotas." };
     doc.sustentacao.inclui = { pt: "Exemplo: correção de erros.", en: "Bug fixes.", es: "Corrección de errores." };
     const issues = donoIssues(doc).join("\n");
     expect(issues).toMatch(/dados\/dono\.json › descoberta\.formato\.pt: texto de EXEMPLO da camada fictícia \(marcado "\(exemplo\)"\)/);

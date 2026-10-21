@@ -327,7 +327,7 @@ Gerado a partir dos 7 docs de especialistas. 606 pontos brutos → 387 itens ap�
 | B311 | P2 | aberto | Criar o lead magnet 'Checklist: 12 perguntas antes de contratar desenvolvimento' | none |
 | B354 | P2 | aberto | Empacotar e publicar a oferta Sprint de Descoberta | fatos operacionais |
 | B355 | P2 | aberto | Adotar preço fechado como modelo principal e nunca expor preço-hora | preço |
-| B356 | P2 | aberto | Definir o teto acima do qual a descoberta paga é obrigatória | preço |
+| B356 | P2 | premissa inválida | Definir o teto acima do qual a descoberta paga é obrigatória (sem objeto desde a D44, 21/10/2026: a Descoberta é gratuita e só acontece quando o diagnóstico mostra que é necessária; o que sobra, um critério interno para recomendá-la, fica na D04 do playbook 15) | preço |
 | B363 | P2 | aberto | Padronizar a proposta comercial e apresentá-la ao vivo | fatos operacionais |
 | B365 | P2 | aberto | Criar templates de escopo detalhado e contrato com cláusulas de proteção | fatos operacionais |
 | B366 | P2 | aberto | Exigir 30% de entrada antes do kickoff e pagamento por marcos | fatos operacionais |

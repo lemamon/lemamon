@@ -1,5 +1,7 @@
 # 7. Modelo de Negócio, Oferta e Comercial
 
+> **Superado pela D44 (21/10/2026):** a Sprint de Descoberta é gratuita e só acontece quando o diagnóstico mostra que é necessária (necessidade e duração definidas com o cliente no diagnóstico). Os trechos deste documento que falam em "descoberta paga" ou "Descoberta paga obrigatória" são a estratégia original, mantida como histórico; o modelo vigente está no [registro de decisões](../playbooks/15-registro-de-decisoes.md) (D44) e no [02](../playbooks/02-proposta-e-politica-comercial.md).
+
 > Documento de arquitetura de melhoria do site — lemamon.dev
 > Escopo desta seção: o que a Lemamon vende, como cobra, como qualifica e como fecha.
 > Tudo que não está no repositório está marcado como `[PREENCHER]`. Toda faixa de preço está marcada como `[ESTIMATIVA DE MERCADO — validar com o custo real da Lemamon]`.
@@ -188,7 +190,7 @@ Mesma quantidade de cliques, posicionamento invertido: o cliente escolhe o **mom
 
 ### 7.3.2. Recomendação
 
-**Modelo principal: preço fechado por escopo, com descoberta paga obrigatória antes de todo preço fechado relevante.**
+**Modelo principal: preço fechado por escopo, com descoberta paga obrigatória antes de todo preço fechado relevante.** _(Superado pela D44, 21/10/2026: preço fechado por escopo continua; a Descoberta é gratuita e só acontece quando necessária. Ver a nota no topo.)_
 **Modelo secundário e alvo estratégico: mensalidade recorrente (Ofertas 3 e 4), com meta de cobrir o custo fixo da operação.**
 **Hora: apenas como exceção controlada** — extensões pequenas para cliente existente, auditorias, consultoria pontual. Nunca como oferta principal e nunca publicada no site.
 
@@ -219,7 +221,7 @@ O site hoje tem uma única porta: preencher o wizard e esperar. Não há nada en
 |---|---|---|
 | **Diagnóstico 100% gratuito, sem limite** | Volume alto de leads | Atrai curioso, consome as horas mais caras da empresa (as do dono), desvaloriza a expertise e não filtra nada. É exatamente o pré-venda gratuito que a Lemamon já faz hoje sem perceber |
 | **Sprint de Descoberta paga como primeira oferta** | Filtra bem, margem boa | Barreira alta demais para quem nunca ouviu falar da empresa. Poucos compram R$ 10 mil de um site sem prova social |
-| **Diagnóstico gratuito curto e estruturado, com entregável, seguido de proposta de Descoberta paga** | Baixa fricção na entrada, filtra por agenda e por resposta às perguntas de qualificação, gera entregável que já demonstra competência | Exige disciplina de tempo para não virar consultoria de graça |
+| **Diagnóstico gratuito curto e estruturado, com entregável, seguido de proposta de Descoberta paga** _(superado pela D44: hoje, seguido da Descoberta gratuita, quando necessária, ou da proposta de desenvolvimento)_ | Baixa fricção na entrada, filtra por agenda e por resposta às perguntas de qualificação, gera entregável que já demonstra competência | Exige disciplina de tempo para não virar consultoria de graça |
 
 ### Recomendação
 
@@ -230,7 +232,7 @@ Como funciona:
 1. O visitante completa o wizard (que agora qualifica — ver 7.5) e agenda a conversa **direto na agenda**, sem ida e volta de e-mail.
 2. A conversa é de **45 minutos, com hora de fim respeitada**, roteirizada: problema, o que já tentaram, quem usa, o que precisa acontecer, restrição de prazo e orçamento.
 3. Em até 2 dias úteis, o lead recebe uma **devolutiva escrita de 1 página**: entendimento do problema, os 3 principais riscos que a Lemamon enxerga, o caminho recomendado, e a faixa de investimento provável.
-4. A devolutiva termina com a proposta de **Sprint de Descoberta paga**, ou com a proposta direta do MVP quando o escopo já estiver claro.
+4. A devolutiva termina com a proposta de **Sprint de Descoberta paga**, ou com a proposta direta do MVP quando o escopo já estiver claro. _(Superado pela D44, 21/10/2026: a devolutiva leva a Descoberta gratuita já combinada, quando ela é necessária, ou a proposta de desenvolvimento.)_
 
 **Por que essa e não outra:**
 - É gratuito o suficiente para ter volume, e escasso o suficiente (45 min, agenda limitada) para não virar balcão.
@@ -463,7 +465,7 @@ Cobertura atual: `[PREENCHER]`
 - Piso de margem bruta por oferta (sugestão: 40%). Proposta abaixo do piso exige aprovação consciente do sócio, com motivo registrado.
 - Colchão de risco de 20–30% em toda estimativa de preço fechado.
 - **Medir horas reais gastas por projeto** e comparar com o orçado. Sem esse número não existe aprendizado de precificação — a empresa repete o mesmo erro por anos.
-- Descoberta paga elimina a maior fonte de erro: orçar o desconhecido.
+- Descoberta paga elimina a maior fonte de erro: orçar o desconhecido. _(Superado pela D44, 21/10/2026: a Descoberta é gratuita e condicional; o argumento continua valendo para ela, sem a cobrança.)_
 
 **Situação atual:** custo-hora interno `[PREENCHER]` · margem média por projeto `[PREENCHER]`
 
@@ -565,8 +567,8 @@ Cobertura atual: `[PREENCHER]`
 
 1. O wizard atual vende **cargos** (UX/UI, Front-end, Back-end) misturados com um resultado (Solução Completa) — e isso posiciona a Lemamon como mão de obra por hora, contradizendo o próprio copy institucional do site.
 2. Substituir por **4 ofertas nomeadas** — Sprint de Descoberta, MVP em 8–12 semanas, Squad Dedicado e Sustentação — em que o cliente escolhe **o estágio dele**, não o cargo que quer contratar.
-3. Modelo de precificação principal: **preço fechado**, sempre precedido de **descoberta paga**; recorrente como alvo estratégico; hora só como exceção.
-4. Isca de entrada: **diagnóstico gratuito de 45 min com devolutiva escrita**, que vende a Descoberta paga.
+3. Modelo de precificação principal: **preço fechado**, sempre precedido de **descoberta paga**; recorrente como alvo estratégico; hora só como exceção. _(Superado pela D44, 21/10/2026: a Descoberta é gratuita e só acontece quando necessária; nada é cobrado antes do desenvolvimento.)_
+4. Isca de entrada: **diagnóstico gratuito de 45 min com devolutiva escrita**, que vende a Descoberta paga. _(Superado pela D44: no diagnóstico se define com o cliente se a Descoberta, gratuita, é necessária.)_
 5. Qualificar no wizard com **3 perguntas no fim** (estágio, prazo, faixa de orçamento) mais empresa e papel na decisão no formulário, sempre com saída digna para quem não sabe.
 6. Hoje o lead **vira um e-mail e morre num inbox**: sem CRM, sem persistência, sem confirmação ao lead, sem SLA, sem follow-up — e com botões sem handler na própria tela de sucesso.
 7. Riscos prioritários: concentração de clientes, preço abaixo do custo, escopo aberto, inadimplência, dependência de pessoa-chave e ausência total de prova social.

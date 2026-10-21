@@ -47,7 +47,8 @@ export function highlightedStage(answers: Answers): "discovery" | "support" {
 
 /**
  * Desde a D44 (21/10/2026) a Descoberta só acontece quando o diagnóstico mostra
- * que é necessária, para todo lead: os textos base já são condicionais, e as
+ * que é necessária, para todo lead: os textos base já são condicionais (inclusive
+ * emphasis.discovery_default, "Quando a Sprint de Descoberta é necessária…"), e as
  * antigas variantes "skip" (confirmacoes.semDescoberta) viraram o texto base.
  */
 export function emphasisKey(answers: Answers): EmphasisKey {

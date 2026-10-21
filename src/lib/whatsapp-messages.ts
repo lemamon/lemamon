@@ -51,7 +51,7 @@ export function wizardQuestionMessage(locale: Locale): string {
 }
 
 /**
- * "Já fez o diagnóstico e a Descoberta ficou definida?" (faixa depois do hero e
+ * "Já fez o diagnóstico e combinou com a gente a Sprint de Descoberta?" (faixa depois do hero e
  * CTA final da Sprint, discovery_sprint._notes.already_diagnosed): quem já fez
  * o diagnóstico combina o início, sem passar pelo wizard de novo.
  */

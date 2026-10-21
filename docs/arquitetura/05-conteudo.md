@@ -1,5 +1,7 @@
 # 05 — Conteúdo, Copy e Narrativa
 
+> **Superado pela D44 (21/10/2026):** a Sprint de Descoberta é gratuita e só acontece quando o diagnóstico mostra que é necessária (necessidade e duração definidas com o cliente no diagnóstico). Os trechos deste documento que falam em "descoberta paga" ou "Descoberta paga obrigatória" são a estratégia original, mantida como histórico; o modelo vigente está no [registro de decisões](../playbooks/15-registro-de-decisoes.md) (D44) e no [02](../playbooks/02-proposta-e-politica-comercial.md).
+
 > Escopo desta seção: auditoria do copy em produção, definição de mensagem central, copy final pronto para colar, estrutura da narrativa "Como trabalhamos", estratégia de prova social, plano editorial do blog, estratégia de i18n e guia de tom de voz.
 >
 > Fontes analisadas: `src/locales/pt-BR/translation.json`, `src/locales/en/translation.json`, `src/locales/es/translation.json`, `src/pages/Projects/project-questions.json`, `src/pages/Projects/data.json`, `src/data/posts.ts`, `src/pages/Home/index.tsx`, `src/components/ContentBlock/index.tsx`, `src/components/Header/index.tsx`, `src/components/Footer/index.tsx`, `src/translation.ts`, `index.html`.
@@ -228,7 +230,7 @@ Antes de escrever a mensagem central é preciso escolher um posicionamento. Abai
 | A favor | Contra |
 |---|---|
 | **É o que o site já é hoje**, feito direito: o wizard em `/projects` já pressupõe escopo fechado (serviço → tipo → segmento → adicionais) | "Ponta a ponta" é a promessa mais comum do mercado — a diferenciação precisa vir 100% do **mecanismo**, não da promessa |
-| Não exige case de nicho: exige mostrar **processo**, que a Lemamon controla e pode publicar amanhã | Escopo fechado transfere risco para a agência; sem descoberta paga, mata a margem |
+| Não exige case de nicho: exige mostrar **processo**, que a Lemamon controla e pode publicar amanhã | Escopo fechado transfere risco para a agência; sem descoberta paga, mata a margem _(superado pela D44: a Descoberta é gratuita, e as horas dela entram como custo de pré-venda, 02 §3)_ |
 | Ataca o medo real do comprador de PME/scale-up: "vou pagar, vai atrasar e não vai funcionar" | Ticket menor que o da Hipótese B, sem recorrência automática |
 | Permite a "Como trabalhamos" que o cliente **pediu explicitamente** — ela vira a seção-herói da página | Precisa de disciplina operacional: se você prometer entrega quinzenal e não entregar, o copy vira passivo |
 

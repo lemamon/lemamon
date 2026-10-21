@@ -181,7 +181,7 @@ Esta devolutiva é sua. Pode repassar a quem decide com você.
 
 Se combinamos que a Descoberta não é necessária: "…Junto vai a proposta de desenvolvimento. Posso te apresentar a proposta em uma conversa curta? Tenho {opção 1} ou {opção 2}." Se a recomendação for um pacote (só com D03 = sim), troque "a proposta de desenvolvimento" por "a proposta do pacote {nome}".
 
-(Toda proposta paga é apresentada ao vivo: playbook [02](02-proposta-e-politica-comercial.md) §9. O plano da Descoberta, gratuita, segue o 02 §7.)
+(Toda proposta paga é apresentada ao vivo: playbook [02](02-proposta-e-politica-comercial.md) §9. O combinado da Descoberta, gratuita, segue o 02 §7; o plano com prazo e preço, entregue no fim dela, é a proposta de desenvolvimento do 02 §8.)
 
 ## 7. Agenda e limite semanal de diagnósticos (B359, B053)
 
@@ -207,6 +207,6 @@ Se combinamos que a Descoberta não é necessária: "…Junto vai a proposta de 
 |---|---|---|---|
 | Comparecimento | diagnósticos feitos ÷ marcados | CRM | [PREENCHER] |
 | Devolutiva no prazo interno | devolutivas no prazo ÷ devolutivas enviadas | CRM | 100% |
-| Diagnóstico → Descoberta iniciada | Descobertas iniciadas ÷ diagnósticos feitos | CRM | [PREENCHER] |
+| Diagnóstico → Descoberta iniciada | Descobertas iniciadas ÷ diagnósticos feitos | CRM: `descoberta_iniciada_em` (fórmula no 05 §8; acompanhamento no 13 §1) | [PREENCHER] |
 | Diagnóstico → proposta de desenvolvimento | propostas de desenvolvimento enviadas ÷ diagnósticos feitos | CRM | [PREENCHER] (07 §7.9.1 cita 70% de diagnóstico → proposta como estimativa de mercado) |
 | Tempo do pedido ao diagnóstico | mediana em dias úteis | CRM | [PREENCHER] |

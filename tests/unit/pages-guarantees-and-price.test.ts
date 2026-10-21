@@ -20,7 +20,7 @@ import { join } from "node:path";
 import { describe, expect, inject, it } from "vitest";
 
 import { ANCHORS, urlFor, type RouteKey } from "@/config/routes";
-import { t, type Locale } from "@/i18n";
+import { t, tDynamic, type Locale } from "@/i18n";
 import { fileForPath, textOf } from "@/integrations/verify-build";
 
 const LOCALES: Locale[] = ["pt", "en", "es"];
@@ -172,6 +172,29 @@ describe("D44: Sprint de Descoberta gratuita, só quando necessária, sem protó
         expect(text, `${locale} ${route}`).not.toContain(TYPICAL_DURATION[locale]);
         expect(text, `${locale} ${route}`).not.toMatch(paid[locale]);
       }
+    }
+  });
+
+  it("revisão da D44: a Descoberta não aparece como certa nem repetida no FAQ vizinho", () => {
+    const discovery = { pt: /Descoberta/, en: /Discovery/, es: /Descubrimiento|Sprint/ } as const;
+    const priceAnswers = [
+      "faq.items.how_much.answer",
+      "faq.items.free_estimate.answer",
+      ...["web_systems", "mobile_apps", "integrations", "mvp"].map((service) => `services.${service}.faq.price.answer`),
+    ];
+    for (const locale of LOCALES) {
+      // "Diagnóstico e Descoberta gratuitos" fica só em pay_before_development, que nunca sai pelo teto
+      // e vem ao lado dessas respostas na Home, em /quanto-custa e nas 4 páginas de projeto.
+      for (const key of priceAnswers) expect(tDynamic(locale, key), `${locale} ${key}`).not.toMatch(discovery[locale]);
+      // A tabela de /sprint-de-descoberta compara com orçar sem entender o problema, não com "sem Descoberta":
+      // quem não precisa da Descoberta também recebe escopo, prazo e preço fechados (when_discovery).
+      const col = t(locale, "discovery_sprint.why_start_here.col_without");
+      expect(col, locale).not.toMatch(discovery[locale]);
+      expect(textOf(section(page("discovery_sprint", locale), "por-que-comecar-aqui")), locale).toContain(col);
+      // /como-trabalhamos: a frase-síntese do hero e a meta description ressalvam a Descoberta.
+      const whenNeeded = { pt: /(quando|se) necessária/, en: /when needed/, es: /si hace falta/ } as const;
+      expect(t(locale, "how_we_work.hero.subtitle"), locale).toMatch(whenNeeded[locale]);
+      expect(t(locale, "meta.how_we_work.description"), locale).toMatch(whenNeeded[locale]);
     }
   });
 

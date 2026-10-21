@@ -62,7 +62,7 @@ Preço mínimo = (horas estimadas × (1 + colchão de risco) × F) ÷ (1 − G �
 
 - Proposta abaixo do preço mínimo só com aprovação do sócio e motivo registrado no CRM.
 - O preço apresentado ao cliente é o **valor da entrega**, nunca horas × taxa (§4).
-- Critério de aceite: cada oferta paga (desenvolvimento por tipo, sustentação) tem a conta feita na planilha com margem ≥ G. A Sprint de Descoberta é gratuita (D44): as horas dela são custo de pré-venda e entram na linha D (recomendação; confirme na próxima revisão da planilha). Acompanhe a taxa Descoberta → desenvolvimento (13 §1) para saber quanto esse custo rende.
+- Critério de aceite: cada oferta paga (desenvolvimento por tipo, sustentação) tem a conta feita na planilha com margem ≥ G. A Sprint de Descoberta é gratuita (D44): as horas dela são custo de pré-venda e entram na linha D (recomendação; confirme na próxima revisão da planilha). Acompanhe a taxa Descoberta → desenvolvimento (fórmula no 05 §8; linha no 13 §1) para saber quanto esse custo rende.
 
 ## 4. Política comercial (B355)
 
@@ -121,12 +121,12 @@ Pacote com margem calculada abaixo de 40% não entra na tabela. Exceção só co
 
 Quando o texto estiver aprovado e igual ao contrato, ele pode ir ao site em `confirmacoes.pagamento` (00 §B5).
 
-## 7. Modelo do plano da Sprint de Descoberta, gratuita (B354)
+## 7. Modelo do combinado da Sprint de Descoberta, gratuita (B354)
 
-Desde a D44 (21/10/2026), a Descoberta é gratuita: este documento é o registro escrito do que foi combinado no diagnóstico, sem preço nem validade. Use o idioma do cliente. Mantenha os **3 entregáveis exatamente como o site** (BLUEPRINT §5.2); qualquer entregável a mais só depois de confirmado e escrito também no site. O protótipo não é entregue na Descoberta (opção "Sem protótipo" do dono: quando fizer parte do escopo, entra no desenvolvimento; o site não diz isso).
+Desde a D44 (21/10/2026), a Descoberta é gratuita: este documento é o **combinado** escrito do que foi definido no diagnóstico (escopo da Descoberta, duração, participantes, exclusões), sem preço nem validade. Não o chame de "plano": no site e no item 3 abaixo, "plano" é a entrega final da Descoberta, com prazo e preço fechados (a proposta de desenvolvimento, §8), e o FAQ "O plano da Descoberta é meu?" fala dessa entrega. Use o idioma do cliente. Mantenha os **3 entregáveis exatamente como o site** (BLUEPRINT §5.2); qualquer entregável a mais só depois de confirmado e escrito também no site. O protótipo não é entregue na Descoberta (opção "Sem protótipo" do dono: quando fizer parte do escopo, entra no desenvolvimento; o site não diz isso).
 
 ```
-PLANO DA SPRINT DE DESCOBERTA (gratuita)
+COMBINADO DA SPRINT DE DESCOBERTA (gratuita)
 {Empresa} · Pedido {protocolo} · {data}
 
 1. Contexto
@@ -172,9 +172,11 @@ Nome, cargo, empresa, data de início.
 
 ## 8. Modelo de proposta de desenvolvimento (com sustentação pré-precificada, B109)
 
+Quando a Descoberta acontece, esta proposta é o "plano com prazo e preço fechados" que o site promete como 3ª entrega (BLUEPRINT §5.2). Quando ela não é necessária, é o mesmo documento, com escopo, prazo e preço fechados a partir do escopo que o cliente já trouxe.
+
 ```
 PROPOSTA — DESENVOLVIMENTO
-{Empresa} · Referência: plano da Sprint de Descoberta de {data} (ou devolutiva de {data}, quando a Descoberta não foi necessária) · Válida até {data + validade (§4, item 5)}
+{Empresa} · Referência: Sprint de Descoberta concluída em {data} (ou devolutiva de {data}, quando a Descoberta não foi necessária) · Válida até {data + validade (§4, item 5)}
 
 1. O que vamos construir
 {Resumo do escopo priorizado. O detalhamento item a item vai no anexo de escopo (§10).}

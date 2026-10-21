@@ -225,8 +225,8 @@ test.describe("resumo: o que é do visitante primeiro (F02, F09)", () => {
       await expect(root).toContainText(s.factors.factor_deadline_window);
       await expect(root).toContainText(s.topics.topic_deadline);
       await expect(root).toContainText(s.deadline_note_window);
-      // D44: sem faixa publicada, o bloco de preço diz que Diagnóstico e Descoberta são gratuitos
-      // e que a primeira etapa paga é o desenvolvimento, com preço fechado antes.
+      // D44: sem faixa publicada, o bloco de preço diz que a Descoberta, quando necessária, também
+      // é gratuita e que a primeira etapa paga é o desenvolvimento, com preço fechado antes.
       await expect(root).toContainText(s.price_empty_2);
 
       // Chips abertos (nunca num <details> fechado); o método completo, sim, recolhido.
