@@ -47,6 +47,10 @@ describe("/contato", () => {
 });
 
 describe("/orcamento/enviado", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   const summary: SentSummary = {
     v: 1,
     protocol: "LEM-20261019-ABCD",
@@ -104,7 +108,12 @@ describe("/orcamento/enviado", () => {
     expect(document.querySelector<HTMLElement>("[data-sent-cases]")?.hidden).toBe(false);
   });
 
-  it("F10: confirma o contato pelo canal, 'Algum dado errado?' com o código e o topo com o código", () => {
+  it("F10: confirma o contato pelo canal, 'Algum dado errado?' com o código e o topo com o código", async () => {
+    // Os links com o código só existem com número de WhatsApp: o número de
+    // TESTE do E2E, sem depender do .env.local (o CI não tem nenhum).
+    vi.resetModules();
+    vi.stubEnv("PUBLIC_WHATSAPP_NUMBER", "5548900000000");
+    const { personalize } = await import("@/components/quote-sent/sent-page");
     document.body.innerHTML = `
       <header><a data-wizard-help href="https://wa.me/5548900000000?text=gen%C3%A9rico">Dúvidas?</a></header>
       <span data-sent-contact data-whatsapp="A gente fala com você pelo WhatsApp {contato} para marcar." data-email="A gente escreve para {contato}.">genérico</span>
