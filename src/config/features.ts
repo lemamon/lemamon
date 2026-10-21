@@ -2,7 +2,7 @@
  * features.ts — ÚNICA fonte das flags when_data (BLUEPRINT §4). Dono: gated.
  *
  * Páginas, Header, Footer, sitemap, mapa de rotas e hreflang consultam SÓ daqui.
- * Nada de checar `precos.descoberta !== null` num componente: pergunte à flag.
+ * Nada de checar `precos.sustentacao !== null` num componente: pergunte à flag.
  *
  * Uso (frontmatter .astro ou getStaticPaths):
  *   const features = await getFeatures();
@@ -25,9 +25,8 @@
  *   hasCompanyData      razão social + CNPJ válido
  *   hasAboutIntro       empresa.apresentacao nos 3 idiomas
  *   hasAboutStory       empresa.historia (≥ 1 parágrafo) nos 3 idiomas
- *   hasDiscoveryFormat  os 4 campos de descoberta.ts nos 3 idiomas
- *   hasDiscoveryDuration  descoberta.duracao nos 3 idiomas + (confirmacoes.duracaoDescoberta
- *                       ou hasDiscoveryFormat): a duração típica sai sozinha (D42)
+ *   hasDiscoveryFormat  os 3 campos de descoberta.ts (formato, participantes, ritmo)
+ *                       nos 3 idiomas; a duração não conta nem é publicada (D44)
  *   hasDiscoveryExclusions  descoberta.naoInclui com ≥ 1 item nos 3 idiomas
  *   hasSupportFormat    inclui + contratacao + canais nos 3 idiomas
  *   hasEngineering      ≥ 1 campo de engenharia.ts nos 3 idiomas
@@ -49,7 +48,7 @@ import { LOCALES, type Locale } from "../i18n/locales";
 import { agenda, agendaReal, type Agenda } from "./agenda";
 import { CNPJ_FICTICIO } from "./camada-ficticia";
 import { confirmacoes, confirmacoesReais, type Confirmacoes } from "./confirmacoes";
-import { descoberta, descobertaReal, type Descoberta } from "./descoberta";
+import { descoberta, descobertaReal, DISCOVERY_FIELDS, type Descoberta } from "./descoberta";
 import { ARQUIVO_DONO, comCamadaFicticia, MODO_FICTICIO, SECOES_DONO } from "./dono";
 import { empresa, empresaReal, isValidCnpj, type Empresa } from "./empresa";
 import { ENGINEERING_FIELDS, engenharia, engenhariaReal, type Engenharia, type EngineeringField } from "./engenharia";
@@ -103,17 +102,12 @@ export interface Features {
   hasAboutIntro: boolean;
   /** "Por que a gente trabalha assim" (empresa.historia) nos 3 idiomas. */
   hasAboutStory: boolean;
-  /** Os 4 campos de descoberta.ts completos. */
-  hasDiscoveryFormat: boolean;
   /**
-   * Duração típica da Descoberta publicável (D42): descoberta.duracao nos 3
-   * idiomas e, além dela, a confirmação do dono (duracaoDescoberta) ou o
-   * formato completo. Libera a duração no FAQ discovery_duration
-   * (answer_with_duration), na tag da etapa 2 (tag_long_with_duration) e no
-   * hero de /sprint-de-descoberta, sempre com "depende do tamanho do problema"
-   * e "combinada antes de começar". Não exige formato, participantes nem ritmo.
+   * Os 3 campos de DISCOVERY_FIELDS (formato, participantes, ritmo) completos.
+   * A duração da Descoberta não entra nem é publicada: ela é definida com o
+   * cliente no diagnóstico (decisão do dono de 21/10/2026, D44, que revoga a D42).
    */
-  hasDiscoveryDuration: boolean;
+  hasDiscoveryFormat: boolean;
   /** "O que a Descoberta não inclui": descoberta.naoInclui com ≥ 1 item nos 3 idiomas (B354). */
   hasDiscoveryExclusions: boolean;
   /** inclui + contratacao + canais completos em sustentacao.ts. */
@@ -345,8 +339,6 @@ export function computeFeatures(src: FeatureSources): Features {
     semDescoberta: c.semDescoberta,
     duracaoDescoberta: c.duracaoDescoberta,
     planoDoCliente: c.planoDoCliente,
-    descobertaAbatida: c.descobertaAbatida,
-    descobertaUnicoCusto: c.descobertaUnicoCusto,
     migracaoDados: c.migracaoDados,
     ligacao: c.ligacao,
     valoresNoDiagnostico: c.valoresNoDiagnostico,
@@ -365,7 +357,7 @@ export function computeFeatures(src: FeatureSources): Features {
 
   const d = src.descoberta;
   const s = src.sustentacao;
-  const hasDiscoveryFormat = [d.formato, d.participantes, d.ritmo, d.duracao].every((value) => isFilledText(value));
+  const hasDiscoveryFormat = DISCOVERY_FIELDS.every(([field]) => isFilledText(d[field]));
   const companies = new Set(src.content.logos.map((logo) => (logo.empresa ?? logo.id).trim().toLocaleLowerCase("pt-BR")));
   const hasTestimonials = src.content.depoimentos.length >= THRESHOLDS.testimonials;
 
@@ -383,7 +375,6 @@ export function computeFeatures(src: FeatureSources): Features {
     hasAboutIntro: isFilledText(src.empresa.apresentacao),
     hasAboutStory: isFilledList(src.empresa.historia, 1),
     hasDiscoveryFormat,
-    hasDiscoveryDuration: isFilledText(d.duracao) && (c.duracaoDescoberta || hasDiscoveryFormat),
     hasDiscoveryExclusions: isFilledList(d.naoInclui, 1),
     hasSupportFormat: SUPPORT_REQUIRED_FIELDS.every((field) => isFilledText(s[field])),
     hasEngineering: engineeringFields.length >= 1,

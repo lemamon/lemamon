@@ -11,6 +11,10 @@
  *   pergunta do banco que as 4 páginas de projeto já usam (faq.items.wont_stall),
  *   sem fato novo. Nunca sai pelo teto.
  *
+ * - `pay_before_development` ("Pago alguma coisa antes do desenvolvimento?")
+ *   abre a página no lugar de why_discovery_paid desde 21/10/2026 (D44: a
+ *   Sprint de Descoberta é gratuita) e nunca sai pelo teto.
+ *
  * Teto de 9 visíveis; com todas as flags são 13 itens, e saem os 4 primeiros
  * visíveis de HWW_FAQ_REMOVAL. discovery_duration e discovery_plan_ownership
  * saem antes dos outros condicionais porque /sprint-de-descoberta, ligada em
@@ -19,7 +23,7 @@
 import type { FaqEntry } from "@/components/services/kit/faq-compose";
 
 export const HWW_FAQ: readonly FaqEntry[] = [
-  { bank: "why_discovery_paid" },
+  { bank: "pay_before_development" },
   { bank: "how_long" },
   { bank: "wont_stall" },
   { bank: "diagnosis_commitment" },
@@ -45,7 +49,7 @@ export const HWW_FAQ_REMOVAL = [
 
 /** Perguntas que o teto nunca tira desta página (dinheiro, prazo, risco, mudança e código). */
 export const HWW_FAQ_NEVER_REMOVED = [
-  "why_discovery_paid",
+  "pay_before_development",
   "how_long",
   "wont_stall",
   "scope_change",

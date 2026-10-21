@@ -21,8 +21,10 @@
  *
  * Teto de 9 visíveis; acima disso, cada página tira os itens na ordem da SUA
  * lista em SERVICE_FAQ_REMOVAL. Nunca saem: SERVICE_FAQ_NEVER_REMOVED (price,
- * why_discovery_paid, how_long_*, wont_stall, scope_change, code_ownership,
- * nda e data_access). how_follow_progress pode sair em sistemas web e
+ * pay_before_development, how_long_*, wont_stall, scope_change, code_ownership,
+ * nda e data_access). pay_before_development ("Pago alguma coisa antes do
+ * desenvolvimento?") entrou no lugar de why_discovery_paid em 21/10/2026 (D44:
+ * a Sprint de Descoberta é gratuita), na mesma posição. how_follow_progress pode sair em sistemas web e
  * aplicativos: wont_stall, logo acima, já diz que a cada 2 semanas você recebe
  * uma parte funcionando. Pior caso testado em tests/unit/pages-faq.test.ts.
  */
@@ -37,7 +39,7 @@ export const SERVICE_FAQ: Readonly<Record<ServiceKey, readonly FaqEntry[]>> = {
     { own: "start_with_part" },
     { cond: "data_migration" },
     { own: "price" },
-    { bank: "why_discovery_paid" },
+    { bank: "pay_before_development" },
     { own: "how_long_system" },
     { bank: "wont_stall" },
     { cond: "scope_change" },
@@ -52,7 +54,7 @@ export const SERVICE_FAQ: Readonly<Record<ServiceKey, readonly FaqEntry[]>> = {
     { own: "ios_android" },
     { own: "store_publishing" },
     { own: "price" },
-    { bank: "why_discovery_paid" },
+    { bank: "pay_before_development" },
     { own: "how_long_app" },
     { bank: "wont_stall" },
     { cond: "scope_change" },
@@ -67,7 +69,7 @@ export const SERVICE_FAQ: Readonly<Record<ServiceKey, readonly FaqEntry[]>> = {
     { own: "data_access" },
     { own: "integrate_or_replace" },
     { own: "price" },
-    { bank: "why_discovery_paid" },
+    { bank: "pay_before_development" },
     { own: "how_long_integration" },
     { bank: "wont_stall" },
     { cond: "scope_change" },
@@ -78,7 +80,7 @@ export const SERVICE_FAQ: Readonly<Record<ServiceKey, readonly FaqEntry[]>> = {
   mvp: [
     { own: "price" },
     { own: "how_long_mvp" },
-    { bank: "why_discovery_paid" },
+    { bank: "pay_before_development" },
     { cond: "discovery_duration" },
     { own: "wont_stall" },
     { cond: "code_ownership" },
@@ -110,7 +112,8 @@ export const SERVICE_FAQ_DIAGNOSIS_LINK: Readonly<Partial<Record<ServiceKey, rea
 
 /**
  * Ordem de remoção acima do teto de 9, por página (services._notes.faq_composition).
- * Com os dados de hoje (escopo, código, NDA e duração da Descoberta ligados):
+ * Com os dados de hoje (escopo, código, NDA e duração da Descoberta ligados;
+ * a duração sem número desde a D44):
  * sistemas web tira need_tech_knowledge e start_with_part; aplicativos,
  * store_publishing e how_follow_progress; integrações, need_tech_knowledge;
  * MVP, what_is_mvp e after_mvp.
@@ -126,7 +129,7 @@ export const SERVICE_FAQ_REMOVAL: Readonly<Record<ServiceKey, readonly string[]>
 /** Perguntas que o teto nunca tira (as objeções de dinheiro, prazo, risco, mudança, código e sigilo). */
 export const SERVICE_FAQ_NEVER_REMOVED = [
   "price",
-  "why_discovery_paid",
+  "pay_before_development",
   "how_long_system",
   "how_long_app",
   "how_long_integration",

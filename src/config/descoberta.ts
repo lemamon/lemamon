@@ -4,37 +4,36 @@
  *  O DADO MORA EM dados/dono.json › descoberta. VAZIO POR PADRÃO.
  * ============================================================================
  *
+ * DECISÃO DO DONO DE 21/10/2026 (D44, revoga a D42): a Sprint de Descoberta é
+ * gratuita, só acontece quando o diagnóstico gratuito mostra que ela é
+ * necessária, e a necessidade e a duração são definidas com o cliente no
+ * diagnóstico. A duração NÃO é publicada: `duracao` fica null (o build recusa
+ * outro valor, src/config/validate.ts) e nenhuma página a mostra.
+ *
  * PARA O DONO — o que preencher em dados/dono.json (cada campo POR IDIOMA, 1–2 frases, até 300 caracteres)
  *   formato        como a Descoberta é organizada (ex.: encontros remotos e uma
  *                  apresentação do plano no fim).
  *   participantes  quem participa, do seu lado e do lado do cliente (só papéis).
  *   ritmo          a cadência dos encontros.
- *   duracao        quanto tempo ela leva, em geral (D42: "em geral 1 semana").
- *                  Pode vir SOZINHA: com confirmacoes.duracaoDescoberta, a duração
- *                  típica já vai ao ar (features.hasDiscoveryDuration), mesmo com
- *                  os outros 3 campos vazios.
+ *   duracao        sempre null (D44): a duração é definida com o cliente no
+ *                  diagnóstico, caso a caso, e não vai ao site.
  *   naoInclui      O QUE A DESCOBERTA NÃO INCLUI (opcional): 1 a 5 itens curtos POR
  *                  IDIOMA, até 120 caracteres cada (ex.: o desenvolvimento em si, a
  *                  hospedagem). null = o bloco não aparece.
  *
- * O QUE LIBERA (features.hasDiscoveryFormat — exige OS 4 campos nos 3 idiomas)
+ * O QUE LIBERA (features.hasDiscoveryFormat — exige OS 3 campos de
+ * DISCOVERY_FIELDS nos 3 idiomas)
  *   - Seção "Como a Descoberta acontece" em /sprint-de-descoberta.
  *   Faltou 1 campo ou 1 idioma = dado parcial: a seção inteira some (título e
  *   âncora incluídos). Não existe "em breve".
- *   features.hasDiscoveryDuration (duracao nos 3 idiomas + duracaoDescoberta,
- *   ou o formato completo):
- *   - A resposta do FAQ "Quanto dura?" que usa a duração (answer_with_duration,
- *     sempre com "depende do tamanho do problema" e "combinada antes").
- *   - A tag da etapa 2 na linha do método (variantes full e highlight) e no
- *     bloco da etapa em /como-trabalhamos (tag_long_with_duration).
- *   - A microcopy do hero de /sprint-de-descoberta (microcopy_with_duration).
  *   features.hasDiscoveryExclusions (naoInclui com ≥ 1 item nos 3 idiomas):
  *   - Bloco "O que a Descoberta não inclui" em /sprint-de-descoberta, logo
  *     depois de "O que você recebe", com o mesmo destaque (B354). Lista vazia
  *     ou faltando num idioma = o bloco some inteiro.
  *
  * O QUE QUEBRA O BUILD: texto com {placeholder}/[CONFIRMAR]/TODO, valor em
- *   dinheiro (o valor da Descoberta, se publicado, vai em precos) ou acima do limite.
+ *   dinheiro (a Descoberta é gratuita e não tem faixa de preço), duracao
+ *   diferente de null ou acima do limite.
  */
 
 import { descoberta as descobertaJson } from "../../dados/dono.json";
@@ -45,17 +44,17 @@ export interface Descoberta {
   formato: Localized | null;
   participantes: Localized | null;
   ritmo: Localized | null;
-  duracao: Localized | null;
+  /** Sempre null (D44, 21/10/2026): a duração é definida com o cliente no diagnóstico e não é publicada. */
+  duracao: null;
   /** O que a Descoberta NÃO inclui (1 a 5 itens por idioma). Opcional: ausente = null. */
   naoInclui?: Localized<string[]> | null;
 }
 
-/** Ordem de exibição e rótulo (discovery_sprint.how_it_happens.fields.<rótulo>). */
+/** Ordem de exibição e rótulo (discovery_sprint.how_it_happens.fields.<rótulo>). Sem duração (D44). */
 export const DISCOVERY_FIELDS = [
   ["formato", "format"],
   ["participantes", "participants"],
   ["ritmo", "rhythm"],
-  ["duracao", "duration"],
 ] as const satisfies readonly (readonly [keyof Descoberta, string])[];
 
 /** Como está em dados/dono.json (sem a camada fictícia). */

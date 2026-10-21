@@ -1,13 +1,10 @@
 ---
 /**
  * Quanto custa §6.6 #5 `how_price_closes` — always. Dono: pages.
- * As 4 etapas com o custo de cada uma: diagnóstico gratuito · Descoberta paga
- * (valor combinado antes; link → /sprint-de-descoberta) · desenvolvimento com
- * preço fechado no plano · sustentação com valor combinado antes. CTA
- * "Começar pelo diagnóstico gratuito".
- *
- * Com confirmacoes.descobertaAbatida, o abatimento entra no fim do texto da
- * Descoberta, e só aqui nesta página (pricing._notes.how_price_closes).
+ * As 4 etapas com o custo de cada uma: diagnóstico gratuito · Descoberta
+ * gratuita, quando necessária (D44, 21/10/2026; link → /sprint-de-descoberta)
+ * · desenvolvimento com preço fechado antes de começar · sustentação com valor
+ * combinado antes. CTA "Começar pelo diagnóstico gratuito".
  * Nomes das etapas: shared.method_timeline (fonte única por idioma).
  *
  * Cada etapa é um <Card as="li"> (B214); o diagnóstico, a porta gratuita, usa
@@ -19,7 +16,6 @@ import ArrowLink from "@/components/ui/ArrowLink.astro";
 import Card from "@/components/ui/Card.astro";
 import SectionHeader from "@/components/ui/SectionHeader.astro";
 import Section from "@/components/ui/Section.astro";
-import { getFeatures } from "@/config/features";
 import { urlFor, type StageId } from "@/config/routes";
 import { getSection, t, type Locale } from "@/i18n";
 
@@ -28,16 +24,14 @@ interface Props {
 }
 
 const { locale } = Astro.props;
-const features = await getFeatures();
 const names = getSection(locale, "shared.method_timeline.stages");
 const copy = getSection(locale, "pricing.how_price_closes.stages");
 const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
-const credit = features.confirm.descobertaAbatida ? ` ${t(locale, "faq.conditional.discovery_credit.cost_suffix")}` : "";
 const stages = order.map((id) => ({
   id,
   name: names[id].name,
   cost: copy[id].cost,
-  text: id === "discovery" ? `${copy[id].text}${credit}` : copy[id].text,
+  text: copy[id].text,
 }));
 ---
 

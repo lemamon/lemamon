@@ -1,6 +1,6 @@
 /**
  * Auditoria de conversão, Pacote B (preço, prazo e garantias à vista) e as
- * decisões D31 e D42 do dono, no build com o dado real (dono: pages e home).
+ * decisões D31 e D44 do dono, no build com o dado real (dono: pages e home).
  *
  *  - F01/F42/F37/F41: o código do cliente na faixa de compromissos, nos riscos,
  *    em /como-trabalhamos e na régua de /quanto-custa; o NDA no hero do MVP;
@@ -10,14 +10,15 @@
  *  - F15: integrações respondem NDA e acesso aos dados perto do topo.
  *  - F14: perfis em linha em /contato (e na Home abaixo de 768px, em CSS).
  *  - D31: a linha da Home e o FAQ "outras cidades ou fora do Brasil".
- *  - D42/F58: a duração típica da Descoberta (sempre "combinada antes").
+ *  - D44 (21/10/2026, revoga a D42): a Sprint de Descoberta é gratuita, só
+ *    quando o diagnóstico mostra que é necessária, sem protótipo e sem duração
+ *    publicada.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, inject, it } from "vitest";
 
-import { descoberta } from "@/config/descoberta";
 import { ANCHORS, urlFor, type RouteKey } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 import { fileForPath, textOf } from "@/integrations/verify-build";
@@ -36,7 +37,6 @@ function section(html: string, id: string): string {
   return html.slice(open.index, next > 0 ? next : undefined);
 }
 const faqIds = (html: string) => [...section(html, ANCHORS.faq).matchAll(/data-faq-id="([^"]+)"/g)].map((match) => match[1]);
-const duration = (locale: Locale) => descoberta.duracao?.[locale] ?? "";
 
 describe("Garantias à vista (F01, F41, F42, F37)", () => {
   it("Home: o 4º compromisso é o código; o risco 'fornecedor que some' cita o código; o par dos orçamentos linka a régua", () => {
@@ -133,29 +133,54 @@ describe("D31: atende empresas de qualquer país", () => {
   });
 });
 
-describe("D42 / F58: duração típica da Descoberta, sempre combinada antes", () => {
-  it("/sprint-de-descoberta: hero e FAQ ('quanto dura?' logo depois de 'quanto custa?')", () => {
+describe("D44: Sprint de Descoberta gratuita, só quando necessária, sem protótipo e sem duração publicada", () => {
+  const TYPICAL_DURATION = { pt: "em geral 1 semana", en: "usually 1 week", es: "en general 1 semana" } as const;
+
+  it("/sprint-de-descoberta: hero sem duração; FAQ abre por 'Quanto custa?' (Nada) e 'Toda empresa precisa?'; sem investimento", () => {
     for (const locale of LOCALES) {
       const html = page("discovery_sprint", locale);
       const text = textOf(html);
-      expect(text, locale).toContain(t(locale, "discovery_sprint.hero.microcopy_with_duration", { duracao_descoberta: duration(locale) }));
-      expect(faqIds(html).slice(0, 2), locale).toEqual(["discovery_cost", "discovery_duration"]);
-      expect(text, locale).toContain(t(locale, "faq.conditional.discovery_duration.answer_with_duration", { duracao_descoberta: duration(locale) }));
-      // Só a duração: "Como a Descoberta acontece" continua desligada (formato, participantes e ritmo vazios).
+      expect(text, locale).toContain(t(locale, "discovery_sprint.hero.microcopy"));
+      expect(faqIds(html), locale).toEqual(["discovery_cost", "when_discovery", "discovery_duration", "obliged_to_continue", "need_scope_ready"]);
+      expect(text, locale).toContain(t(locale, "faq.items.discovery_cost.answer"));
+      expect(text, locale).toContain(t(locale, "faq.conditional.discovery_duration.answer_draft"));
+      expect(html, locale).not.toContain(`id="${ANCHORS.investment}"`);
+      // Sem formato publicado, "Como a Descoberta acontece" continua desligada.
       expect(html, locale).not.toContain(`id="${ANCHORS.discoveryFormat}"`);
+      // 3 entregas, sem protótipo.
+      expect(section(html, "entregaveis").match(/<li data-id="/g) ?? [], locale).toHaveLength(3);
     }
   });
 
-  it("linha do método (Home) e etapa 2 em /como-trabalhamos: a tag longa ganha a duração", () => {
+  it("linha do método (Home) e etapa 2 em /como-trabalhamos: tag 'gratuita, se for necessária', sem duração", () => {
     for (const locale of LOCALES) {
-      const tag = t(locale, "shared.method_timeline.stages.discovery.tag_long_with_duration", { duracao_descoberta: duration(locale) });
-      expect(textOf(section(page("home", locale), "como-trabalhamos")), locale).toContain(tag);
-      expect(textOf(section(page("how_we_work", locale), ANCHORS.stage.discovery)), locale).toContain(tag);
+      const tag = t(locale, "shared.method_timeline.stages.discovery.tag");
+      const home = textOf(section(page("home", locale), "como-trabalhamos"));
+      const stage = textOf(section(page("how_we_work", locale), ANCHORS.stage.discovery));
+      expect(home, locale).toContain(tag);
+      expect(stage, locale).toContain(tag);
+      for (const text of [home, stage]) expect(text, locale).not.toContain(TYPICAL_DURATION[locale]);
     }
   });
 
-  it("MVP: o FAQ responde quanto dura a Descoberta", () => {
-    for (const locale of LOCALES) expect(faqIds(page("service_mvp", locale)), locale).toContain("discovery_duration");
+  it("nenhuma página publica a duração típica nem a Descoberta paga", () => {
+    const routes: RouteKey[] = ["home", "how_we_work", "discovery_sprint", "pricing", "service_mvp", "service_web_systems", "quote"];
+    const paid = { pt: /Paga ·|etapa paga, com valor|Descoberta é paga/, en: /Paid ·|paid stage, at a price|Discovery Sprint is paid/, es: /Con costo acordado|tiene un costo acordado/ } as const;
+    for (const locale of LOCALES) {
+      for (const route of routes) {
+        const text = textOf(page(route, locale));
+        expect(text, `${locale} ${route}`).not.toContain(TYPICAL_DURATION[locale]);
+        expect(text, `${locale} ${route}`).not.toMatch(paid[locale]);
+      }
+    }
+  });
+
+  it("MVP: o FAQ responde quanto dura a Descoberta, sem número", () => {
+    for (const locale of LOCALES) {
+      const html = page("service_mvp", locale);
+      expect(faqIds(html), locale).toContain("discovery_duration");
+      expect(textOf(html), locale).toContain(t(locale, "faq.conditional.discovery_duration.answer_draft"));
+    }
   });
 });
 

@@ -201,6 +201,9 @@ test.describe("resumo: o que é do visitante primeiro (F02, F09)", () => {
       await expect(root).toContainText(s.factors.factor_deadline_window);
       await expect(root).toContainText(s.topics.topic_deadline);
       await expect(root).toContainText(s.deadline_note_window);
+      // D44: sem faixa publicada, o bloco de preço diz que Diagnóstico e Descoberta são gratuitos
+      // e que a primeira etapa paga é o desenvolvimento, com preço fechado antes.
+      await expect(root).toContainText(s.price_empty_2);
 
       // Chips abertos (nunca num <details> fechado); o método completo, sim, recolhido.
       await expect(root.getByRole("button", { name: s.edit_aria_label.replace("{rotulo}", q.steps.deadline.short_label) })).toBeVisible();
@@ -208,7 +211,7 @@ test.describe("resumo: o que é do visitante primeiro (F02, F09)", () => {
       await expect(details).toHaveCount(1);
       await expect(details).not.toHaveAttribute("open", /.*/);
       await expect(details.locator("summary")).toContainText(s.path_all_stages);
-      // A etapa realçada, com a tag "Paga · …", fica à vista fora do <details>.
+      // A etapa realçada, com a tag "Gratuita · se for necessária" (D44), fica à vista fora do <details>.
       const highlighted = root.locator('[aria-current="step"]').first();
       await expect(highlighted).toBeVisible();
       await expect(highlighted).toContainText(COPY[locale].shared.method_timeline.stages.discovery.tag);

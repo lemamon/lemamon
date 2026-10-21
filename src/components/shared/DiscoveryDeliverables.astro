@@ -1,12 +1,14 @@
 ---
 /**
- * Os 4 entregáveis da Sprint de Descoberta — BLUEPRINT §5.2. Dono: home.
+ * Os 3 entregáveis da Sprint de Descoberta — BLUEPRINT §5.2. Dono: home.
  * API estável: `locale`, `level`.
  *
- * Exatamente 4 (entendimento do problema, escopo priorizado, protótipo,
- * plano com prazo e preço fechados); nada além disso até o dono confirmar.
- * Desenho: 4 células com bordas compartilhadas (2×2 a partir de 768px), cada
- * uma com o marcador de "entregue" e o título no nível pedido.
+ * Exatamente 3 (entendimento do problema, escopo priorizado, plano com prazo e
+ * preço fechados); nada além disso até o dono confirmar. O protótipo saiu em
+ * 21/10/2026 (D44, opção "Sem protótipo" do dono).
+ * Desenho: células com bordas compartilhadas (2 colunas a partir de 768px; a
+ * última, sozinha na linha, ocupa a largura toda), cada uma com o marcador de
+ * "entregue" e o título no nível pedido.
  */
 import Icon from "@/components/ui/Icon.astro";
 import { getSection, type Locale } from "@/i18n";
@@ -77,6 +79,10 @@ const Heading = `h${level}` as "h3" | "h4";
     .discovery-deliverables li {
       padding: var(--space-6);
       border-inline-end: 1px solid var(--color-border-default);
+    }
+    /* Número ímpar de entregas (hoje 3): a última fecha a grade sem célula vazia. */
+    .discovery-deliverables li:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
     }
   }
 </style>

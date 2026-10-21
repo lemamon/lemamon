@@ -51,12 +51,12 @@ export function wizardQuestionMessage(locale: Locale): string {
 }
 
 /**
- * "Já recebeu a proposta da Sprint de Descoberta?" (faixa depois do hero e CTA
- * final da Sprint, discovery_sprint._notes.already_diagnosed): quem já fez o
- * diagnóstico combina o início, sem passar pelo wizard de novo.
+ * "Já fez o diagnóstico e a Descoberta ficou definida?" (faixa depois do hero e
+ * CTA final da Sprint, discovery_sprint._notes.already_diagnosed): quem já fez
+ * o diagnóstico combina o início, sem passar pelo wizard de novo.
  */
-export function discoveryProposalMessage(locale: Locale): string {
-  return t(locale, "quote.whatsapp_messages.discovery_proposal");
+export function discoveryStartMessage(locale: Locale): string {
+  return t(locale, "quote.whatsapp_messages.discovery_start");
 }
 
 /** /orcamento/enviado sem storage (com storage, o script troca pela versão com o código). */

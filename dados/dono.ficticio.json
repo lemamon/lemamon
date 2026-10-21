@@ -117,8 +117,6 @@
     "semDescoberta": true,
     "duracaoDescoberta": true,
     "planoDoCliente": true,
-    "descobertaAbatida": true,
-    "descobertaUnicoCusto": true,
     "migracaoDados": true,
     "ligacao": true,
     "valoresNoDiagnostico": true,
@@ -162,15 +160,6 @@
     "scoreD": { "ativo": false }
   },
   "precos": {
-    "descoberta": {
-      "faixa": { "pt": "R$ 8 mil a R$ 15 mil (exemplo)", "en": "BRL 8k–15k (example)", "es": "BRL 8 mil a 15 mil (ejemplo)" },
-      "unidade": "projeto",
-      "fatores": {
-        "pt": ["Exemplo: quantas áreas da empresa entram no plano", "Exemplo: se existe um sistema atual para entender"],
-        "en": ["Example: how many areas of the company the plan covers", "Example: whether there is a current system to understand"],
-        "es": ["Ejemplo: cuántas áreas de la empresa entran en el plan", "Ejemplo: si hay un sistema actual para entender"]
-      }
-    },
     "desenvolvimento": {
       "sistemas": {
         "faixa": { "pt": "R$ 60 mil a R$ 150 mil (exemplo)", "en": "BRL 60k–150k (example)", "es": "BRL 60 mil a 150 mil (ejemplo)" },
@@ -236,11 +225,7 @@
       "en": "Example: two sessions a week, with material to review in between.",
       "es": "Ejemplo: dos encuentros por semana, con material para revisar entre ellos."
     },
-    "duracao": {
-      "pt": "de duas a três semanas (exemplo)",
-      "en": "two to three weeks (example)",
-      "es": "de dos a tres semanas (ejemplo)"
-    },
+    "duracao": null,
     "naoInclui": {
       "pt": [
         "Exemplo: o desenvolvimento do sistema, que vem depois, com prazo e preço combinados no plano.",

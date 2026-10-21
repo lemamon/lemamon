@@ -1,17 +1,14 @@
 ---
 /**
  * Como trabalhamos §6.2 #6 `stage_discovery` (#descoberta) — always. Dono: pages.
- * Etapa 2, paga: "é aqui que o seu problema vira um plano"; os 4 entregáveis
- * (§5.2, componente do home); custo (valor combinado antes); depois (você
- * decide se segue). Link "Entender por que a Sprint de Descoberta vem antes"
- * → /sprint-de-descoberta.
- *
- * Com confirmacoes.descobertaAbatida, o abatimento entra AQUI, no fim do
- * custo, e em nenhum outro lugar da página (faq._notes.discovery_credit).
+ * Etapa 2, gratuita e só quando o diagnóstico mostra que é necessária (D44,
+ * 21/10/2026): "é aqui que o seu problema vira um plano"; os 3 entregáveis
+ * (§5.2, componente do home); custo ("Gratuita…"); depois (você decide se
+ * segue). Link "Entender por que a Sprint de Descoberta vem antes" →
+ * /sprint-de-descoberta.
  */
 import DiscoveryDeliverables from "@/components/shared/DiscoveryDeliverables.astro";
 import ArrowLink from "@/components/ui/ArrowLink.astro";
-import { getFeatures } from "@/config/features";
 import { urlFor } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 
@@ -23,10 +20,7 @@ interface Props {
 }
 
 const { locale } = Astro.props;
-const features = await getFeatures();
-const cost = features.confirm.descobertaAbatida
-  ? `${t(locale, "how_we_work.stage_discovery.cost")} ${t(locale, "faq.conditional.discovery_credit.cost_suffix")}`
-  : t(locale, "how_we_work.stage_discovery.cost");
+const cost = t(locale, "how_we_work.stage_discovery.cost");
 ---
 
 <HwwStageBlock locale={locale} stage="discovery" title={t(locale, "how_we_work.stage_discovery.title")}>

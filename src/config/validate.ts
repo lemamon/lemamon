@@ -181,9 +181,10 @@ const priceLine = z
   })
   .nullable();
 
+// A Sprint de Descoberta é gratuita (D44, 21/10/2026): não existe linha
+// `descoberta` em precos (campo desconhecido derruba o build).
 const precosSchema = z
   .strictObject({
-    descoberta: priceLine,
     desenvolvimento: z.strictObject({
       sistemas: priceLine,
       aplicativos: priceLine,
@@ -251,8 +252,6 @@ const confirmacoesSchema = z.strictObject({
   semDescoberta: z.boolean(),
   duracaoDescoberta: z.boolean(),
   planoDoCliente: z.boolean(),
-  descobertaAbatida: z.boolean(),
-  descobertaUnicoCusto: z.boolean(),
   migracaoDados: z.boolean(),
   ligacao: z.boolean(),
   valoresNoDiagnostico: z.boolean(),
@@ -302,7 +301,10 @@ const descobertaSchema = z.strictObject({
   formato: localized(300).nullable(),
   participantes: localized(300).nullable(),
   ritmo: localized(300).nullable(),
-  duracao: localized(300).nullable(),
+  /** D44 (21/10/2026, revoga a D42): a duração da Descoberta não é publicada. */
+  duracao: z.null({
+    error: "a duração da Sprint de Descoberta não é publicada (decisão do dono de 21/10/2026, D44): ela é definida com o cliente no diagnóstico. Deixe null",
+  }),
   /** "O que a Descoberta não inclui": até 5 itens de até 120 caracteres por idioma (vazio = parcial, não aparece). */
   naoInclui: localizedList(5, 120).nullable().optional(),
 });

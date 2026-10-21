@@ -57,7 +57,7 @@ export function caseFrontmatter(locale: "pt" | "en" | "es" = "pt", slug: string 
     entregue: `${FIXTURE_MARK} Um sistema web para o comercial e um app para o motorista.`,
     comoFoi: [
       { etapa: "diagnosis", quando: "fev/2026", texto: `${FIXTURE_MARK} Conversa de 45 minutos e devolutiva.` },
-      { etapa: "discovery", quando: "mar/2026", texto: `${FIXTURE_MARK} Escopo priorizado e protótipo.` },
+      { etapa: "discovery", quando: "mar/2026", texto: `${FIXTURE_MARK} Escopo priorizado e plano.` },
       { etapa: "development", quando: "abr–jul/2026", texto: `${FIXTURE_MARK} Entregas a cada 2 semanas.` },
     ],
     resultado: [

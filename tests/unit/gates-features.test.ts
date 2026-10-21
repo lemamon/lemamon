@@ -55,15 +55,19 @@ describe("estado do repositório e fixtures", () => {
 
 describe("configs: completo liga, parcial desliga", () => {
   it("hasPricing + pricingLines: só linhas completas, por linha", () => {
-    expect(flags(completeSources()).pricingLines).toHaveLength(6);
+    // 5 linhas: a Sprint de Descoberta é gratuita e não tem faixa (D44, 21/10/2026).
+    expect(flags(completeSources()).pricingLines).toHaveLength(5);
     const partial = mutate((s) => {
-      s.precos.descoberta = { ...s.precos.descoberta!, faixa: withoutLocale(s.precos.descoberta!.faixa, "es", "") };
+      s.precos.desenvolvimento.sistemas = {
+        ...s.precos.desenvolvimento.sistemas!,
+        faixa: withoutLocale(s.precos.desenvolvimento.sistemas!.faixa, "es", ""),
+      };
       s.precos.desenvolvimento.mvp = { ...s.precos.desenvolvimento.mvp!, fatores: { pt: [], en: [], es: [] } };
       s.precos.sustentacao = null;
     });
     const features = flags(partial);
-    expect(features.pricingLines).toEqual(["desenvolvimento.sistemas", "desenvolvimento.aplicativos", "desenvolvimento.integracoes"]);
-    expect(pricingLinesFor(features, ["descoberta", "desenvolvimento.mvp"])).toEqual([]);
+    expect(features.pricingLines).toEqual(["desenvolvimento.aplicativos", "desenvolvimento.integracoes"]);
+    expect(pricingLinesFor(features, ["desenvolvimento.sistemas", "desenvolvimento.mvp"])).toEqual([]);
     const none = mutate((s) => {
       s.precos = baseSources().precos;
     });
@@ -144,31 +148,24 @@ describe("configs: completo liga, parcial desliga", () => {
     expect(flags(mutate((s) => void Reflect.deleteProperty(s.descoberta, "naoInclui"))).hasDiscoveryExclusions).toBe(false);
     expect(flags(mutate((s) => void (s.descoberta.naoInclui = withoutLocale(s.descoberta.naoInclui!, "en", [])))).hasDiscoveryExclusions).toBe(false);
     expect(flags(mutate((s) => void (s.descoberta.naoInclui = withoutLocale(s.descoberta.naoInclui!, "es", [" "])))).hasDiscoveryExclusions).toBe(false);
-    // Independente do formato: dá para publicar o que não inclui sem os 4 campos do formato.
-    expect(flags(mutate((s) => void (s.descoberta.duracao = null))).hasDiscoveryExclusions).toBe(true);
+    // Independente do formato: dá para publicar o que não inclui sem os 3 campos do formato.
+    expect(flags(mutate((s) => void (s.descoberta.ritmo = null))).hasDiscoveryExclusions).toBe(true);
   });
 
-  it("hasDiscoveryFormat: os 4 campos; 3 de 4 ou um idioma faltando desliga", () => {
+  it("hasDiscoveryFormat: os 3 campos (formato, participantes, ritmo); 2 de 3 ou um idioma faltando desliga", () => {
     expect(flags(completeSources()).hasDiscoveryFormat).toBe(true);
-    expect(flags(mutate((s) => void (s.descoberta.duracao = null))).hasDiscoveryFormat).toBe(false);
+    // A duração não conta (D44, 21/10/2026): é sempre null e o formato liga sem ela.
+    expect(completeSources().descoberta.duracao).toBeNull();
+    expect(flags(mutate((s) => void (s.descoberta.participantes = null))).hasDiscoveryFormat).toBe(false);
     expect(flags(mutate((s) => void (s.descoberta.ritmo = withoutLocale(s.descoberta.ritmo!, "pt", "")))).hasDiscoveryFormat).toBe(false);
   });
 
-  it("hasDiscoveryDuration (D42): a duração nos 3 idiomas + a confirmação do dono, ou o formato completo; sem formato, participantes nem ritmo", () => {
-    expect(flags(completeSources()).hasDiscoveryDuration).toBe(true);
-    const onlyDuration = mutate((s) => {
-      s.descoberta = { ...baseSources().descoberta, duracao: fx("em geral 1 semana") };
+  it("D44 (revoga a D42): nenhuma flag publica a duração da Descoberta; preenchê-la derruba o build", () => {
+    expect("hasDiscoveryDuration" in flags(completeSources())).toBe(false);
+    const withDuration = mutate((s) => {
+      (s.descoberta as unknown as { duracao: unknown }).duracao = fx("em geral 1 semana");
     });
-    expect(flags(onlyDuration)).toMatchObject({ hasDiscoveryDuration: true, hasDiscoveryFormat: false });
-    // Sem a confirmação, a duração sozinha não sai; com o formato completo, sai.
-    const noFlag = mutate((s) => {
-      s.descoberta = { ...baseSources().descoberta, duracao: fx("x") };
-      s.confirmacoes.duracaoDescoberta = false;
-    });
-    expect(flags(noFlag).hasDiscoveryDuration).toBe(false);
-    expect(flags(mutate((s) => void (s.confirmacoes.duracaoDescoberta = false))).hasDiscoveryDuration).toBe(true);
-    // Um idioma faltando desliga.
-    expect(flags(mutate((s) => void (s.descoberta.duracao = withoutLocale(s.descoberta.duracao!, "es", "")))).hasDiscoveryDuration).toBe(false);
+    expect(configIssues(withDuration).join("\n")).toMatch(/descoberta\.duracao: a duração da Sprint de Descoberta não é publicada/);
   });
 
   it("confirm.atendeExterior (D31): só junto com outrasCidades", () => {
@@ -322,14 +319,19 @@ describe("conteúdo contraditório derruba o build (contentIssues)", () => {
 
 describe("config malformado derruba o build (configIssues)", () => {
   it.each([
-    ["dinheiro fora de precos/qualificacao", (s: FeatureSources) => void (s.descoberta.duracao = { pt: "R$ 5 mil", en: "x", es: "x" }), /monetário/],
+    ["dinheiro fora de precos/qualificacao", (s: FeatureSources) => void (s.descoberta.formato = { pt: "R$ 5 mil", en: "x", es: "x" }), /monetário/],
     ["placeholder no texto do dono", (s: FeatureSources) => void (s.engenharia.tests = { pt: "{x}", en: "x", es: "x" }), /rascunho/],
     ["dinheiro no que a Descoberta não inclui", (s: FeatureSources) => void (s.descoberta.naoInclui = { pt: ["Hospedagem de R$ 200"], en: ["x"], es: ["x"] }), /descoberta\.naoInclui\.pt\[0\].*monetário/],
     ["mais de 5 itens no que a Descoberta não inclui", (s: FeatureSources) => void (s.descoberta.naoInclui = { pt: ["a", "b", "c", "d", "e", "f"], en: ["x"], es: ["x"] }), /descoberta\.naoInclui\.pt: no máximo 5/],
     ["item longo no que a Descoberta não inclui", (s: FeatureSources) => void (s.descoberta.naoInclui = { pt: ["x".repeat(121)], en: ["x"], es: ["x"] }), /descoberta\.naoInclui\.pt\[0\]: no máximo 120/],
     ["sustentação com unidade de projeto", (s: FeatureSources) => void (s.precos.sustentacao!.unidade = "projeto"), /unidade/],
-    ["Descoberta com unidade mensal", (s: FeatureSources) => void (s.precos.descoberta!.unidade = "mes"), /unidade/],
-    ["mais de 3 fatores", (s: FeatureSources) => void (s.precos.descoberta!.fatores.pt = ["a", "b", "c", "d"]), /fatores/],
+    ["desenvolvimento com unidade mensal", (s: FeatureSources) => void (s.precos.desenvolvimento.sistemas!.unidade = "mes"), /unidade/],
+    ["mais de 3 fatores", (s: FeatureSources) => void (s.precos.desenvolvimento.sistemas!.fatores.pt = ["a", "b", "c", "d"]), /fatores/],
+    [
+      "linha de preço da Descoberta (gratuita, D44)",
+      (s: FeatureSources) => void ((s.precos as unknown as Record<string, unknown>).descoberta = null),
+      /precos: campo desconhecido "descoberta"/,
+    ],
     ["perfil fora do domínio", (s: FeatureSources) => void (s.perfis.github.url = "https://gitlab.com/lemamon"), /github/],
     ["3 faixas no wizard", (s: FeatureSources) => void s.qualificacao.faixas.pop(), /4 faixas/],
     ["corte que não é faixa", (s: FeatureSources) => void (s.qualificacao.faixas = []), /corteMql|faixas mensais/],

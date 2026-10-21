@@ -1,7 +1,8 @@
 /**
  * Termos explicados (BLUEPRINT §5.9) — helpers de components/shared/terms.ts. Dono: home.
  * O rótulo vem da própria explicação do i18n, então a 1ª menção é achada nos
- * 3 idiomas sem chave nova; na Home, os 4 termos de §5.9 têm 1ª menção.
+ * 3 idiomas sem chave nova; na Home, os 3 termos de §5.9 têm 1ª menção
+ * ("protótipo" saiu em 21/10/2026, D44: a Descoberta não entrega protótipo).
  */
 import { describe, expect, it } from "vitest";
 
@@ -17,7 +18,7 @@ import {
 import { getSection, t, type Locale } from "@/i18n";
 
 const LOCALES: Locale[] = ["pt", "en", "es"];
-const HOME_TERMS: TermId[] = ["mvp", "written_feedback", "prioritized_scope", "prototype"];
+const HOME_TERMS: TermId[] = ["mvp", "written_feedback", "prioritized_scope"];
 
 describe("termLabel", () => {
   it("pega o termo antes dos dois-pontos e tira o parêntese", () => {
@@ -27,7 +28,7 @@ describe("termLabel", () => {
 
   it("todo termo de shared.terms tem rótulo nos 3 idiomas", () => {
     for (const locale of LOCALES) {
-      for (const term of ["prototype", "prioritized_scope", "mvp", "api", "discovery_sprint", "support", "written_feedback"] as const) {
+      for (const term of ["prioritized_scope", "mvp", "api", "discovery_sprint", "support", "written_feedback"] as const) {
         expect(termLabel(t(locale, `shared.terms.${term}`)).length).toBeGreaterThan(1);
       }
     }
@@ -37,13 +38,13 @@ describe("termLabel", () => {
 describe("findTerm / splitTerms", () => {
   it("casa sem diferenciar maiúsculas e estende até o fim da palavra", () => {
     expect(findTerm("Sistemas e MVPs.", "mvp", "MVP")).toEqual({ term: "mvp", start: 11, end: 15 });
-    expect(findTerm("o Protótipo", "prototype", "protótipo")?.start).toBe(2);
+    expect(findTerm("o Escopo priorizado", "prioritized_scope", "escopo priorizado")?.start).toBe(2);
     expect(findTerm("superMVP", "mvp", "MVP")).toBeNull();
   });
 
   it("marca só a 1ª menção e preserva o texto", () => {
-    const text = "Veja o protótipo. O protótipo de novo.";
-    const segments = splitTerms(text, [{ term: "prototype", label: "Protótipo" }]);
+    const text = "Veja o escopo priorizado. O escopo priorizado de novo.";
+    const segments = splitTerms(text, [{ term: "prioritized_scope", label: "Escopo priorizado" }]);
     expect(segments.map((segment) => segment.value).join("")).toBe(text);
     expect(segments.filter((segment) => segment.kind === "term")).toHaveLength(1);
   });
@@ -88,7 +89,7 @@ describe("glueTermPunctuation (B001: o ponto não cai sozinho na linha de baixo)
 });
 
 describe("Home: 1ª menção dos termos de §5.9", () => {
-  it("os 4 termos têm 1ª menção nos textos da Home, em cada idioma", () => {
+  it("os 3 termos têm 1ª menção nos textos da Home, em cada idioma", () => {
     for (const locale of LOCALES) {
       const risks = getSection(locale, "home.risks.pairs");
       const method = getSection(locale, "home.method.stages");

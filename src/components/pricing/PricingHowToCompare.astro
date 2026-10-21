@@ -9,8 +9,9 @@
  * answer_draft de confirmacoes.codigoProprietario, com
  * lemamon_with_code_ownership; auditoria de conversão F37). Sem as flags, 5
  * perguntas; com as duas, 7.
- * Primeira menção de "protótipo" (when_working) e de "escopo priorizado"
- * (before_paying) recebem a explicação de shared.terms (§5.9).
+ * A primeira menção de "escopo priorizado" (before_paying) recebe a
+ * explicação de shared.terms (§5.9). "Protótipo" não aparece mais: desde a D44
+ * (21/10/2026) a Descoberta não entrega protótipo.
  * Fecha com o link "Começar pelo diagnóstico gratuito" → ?origem=preco-comparar.
  * Cada pergunta é um <Card as="li"> (B214); gutter = --grid-gap (B222). O
  * índice alinha pela linha de base do título (sem deslocamento literal, B182).
@@ -31,7 +32,7 @@ interface Props {
   locale: Locale;
 }
 
-type TermId = "prototype" | "prioritized_scope";
+type TermId = "prioritized_scope";
 
 const { locale } = Astro.props;
 const features = await getFeatures();
@@ -39,7 +40,7 @@ const q = getSection(locale, "pricing.how_to_compare.questions");
 const all: { id: string; question: string; why: string; answer: string; term?: TermId; show: boolean }[] = [
   { id: "out_of_scope", ...q.out_of_scope, answer: q.out_of_scope.lemamon, show: true },
   { id: "fixed_or_hourly", ...q.fixed_or_hourly, answer: q.fixed_or_hourly.lemamon, show: true },
-  { id: "when_working", ...q.when_working, answer: q.when_working.lemamon, term: "prototype", show: true },
+  { id: "when_working", ...q.when_working, answer: q.when_working.lemamon, show: true },
   {
     id: "scope_change",
     question: q.scope_change.question,

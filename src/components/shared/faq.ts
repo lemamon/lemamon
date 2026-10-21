@@ -19,7 +19,6 @@
 
 import type { Features } from "@/config/features";
 import { confirmacoes as defaultConfirmacoes, type Confirmacoes } from "@/config/confirmacoes";
-import { descoberta as defaultDescoberta, type Descoberta } from "@/config/descoberta";
 import { empresa } from "@/config/empresa";
 import { hasText, t, tDynamic, type Locale, type Messages } from "@/i18n";
 
@@ -61,22 +60,16 @@ export const FAQ_MAX = 9;
 
 type BankFeatures = Pick<Features, "hasPricing"> & Partial<Pick<Features, "confirm">>;
 /** hasWhatsapp é opcional: sem ela, a resposta do NDA cita o WhatsApp (variante padrão). */
-type ConditionalFeatures = Pick<Features, "confirm" | "hasCompanyData" | "hasDiscoveryFormat"> &
-  Partial<Pick<Features, "hasWhatsapp">>;
+type ConditionalFeatures = Pick<Features, "confirm" | "hasCompanyData"> & Partial<Pick<Features, "hasWhatsapp">>;
 
 export interface BankOptions {
   /**
    * Âncora (ou URL) do bloco de faixas DESTA página. Com hasPricing, as
-   * perguntas que têm `answer_with_pricing_suffix` (how_much, discovery_cost)
-   * ganham o sufixo como link (faq._notes.how_much / discovery_cost). Sem esta
-   * opção o sufixo não aparece, para nunca apontar para âncora inexistente.
+   * perguntas que têm `answer_with_pricing_suffix` (how_much) ganham o sufixo
+   * como link (faq._notes.how_much). Sem esta opção o sufixo não aparece, para
+   * nunca apontar para âncora inexistente.
    */
   pricingHref?: string;
-  /**
-   * Sufixo do abatimento no fim de why_discovery_paid. SÓ nas páginas de
-   * serviço (faq._notes.discovery_credit) e só com confirmacoes.descobertaAbatida.
-   */
-  discoveryCreditSuffix?: boolean;
   /**
    * Rascunho aprovado de "De quem é o código?" (confirmacoes.codigoProprietario).
    * Padrão: o do config. Só testes injetam outro valor.
@@ -114,9 +107,6 @@ export function bankItems(
     if (features.confirm?.codigoProprietario && codeChoice === "answer_draft" && hasText(locale, withCode)) {
       answer = tDynamic(locale, withCode);
     }
-    if (key === "why_discovery_paid" && options.discoveryCreditSuffix && features.confirm?.descobertaAbatida) {
-      answer = `${answer} ${t(locale, "faq.conditional.discovery_credit.cost_suffix")}`;
-    }
     const item: FaqItem = { id: key, question: pick("question"), answer, source: "bank" };
     const suffixKey = `${base}.answer_with_pricing_suffix`;
     if (features.hasPricing && options.pricingHref && hasText(locale, suffixKey)) {
@@ -128,18 +118,22 @@ export function bankItems(
 
 export interface ConditionalSources {
   confirmacoes: Confirmacoes;
-  descoberta: Descoberta;
 }
 
-const DEFAULT_SOURCES: ConditionalSources = { confirmacoes: defaultConfirmacoes, descoberta: defaultDescoberta };
+const DEFAULT_SOURCES: ConditionalSources = { confirmacoes: defaultConfirmacoes };
 
-/** Condicionais de texto fixo: flag de confirmacoes.ts → question + answer_draft. */
+/**
+ * Condicionais de texto fixo: flag de confirmacoes.ts → question + answer_draft.
+ * discovery_duration (D44, 21/10/2026, revoga a D42): só o answer_draft, sem
+ * número ("a necessidade e a duração são definidas com você no diagnóstico");
+ * a duração da Descoberta não é publicada (faq._notes.discovery_duration).
+ */
 const DRAFT_FLAG = {
   scope_change: "escopoMudanca",
   third_party_system: "sistemaTerceiros",
   skip_discovery: "semDescoberta",
+  discovery_duration: "duracaoDescoberta",
   discovery_plan_ownership: "planoDoCliente",
-  discovery_credit: "descobertaAbatida",
   data_migration: "migracaoDados",
 } as const satisfies Partial<Record<FaqConditionalKey, keyof Features["confirm"]>>;
 
@@ -175,17 +169,6 @@ function conditionalItem(
       // Brasil?" (nunca duas perguntas). atendeExterior exige outrasCidades.
       if (!confirm.outrasCidades) return null;
       return confirm.atendeExterior ? make("question_with_abroad", "answer_with_abroad") : make("question", "answer_draft");
-    case "discovery_duration": {
-      // Precedência (faq._notes.discovery_duration, D42): duração típica
-      // (descoberta.duracao + confirmação do dono, ou o formato completo) >
-      // só a confirmação (answer_draft, sem número) > nada. Mesma regra de
-      // features.hasDiscoveryDuration, no idioma da página.
-      const duracao = sources.descoberta.duracao?.[locale]?.trim();
-      if (duracao && (confirm.duracaoDescoberta || features.hasDiscoveryFormat)) {
-        return make("question", "answer_with_duration", { duracao_descoberta: duracao });
-      }
-      return confirm.duracaoDescoberta ? make("question", "answer_draft") : null;
-    }
     case "diagnosis_format": {
       const format = c.formatoDiagnostico;
       if (!confirm.formatoDiagnostico || !format) return null;

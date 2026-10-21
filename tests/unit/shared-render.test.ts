@@ -58,25 +58,25 @@ describe("MethodTimeline (§5.1)", () => {
     }
   });
 
-  it("full: 'Você recebe' e tag longa; links locais e 'none'", async () => {
+  it("full: 'Você recebe' e a mesma tag; links locais e 'none'", async () => {
     const full = await render(MethodTimeline, { locale: "pt", variant: "full", linkStages: false });
     expect(full).toContain(t("pt", "shared.method_timeline.you_get_label"));
-    expect(full).toContain(t("pt", "shared.method_timeline.stages.discovery.tag_long"));
+    expect(full).toContain(t("pt", "shared.method_timeline.stages.discovery.tag"));
     expect(full).toContain('href="#diagnostico"');
     const none = await render(MethodTimeline, { locale: "pt", variant: "compact", links: "none" });
     expect(none).not.toMatch(/<a\b/);
   });
 
-  it("D42: a duração típica da Descoberta só nas variantes full e highlight (a compacta fica curta)", async () => {
+  it("D44: a tag da Descoberta é a mesma nas 3 variantes, gratuita e sem duração nem protótipo", async () => {
     for (const locale of LOCALES) {
-      const tag = t(locale, "shared.method_timeline.stages.discovery.tag_long_with_duration", { duracao_descoberta: "§" });
-      const [before] = tag.split("§");
-      const full = decode(await render(MethodTimeline, { locale, variant: "full" }));
-      const highlight = decode(await render(MethodTimeline, { locale, variant: "highlight", highlight: "discovery" }));
-      const compact = decode(await render(MethodTimeline, { locale, variant: "compact" }));
-      for (const html of [full, highlight]) expect(html, locale).toContain(before);
-      expect(compact, locale).not.toContain(before);
+      const tag = t(locale, "shared.method_timeline.stages.discovery.tag");
+      for (const variant of ["compact", "full", "highlight"] as const) {
+        const html = decode(await render(MethodTimeline, { locale, variant, highlight: "discovery" }));
+        expect(html, `${locale} ${variant}`).toContain(tag);
+        expect(html, `${locale} ${variant}`).not.toMatch(/1 (semana|week)|prot[óo]tip|prototype/i);
+      }
     }
+    expect(t("pt", "shared.method_timeline.stages.discovery.tag")).toBe("Gratuita · se for necessária");
   });
 
   it("highlight: uma etapa com aria-current=step e o selo 'Próximo passo'", async () => {
@@ -191,8 +191,8 @@ describe("Compromissos, decisão, CTA final e termos", () => {
   });
 
   it("termo: nota por padrão; toggletip nativo (popover) com o modo tip", async () => {
-    const note = await render(Term, { locale: "pt", term: "prototype" });
-    expect(note).toContain(t("pt", "shared.terms.prototype"));
+    const note = await render(Term, { locale: "pt", term: "prioritized_scope" });
+    expect(note).toContain(t("pt", "shared.terms.prioritized_scope"));
     expect(note).not.toContain("popover");
     const tip = await render(Term, { locale: "pt", term: "mvp", mode: "tip" }, { default: "MVPs" });
     expect(tip).toMatch(/<button[^>]*popovertarget="([^"]+)"/);

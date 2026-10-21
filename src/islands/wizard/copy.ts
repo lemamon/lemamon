@@ -43,8 +43,8 @@ export interface WizardCopy {
    * vindo pelo slot do MethodTimeline, dentro de um <details>.
    */
   method: { stages: Shared["method_timeline"]["stages"]; nextStep: string };
-  /** shared.terms: só os dois termos explicados no resumo (i18n quote._notes.terms). */
-  terms: Pick<Shared["terms"], "prototype" | "prioritized_scope">;
+  /** shared.terms: só o termo explicado no resumo, escopo priorizado (i18n quote._notes.terms; sem protótipo desde a D44). */
+  terms: Pick<Shared["terms"], "prioritized_scope">;
   investment: Pick<Shared["investment"], "row_labels" | "unit_project" | "unit_month">;
   clipboard: Shared["clipboard"];
   /** shared.forms.email_suggestion: "Você quis dizer {email}?" + "Corrigir" (achado F07). */

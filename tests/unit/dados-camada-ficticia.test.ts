@@ -278,14 +278,14 @@ describe("merge: a camada fictícia só preenche o que está vazio", () => {
     expect(efetivo.empresa.cnpj).toBe((real.empresa as { cnpj: string }).cnpj);
     expect(efetivo.empresa.cnpj).not.toBe(CNPJ_FICTICIO);
     expect(efetivo.empresa.anoFundacao).toBe((real.empresa as { anoFundacao: number | null }).anoFundacao);
-    // D31 e D42: as decisões novas valem com a camada ligada.
+    // D31 e D44: as decisões novas valem com a camada ligada.
     expect(efetivo.confirmacoes.outrasCidades).toBe(true);
     expect(efetivo.confirmacoes.atendeExterior).toBe(true);
     expect(efetivo.confirmacoes.duracaoDescoberta).toBe(true);
-    // Descoberta parcial (D42): a duração real vence a de exemplo, campo a campo e idioma a idioma;
-    // os campos vazios (formato, participantes, ritmo, exclusões) vêm da camada.
-    expect(efetivo.descoberta.duracao).toEqual((real.descoberta as { duracao: unknown }).duracao);
-    expect(JSON.stringify(efetivo.descoberta.duracao)).not.toMatch(/exemplo|example|ejemplo/i);
+    // D44 (revoga a D42): nem a camada publica a duração da Descoberta; os campos vazios
+    // (formato, participantes, ritmo, exclusões) vêm da camada.
+    expect(efetivo.descoberta.duracao).toBeNull();
+    expect((ficticio.descoberta as { duracao: unknown }).duracao).toBeNull();
     expect(efetivo.descoberta.formato).toEqual((ficticio.descoberta as { formato: unknown }).formato);
     expect(efetivo.descoberta.naoInclui).toEqual((ficticio.descoberta as { naoInclui: unknown }).naoInclui);
     // O que estava vazio vem da camada.

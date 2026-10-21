@@ -34,8 +34,7 @@ export type FaqEntry =
   /** Pergunta própria do serviço: services.{service}.faq.{own}. */
   | { own: string };
 
-export type FaqFeatures = Pick<Features, "hasPricing" | "hasDiscoveryFormat" | "hasCompanyData" | "confirm"> &
-  Partial<Pick<Features, "hasWhatsapp">>;
+export type FaqFeatures = Pick<Features, "hasPricing" | "hasCompanyData" | "confirm"> & Partial<Pick<Features, "hasWhatsapp">>;
 
 export interface OrderedFaqOptions {
   /** Serviço dono das perguntas `{ own }`. */
@@ -44,8 +43,6 @@ export interface OrderedFaqOptions {
   removalOrder?: readonly string[];
   /** Âncora das faixas DESTA página (só quando o bloco existe nela): sufixo-link do banco. */
   pricingHref?: string;
-  /** Sufixo do abatimento em why_discovery_paid (só páginas de serviço). */
-  discoveryCreditSuffix?: boolean;
   /** Link no fim de uma pergunta própria (ex.: price → #investimento), por id. */
   ownLinks?: Readonly<Record<string, FaqLink | undefined>>;
   /**
@@ -106,9 +103,9 @@ export function orderedFaq(
   features: FaqFeatures,
   options: OrderedFaqOptions = {},
 ): FaqItem[] {
-  const { service, removalOrder, pricingHref, discoveryCreditSuffix, ownLinks = {}, ownInlineLinks = {} } = options;
+  const { service, removalOrder, pricingHref, ownLinks = {}, ownInlineLinks = {} } = options;
   const items = entries.flatMap((entry): FaqItem[] => {
-    if ("bank" in entry) return bankItems(locale, [entry.bank], features, { pricingHref, discoveryCreditSuffix });
+    if ("bank" in entry) return bankItems(locale, [entry.bank], features, { pricingHref });
     if ("cond" in entry) return conditionalItems(locale, [entry.cond], features);
     if (!service) return [];
     const item = ownItem(locale, service, entry.own, features, ownLinks[entry.own], ownInlineLinks[entry.own]);

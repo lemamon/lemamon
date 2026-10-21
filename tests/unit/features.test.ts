@@ -15,10 +15,10 @@ describe("features — estado do repositório (dados/dono.json)", () => {
     expect(CONFIG_SOURCES).toEqual(CONFIG_SOURCES_REAIS);
   });
 
-  it("só as decisões do dono ligam flags: faixas da P5, perfis, empresa (razão social + CNPJ), escopo, código do cliente, NDA, outras cidades e exterior (D31) e duração da Descoberta (D42)", () => {
+  it("só as decisões do dono ligam flags: faixas da P5, perfis, empresa (razão social + CNPJ), escopo, código do cliente, NDA, outras cidades e exterior (D31) e o FAQ da duração da Descoberta, sem número (D44)", () => {
     const features = computeFeatures(realSources());
     const on = Object.entries(features).filter(([key, value]) => key.startsWith("has") && value === true);
-    expect(on.map(([key]) => key).sort()).toEqual(["hasBudgetTiers", "hasCompanyData", "hasDiscoveryDuration", "hasProfiles"]);
+    expect(on.map(([key]) => key).sort()).toEqual(["hasBudgetTiers", "hasCompanyData", "hasProfiles"]);
     expect(features.profiles).toEqual({ github: true, linkedin: true, medium: true });
     expect(features.pricingLines).toEqual([]);
     expect(Object.entries(features.confirm).filter(([, value]) => value).map(([key]) => key).sort()).toEqual([
@@ -43,10 +43,10 @@ describe("features — estado do repositório (dados/dono.json)", () => {
 describe("features — gates ligam e desligam", () => {
   it("hasPricing: linha completa liga; parcial não renderiza", () => {
     const sources = baseSources();
-    sources.precos.descoberta = { faixa: text("X"), unidade: "projeto", fatores: { pt: ["a"], en: ["a"], es: ["a"] } };
-    expect(computeFeatures(sources)).toMatchObject({ hasPricing: true, pricingLines: ["descoberta"] });
+    sources.precos.desenvolvimento.sistemas = { faixa: text("X"), unidade: "projeto", fatores: { pt: ["a"], en: ["a"], es: ["a"] } };
+    expect(computeFeatures(sources)).toMatchObject({ hasPricing: true, pricingLines: ["desenvolvimento.sistemas"] });
 
-    sources.precos.descoberta = { faixa: { pt: "X", en: "", es: "X" }, unidade: "projeto", fatores: { pt: ["a"], en: ["a"], es: ["a"] } };
+    sources.precos.desenvolvimento.sistemas = { faixa: { pt: "X", en: "", es: "X" }, unidade: "projeto", fatores: { pt: ["a"], en: ["a"], es: ["a"] } };
     expect(computeFeatures(sources).hasPricing).toBe(false);
   });
 

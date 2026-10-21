@@ -34,7 +34,7 @@ describe("orderedFaq — páginas de serviço", () => {
       "need_tech_knowledge",
       "start_with_part",
       "price",
-      "why_discovery_paid",
+      "pay_before_development",
       "how_long_system",
       "wont_stall",
       "how_follow_progress",
@@ -50,7 +50,7 @@ describe("orderedFaq — páginas de serviço", () => {
       "custom_vs_ready",
       "data_migration",
       "price",
-      "why_discovery_paid",
+      "pay_before_development",
       "how_long_system",
       "wont_stall",
       "scope_change",
@@ -68,13 +68,19 @@ describe("orderedFaq — páginas de serviço", () => {
     expect(plain.some((item) => item.link)).toBe(false);
   });
 
-  it("abatimento da Descoberta no why_discovery_paid só com a flag e a opção", () => {
-    const entries: FaqEntry[] = [{ bank: "why_discovery_paid" }];
-    const base = orderedFaq("pt", entries, features(), { discoveryCreditSuffix: true })[0]?.answer ?? "";
-    const credited = orderedFaq("pt", entries, features({ descobertaAbatida: true }), { discoveryCreditSuffix: true })[0]?.answer ?? "";
-    const notHere = orderedFaq("pt", entries, features({ descobertaAbatida: true }))[0]?.answer ?? "";
-    expect(credited.length).toBeGreaterThan(base.length);
-    expect(notHere).toBe(base);
+  it("D44: pay_before_development ('Pago alguma coisa antes do desenvolvimento?') no lugar de why_discovery_paid, sem sufixo de abatimento", () => {
+    const entries: FaqEntry[] = [{ bank: "pay_before_development" }];
+    for (const locale of ["pt", "en", "es"] as const) {
+      const item = orderedFaq(locale, entries, features({ duracaoDescoberta: true }))[0];
+      expect(item?.question, locale).toBe(t(locale, "faq.items.pay_before_development.question"));
+      expect(item?.answer, locale).toBe(t(locale, "faq.items.pay_before_development.answer"));
+    }
+    for (const service of SERVICE_KEYS) {
+      const declared = SERVICE_FAQ[service].map((entry) => ("bank" in entry ? entry.bank : "cond" in entry ? entry.cond : entry.own));
+      expect(declared, service).not.toContain("why_discovery_paid");
+      expect(declared, service).not.toContain("discovery_credit");
+      expect(declared.includes("pay_before_development"), service).toBe(service !== "support");
+    }
   });
 
   it("pergunta própria inexistente não vira item vazio; sem serviço, own é ignorada", () => {
@@ -88,7 +94,7 @@ describe("orderedFaq — páginas do método", () => {
     for (const locale of ["pt", "en", "es"] as const) {
       const items = orderedFaq(locale, HWW_FAQ, features(), { removalOrder: HWW_FAQ_REMOVAL });
       expect(items.map((item) => item.id), locale).toEqual([
-        "why_discovery_paid",
+        "pay_before_development",
         "how_long",
         "wont_stall",
         "diagnosis_commitment",
@@ -105,7 +111,7 @@ describe("orderedFaq — páginas do método", () => {
     const all: FaqItem[] = ids.map((id) => ({ id, question: id, answer: id, source: "bank" }));
     const capped = capFaq(all, { removalOrder: HWW_FAQ_REMOVAL }).map((item) => item.id);
     expect(capped).toEqual([
-      "why_discovery_paid",
+      "pay_before_development",
       "how_long",
       "wont_stall",
       "diagnosis_format",
@@ -264,7 +270,7 @@ describe("Garantias e preço à vista nas páginas de serviço (auditoria de con
     expect(visible("web_systems")).toEqual([
       "custom_vs_ready",
       "price",
-      "why_discovery_paid",
+      "pay_before_development",
       "how_long_system",
       "wont_stall",
       "scope_change",
@@ -276,7 +282,7 @@ describe("Garantias e preço à vista nas páginas de serviço (auditoria de con
       "app_or_web",
       "ios_android",
       "price",
-      "why_discovery_paid",
+      "pay_before_development",
       "how_long_app",
       "wont_stall",
       "scope_change",
@@ -288,7 +294,7 @@ describe("Garantias e preço à vista nas páginas de serviço (auditoria de con
       "data_access",
       "integrate_or_replace",
       "price",
-      "why_discovery_paid",
+      "pay_before_development",
       "how_long_integration",
       "wont_stall",
       "scope_change",
@@ -297,7 +303,7 @@ describe("Garantias e preço à vista nas páginas de serviço (auditoria de con
     expect(visible("mvp")).toEqual([
       "price",
       "how_long_mvp",
-      "why_discovery_paid",
+      "pay_before_development",
       "discovery_duration",
       "wont_stall",
       "code_ownership",

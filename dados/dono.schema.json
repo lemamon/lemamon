@@ -478,23 +478,15 @@
         },
         "semDescoberta": {
           "type": "boolean",
-          "description": "FAQ \"Dá para pular a Descoberta?\"."
+          "description": "FAQ \"Posso começar direto pelo desenvolvimento?\" (texto alinhado à D44: a necessidade da Descoberta é definida com você no diagnóstico; ligar = aprovar o texto)."
         },
         "duracaoDescoberta": {
           "type": "boolean",
-          "description": "FAQ \"Quanto dura a Descoberta?\" (D42). Com descoberta.duracao preenchida, a resposta e a tag da etapa citam a duração típica, sempre com \"depende do tamanho do problema\"."
+          "description": "FAQ \"Quanto dura a Descoberta?\" com resposta sem número (D44, 21/10/2026, revoga a D42): a necessidade e a duração são definidas com você no diagnóstico."
         },
         "planoDoCliente": {
           "type": "boolean",
           "description": "FAQ \"O plano da Descoberta é meu se eu não seguir?\"."
-        },
-        "descobertaAbatida": {
-          "type": "boolean",
-          "description": "FAQ \"O valor da Descoberta é abatido?\" (só abatimento integral)."
-        },
-        "descobertaUnicoCusto": {
-          "type": "boolean",
-          "description": "Frase \"é o único valor que você assume\"."
         },
         "migracaoDados": {
           "type": "boolean",
@@ -575,8 +567,6 @@
         "semDescoberta",
         "duracaoDescoberta",
         "planoDoCliente",
-        "descobertaAbatida",
-        "descobertaUnicoCusto",
         "migracaoDados",
         "ligacao",
         "valoresNoDiagnostico",
@@ -651,19 +641,8 @@
     },
     "precos": {
       "type": "object",
-      "description": "Faixas de investimento publicadas (BLUEPRINT §4 e §5.4). null = não publicar a linha. Linha completa libera a seção \"Investimento\" nas páginas dela.",
+      "description": "Faixas de investimento publicadas (BLUEPRINT §4 e §5.4). null = não publicar a linha. Linha completa libera a seção \"Investimento\" nas páginas dela. A Sprint de Descoberta é gratuita (D44, 21/10/2026) e não tem linha.",
       "properties": {
-        "descoberta": {
-          "description": "Sprint de Descoberta (unidade \"projeto\").",
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/linhaDePreco"
-            }
-          ]
-        },
         "desenvolvimento": {
           "type": "object",
           "description": "Desenvolvimento, por tipo (unidade \"projeto\").",
@@ -734,7 +713,6 @@
         }
       },
       "required": [
-        "descoberta",
         "desenvolvimento",
         "sustentacao"
       ],
@@ -757,7 +735,7 @@
     },
     "descoberta": {
       "type": "object",
-      "description": "Formato da Sprint de Descoberta (§6.3). Os 4 campos nos 3 idiomas liberam \"Como a Descoberta acontece\"; naoInclui (1 a 5 itens nos 3 idiomas) libera \"O que a Descoberta não inclui\".",
+      "description": "Formato da Sprint de Descoberta (§6.3). formato, participantes e ritmo nos 3 idiomas liberam \"Como a Descoberta acontece\"; naoInclui (1 a 5 itens nos 3 idiomas) libera \"O que a Descoberta não inclui\". A duração não é publicada (D44).",
       "properties": {
         "formato": {
           "description": "Como a Descoberta é organizada.",
@@ -793,15 +771,8 @@
           ]
         },
         "duracao": {
-          "description": "Quanto tempo leva, em geral (ex.: \"em geral 1 semana\"). Sozinha, com confirmacoes.duracaoDescoberta, já vai para o FAQ \"Quanto dura?\" e para a tag da etapa; os 4 campos juntos liberam \"Como a Descoberta acontece\".",
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/localizado300"
-            }
-          ]
+          "description": "Sempre null (D44, 21/10/2026, revoga a D42): a duração da Descoberta é definida com o cliente no diagnóstico e não é publicada.",
+          "type": "null"
         },
         "naoInclui": {
           "description": "O que a Sprint de Descoberta NÃO inclui (ex.: desenvolvimento, hospedagem), 1 a 5 itens curtos por idioma, sem valor em dinheiro. null = o bloco não aparece. Libera hasDiscoveryExclusions.",
@@ -1431,7 +1402,7 @@
             "projeto",
             "mes"
           ],
-          "description": "\"projeto\" (Descoberta e desenvolvimento) ou \"mes\" (sustentação)."
+          "description": "\"projeto\" (desenvolvimento) ou \"mes\" (sustentação)."
         },
         "fatores": {
           "$ref": "#/definitions/listaLocalizada3x120",

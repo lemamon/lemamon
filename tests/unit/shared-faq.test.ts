@@ -22,7 +22,7 @@ import {
 } from "@/components/shared/faq";
 import { empresa } from "@/config/empresa";
 import { computeFeatures } from "@/config/features";
-import { t, type Locale } from "@/i18n";
+import { getSection, t, type Locale } from "@/i18n";
 
 import { baseSources } from "../fixtures/features";
 import { completeConfirmacoes, completeDescoberta, completeEmpresa, completePrecos } from "../fixtures/owner-data";
@@ -31,7 +31,7 @@ const LOCALES: Locale[] = ["pt", "en", "es"];
 const HOME_BANK: FaqBankKey[] = [
   "how_much",
   "how_long",
-  "why_discovery_paid",
+  "pay_before_development",
   "diagnosis_commitment",
   "need_tech_knowledge",
   "how_follow_progress",
@@ -50,7 +50,6 @@ const ALL_CONDITIONAL: FaqConditionalKey[] = [
   "skip_discovery",
   "discovery_duration",
   "discovery_plan_ownership",
-  "discovery_credit",
   "data_migration",
 ];
 
@@ -105,12 +104,35 @@ describe("bankItems", () => {
     expect(composeFaq("pt", { features: full, bank: ["wont_stall"], sources: alt })[0]?.answer).toBe(t("pt", "faq.items.wont_stall.answer"));
   });
 
-  it("abatimento da Descoberta só com a flag e só quando a página pede", () => {
-    const base = t("pt", "faq.items.why_discovery_paid.answer");
-    const suffix = t("pt", "faq.conditional.discovery_credit.cost_suffix");
-    expect(bankItems("pt", ["why_discovery_paid"], full)[0]?.answer).toBe(base);
-    expect(bankItems("pt", ["why_discovery_paid"], empty, { discoveryCreditSuffix: true })[0]?.answer).toBe(base);
-    expect(bankItems("pt", ["why_discovery_paid"], full, { discoveryCreditSuffix: true })[0]?.answer).toBe(`${base} ${suffix}`);
+  it("D44: a Descoberta é gratuita; pay_before_development e discovery_cost dizem que nada é cobrado antes do desenvolvimento, sem sufixo nem variante", () => {
+    for (const features of [empty, full]) {
+      const [pay, cost] = bankItems("pt", ["pay_before_development", "discovery_cost"], features, { pricingHref: "#investimento" });
+      expect(pay?.answer).toBe(t("pt", "faq.items.pay_before_development.answer"));
+      expect(pay?.answer).toMatch(/^Não\. O diagnóstico e a Sprint de Descoberta, quando ela é necessária, são gratuitos\./);
+      expect(cost?.answer).toMatch(/^Nada\. A Sprint de Descoberta é gratuita/);
+      expect(cost?.link).toBeUndefined();
+    }
+    expect(t("en", "faq.items.discovery_cost.answer")).toMatch(/^Nothing\. The Discovery Sprint is free/);
+    expect(t("es", "faq.items.discovery_cost.answer")).toMatch(/^Nada\. El Sprint de Descubrimiento es gratuito/);
+  });
+
+  it("D44: nenhuma pergunta ou resposta do FAQ fala de Descoberta paga, abatimento, protótipo ou duração típica", () => {
+    const forbidden = {
+      pt: /prot[óo]tipo|abatid|etapa paga|[ée] paga\b|valor da (Sprint de )?Descoberta|1 semana/i,
+      en: /prototype|credited|deducted|Discovery (Sprint )?is paid|paid Discovery|Discovery (Sprint )?(price|fee)|1 week/i,
+      es: /prototipo|se descuenta|Sprint[^.]*con costo|costo del Sprint|1 semana/i,
+    } as const;
+    for (const locale of LOCALES) {
+      for (const group of ["items", "conditional"] as const) {
+        const section = getSection(locale, `faq.${group}`) as unknown as Record<string, Record<string, string>>;
+        for (const [id, entry] of Object.entries(section)) {
+          if (id.startsWith("_")) continue;
+          for (const [field, value] of Object.entries(entry)) {
+            expect(value, `${locale}:faq.${group}.${id}.${field}`).not.toMatch(forbidden[locale]);
+          }
+        }
+      }
+    }
   });
 });
 
@@ -155,35 +177,16 @@ describe("conditionalItems", () => {
     }
   });
 
-  it("discovery_duration (D42): duração típica (com ou sem o formato) > só a confirmação > nada", () => {
-    // Formato completo: a duração entra, sempre com "depende" e "combinada antes".
-    const withFormat = conditionalItems("pt", ["discovery_duration"], full, owner)[0];
-    expect(withFormat?.answer).toBe(
-      t("pt", "faq.conditional.discovery_duration.answer_with_duration", { duracao_descoberta: owner.descoberta.duracao?.pt ?? "" }),
-    );
-    // Só a duração + a confirmação do dono (os outros 3 campos vazios), nos 3 idiomas.
-    const onlyDuration = {
-      ...owner,
-      descoberta: { ...baseSources().descoberta, duracao: { pt: "em geral 1 semana", en: "usually 1 week", es: "en general 1 semana" } },
-    };
-    const durationFeatures = computeFeatures(baseSources(onlyDuration));
-    expect(durationFeatures.hasDiscoveryFormat).toBe(false);
-    expect(durationFeatures.hasDiscoveryDuration).toBe(true);
+  it("discovery_duration (D44, revoga a D42): só o answer_draft, sem número, e só com a confirmação do dono", () => {
+    // Com a confirmação (e até com o formato completo), a resposta é a mesma, sem duração.
     for (const locale of LOCALES) {
-      const answer = conditionalItems(locale, ["discovery_duration"], durationFeatures, onlyDuration)[0]?.answer ?? "";
-      expect(answer, locale).toContain(onlyDuration.descoberta.duracao[locale]);
-      expect(answer, locale).toBe(
-        t(locale, "faq.conditional.discovery_duration.answer_with_duration", { duracao_descoberta: onlyDuration.descoberta.duracao[locale] }),
-      );
+      const answer = conditionalItems(locale, ["discovery_duration"], full, owner)[0]?.answer ?? "";
+      expect(answer, locale).toBe(t(locale, "faq.conditional.discovery_duration.answer_draft"));
+      expect(answer, locale).not.toMatch(/\d/);
     }
-    expect(conditionalItems("pt", ["discovery_duration"], durationFeatures, onlyDuration)[0]?.answer).toMatch(/^Depende do tamanho do problema/);
-    // Só a confirmação, sem duração: resposta sem número.
-    const onlyFlag = computeFeatures(baseSources({ confirmacoes: owner.confirmacoes }));
-    expect(conditionalItems("pt", ["discovery_duration"], onlyFlag, { ...owner, descoberta: baseSources().descoberta })[0]?.answer).toBe(
-      t("pt", "faq.conditional.discovery_duration.answer_draft"),
-    );
-    // Duração sem a confirmação e sem o formato completo: nada.
-    const noFlag = { ...onlyDuration, confirmacoes: { ...owner.confirmacoes, duracaoDescoberta: false } };
+    expect(t("pt", "faq.conditional.discovery_duration.answer_draft")).toMatch(/definidas com você no diagnóstico/);
+    // Sem a confirmação: nada.
+    const noFlag = { ...owner, confirmacoes: { ...owner.confirmacoes, duracaoDescoberta: false } };
     expect(conditionalItems("pt", ["discovery_duration"], computeFeatures(baseSources(noFlag)), noFlag)).toEqual([]);
   });
 
@@ -235,7 +238,7 @@ describe("composeFaq e teto de 9", () => {
     expect(ids(items)).toEqual([
       "how_much",
       "how_long",
-      "why_discovery_paid",
+      "pay_before_development",
       "diagnosis_commitment",
       ...HOME_CONDITIONAL,
     ]);

@@ -856,10 +856,6 @@ textarea.control {
 }
 
 .terms {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding-inline-start: var(--space-5);
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
   line-height: var(--leading-sm);

@@ -315,13 +315,15 @@ describe("com dado completo (fixtures injetadas), cada seção aparece; parcial 
     expect(none.trim()).toBe("");
   });
 
-  it("DiscoveryFormat: os 4 campos; com 1 faltando, nada", async () => {
+  it("DiscoveryFormat: os 3 campos (sem duração, D44); com 1 faltando, nada", async () => {
     const on = await html(DiscoveryFormat, { locale: "es", data: { features: { hasDiscoveryFormat: true }, descoberta: completeDescoberta() } });
     expect(on).toContain('id="como-acontece"');
-    expect(on.match(/<dt/g)).toHaveLength(4);
+    expect(on.match(/<dt/g)).toHaveLength(3);
+    // A duração não aparece: o intro remete ao diagnóstico.
+    expect(on).toContain(t("es", "discovery_sprint.how_it_happens.intro"));
     const partial = await html(DiscoveryFormat, {
       locale: "es",
-      data: { features: { hasDiscoveryFormat: true }, descoberta: { ...completeDescoberta(), duracao: null } },
+      data: { features: { hasDiscoveryFormat: true }, descoberta: { ...completeDescoberta(), ritmo: null } },
     });
     expect(partial.trim()).toBe("");
   });

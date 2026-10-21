@@ -42,7 +42,7 @@ describe("dados/dono.json — o arquivo do dono", () => {
     expect(donoIssues(real)).toEqual([]);
   });
 
-  it("decisões 5, 9, 10, D31 e D42: escopo, código do cliente (answer_draft), NDA, outras cidades e exterior, duração da Descoberta; o resto desligado", () => {
+  it("decisões 5, 9, 10, D31 e D44: escopo, código do cliente (answer_draft), NDA, outras cidades e exterior, FAQ da duração da Descoberta (sem número); o resto desligado", () => {
     const ligadas = Object.entries(real.confirmacoes).filter(([, value]) => value !== false && value !== null);
     expect(Object.fromEntries(ligadas)).toEqual({
       escopoMudanca: true,
@@ -54,12 +54,12 @@ describe("dados/dono.json — o arquivo do dono", () => {
     });
   });
 
-  it("D42: só a duração típica da Descoberta, nos 3 idiomas; formato, participantes, ritmo e exclusões vazios", () => {
+  it("D44 (revoga a D42): a duração da Descoberta não é publicada; formato, participantes, ritmo, duração e exclusões vazios", () => {
     expect(real.descoberta).toEqual({
       formato: null,
       participantes: null,
       ritmo: null,
-      duracao: { pt: "em geral 1 semana", en: "usually 1 week", es: "en general 1 semana" },
+      duracao: null,
       naoInclui: null,
     });
     const features = computeFeatures({
@@ -67,9 +67,13 @@ describe("dados/dono.json — o arquivo do dono", () => {
       content: { cases: [], logos: [], depoimentos: [], time: [], posts: [] },
       env: { whatsappNumber: "", ga4Id: "" },
     });
-    expect(features.hasDiscoveryDuration).toBe(true);
+    expect("hasDiscoveryDuration" in features).toBe(false);
     expect(features.hasDiscoveryFormat).toBe(false);
+    expect(features.confirm.duracaoDescoberta).toBe(true);
     expect(features.confirm.atendeExterior).toBe(true);
+    // A Descoberta é gratuita: abatimento e "único custo" saíram do arquivo e do schema.
+    expect(Object.keys(real.confirmacoes)).not.toContain("descobertaAbatida");
+    expect(Object.keys(real.confirmacoes)).not.toContain("descobertaUnicoCusto");
   });
 
   it("decisão 6: GitHub, LinkedIn e Medium publicados", () => {
@@ -99,8 +103,10 @@ describe("dados/dono.json — o arquivo do dono", () => {
   });
 
   it("decisões 3 e 8: nenhum preço, pessoa, depoimento ou logo; razão social e CNPJ o dono já mandou (o resto fica vazio)", () => {
-    const linhas = [real.precos.descoberta, real.precos.sustentacao, ...Object.values(real.precos.desenvolvimento)];
+    const linhas = [real.precos.sustentacao, ...Object.values(real.precos.desenvolvimento)];
     expect(linhas.every((linha) => linha === null)).toBe(true);
+    // D44: a Sprint de Descoberta é gratuita e não tem linha de preço.
+    expect(Object.keys(real.precos)).not.toContain("descoberta");
     expect(real.empresa).toMatchObject({ razaoSocial: "Lemamon.dev LTDA", cnpj: "69.700.690/0001-98", responsavel: "", anoFundacao: null });
     expect(isValidCnpj(real.empresa.cnpj)).toBe(true);
     expect([real.time, real.depoimentos, real.logos]).toEqual([[], [], []]);
@@ -465,11 +471,11 @@ describe("texto de EXEMPLO da camada fictícia nunca vale no dado real", () => {
 
   it("qualquer campo do dono.json com texto de exemplo derruba a validação, com o caminho", () => {
     const doc = copia();
-    doc.descoberta.duracao = { pt: "de duas a três semanas (exemplo)", en: "two to three weeks", es: "de dos a tres semanas" };
+    doc.descoberta.formato = { pt: "encontros remotos (exemplo)", en: "remote sessions", es: "encuentros remotos" };
     doc.confirmacoes.pagamento = { pt: "Condições de exemplo: parcelas ligadas às entregas.", en: "Payment in instalments.", es: "Pago en cuotas." };
     doc.sustentacao.inclui = { pt: "Exemplo: correção de erros.", en: "Bug fixes.", es: "Corrección de errores." };
     const issues = donoIssues(doc).join("\n");
-    expect(issues).toMatch(/dados\/dono\.json › descoberta\.duracao\.pt: texto de EXEMPLO da camada fictícia \(marcado "\(exemplo\)"\)/);
+    expect(issues).toMatch(/dados\/dono\.json › descoberta\.formato\.pt: texto de EXEMPLO da camada fictícia \(marcado "\(exemplo\)"\)/);
     expect(issues).toMatch(/dados\/dono\.json › confirmacoes\.pagamento\.pt: texto de EXEMPLO da camada fictícia \(começa com "Condições de exemplo"\)/);
     expect(issues).toMatch(/dados\/dono\.json › sustentacao\.inclui\.pt: texto de EXEMPLO/);
     expect(issues).not.toMatch(/\.en: texto de EXEMPLO|\.es: texto de EXEMPLO/);
@@ -542,9 +548,9 @@ describe("valor COPIADO de dados/dono.ficticio.json ou de dados/ficticio/ derrub
       }),
     )).join("\n");
     expect(problemas).toMatch(
-      /dados\/dono\.json › descoberta\.duracao\.pt: valor copiado de dados\/dono\.ficticio\.json › descoberta\.duracao\.pt \("de duas a três semanas \(exemplo\)"\)/,
+      /dados\/dono\.json › descoberta\.ritmo\.pt: valor copiado de dados\/dono\.ficticio\.json › descoberta\.ritmo\.pt \("Exemplo: dois encontros por semana/,
     );
-    expect(problemas).toMatch(/dados\/dono\.json › precos\.descoberta\.faixa\.pt: valor copiado de .*"R\$ 8 mil a R\$ 15 mil \(exemplo\)"/);
+    expect(problemas).toMatch(/dados\/dono\.json › precos\.desenvolvimento\.sistemas\.faixa\.pt: valor copiado de .*"R\$ 60 mil a R\$ 150 mil \(exemplo\)"/);
     expect(problemas).toMatch(/dados\/dono\.json › confirmacoes\.pagamento\.pt: valor copiado de/);
     expect(problemas).toMatch(/dados\/dono\.json › qualificacao\.faixasMensais\[0\]\.rotulo\.pt: valor copiado de/);
     // ids e enums iguais (tier_1, "projeto", "mes") não contam como cópia.

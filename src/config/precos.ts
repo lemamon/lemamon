@@ -9,15 +9,17 @@
  *   Uma linha por item, cada uma com:
  *     faixa    texto da faixa, POR IDIOMA, já com a moeda que você escolher
  *              (exemplos no docs/playbooks/00-DADOS-DO-DONO.md).
- *     unidade  "projeto" (Descoberta e desenvolvimento) ou "mes" (sustentação).
+ *     unidade  "projeto" (desenvolvimento) ou "mes" (sustentação).
  *     fatores  "o que move o valor": de 1 a 3 itens curtos POR IDIOMA.
- *   Itens: descoberta · desenvolvimento.{sistemas, aplicativos, integracoes, mvp} · sustentacao.
+ *   Itens: desenvolvimento.{sistemas, aplicativos, integracoes, mvp} · sustentacao.
  *   Deixe `null` o item que não quer publicar.
+ *   A Sprint de Descoberta NÃO tem linha: ela é gratuita (decisão do dono de
+ *   21/10/2026, D44). O bloco de investimento diz isso numa linha fixa
+ *   (shared.investment.discovery_line), sem faixa.
  *
  * O QUE LIBERA (features.hasPricing + features.pricingLines)
- *   - Seção "Investimento" na Home, Como trabalhamos, Sprint de Descoberta,
- *     serviços, hub de serviços e no topo de Quanto custa (cada página mostra só
- *     as linhas dela).
+ *   - Seção "Investimento" na Home, Como trabalhamos, serviços, hub de
+ *     serviços e no topo de Quanto custa (cada página mostra só as linhas dela).
  *   - Variantes "com faixas" do FAQ "Quanto custa?" e do resumo do wizard.
  *   Linha incompleta (faltou um idioma, faixa vazia, nenhum fator) NÃO aparece,
  *   e a seção inteira some (título e âncora incluídos) se nenhuma linha estiver completa.
@@ -47,7 +49,6 @@ export interface PriceLine {
 }
 
 export interface Precos {
-  descoberta: PriceLine | null;
   desenvolvimento: {
     sistemas: PriceLine | null;
     aplicativos: PriceLine | null;
@@ -59,7 +60,6 @@ export interface Precos {
 }
 
 export const PRICE_LINE_IDS = [
-  "descoberta",
   "desenvolvimento.sistemas",
   "desenvolvimento.aplicativos",
   "desenvolvimento.integracoes",
@@ -69,8 +69,7 @@ export const PRICE_LINE_IDS = [
 export type PriceLineId = (typeof PRICE_LINE_IDS)[number];
 
 /** Rótulo de cada linha: shared.investment.row_labels.<valor>. */
-export const PRICE_LINE_LABEL: Record<PriceLineId, "discovery" | "development_web_systems" | "development_mobile_apps" | "development_integrations" | "development_mvp" | "support"> = {
-  descoberta: "discovery",
+export const PRICE_LINE_LABEL: Record<PriceLineId, "development_web_systems" | "development_mobile_apps" | "development_integrations" | "development_mvp" | "support"> = {
   "desenvolvimento.sistemas": "development_web_systems",
   "desenvolvimento.aplicativos": "development_mobile_apps",
   "desenvolvimento.integracoes": "development_integrations",
@@ -80,7 +79,6 @@ export const PRICE_LINE_LABEL: Record<PriceLineId, "discovery" | "development_we
 
 /** Unidade obrigatória de cada linha (validada no build). */
 export const PRICE_LINE_UNIT: Record<PriceLineId, PriceUnit> = {
-  descoberta: "projeto",
   "desenvolvimento.sistemas": "projeto",
   "desenvolvimento.aplicativos": "projeto",
   "desenvolvimento.integracoes": "projeto",
@@ -99,8 +97,6 @@ export const SERVICE_PRICE_LINE = {
 
 export function getPriceLine(source: Precos, id: PriceLineId): PriceLine | null {
   switch (id) {
-    case "descoberta":
-      return source.descoberta;
     case "sustentacao":
       return source.sustentacao;
     case "desenvolvimento.sistemas":

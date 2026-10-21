@@ -83,8 +83,8 @@ describe("marcadores fictícios (o que o caçador procura)", () => {
       "privacidade.exemplo@example.com",
       "https://example.com/agenda",
       // textos de config que vazaram no cenário de cópia (X8)
-      "de duas a três semanas (exemplo)",
-      "R$ 8 mil a R$ 15 mil (exemplo)",
+      "Exemplo: dois encontros por semana, com material para revisar entre eles.",
+      "R$ 60 mil a R$ 150 mil (exemplo)",
       "R$ 3 mil a R$ 8 mil (exemplo)",
       "Condições de exemplo: o pagamento é dividido em parcelas ligadas às entregas, combinadas no plano.",
       // MDX: slug, título, frontmatter e frases do corpo (X9b)
@@ -182,7 +182,8 @@ describe("build COM a flag (local): a camada aparece, marcada", () => {
       CNPJ_FICTICIO,
       "Ana Exemplo Souza",
       "exemplo-sistema-de-fretes",
-      "de duas a três semanas (exemplo)",
+      // ritmo da Descoberta: "Como a Descoberta acontece" sai na prévia com os 3 campos (D44, sem duração)
+      "Exemplo: dois encontros por semana, com material para revisar entre eles.",
       "Este post é fictício e só aparece com a camada de dados fictícios ligada.",
       CLASSE_FAIXA,
       ROBOTS_FICTICIO,

@@ -30,7 +30,7 @@ import type { Locale } from "@/i18n";
 export const HOME_FAQ_BANK = [
   "how_much",
   "how_long",
-  "why_discovery_paid",
+  "pay_before_development",
   "diagnosis_commitment",
   "need_tech_knowledge",
   "how_follow_progress",
@@ -50,7 +50,7 @@ export const HOME_FAQ_ORDER = [
   "how_much",
   "how_long",
   "code_ownership",
-  "why_discovery_paid",
+  "pay_before_development",
   "diagnosis_commitment",
   "need_tech_knowledge",
   "how_follow_progress",

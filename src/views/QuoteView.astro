@@ -24,7 +24,6 @@ import QuoteQuickFaq from "@/components/quote/QuoteQuickFaq.astro";
 import MethodTimeline from "@/components/shared/MethodTimeline.astro";
 import ArrowLink from "@/components/ui/ArrowLink.astro";
 import Card from "@/components/ui/Card.astro";
-import { descoberta } from "@/config/descoberta";
 import { empresa } from "@/config/empresa";
 import { getFeatures } from "@/config/features";
 import { privacidade } from "@/config/privacidade";
@@ -64,24 +63,6 @@ const previewSubmit = isPreviewSubmitContext(deployContext());
 const summaryCasesTitle = (key: "cases_title" | "cases_title_one"): string =>
   hasText(locale, `quote.summary.${key}`) ? tDynamic(locale, `quote.summary.${key}`) : t(locale, `quote.sent.meanwhile.${key}`);
 
-/**
- * Linha do método compacta do resumo (F02): com a duração típica publicável
- * (D42, features.hasDiscoveryDuration), a Descoberta realçada leva a mesma tag
- * com duração do MethodTimeline completo (tag_long_with_duration).
- */
-const discoveryDuration = features.hasDiscoveryDuration ? descoberta.duracao?.[locale]?.trim() : undefined;
-const methodStages = discoveryDuration
-  ? {
-      ...shared.method_timeline.stages,
-      discovery: {
-        ...shared.method_timeline.stages.discovery,
-        tag: t(locale, "shared.method_timeline.stages.discovery.tag_long_with_duration", {
-          duracao_descoberta: discoveryDuration,
-        }),
-      },
-    }
-  : shared.method_timeline.stages;
-
 const copy: WizardCopy = {
   progress: quote.progress,
   nav: quote.nav,
@@ -101,8 +82,9 @@ const copy: WizardCopy = {
     titleOne: summaryCasesTitle("cases_title_one"),
     readCase: shared.cta.read_case,
   },
-  method: { stages: methodStages, nextStep: shared.method_timeline.next_step_badge },
-  terms: { prototype: shared.terms.prototype, prioritized_scope: shared.terms.prioritized_scope },
+  /** Linha do método compacta do resumo (F02): a mesma tag da linha do método, sem duração (D44). */
+  method: { stages: shared.method_timeline.stages, nextStep: shared.method_timeline.next_step_badge },
+  terms: { prioritized_scope: shared.terms.prioritized_scope },
   investment: {
     row_labels: shared.investment.row_labels,
     unit_project: shared.investment.unit_project,
@@ -204,7 +186,6 @@ const entryMessage = quoteEntryMessage(locale);
         hasAgenda: features.hasAgenda,
         hasWhatsapp: features.hasWhatsapp,
         phoneCall: features.confirm.ligacao,
-        semDescoberta: features.confirm.semDescoberta,
         valoresNoDiagnostico: features.confirm.valoresNoDiagnostico,
         nda: features.confirm.nda,
       }}

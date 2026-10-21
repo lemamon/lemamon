@@ -29,8 +29,6 @@ import {
 } from "./model";
 
 export interface SummaryContext {
-  /** confirmacoes.semDescoberta (variantes "skip"). */
-  semDescoberta: boolean;
   /** confirmacoes.valoresNoDiagnostico. */
   valoresNoDiagnostico: boolean;
   /** Linhas COMPLETAS de precos.ts (features.pricingLines). */
@@ -47,11 +45,14 @@ export function highlightedStage(answers: Answers): "discovery" | "support" {
   return isLive(answers) ? "support" : "discovery";
 }
 
-export function emphasisKey(answers: Answers, ctx: Pick<SummaryContext, "semDescoberta">): EmphasisKey {
+/**
+ * Desde a D44 (21/10/2026) a Descoberta só acontece quando o diagnóstico mostra
+ * que é necessária, para todo lead: os textos base já são condicionais, e as
+ * antigas variantes "skip" (confirmacoes.semDescoberta) viraram o texto base.
+ */
+export function emphasisKey(answers: Answers): EmphasisKey {
   if (isLive(answers)) return "live_system";
-  if (answers.stage === "scope_defined") {
-    return ctx.semDescoberta ? "discovery_scope_defined_skip_variant" : "discovery_scope_defined";
-  }
+  if (answers.stage === "scope_defined") return "discovery_scope_defined";
   return "discovery_default";
 }
 
@@ -61,8 +62,8 @@ export function emphasisKey(answers: Answers, ctx: Pick<SummaryContext, "semDesc
 
 export type PriceBlock =
   | { kind: "live"; second: "price_empty_live_2" | "price_empty_live_2_with_values" }
-  | { kind: "ranges"; lines: PriceLineId[]; note: "price_note" | "price_note_skip_variant" }
-  | { kind: "empty"; first: "price_empty" | "price_empty_skip_variant" };
+  | { kind: "ranges"; lines: PriceLineId[] }
+  | { kind: "empty" };
 
 const DEV_LINE: Record<Exclude<BuildType, "not_sure">, PriceLineId> = {
   ops_system: "desenvolvimento.sistemas",
@@ -75,7 +76,8 @@ const DEV_LINE: Record<Exclude<BuildType, "not_sure">, PriceLineId> = {
 
 /**
  * Linha de desenvolvimento da P2: só quando TODOS os tipos marcados caem na
- * mesma linha; not_sure ou linhas diferentes → nenhuma (só a da Descoberta).
+ * mesma linha; not_sure ou linhas diferentes → nenhuma (bloco "empty"). A
+ * Descoberta é gratuita e não tem faixa (D44).
  */
 export function developmentLine(types: readonly BuildType[] | undefined): PriceLineId | null {
   if (!types || types.length === 0 || types.includes("not_sure")) return null;
@@ -87,13 +89,10 @@ export function priceBlock(answers: Answers, ctx: SummaryContext): PriceBlock {
   if (isLive(answers)) {
     return { kind: "live", second: ctx.valoresNoDiagnostico ? "price_empty_live_2_with_values" : "price_empty_live_2" };
   }
-  const skip = answers.stage === "scope_defined" && ctx.semDescoberta;
-  const wanted: PriceLineId[] = ["descoberta"];
   const dev = developmentLine(answers.build_type);
-  if (dev) wanted.push(dev);
-  const lines = wanted.filter((id) => ctx.pricingLines.includes(id));
-  if (lines.length > 0) return { kind: "ranges", lines, note: skip ? "price_note_skip_variant" : "price_note" };
-  return { kind: "empty", first: skip ? "price_empty_skip_variant" : "price_empty" };
+  const lines = dev && ctx.pricingLines.includes(dev) ? [dev] : [];
+  if (lines.length > 0) return { kind: "ranges", lines };
+  return { kind: "empty" };
 }
 
 /* ------------------------------------------------------------------ *
@@ -145,7 +144,7 @@ export function summaryTopics(answers: Answers, ctx: SummaryContext): TopicId[] 
 
 export type FactorId = keyof RulesCopy["summary"]["factors"];
 
-export function summaryFactors(answers: Answers, ctx: Pick<SummaryContext, "semDescoberta">): FactorId[] {
+export function summaryFactors(answers: Answers): FactorId[] {
   const types = answers.build_type ?? [];
   const has = (type: BuildType) => types.includes(type);
   const live = isLive(answers);
@@ -156,9 +155,7 @@ export function summaryFactors(answers: Answers, ctx: Pick<SummaryContext, "semD
   if (has("automation")) factors.push("factor_automation");
   // mvp diz a fase do produto, não é outro tipo de software: mvp + 1 tipo = uma frente.
   const fronts = types.filter((type) => type !== "mvp" && type !== "not_sure").length;
-  if (fronts >= 2 && !live) {
-    factors.push(answers.stage === "scope_defined" && ctx.semDescoberta ? "factor_multi_skip_variant" : "factor_multi");
-  }
+  if (fronts >= 2 && !live) factors.push("factor_multi");
   if (isDeadlineUrgent(answers)) factors.push("factor_deadline");
   else if (hasDeadlineWindow(answers)) factors.push("factor_deadline_window");
   if (!live && (has("ops_system") || has("client_platform") || has("mvp"))) factors.push("factor_scope");

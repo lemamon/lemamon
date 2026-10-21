@@ -24,12 +24,13 @@
  * O bloco "O que a Sprint de Descoberta define" é um <Card surface="subtle">
  * (B214); a lista em 2 colunas usa o gutter do grid (B222).
  * Na linha do método, a etapa "Sprint de Descoberta" leva a
- * /sprint-de-descoberta (a página que justifica a etapa paga), como na Home
+ * /sprint-de-descoberta (a página que explica a etapa), como na Home
  * (stageHref); as outras etapas, a /como-trabalhamos#{etapa} (painel de design).
  *
  * Termo explicado (§5.9) na primeira menção da página, que cai nas linhas das
- * etapas: "protótipo" (sistemas, apps, MVP) ou "escopo priorizado"
- * (integrações, sustentação).
+ * etapas: "escopo priorizado" em integrações e sustentação. Em sistemas, apps
+ * e MVP as linhas não usam o termo e nenhuma nota aparece ("protótipo" saiu
+ * em 21/10/2026, D44: a Descoberta não entrega protótipo).
  */
 import DecisionPoints from "@/components/shared/DecisionPoints.astro";
 import MethodTimeline from "@/components/shared/MethodTimeline.astro";
@@ -58,7 +59,7 @@ const title = isSupport
       servico_frase: tDynamic(locale, `services.${service}.name_in_sentence`),
     });
 const steps: Record<StageId, string> = getSection(locale, `services.${service}.method_steps` as const);
-const term = service === "integrations" || service === "support" ? "prioritized_scope" : "prototype";
+const term = service === "integrations" || service === "support" ? "prioritized_scope" : null;
 const box = isSupport
   ? { title: t(locale, "services.support.agreed_before_title"), items: getSection(locale, "services.support.agreed_before") }
   : {
@@ -70,7 +71,7 @@ const box = isSupport
 <Section id="como-funciona" labelledby="como-funciona-title">
   <SectionHeader id="como-funciona-title" title={title} />
   <MethodTimeline locale={locale} variant="compact" notes={steps} stageHref={{ discovery: urlFor("discovery_sprint", locale) }} />
-  <p class="term-note"><Term locale={locale} term={term} /></p>
+  {term && <p class="term-note"><Term locale={locale} term={term} /></p>}
 
   <div class="defines">
     <Card surface="subtle">

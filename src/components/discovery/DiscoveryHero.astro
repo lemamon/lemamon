@@ -4,17 +4,15 @@
  * Breadcrumb Início › Como trabalhamos › Sprint de Descoberta (BreadcrumbList,
  * §8.7); eyebrow "Etapa 2 de 4"; CTA "Começar pelo diagnóstico gratuito" →
  * /orcamento?entrada=descoberta&origem=descoberta-hero; secundário "Tirar
- * dúvidas no WhatsApp"; microcopy (o primeiro passo é gratuito). Com a
- * duração típica da Descoberta (D42, features.hasDiscoveryDuration),
- * microcopy_with_duration ("…dura em geral 1 semana, com valor e duração
- * combinados antes de começar"; auditoria F58).
+ * dúvidas no WhatsApp"; microcopy (o primeiro passo é o diagnóstico gratuito,
+ * em que se define com você se a Descoberta, também gratuita, é necessária).
+ * Sem duração (D44, 21/10/2026: a duração é definida no diagnóstico e não é
+ * publicada).
  */
 import Breadcrumb from "@/components/shell/Breadcrumb.astro";
 import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
 import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
 import PageHero from "@/components/services/kit/PageHero.astro";
-import { descoberta } from "@/config/descoberta";
-import { getFeatures } from "@/config/features";
 import { urlFor } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 
@@ -24,11 +22,7 @@ interface Props {
 }
 
 const { locale, whatsappMessage } = Astro.props;
-const features = await getFeatures();
-const duration = features.hasDiscoveryDuration ? descoberta.duracao?.[locale]?.trim() : undefined;
-const microcopy = duration
-  ? t(locale, "discovery_sprint.hero.microcopy_with_duration", { duracao_descoberta: duration })
-  : t(locale, "discovery_sprint.hero.microcopy");
+const microcopy = t(locale, "discovery_sprint.hero.microcopy");
 const crumbs = [
   { label: t(locale, "shared.breadcrumb.home"), href: urlFor("home", locale) },
   { label: t(locale, "shared.breadcrumb.how_we_work"), href: urlFor("how_we_work", locale) },

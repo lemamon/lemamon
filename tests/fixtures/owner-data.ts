@@ -54,7 +54,6 @@ const line = (faixa: string, unidade: PriceLine["unidade"]): PriceLine => ({
 
 export function completePrecos(): Precos {
   return {
-    descoberta: line("1 a 2", "projeto"),
     desenvolvimento: {
       sistemas: line("10 a 20", "projeto"),
       aplicativos: line("15 a 30", "projeto"),
@@ -101,8 +100,6 @@ export function completeConfirmacoes(): Confirmacoes {
     semDescoberta: true,
     duracaoDescoberta: true,
     planoDoCliente: true,
-    descobertaAbatida: true,
-    descobertaUnicoCusto: true,
     migracaoDados: true,
     ligacao: true,
     valoresNoDiagnostico: true,
@@ -148,7 +145,8 @@ export function completeDescoberta(): Descoberta {
     formato: fx("encontros remotos"),
     participantes: fx("quem decide e quem usa"),
     ritmo: fx("dois encontros por semana"),
-    duracao: fx("algumas semanas"),
+    // D44 (21/10/2026): a duração da Descoberta não é publicada; o campo é sempre null.
+    duracao: null,
     naoInclui: fxList("o desenvolvimento do sistema", "a hospedagem"),
   };
 }

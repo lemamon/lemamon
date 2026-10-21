@@ -6,17 +6,21 @@
  * unidade e fatores nos 3 idiomas), não renderiza nada: nem título, nem
  * âncora, nem wrapper. A página só posiciona <Investment lines={[...]} />.
  *
- * Conteúdo: título, introdução que se sustenta sem números, a linha fixa
- * "Diagnóstico: gratuito", uma linha por item preenchido (rótulo, faixa,
+ * Conteúdo: título, introdução que se sustenta sem números, as linhas fixas
+ * "Diagnóstico: gratuito" e "Sprint de Descoberta: gratuita, se for
+ * necessária" (D44, 21/10/2026: a Descoberta não tem faixa de preço; a
+ * segunda linha não sai na sustentação, `discoveryLine={false}`), uma linha
+ * por item preenchido (rótulo, faixa,
  * unidade, "o que faz o valor variar"), a nota "Referência, não proposta." e
  * o fecho com link de texto para o diagnóstico (?origem={origem}-investimento,
  * i18n _notes.investment). Sem "plano recomendado" e sem card em destaque.
  *
  * Valores monetários só existem em precos.ts; este componente apenas os lê.
  * API estável: `locale`, `lines`, `origem`, `id`, `title`; opcionais
- * `intro`/`note`/`ctaLead` (substituem os compartilhados — discovery_sprint e
- * serviços, i18n _notes; ctaLead na sustentação, que é mensal e não tem "preço
- * do desenvolvimento"), `servico`/`entrada` (atribuição do link) e `level`;
+ * `intro`/`note`/`ctaLead` (substituem os compartilhados — serviços, i18n
+ * _notes; ctaLead na sustentação, que é mensal e não tem "preço do
+ * desenvolvimento"), `discoveryLine`, `servico`/`entrada` (atribuição do link)
+ * e `level`;
  * `eyebrow`/`index`/`divider` (rótulo numerado e linha de topo, Home).
  *
  * Medição (B118): o bloco leva data-pricing-view={origem} e o script manda UM
@@ -45,12 +49,19 @@ interface Props {
   id?: string;
   /** Sobrescreve shared.investment.title (ex.: pricing.ranges.title). */
   title?: string;
-  /** Substitui shared.investment.intro (ex.: discovery_sprint.investment.intro). */
+  /** Substitui shared.investment.intro (ex.: services.support.investment_intro). */
   intro?: string;
   /** Substitui shared.investment.note (ex.: services.template.investment_note). */
   note?: string;
   /** Substitui shared.investment.cta_lead (ex.: services.support.investment_cta_lead). */
   ctaLead?: string;
+  /**
+   * Linha fixa "Sprint de Descoberta: gratuita, se for necessária"
+   * (shared.investment.discovery_line), logo abaixo de "Diagnóstico: gratuito".
+   * Padrão: true. A sustentação passa false: lá o copy não diz se a Descoberta
+   * se aplica (services._notes.support_overrides).
+   */
+  discoveryLine?: boolean;
   servico?: ServiceKey;
   entrada?: "descoberta";
   level?: 2 | 3;
@@ -71,6 +82,7 @@ const {
   intro,
   note,
   ctaLead,
+  discoveryLine = true,
   servico,
   entrada,
   level = 2,
@@ -120,6 +132,12 @@ const indexLabel = eyebrow && index && index > 0 ? `${String(index).padStart(2, 
             <Icon name="check" size={16} strokeWidth={2.5} />
             {t(locale, "shared.investment.diagnosis_line")}
           </p>
+          {discoveryLine && (
+            <p class="inv__free">
+              <Icon name="check" size={16} strokeWidth={2.5} />
+              {t(locale, "shared.investment.discovery_line")}
+            </p>
+          )}
           <dl class="inv__rows">
             {rows.map((row) => (
               <div class="inv__row" data-line={row.id}>

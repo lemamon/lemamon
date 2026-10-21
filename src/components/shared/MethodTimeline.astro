@@ -15,10 +15,9 @@
  *   full      — + "Você recebe" (Home e Como trabalhamos); aceita `details`
  *   highlight — uma etapa realçada (Sprint de Descoberta, resumo)
  * A etapa 1 sempre leva o selo "Comece aqui" ou "Próximo passo".
- * Duração típica da Descoberta (D42, features.hasDiscoveryDuration): nas
- * variantes full e highlight, a tag da etapa 2 vira tag_long_with_duration
- * ("Paga · valor combinado antes do início · em geral 1 semana"); a compacta
- * (hero, serviços) fica curta. É a única duração do desenho.
+ * A tag é a mesma nas 3 variantes (stages.{id}.tag). Nenhuma etapa mostra
+ * duração: a da Descoberta é definida com o cliente no diagnóstico e não é
+ * publicada (decisão do dono de 21/10/2026, D44, que revoga a D42).
  * Tags são texto com contraste AA (nunca só cor). O realce usa borda, fundo e
  * aria-current="step", não só cor.
  *
@@ -31,8 +30,6 @@
  * comporta (container query, não viewport: funciona dentro de um painel de
  * 5 colunas e numa seção cheia). orientation="vertical" força a vertical.
  */
-import { descoberta } from "@/config/descoberta";
-import { getFeatures } from "@/config/features";
 import { ANCHORS, anchorFor, type StageId } from "@/config/routes";
 import { getSection, t, type Locale } from "@/i18n";
 
@@ -98,9 +95,7 @@ const {
 } = Astro.props;
 
 const links = linksProp ?? (linkStages ? "how_we_work" : "local");
-const features = await getFeatures();
 const stages = getSection(locale, "shared.method_timeline.stages");
-const discoveryDuration = features.hasDiscoveryDuration ? descoberta.duracao?.[locale]?.trim() : undefined;
 const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
 const badgeText =
   badge === "next_step"
@@ -108,14 +103,7 @@ const badgeText =
     : t(locale, "shared.method_timeline.start_here_badge");
 const youGetLabel = t(locale, "shared.method_timeline.you_get_label");
 
-const tagOf = (id: StageId): string => {
-  const stage = stages[id];
-  if (variant === "compact") return stage.tag;
-  if (id === "discovery" && discoveryDuration) {
-    return t(locale, "shared.method_timeline.stages.discovery.tag_long_with_duration", { duracao_descoberta: discoveryDuration });
-  }
-  return "tag_long" in stage ? stage.tag_long : stage.tag;
-};
+const tagOf = (id: StageId): string => stages[id].tag;
 
 const hrefOf = (id: StageId): string | null => {
   if (stageHref[id]) return stageHref[id] ?? null;

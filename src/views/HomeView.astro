@@ -70,7 +70,7 @@ const chapterOf = (key: "cases" | "team") =>
   ({ index: plan[key].index, divider: plan[key].divider }) as Record<never, never>;
 
 /* Termos §5.9: onde fica a 1ª menção de cada um, na ordem de leitura. */
-const TERMS: TermId[] = ["mvp", "written_feedback", "prioritized_scope", "prototype"];
+const TERMS: TermId[] = ["mvp", "written_feedback", "prioritized_scope"];
 const risks = riskAnswers(locale, features);
 const method = getSection(locale, "home.method.stages");
 const termPlan = planFirstMentions(

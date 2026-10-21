@@ -4,8 +4,10 @@
  *  O DADO MORA EM dados/dono.json › confirmacoes.
  *  Decidido pelo dono: escopoMudanca = true (FAQ "E se eu mudar o escopo?");
  *  outrasCidades e atendeExterior = true (D31, 21/10/2026: atende empresas de
- *  qualquer país); duracaoDescoberta = true (D42, 21/10/2026: "depende do
- *  cliente, mas no geral 1 semana", em descoberta.duracao).
+ *  qualquer país); duracaoDescoberta = true (D44, 21/10/2026, revoga a D42: a
+ *  Sprint de Descoberta é gratuita, só acontece quando o diagnóstico mostra que
+ *  é necessária, e a necessidade e a duração são definidas com o cliente no
+ *  diagnóstico; nenhuma duração é publicada).
  * ============================================================================
  *
  * PARA O DONO — o que preencher (em dados/dono.json, não aqui)
@@ -22,12 +24,12 @@
  *                             qualquer país atende outras cidades; o build confere)
  *     nda                     FAQ "Vocês assinam NDA?" (+ texto do card de e-mail em /contato)
  *     sistemaTerceiros        FAQ "Cuidam de sistema feito por outra empresa?"
- *     semDescoberta           FAQ "Dá para pular a Descoberta?"
- *     duracaoDescoberta       FAQ "Quanto dura a Descoberta?" (com descoberta.duracao
- *                             preenchida, a resposta e a tag da etapa citam a duração típica)
+ *     semDescoberta           FAQ "Posso começar direto pelo desenvolvimento?" (o texto
+ *                             segue a D44: a necessidade da Descoberta é definida com
+ *                             você no diagnóstico; ligar = aprovar esse texto)
+ *     duracaoDescoberta       FAQ "Quanto dura a Descoberta?" (D44: resposta sem número,
+ *                             "definida com você no diagnóstico"; nunca uma duração típica)
  *     planoDoCliente          FAQ "O plano da Descoberta é meu se eu não seguir?"
- *     descobertaAbatida       FAQ "O valor da Descoberta é abatido?" (só abatimento integral)
- *     descobertaUnicoCusto    frase "é o único valor que você assume"
  *     migracaoDados           FAQ "Vocês migram os dados da planilha/sistema atual?"
  *     ligacao                 opção "Ligação" no canal de contato do wizard
  *     valoresNoDiagnostico    variante do resumo do wizard que fala de valores no diagnóstico
@@ -73,16 +75,12 @@ export interface Confirmacoes {
   /** faq.conditional.skip_discovery. */
   semDescoberta: boolean;
   /**
-   * faq.conditional.discovery_duration: answer_draft; com descoberta.duracao
-   * preenchida, answer_with_duration (features.hasDiscoveryDuration).
+   * faq.conditional.discovery_duration: answer_draft, sem número (D44: a
+   * duração é definida com o cliente no diagnóstico e não é publicada).
    */
   duracaoDescoberta: boolean;
   /** faq.conditional.discovery_plan_ownership. */
   planoDoCliente: boolean;
-  /** faq.conditional.discovery_credit + sufixos de custo (só abatimento integral). */
-  descobertaAbatida: boolean;
-  /** "É o único valor que você assume" (faq._notes.single_value). */
-  descobertaUnicoCusto: boolean;
   /** faq.conditional.data_migration. */
   migracaoDados: boolean;
   /** Opção "Ligação" no canal de contato do wizard. */

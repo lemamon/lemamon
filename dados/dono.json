@@ -52,8 +52,6 @@
     "semDescoberta": false,
     "duracaoDescoberta": true,
     "planoDoCliente": false,
-    "descobertaAbatida": false,
-    "descobertaUnicoCusto": false,
     "migracaoDados": false,
     "ligacao": false,
     "valoresNoDiagnostico": false,
@@ -89,7 +87,6 @@
     "scoreD": { "ativo": false }
   },
   "precos": {
-    "descoberta": null,
     "desenvolvimento": {
       "sistemas": null,
       "aplicativos": null,
@@ -103,7 +100,7 @@
     "formato": null,
     "participantes": null,
     "ritmo": null,
-    "duracao": { "pt": "em geral 1 semana", "en": "usually 1 week", "es": "en general 1 semana" },
+    "duracao": null,
     "naoInclui": null
   },
   "sustentacao": {

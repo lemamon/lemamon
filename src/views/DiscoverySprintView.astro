@@ -2,21 +2,23 @@
 /**
  * Sprint de Descoberta (BLUEPRINT §6.3) — view dos 3 idiomas. Dono: pages.
  *
- * Ordem: hero → faixa "já recebeu a proposta?" → why_start_here →
+ * Ordem: hero → faixa "já fez o diagnóstico?" → why_start_here →
  * deliverables → exclusions* → who_for → where_it_fits → how_it_happens* →
- * investment* → faq → cta_final (* = when_data, auto-gated).
+ * faq → cta_final (* = when_data, auto-gated).
+ *
+ * D44 (21/10/2026): a Descoberta é gratuita, só acontece quando o diagnóstico
+ * mostra que é necessária e não entrega protótipo. A seção `investment` saiu
+ * (não há faixa de preço da Descoberta; precos.descoberta deixou de existir).
  *
  * exclusions (B354): "O que a Descoberta não inclui" vem colada em "O que você
  * recebe", com o mesmo destaque (H2 do mesmo nível, mesma superfície). Só sai
  * com dados/dono.json › descoberta.naoInclui (hasDiscoveryExclusions).
  *
- * FAQ (discovery_sprint._notes.faq_composition e COPY.md §8a): discovery_cost ·
- * [discovery_duration] · why_discovery_paid · [discovery_credit] ·
- * obliged_to_continue · need_scope_ready · [discovery_plan_ownership].
- * "Quanto dura?" sobe para logo depois de "Quanto custa?" (auditoria F58,
- * D42): as duas primeiras perguntas de quem vai pagar.
- * O sufixo-link de discovery_cost só existe com a linha `descoberta` visível
- * nesta página (faq._notes.discovery_cost).
+ * FAQ (discovery_sprint._notes.faq_composition e COPY.md §8a): discovery_cost
+ * ("Nada": a resposta que mais converte) · when_discovery ("Toda empresa
+ * precisa da Sprint de Descoberta?") · [discovery_duration] (sem número) ·
+ * obliged_to_continue · need_scope_ready · [discovery_plan_ownership]. No
+ * máximo 6 itens; teto de 9.
  */
 import DiscoveryAlreadyDiagnosed from "@/components/discovery/DiscoveryAlreadyDiagnosed.astro";
 import DiscoveryDeliverablesSection from "@/components/discovery/DiscoveryDeliverablesSection.astro";
@@ -30,13 +32,11 @@ import { orderedFaq } from "@/components/services/kit/faq-compose";
 import LinkedText from "@/components/services/kit/LinkedText.astro";
 import CtaFinal from "@/components/shared/CtaFinal.astro";
 import Faq from "@/components/shared/Faq.astro";
-import Investment from "@/components/shared/Investment.astro";
-import { getFeatures, pricingLinesFor } from "@/config/features";
-import { ANCHORS } from "@/config/routes";
+import { getFeatures } from "@/config/features";
 import Base from "@/layouts/Base.astro";
 import { t, type Locale } from "@/i18n";
 import { whatsappHref } from "@/lib/whatsapp";
-import { discoveryProposalMessage, pageMessage } from "@/lib/whatsapp-messages";
+import { discoveryStartMessage, pageMessage } from "@/lib/whatsapp-messages";
 
 interface Props {
   locale: Locale;
@@ -45,27 +45,22 @@ interface Props {
 const { locale } = Astro.props;
 const whatsappMessage = pageMessage(locale, t(locale, "shared.breadcrumb.discovery_sprint"));
 const features = await getFeatures();
-const hasDiscoveryLine = pricingLinesFor(features, ["descoberta"]).length > 0;
 const faqItems = orderedFaq(
   locale,
   [
     { bank: "discovery_cost" },
+    { bank: "when_discovery" },
     { cond: "discovery_duration" },
-    { bank: "why_discovery_paid" },
-    { cond: "discovery_credit" },
     { bank: "obliged_to_continue" },
     { bank: "need_scope_ready" },
     { cond: "discovery_plan_ownership" },
   ],
   features,
-  {
-    removalOrder: ["need_scope_ready", "obliged_to_continue"],
-    pricingHref: hasDiscoveryLine ? `#${ANCHORS.investment}` : undefined,
-  },
+  { removalOrder: ["need_scope_ready", "obliged_to_continue"] },
 );
-/** Faixa "Já recebeu a proposta?" (depois do hero e no CTA final): mensagem própria. */
-const proposalMessage = discoveryProposalMessage(locale);
-const proposalHref = whatsappHref(proposalMessage);
+/** Faixa "Já fez o diagnóstico?" (depois do hero e no CTA final): mensagem própria. */
+const startMessage = discoveryStartMessage(locale);
+const startHref = whatsappHref(startMessage);
 ---
 
 <Base
@@ -77,22 +72,13 @@ const proposalHref = whatsappHref(proposalMessage);
   ctaOrigin="descoberta-barra"
 >
   <DiscoveryHero locale={locale} whatsappMessage={whatsappMessage} />
-  <DiscoveryAlreadyDiagnosed locale={locale} whatsappMessage={proposalMessage} />
+  <DiscoveryAlreadyDiagnosed locale={locale} whatsappMessage={startMessage} />
   <DiscoveryWhyStartHere locale={locale} />
   <DiscoveryDeliverablesSection locale={locale} />
   <DiscoveryExclusions locale={locale} />
   <DiscoveryWhoFor locale={locale} />
   <DiscoveryWhereItFits locale={locale} />
   <DiscoveryFormat locale={locale} />
-  <Investment
-    locale={locale}
-    lines={["descoberta"]}
-    origem="descoberta"
-    entrada="descoberta"
-    title={t(locale, "discovery_sprint.investment.title")}
-    intro={t(locale, "discovery_sprint.investment.intro")}
-    note={t(locale, "discovery_sprint.investment.note")}
-  />
   <Faq locale={locale} title={t(locale, "discovery_sprint.faq.title")} items={faqItems} />
   <CtaFinal
     locale={locale}
@@ -104,11 +90,11 @@ const proposalHref = whatsappHref(proposalMessage);
   >
     <p>
       {
-        proposalHref ? (
+        startHref ? (
           <LinkedText
             text={t(locale, "discovery_sprint.cta_final.already_diagnosed")}
             phrase={t(locale, "discovery_sprint.cta_final.already_diagnosed_whatsapp_phrase")}
-            href={proposalHref}
+            href={startHref}
             target="_blank"
             rel="noopener"
             srSuffix={t(locale, "shared.a11y.opens_new_tab")}

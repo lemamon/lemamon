@@ -27,7 +27,7 @@ const everything: HomeSectionFeatures = {
   hasLogos: true,
   hasTestimonials: true,
   hasCases: true,
-  pricingLines: ["descoberta"],
+  pricingLines: ["desenvolvimento.sistemas"],
   hasTeam: true,
   hasProfiles: true,
 };

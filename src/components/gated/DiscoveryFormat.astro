@@ -1,9 +1,10 @@
 ---
 /**
  * Sprint de Descoberta §6.3 #6 `how_it_happens` — "Como a Descoberta acontece".
- * when_data hasDiscoveryFormat: os 4 campos de descoberta.ts (formato,
- * participantes, ritmo, duração) completos nos 3 idiomas; com qualquer um
- * faltando a seção inteira some (o intro cita a duração). Âncora: #como-acontece.
+ * when_data hasDiscoveryFormat: os 3 campos de descoberta.ts (formato,
+ * participantes, ritmo) completos nos 3 idiomas; com qualquer um faltando a
+ * seção inteira some. A duração não aparece (D44, 21/10/2026): o intro diz que
+ * ela é definida com você no diagnóstico. Âncora: #como-acontece.
  * Dono: gated.
  *
  * AUTO-GATED. `data` existe só para os testes (flag e config injetados).
@@ -33,7 +34,7 @@ const items = features.hasDiscoveryFormat
       return value ? [{ label: labels[label], value }] : [];
     })
   : [];
-// Os 4 campos são obrigatórios: a flag já garante, isto só impede render parcial se alguém injetar dado incompleto.
+// Os 3 campos são obrigatórios: a flag já garante, isto só impede render parcial se alguém injetar dado incompleto.
 const complete = items.length === DISCOVERY_FIELDS.length;
 ---
 

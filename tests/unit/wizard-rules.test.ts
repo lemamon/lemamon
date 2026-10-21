@@ -30,17 +30,16 @@ const copy: RulesCopy = {
   whatsapp: quote.whatsapp_messages,
   contactForm: quote.contact_form,
 };
-const noPricing = { semDescoberta: false, valoresNoDiagnostico: false, pricingLines: [] as const };
+const noPricing = { valoresNoDiagnostico: false, pricingLines: [] as const };
 const chipCtx: ChipContext = { hasBudgetTiers: false, hasMonthlyTiers: false, tierLabel: () => undefined };
 
 describe("etapa realçada e ênfase", () => {
   it("Descoberta para quem vai construir; sustentação para sistema no ar", () => {
     expect(highlightedStage({ stage: "product_idea" })).toBe("discovery");
     expect(highlightedStage({ stage: "maintain_live_system" })).toBe("support");
-    expect(emphasisKey({ stage: "problem_unclear" }, noPricing)).toBe("discovery_default");
-    expect(emphasisKey({ stage: "scope_defined" }, noPricing)).toBe("discovery_scope_defined");
-    expect(emphasisKey({ stage: "scope_defined" }, { semDescoberta: true })).toBe("discovery_scope_defined_skip_variant");
-    expect(emphasisKey({ stage: "evolve_live_system" }, noPricing)).toBe("live_system");
+    expect(emphasisKey({ stage: "problem_unclear" })).toBe("discovery_default");
+    expect(emphasisKey({ stage: "scope_defined" })).toBe("discovery_scope_defined");
+    expect(emphasisKey({ stage: "evolve_live_system" })).toBe("live_system");
   });
 });
 
@@ -87,18 +86,20 @@ describe("tópicos (2 a 4, por prioridade)", () => {
   it("topic_budget só quando o bloco de preço mostra faixas", () => {
     const answers: Answers = { stage: "problem_unclear", build_type: ["mvp"], budget: "not_considered" };
     expect(summaryTopics(answers, noPricing)).not.toContain("topic_budget");
-    expect(summaryTopics(answers, { ...noPricing, pricingLines: ["descoberta"] })).toContain("topic_budget");
+    expect(summaryTopics(answers, { ...noPricing, pricingLines: ["desenvolvimento.mvp"] })).toContain("topic_budget");
+    // A Descoberta é gratuita e não tem faixa (D44): sem a linha do tipo, nada de faixas.
+    expect(summaryTopics(answers, { ...noPricing, pricingLines: ["desenvolvimento.sistemas"] })).not.toContain("topic_budget");
   });
 });
 
 describe("fatores (até 3; com menos de 2, factor_default completa)", () => {
   it("app, integração, várias frentes (mvp não conta como frente)", () => {
-    expect(summaryFactors({ stage: "scope_defined", build_type: ["mobile_app", "integration"] }, noPricing)).toEqual([
+    expect(summaryFactors({ stage: "scope_defined", build_type: ["mobile_app", "integration"] })).toEqual([
       "factor_app",
       "factor_integration",
       "factor_multi",
     ]);
-    expect(summaryFactors({ stage: "product_idea", build_type: ["mvp", "client_platform"] }, noPricing)).toEqual([
+    expect(summaryFactors({ stage: "product_idea", build_type: ["mvp", "client_platform"] })).toEqual([
       "factor_scope",
       "factor_default",
     ]);
@@ -106,28 +107,28 @@ describe("fatores (até 3; com menos de 2, factor_default completa)", () => {
 
   it("caminhos comuns nunca entregam um fator só (a promessa da entrada é 'o que influencia')", () => {
     // "Nos próximos 3 meses" (o caminho mais comum) tem fator próprio (F09).
-    expect(summaryFactors({ stage: "problem_unclear", build_type: ["ops_system"], deadline: "within_3_months" }, noPricing)).toEqual([
+    expect(summaryFactors({ stage: "problem_unclear", build_type: ["ops_system"], deadline: "within_3_months" })).toEqual([
       "factor_deadline_window",
       "factor_scope",
     ]);
     expect(
-      summaryFactors({ stage: "scope_defined", build_type: ["client_platform"], deadline: "between_3_and_6_months" }, noPricing),
+      summaryFactors({ stage: "scope_defined", build_type: ["client_platform"], deadline: "between_3_and_6_months" }),
     ).toEqual(["factor_scope", "factor_default"]);
     // Com dois fatores próprios, o genérico não entra.
-    expect(summaryFactors({ stage: "problem_unclear", build_type: ["ops_system"], deadline: "asap" }, noPricing)).toEqual([
+    expect(summaryFactors({ stage: "problem_unclear", build_type: ["ops_system"], deadline: "asap" })).toEqual([
       "factor_deadline",
       "factor_scope",
     ]);
   });
 
   it("janela de 3 meses: fator próprio; urgência ou data marcada vencem (F09)", () => {
-    expect(summaryFactors({ stage: "scope_defined", build_type: ["client_platform"], deadline: "within_3_months" }, noPricing)).toEqual([
+    expect(summaryFactors({ stage: "scope_defined", build_type: ["client_platform"], deadline: "within_3_months" })).toEqual([
       "factor_deadline_window",
       "factor_scope",
     ]);
     const withDate: Answers = { stage: "scope_defined", build_type: ["client_platform"], deadline: "within_3_months", deadline_reason: "Feira" };
-    expect(summaryFactors(withDate, noPricing)).toEqual(["factor_deadline", "factor_scope"]);
-    expect(summaryFactors({ stage: "problem_unclear", build_type: ["ops_system"], deadline: "over_6_months" }, noPricing)).not.toContain(
+    expect(summaryFactors(withDate)).toEqual(["factor_deadline", "factor_scope"]);
+    expect(summaryFactors({ stage: "problem_unclear", build_type: ["ops_system"], deadline: "over_6_months" })).not.toContain(
       "factor_deadline_window",
     );
   });
@@ -147,42 +148,40 @@ describe("fatores (até 3; com menos de 2, factor_default completa)", () => {
     }
   });
 
-  it("variante skip e fator de sistema no ar; sem nada, factor_default", () => {
-    expect(summaryFactors({ stage: "scope_defined", build_type: ["ops_system", "automation"] }, { semDescoberta: true })).toContain(
-      "factor_multi_skip_variant",
-    );
-    expect(summaryFactors({ stage: "maintain_live_system", build_type: ["ops_system"] }, noPricing)).toEqual([
+  it("várias frentes (texto base sem supor a Descoberta, D44) e fator de sistema no ar; sem nada, factor_default", () => {
+    expect(summaryFactors({ stage: "scope_defined", build_type: ["ops_system", "automation"] })).toContain("factor_multi");
+    expect(getSection("pt", "quote").summary.factors.factor_multi).toMatch(/combinada antes de começar$/);
+    expect(summaryFactors({ stage: "maintain_live_system", build_type: ["ops_system"] })).toEqual([
       "factor_scope_live",
       "factor_default",
     ]);
-    expect(summaryFactors({ stage: "problem_unclear", build_type: ["not_sure"] }, noPricing)).toEqual(["factor_default"]);
+    expect(summaryFactors({ stage: "problem_unclear", build_type: ["not_sure"] })).toEqual(["factor_default"]);
   });
 });
 
 describe("bloco 'E o preço?'", () => {
-  it("sem faixa preenchida: price_empty (nenhum número)", () => {
-    expect(priceBlock({ stage: "problem_unclear", build_type: ["mvp"] }, noPricing)).toEqual({ kind: "empty", first: "price_empty" });
-    expect(priceBlock({ stage: "scope_defined" }, { ...noPricing, semDescoberta: true })).toEqual({
-      kind: "empty",
-      first: "price_empty_skip_variant",
-    });
+  it("sem faixa preenchida: bloco vazio (price_empty + price_empty_2, nenhum número)", () => {
+    expect(priceBlock({ stage: "problem_unclear", build_type: ["mvp"] }, noPricing)).toEqual({ kind: "empty" });
+    expect(priceBlock({ stage: "scope_defined" }, noPricing)).toEqual({ kind: "empty" });
+    // D44: só o desenvolvimento é pago, com preço fechado antes; Descoberta gratuita.
+    const s = getSection("pt", "quote").summary;
+    expect(s.price_empty_2).toBe("Diagnóstico e Sprint de Descoberta são gratuitos. A primeira etapa paga é o desenvolvimento, com preço fechado antes de ele começar.");
   });
 
-  it("com faixas: Descoberta + a linha do tipo, lado a lado, nunca somadas", () => {
-    const ctx = { ...noPricing, pricingLines: ["descoberta", "desenvolvimento.aplicativos"] as const };
+  it("com faixa: só a linha de desenvolvimento do tipo (a Descoberta é gratuita e não tem faixa, D44)", () => {
+    const ctx = { ...noPricing, pricingLines: ["desenvolvimento.aplicativos" as const] };
     expect(priceBlock({ stage: "product_idea", build_type: ["mobile_app"] }, { ...ctx, pricingLines: [...ctx.pricingLines] })).toEqual({
       kind: "ranges",
-      lines: ["descoberta", "desenvolvimento.aplicativos"],
-      note: "price_note",
+      lines: ["desenvolvimento.aplicativos"],
     });
   });
 
-  it("várias frentes ou 'Ainda não sei': só a da Descoberta", () => {
+  it("várias frentes ou 'Ainda não sei': nenhuma faixa (bloco vazio)", () => {
     expect(developmentLine(["mvp", "client_platform"])).toBeNull();
     expect(developmentLine(["integration", "automation"])).toBe("desenvolvimento.integracoes");
     expect(developmentLine(["not_sure"])).toBeNull();
-    const ctx = { ...noPricing, pricingLines: ["descoberta", "desenvolvimento.sistemas"] as never[] };
-    expect(priceBlock({ stage: "problem_unclear", build_type: ["ops_system", "mobile_app"] }, ctx)).toMatchObject({ lines: ["descoberta"] });
+    const ctx = { ...noPricing, pricingLines: ["desenvolvimento.sistemas", "desenvolvimento.aplicativos"] as never[] };
+    expect(priceBlock({ stage: "problem_unclear", build_type: ["ops_system", "mobile_app"] }, ctx)).toEqual({ kind: "empty" });
   });
 
   it("sistema no ar: sempre o texto 'live', com ou sem faixas", () => {

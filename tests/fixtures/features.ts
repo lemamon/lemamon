@@ -17,7 +17,6 @@ export const text = (value: string): Localized => ({ pt: value, en: value, es: v
 export function emptyConfigs(): Omit<FeatureSources, "content" | "env"> {
   return {
     precos: {
-      descoberta: null,
       desenvolvimento: { sistemas: null, aplicativos: null, integracoes: null, mvp: null },
       sustentacao: null,
     },
@@ -33,8 +32,6 @@ export function emptyConfigs(): Omit<FeatureSources, "content" | "env"> {
       semDescoberta: false,
       duracaoDescoberta: false,
       planoDoCliente: false,
-      descobertaAbatida: false,
-      descobertaUnicoCusto: false,
       migracaoDados: false,
       ligacao: false,
       valoresNoDiagnostico: false,

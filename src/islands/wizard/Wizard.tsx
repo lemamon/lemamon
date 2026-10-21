@@ -174,8 +174,6 @@ export interface WizardFlags extends ModelFlags {
   hasWhatsapp: boolean;
   /** confirmacoes.ligacao: opção "Ligação" no canal de contato. */
   phoneCall: boolean;
-  /** confirmacoes.semDescoberta (variantes "skip" do resumo). */
-  semDescoberta: boolean;
   /** confirmacoes.valoresNoDiagnostico. */
   valoresNoDiagnostico: boolean;
   /** confirmacoes.nda (nota de NDA sob "Mais detalhes"). */
@@ -419,8 +417,8 @@ function WizardFlow(props: WizardProps) {
   const chipCtx = useMemo<ChipContext>(() => ({ ...modelFlags, tierLabel }), [modelFlags, tierLabel]);
   const chips = useMemo(() => answerChips(answers, copy, chipCtx), [answers, copy, chipCtx]);
   const summaryCtx = useMemo(
-    () => ({ semDescoberta: flags.semDescoberta, valoresNoDiagnostico: flags.valoresNoDiagnostico, pricingLines }),
-    [flags.semDescoberta, flags.valoresNoDiagnostico, pricingLines],
+    () => ({ valoresNoDiagnostico: flags.valoresNoDiagnostico, pricingLines }),
+    [flags.valoresNoDiagnostico, pricingLines],
   );
 
   /* ---------------------------------------------------------------- *
@@ -1270,7 +1268,7 @@ function WizardFlow(props: WizardProps) {
     if (block.kind === "empty") {
       return (
         <>
-          <p>{s[block.first]}</p>
+          <p>{s.price_empty}</p>
           <p>{s.price_empty_2}</p>
         </>
       );
@@ -1293,7 +1291,7 @@ function WizardFlow(props: WizardProps) {
             );
           })}
         </ul>
-        <p>{s[block.note]}</p>
+        <p>{s.price_note}</p>
       </>
     );
   }
@@ -1338,9 +1336,9 @@ function WizardFlow(props: WizardProps) {
 
   /**
    * Linha do método compacta (F02): a etapa 1 (o próximo passo, gratuito) e a
-   * etapa realçada pela P1, com a tag de cada uma ("Paga · valor combinado
-   * antes do início" só aparece aqui). As 4 etapas, com o "Você recebe" e os
-   * termos explicados, ficam num <details> fechado.
+   * etapa realçada pela P1, com a tag de cada uma (na Descoberta, "Gratuita ·
+   * se for necessária", D44). As 4 etapas, com o "Você recebe" e o termo
+   * explicado (escopo priorizado), ficam num <details> fechado.
    */
   function renderMethod(stage: "discovery" | "support", live: boolean) {
     const s = copy.summary;
@@ -1367,7 +1365,7 @@ function WizardFlow(props: WizardProps) {
             <span className={styles.stageTag}>{stages[highlighted.id].tag}</span>
           </li>
         </ol>
-        <p className={styles.emphasis}>{s.emphasis[emphasisKey(answers, summaryCtx)]}</p>
+        <p className={styles.emphasis}>{s.emphasis[emphasisKey(answers)]}</p>
         <details className={styles.allStages}>
           <summary className={styles.allStagesSummary}>
             <svg className={styles.toggleIcon} viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
@@ -1377,12 +1375,7 @@ function WizardFlow(props: WizardProps) {
           </summary>
           <div className={styles.allStagesBody}>
             <div className={styles.timeline}>{stage === "support" ? props.timelineSupport : props.timelineDiscovery}</div>
-            {stage === "discovery" && (
-              <ul className={styles.terms}>
-                <li>{copy.terms.prioritized_scope}</li>
-                <li>{copy.terms.prototype}</li>
-              </ul>
-            )}
+            {stage === "discovery" && <p className={styles.terms}>{copy.terms.prioritized_scope}</p>}
           </div>
         </details>
       </div>
@@ -1402,7 +1395,7 @@ function WizardFlow(props: WizardProps) {
     const live = isLive(answers);
     const stage = highlightedStage(answers);
     const topics = summaryTopics(answers, summaryCtx);
-    const factors = summaryFactors(answers, summaryCtx);
+    const factors = summaryFactors(answers);
     const note = deadlineNote(answers);
     const titleId = `${uid}-summary`;
     const waMessage = summaryWhatsappMessage(chips, copy.whatsapp, protocol);
