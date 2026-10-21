@@ -77,12 +77,21 @@ export interface BankOptions {
    * serviço (faq._notes.discovery_credit) e só com confirmacoes.descobertaAbatida.
    */
   discoveryCreditSuffix?: boolean;
+  /**
+   * Rascunho aprovado de "De quem é o código?" (confirmacoes.codigoProprietario).
+   * Padrão: o do config. Só testes injetam outro valor.
+   */
+  codeOwnership?: Confirmacoes["codigoProprietario"];
 }
 
 /**
  * Itens do banco (faq.items), na ordem pedida, já na variante do build
  * (faq._notes): com hasPricing usa question_with_pricing/answer_with_pricing
  * quando existem; sem hasPricing usa answer_without_pricing quando existe.
+ * Com o código do cliente aprovado no rascunho answer_draft ("é da sua
+ * empresa, por contrato"), answer_with_code_ownership substitui a resposta
+ * quando existe (faq._notes.wont_stall, auditoria F42). Com answer_draft_alt
+ * (transferência conforme os pagamentos), a resposta fica a padrão.
  */
 export function bankItems(
   locale: Locale,
@@ -100,6 +109,11 @@ export function bankItems(
       return tDynamic(locale, `${base}.${field}`);
     };
     let answer = pick("answer");
+    const withCode = `${base}.answer_with_code_ownership`;
+    const codeChoice = options.codeOwnership ?? defaultConfirmacoes.codigoProprietario;
+    if (features.confirm?.codigoProprietario && codeChoice === "answer_draft" && hasText(locale, withCode)) {
+      answer = tDynamic(locale, withCode);
+    }
     if (key === "why_discovery_paid" && options.discoveryCreditSuffix && features.confirm?.descobertaAbatida) {
       answer = `${answer} ${t(locale, "faq.conditional.discovery_credit.cost_suffix")}`;
     }
@@ -122,7 +136,6 @@ const DEFAULT_SOURCES: ConditionalSources = { confirmacoes: defaultConfirmacoes,
 /** Condicionais de texto fixo: flag de confirmacoes.ts → question + answer_draft. */
 const DRAFT_FLAG = {
   scope_change: "escopoMudanca",
-  other_cities: "outrasCidades",
   third_party_system: "sistemaTerceiros",
   skip_discovery: "semDescoberta",
   discovery_plan_ownership: "planoDoCliente",
@@ -157,11 +170,19 @@ function conditionalItem(
       return features.hasCompanyData
         ? make("question_with_company_data", "answer_with_company_data")
         : make("question", "answer_draft");
+    case "other_cities":
+      // D31: com atendeExterior, UMA pergunta com a variante "…ou de fora do
+      // Brasil?" (nunca duas perguntas). atendeExterior exige outrasCidades.
+      if (!confirm.outrasCidades) return null;
+      return confirm.atendeExterior ? make("question_with_abroad", "answer_with_abroad") : make("question", "answer_draft");
     case "discovery_duration": {
-      // Precedência (faq._notes.discovery_duration): formato completo > confirmação > nada.
+      // Precedência (faq._notes.discovery_duration, D42): duração típica
+      // (descoberta.duracao + confirmação do dono, ou o formato completo) >
+      // só a confirmação (answer_draft, sem número) > nada. Mesma regra de
+      // features.hasDiscoveryDuration, no idioma da página.
       const duracao = sources.descoberta.duracao?.[locale]?.trim();
-      if (features.hasDiscoveryFormat && duracao) {
-        return make("question", "answer_with_format", { duracao_descoberta: duracao });
+      if (duracao && (confirm.duracaoDescoberta || features.hasDiscoveryFormat)) {
+        return make("question", "answer_with_duration", { duracao_descoberta: duracao });
       }
       return confirm.duracaoDescoberta ? make("question", "answer_draft") : null;
     }
@@ -249,9 +270,10 @@ export interface ComposeOptions extends BankOptions, CapOptions {
 /** Página própria + banco + condicionais, com variantes e teto aplicados. */
 export function composeFaq(locale: Locale, options: ComposeOptions): FaqItem[] {
   const { features, bank = [], conditional = [], page = [], sources, max, removalOrder } = options;
+  const codeOwnership = options.codeOwnership ?? sources?.confirmacoes.codigoProprietario;
   const items = [
     ...page.map((item) => ({ ...item, source: item.source ?? ("page" as const) })),
-    ...bankItems(locale, bank, features, options),
+    ...bankItems(locale, bank, features, { ...options, codeOwnership }),
     ...conditionalItems(locale, conditional, features, sources),
   ];
   return capFaq(items, { max, removalOrder });

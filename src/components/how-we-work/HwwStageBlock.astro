@@ -9,12 +9,18 @@
  * (how_we_work._notes.you_get; o check-i18n garante que é igual à cópia
  * how_we_work.stage_*.you_get).
  *
+ * Tag da etapa 2: com a duração típica da Descoberta (D42,
+ * features.hasDiscoveryDuration), tag_long_with_duration, a mesma da linha do
+ * método ("… · em geral 1 semana").
+ *
  * Slots: "intro" (antes do "Você recebe") e o padrão (depois dele).
  *
  * Ritmo vertical e divisória do topo: <Section spacing="compact" divider>
  * (B211); a raiz não declara padding-block nem borda própria.
  */
 import Section from "@/components/ui/Section.astro";
+import { descoberta } from "@/config/descoberta";
+import { getFeatures } from "@/config/features";
 import { ANCHORS, type StageId } from "@/config/routes";
 import { getSection, t, type Locale } from "@/i18n";
 
@@ -29,7 +35,13 @@ const stages = getSection(locale, "shared.method_timeline.stages");
 const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
 const number = String(order.indexOf(stage) + 1).padStart(2, "0");
 const data = stages[stage];
-const tag = "tag_long" in data ? data.tag_long : data.tag;
+const features = await getFeatures();
+const duration = stage === "discovery" && features.hasDiscoveryDuration ? descoberta.duracao?.[locale]?.trim() : undefined;
+const tag = duration
+  ? t(locale, "shared.method_timeline.stages.discovery.tag_long_with_duration", { duracao_descoberta: duration })
+  : "tag_long" in data
+    ? data.tag_long
+    : data.tag;
 const id = ANCHORS.stage[stage];
 const titleId = `${id}-title`;
 ---

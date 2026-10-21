@@ -154,6 +154,29 @@ describe("configs: completo liga, parcial desliga", () => {
     expect(flags(mutate((s) => void (s.descoberta.ritmo = withoutLocale(s.descoberta.ritmo!, "pt", "")))).hasDiscoveryFormat).toBe(false);
   });
 
+  it("hasDiscoveryDuration (D42): a duração nos 3 idiomas + a confirmação do dono, ou o formato completo; sem formato, participantes nem ritmo", () => {
+    expect(flags(completeSources()).hasDiscoveryDuration).toBe(true);
+    const onlyDuration = mutate((s) => {
+      s.descoberta = { ...baseSources().descoberta, duracao: fx("em geral 1 semana") };
+    });
+    expect(flags(onlyDuration)).toMatchObject({ hasDiscoveryDuration: true, hasDiscoveryFormat: false });
+    // Sem a confirmação, a duração sozinha não sai; com o formato completo, sai.
+    const noFlag = mutate((s) => {
+      s.descoberta = { ...baseSources().descoberta, duracao: fx("x") };
+      s.confirmacoes.duracaoDescoberta = false;
+    });
+    expect(flags(noFlag).hasDiscoveryDuration).toBe(false);
+    expect(flags(mutate((s) => void (s.confirmacoes.duracaoDescoberta = false))).hasDiscoveryDuration).toBe(true);
+    // Um idioma faltando desliga.
+    expect(flags(mutate((s) => void (s.descoberta.duracao = withoutLocale(s.descoberta.duracao!, "es", "")))).hasDiscoveryDuration).toBe(false);
+  });
+
+  it("confirm.atendeExterior (D31): só junto com outrasCidades", () => {
+    expect(flags(completeSources()).confirm.atendeExterior).toBe(true);
+    expect(flags(mutate((s) => void (s.confirmacoes.outrasCidades = false))).confirm.atendeExterior).toBe(false);
+    expect(flags(mutate((s) => void (s.confirmacoes.atendeExterior = false))).confirm).toMatchObject({ atendeExterior: false, outrasCidades: true });
+  });
+
   it("hasSupportFormat: inclui + contratação + canais; urgências é opcional", () => {
     expect(flags(completeSources()).hasSupportFormat).toBe(true);
     expect(flags(mutate((s) => void (s.sustentacao.urgencias = null))).hasSupportFormat).toBe(true);

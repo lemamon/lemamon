@@ -9,16 +9,25 @@
  *                  apresentação do plano no fim).
  *   participantes  quem participa, do seu lado e do lado do cliente (só papéis).
  *   ritmo          a cadência dos encontros.
- *   duracao        quanto tempo ela leva.
+ *   duracao        quanto tempo ela leva, em geral (D42: "em geral 1 semana").
+ *                  Pode vir SOZINHA: com confirmacoes.duracaoDescoberta, a duração
+ *                  típica já vai ao ar (features.hasDiscoveryDuration), mesmo com
+ *                  os outros 3 campos vazios.
  *   naoInclui      O QUE A DESCOBERTA NÃO INCLUI (opcional): 1 a 5 itens curtos POR
  *                  IDIOMA, até 120 caracteres cada (ex.: o desenvolvimento em si, a
  *                  hospedagem). null = o bloco não aparece.
  *
  * O QUE LIBERA (features.hasDiscoveryFormat — exige OS 4 campos nos 3 idiomas)
  *   - Seção "Como a Descoberta acontece" em /sprint-de-descoberta.
- *   - A resposta do FAQ "Quanto dura?" que usa a duração.
  *   Faltou 1 campo ou 1 idioma = dado parcial: a seção inteira some (título e
  *   âncora incluídos). Não existe "em breve".
+ *   features.hasDiscoveryDuration (duracao nos 3 idiomas + duracaoDescoberta,
+ *   ou o formato completo):
+ *   - A resposta do FAQ "Quanto dura?" que usa a duração (answer_with_duration,
+ *     sempre com "depende do tamanho do problema" e "combinada antes").
+ *   - A tag da etapa 2 na linha do método (variantes full e highlight) e no
+ *     bloco da etapa em /como-trabalhamos (tag_long_with_duration).
+ *   - A microcopy do hero de /sprint-de-descoberta (microcopy_with_duration).
  *   features.hasDiscoveryExclusions (naoInclui com ≥ 1 item nos 3 idiomas):
  *   - Bloco "O que a Descoberta não inclui" em /sprint-de-descoberta, logo
  *     depois de "O que você recebe", com o mesmo destaque (B354). Lista vazia

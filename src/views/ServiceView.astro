@@ -102,7 +102,7 @@ const diagnosisLink: FaqInlineLink = {
 };
 const faqItems = orderedFaq(locale, SERVICE_FAQ[service], features, {
   service,
-  removalOrder: SERVICE_FAQ_REMOVAL,
+  removalOrder: SERVICE_FAQ_REMOVAL[service],
   discoveryCreditSuffix: true,
   ownLinks: { price: priceLink },
   ownInlineLinks: Object.fromEntries((SERVICE_FAQ_DIAGNOSIS_LINK[service] ?? []).map((id) => [id, diagnosisLink])),

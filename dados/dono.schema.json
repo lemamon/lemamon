@@ -464,6 +464,10 @@
           "type": "boolean",
           "description": "FAQ \"Atendem fora de São Paulo?\"."
         },
+        "atendeExterior": {
+          "type": "boolean",
+          "description": "Atende empresas de qualquer país, a distância (D31): variante \"…ou de fora do Brasil?\" do FAQ de outras cidades e linha da Home. Exige outrasCidades = true."
+        },
         "nda": {
           "type": "boolean",
           "description": "FAQ \"Vocês assinam NDA?\"."
@@ -478,7 +482,7 @@
         },
         "duracaoDescoberta": {
           "type": "boolean",
-          "description": "FAQ \"Quanto dura a Descoberta?\"."
+          "description": "FAQ \"Quanto dura a Descoberta?\" (D42). Com descoberta.duracao preenchida, a resposta e a tag da etapa citam a duração típica, sempre com \"depende do tamanho do problema\"."
         },
         "planoDoCliente": {
           "type": "boolean",
@@ -565,6 +569,7 @@
         "codigoProprietario",
         "notaFiscal",
         "outrasCidades",
+        "atendeExterior",
         "nda",
         "sistemaTerceiros",
         "semDescoberta",
@@ -788,7 +793,7 @@
           ]
         },
         "duracao": {
-          "description": "Quanto tempo leva (também responde o FAQ \"Quanto dura?\").",
+          "description": "Quanto tempo leva, em geral (ex.: \"em geral 1 semana\"). Sozinha, com confirmacoes.duracaoDescoberta, já vai para o FAQ \"Quanto dura?\" e para a tag da etapa; os 4 campos juntos liberam \"Como a Descoberta acontece\".",
           "anyOf": [
             {
               "type": "null"

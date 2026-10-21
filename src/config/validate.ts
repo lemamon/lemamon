@@ -245,6 +245,7 @@ const confirmacoesSchema = z.strictObject({
   }),
   notaFiscal: z.boolean(),
   outrasCidades: z.boolean(),
+  atendeExterior: z.boolean(),
   nda: z.boolean(),
   sistemaTerceiros: z.boolean(),
   semDescoberta: z.boolean(),
@@ -492,6 +493,14 @@ export function configIssues(sources: ConfigSources & { privacidade?: Privacidad
   if (sources.qualificacao?.scoreD?.ativo && !sources.confirmacoes?.scoreDRecebeDiagnostico) {
     issues.push(
       `${origem} › qualificacao.scoreD.ativo: exige confirmacoes.scoreDRecebeDiagnostico = true (o pedido fora de perfil também recebe os 45 minutos e a devolutiva)`,
+    );
+  }
+
+  // D31: a variante "…ou de fora do Brasil?" do FAQ other_cities afirma também
+  // as outras cidades do Brasil (i18n faq._notes.other_cities).
+  if (sources.confirmacoes?.atendeExterior && !sources.confirmacoes?.outrasCidades) {
+    issues.push(
+      `${origem} › confirmacoes.atendeExterior: exige confirmacoes.outrasCidades = true (quem atende empresas de outros países também atende as de outras cidades do Brasil, e a resposta do FAQ diz as duas coisas)`,
     );
   }
   return issues;

@@ -95,6 +95,7 @@ export function completeConfirmacoes(): Confirmacoes {
     codigoProprietario: "answer_draft",
     notaFiscal: true,
     outrasCidades: true,
+    atendeExterior: true,
     nda: true,
     sistemaTerceiros: true,
     semDescoberta: true,

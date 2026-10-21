@@ -8,14 +8,20 @@
  * combina). Logos (when_data) entram ABAIXO desta faixa, nunca no lugar dela.
  * 4 colunas no desktop, 2×2 no tablet, lista no mobile (§6.1 #2).
  *
- * - `items`: subconjunto, na ordem pedida (padrão: os 4). Em
- *   /servicos/sustentacao só `after_launch` (services._notes.hero_trust): os
- *   outros 3 descrevem o método de projeto.
+ * - `items`: subconjunto, na ordem pedida. Padrão: os 4 do método, e o 4º é
+ *   `code_owned` ("O código é da sua empresa, por contrato") quando o dono
+ *   aprovou o rascunho answer_draft de confirmacoes.codigoProprietario
+ *   (auditoria de conversão F01); sem ele (ou com answer_draft_alt, em que a
+ *   propriedade passa conforme os pagamentos), `after_launch`. Nunca 5 itens
+ *   (a faixa tem de 1 a 4 colunas). Em /servicos/sustentacao só `after_launch`
+ *   (services._notes.hero_trust): os outros descrevem o método de projeto.
  * - `variant="compact"`: linha compacta, sem faixa nem contêiner, para dentro
  *   de outra seção (/orcamento after_send, quote._notes.entry_placement).
  */
 import Icon from "@/components/ui/Icon.astro";
 import Section from "@/components/ui/Section.astro";
+import { confirmacoes } from "@/config/confirmacoes";
+import { getFeatures } from "@/config/features";
 import { getSection, t, type Locale, type Messages } from "@/i18n";
 
 import NoBreakText from "./NoBreakText.astro";
@@ -29,8 +35,11 @@ interface Props {
 }
 
 const { locale, items: only, variant = "band" } = Astro.props;
+const features = await getFeatures();
 const all = getSection(locale, "shared.commitments.items");
-const ids = (only ?? (Object.keys(all) as CommitmentId[])).filter((id) => id in all);
+const codeOwned = features.confirm.codigoProprietario && confirmacoes.codigoProprietario === "answer_draft";
+const defaults: CommitmentId[] = ["scope_price_closed", "every_two_weeks", "you_decide", codeOwned ? "code_owned" : "after_launch"];
+const ids = (only ?? defaults).filter((id) => id in all);
 const items = ids.map((id) => [id, all[id]] as const);
 const label = t(locale, "shared.commitments.aria_label");
 const seal = t(locale, "shared.commitments.location_seal");

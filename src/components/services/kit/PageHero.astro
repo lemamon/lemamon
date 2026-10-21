@@ -15,9 +15,13 @@
  * `splitTitle` mostra a parte depois de ": " numa linha menor DENTRO do mesmo
  * H1, sem mudar o texto (services._notes.mvp_h1).
  *
+ * Microcopy em " · " ("Sem compromisso · 45 minutos · devolutiva por
+ * escrito", auditoria F41): a quebra cai antes do "·" (NoBreakText separator).
+ *
  * Ritmo vertical: <Section spacing="hero-compact"> (B211), como ContactHero e
  * QuoteEntry; a raiz não declara padding-block próprio.
  */
+import NoBreakText from "@/components/shared/NoBreakText.astro";
 import Section from "@/components/ui/Section.astro";
 
 interface Props {
@@ -52,7 +56,13 @@ const hasActions = Astro.slots.has("actions");
           </div>
         )
       }
-      {microcopy && <p class="page-hero__microcopy">{microcopy}</p>}
+      {
+        microcopy && (
+          <p class="page-hero__microcopy">
+            <NoBreakText text={microcopy} separator />
+          </p>
+        )
+      }
     </div>
     <slot name="after" />
   </div>

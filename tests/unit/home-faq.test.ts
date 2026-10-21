@@ -3,9 +3,10 @@
  * Dono: home.
  *  - sem flag do dono: as 7 do banco, na ordem do BLUEPRINT;
  *  - com TODAS as condicionais ligadas (12 perguntas): o teto de 9 tira NF,
- *    NDA e "Como acompanho" (respondidas em /quanto-custa, /contato e na
- *    etapa 3 do método) e mantém "E depois que entra no ar?" e "Preciso
- *    entender de tecnologia?";
+ *    "Como acompanho" e "O diagnóstico tem compromisso?" (respondidas em
+ *    /quanto-custa, na etapa 3 do método e na microcopy do hero) e mantém o
+ *    NDA, "E depois que entra no ar?" e "Preciso entender de tecnologia?";
+ *  - "O código fica com a minha empresa?" em 3º (auditoria de conversão F01);
  *  - o FAQPage JSON-LD é exatamente a lista visível (pergunta e resposta);
  *  - a HomeView usa esta composição.
  */
@@ -15,6 +16,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import {
   HOME_FAQ_BANK,
   HOME_FAQ_CONDITIONAL,
+  HOME_FAQ_ORDER,
   HOME_FAQ_REMOVAL_ORDER,
   homeFaqItems,
 } from "@/components/home/home-faq";
@@ -24,7 +26,7 @@ import { computeFeatures, getFeatures } from "@/config/features";
 import { t, type Locale } from "@/i18n";
 import HomeView from "@/views/HomeView.astro";
 
-import { baseSources } from "../fixtures/features";
+import { baseSources, realSources } from "../fixtures/features";
 import { completeConfirmacoes, completeDescoberta, completeEmpresa } from "../fixtures/owner-data";
 
 const LOCALES: Locale[] = ["pt", "en", "es"];
@@ -75,23 +77,44 @@ describe("FAQ da Home — composição (B039)", () => {
     }
   });
 
-  it("com todas as condicionais: 9 perguntas, sem NF/NDA/acompanhamento, com 'depois do ar' e 'preciso entender de tecnologia'", () => {
+  it("com todas as condicionais: 9 perguntas, código em 3º, sem NF/acompanhamento/compromisso, com NDA, 'depois do ar' e 'tecnologia'", () => {
     expect(HOME_FAQ_BANK.length + HOME_FAQ_CONDITIONAL.length).toBe(12);
+    expect([...HOME_FAQ_ORDER].sort()).toEqual([...HOME_FAQ_BANK, ...HOME_FAQ_CONDITIONAL].sort());
     for (const locale of LOCALES) {
       const items = homeFaqItems(locale, { features: allFlags, sources: owner });
       expect(items, locale).toHaveLength(FAQ_MAX);
       expect(ids(items), locale).toEqual([
         "how_much",
         "how_long",
+        "code_ownership",
         "why_discovery_paid",
-        "diagnosis_commitment",
         "need_tech_knowledge",
         "after_launch",
         "scope_change",
-        "code_ownership",
         "other_cities",
+        "nda",
       ]);
-      for (const removed of ["invoice", "nda", "how_follow_progress"]) expect(ids(items), locale).not.toContain(removed);
+      for (const removed of ["invoice", "how_follow_progress", "diagnosis_commitment"]) expect(ids(items), locale).not.toContain(removed);
+    }
+  });
+
+  it("dados de hoje (D31: outras cidades e exterior; NDA e código): 11 perguntas → saem acompanhamento e compromisso; o NDA fica", () => {
+    const real = computeFeatures(realSources());
+    for (const locale of LOCALES) {
+      const items = homeFaqItems(locale, { features: real });
+      expect(ids(items), locale).toEqual([
+        "how_much",
+        "how_long",
+        "code_ownership",
+        "why_discovery_paid",
+        "need_tech_knowledge",
+        "after_launch",
+        "scope_change",
+        "other_cities",
+        "nda",
+      ]);
+      const cities = items.find((item) => item.id === "other_cities");
+      expect(cities?.question, locale).toBe(t(locale, "faq.conditional.other_cities.question_with_abroad"));
     }
   });
 

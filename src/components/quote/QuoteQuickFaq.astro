@@ -4,7 +4,8 @@
  * Some no modo foco (QuoteView). <details>/<summary> nativo, sem JS, indexável;
  * a primeira pergunta ("Vou sair daqui com um orçamento?") aberta.
  *
- * Ordem e variantes: i18n quote._notes.quick_faq e pricing_suffix. Itens
+ * Ordem e variantes: i18n quote._notes.quick_faq e pricing_suffix (nda e
+ * code_ownership em 2º e 3º, auditoria de conversão F01). Itens
  * condicionais (banco central faq.conditional e conversation_format) só
  * renderizam com a flag do dono (features.confirm); o FAQPage JSON-LD leva só
  * os itens renderizados. Depois do FAQ: scope_line + scope_items (lista).
@@ -60,6 +61,21 @@ items.push({
     confirm.valoresNoDiagnostico ? faq.price_at_end.answer_3_with_values : faq.price_at_end.answer_3,
   ],
 });
+// Garantias à vista (auditoria de conversão F01): NDA e código logo depois da
+// 1ª pergunta, não no fim da lista (antes, 7º e 8º de 8).
+if (confirm.nda) {
+  // Mesma regra do banco central (shared/faq.ts): o e-mail vem de empresa.ts e,
+  // sem WhatsApp no ambiente, a variante cita só o e-mail.
+  const answer = features.hasWhatsapp ? bank.nda.answer_draft : bank.nda.answer_draft_no_whatsapp;
+  items.push({ id: "nda", question: bank.nda.question, paragraphs: [interpolate(answer, { email: empresa.email })] });
+}
+if (confirmacoes.codigoProprietario) {
+  items.push({
+    id: "code_ownership",
+    question: bank.code_ownership.question,
+    paragraphs: [bank.code_ownership[confirmacoes.codigoProprietario]],
+  });
+}
 if (confirm.escopoMudanca) {
   items.push({ id: "scope_change", question: bank.scope_change.question, paragraphs: [bank.scope_change.answer_draft] });
 }
@@ -86,19 +102,6 @@ items.push({
   paragraphs: [faq.need_to_know_everything.answer],
 });
 items.push({ id: "data_use", question: faq.data_use.question, paragraphs: [faq.data_use.answer, faq.data_use.answer_2] });
-if (confirm.nda) {
-  // Mesma regra do banco central (shared/faq.ts): o e-mail vem de empresa.ts e,
-  // sem WhatsApp no ambiente, a variante cita só o e-mail.
-  const answer = features.hasWhatsapp ? bank.nda.answer_draft : bank.nda.answer_draft_no_whatsapp;
-  items.push({ id: "nda", question: bank.nda.question, paragraphs: [interpolate(answer, { email: empresa.email })] });
-}
-if (confirmacoes.codigoProprietario) {
-  items.push({
-    id: "code_ownership",
-    question: bank.code_ownership.question,
-    paragraphs: [bank.code_ownership[confirmacoes.codigoProprietario]],
-  });
-}
 if (confirm.notaFiscal) {
   items.push(
     features.hasCompanyData

@@ -23,6 +23,7 @@ import {
   type FaqLink,
 } from "@/components/shared/faq";
 import { confirmacoes } from "@/config/confirmacoes";
+import { empresa } from "@/config/empresa";
 import type { Features } from "@/config/features";
 import type { ServiceKey } from "@/config/routes";
 import { hasText, tDynamic, type Locale } from "@/i18n";
@@ -55,9 +56,14 @@ export interface OrderedFaqOptions {
 }
 
 /**
- * Pergunta própria do serviço. mvp.faq.wont_stall troca para
- * answer_with_code_ownership com confirmacoes.codigoProprietario
- * (services._notes.pending_owner, item 2).
+ * Pergunta própria do serviço. Variantes, pela ordem:
+ *  - com confirmacoes.nda e a chave `question_with_nda`: pergunta e resposta
+ *    que incluem o NDA (integrations.faq.data_access, auditoria F15); sem
+ *    WhatsApp no ambiente, `answer_with_nda_no_whatsapp`. {email} vem de
+ *    empresa.ts, como no faq.conditional.nda. Sem a flag, a pergunta e a
+ *    resposta padrão não falam de NDA;
+ *  - mvp.faq.wont_stall troca para answer_with_code_ownership com
+ *    confirmacoes.codigoProprietario (services._notes.pending_owner, item 2).
  */
 function ownItem(
   locale: Locale,
@@ -69,14 +75,23 @@ function ownItem(
 ): FaqItem | null {
   const base = `services.${service}.faq.${key}`;
   if (!hasText(locale, `${base}.question`)) return null;
+  const withNda = features.confirm.nda && hasText(locale, `${base}.question_with_nda`);
   const withCode = `${base}.answer_with_code_ownership`;
-  const answer =
+  let question = tDynamic(locale, `${base}.question`);
+  let answer =
     features.confirm.codigoProprietario && confirmacoes.codigoProprietario && hasText(locale, withCode)
       ? tDynamic(locale, withCode)
       : tDynamic(locale, `${base}.answer`);
+  if (withNda) {
+    const noWhatsapp = `${base}.answer_with_nda_no_whatsapp`;
+    question = tDynamic(locale, `${base}.question_with_nda`);
+    answer = tDynamic(locale, features.hasWhatsapp === false && hasText(locale, noWhatsapp) ? noWhatsapp : `${base}.answer_with_nda`, {
+      email: empresa.email,
+    });
+  }
   return {
     id: key,
-    question: tDynamic(locale, `${base}.question`),
+    question,
     answer,
     source: "page",
     ...(link ? { link } : {}),

@@ -27,6 +27,7 @@ export function emptyConfigs(): Omit<FeatureSources, "content" | "env"> {
       codigoProprietario: false,
       notaFiscal: false,
       outrasCidades: false,
+      atendeExterior: false,
       nda: false,
       sistemaTerceiros: false,
       semDescoberta: false,

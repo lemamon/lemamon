@@ -42,9 +42,34 @@ describe("dados/dono.json — o arquivo do dono", () => {
     expect(donoIssues(real)).toEqual([]);
   });
 
-  it("decisões 5, 9 e 10: mudança de escopo, código do cliente (answer_draft) e NDA; o resto das confirmações desligado", () => {
+  it("decisões 5, 9, 10, D31 e D42: escopo, código do cliente (answer_draft), NDA, outras cidades e exterior, duração da Descoberta; o resto desligado", () => {
     const ligadas = Object.entries(real.confirmacoes).filter(([, value]) => value !== false && value !== null);
-    expect(Object.fromEntries(ligadas)).toEqual({ escopoMudanca: true, codigoProprietario: "answer_draft", nda: true });
+    expect(Object.fromEntries(ligadas)).toEqual({
+      escopoMudanca: true,
+      codigoProprietario: "answer_draft",
+      outrasCidades: true,
+      atendeExterior: true,
+      nda: true,
+      duracaoDescoberta: true,
+    });
+  });
+
+  it("D42: só a duração típica da Descoberta, nos 3 idiomas; formato, participantes, ritmo e exclusões vazios", () => {
+    expect(real.descoberta).toEqual({
+      formato: null,
+      participantes: null,
+      ritmo: null,
+      duracao: { pt: "em geral 1 semana", en: "usually 1 week", es: "en general 1 semana" },
+      naoInclui: null,
+    });
+    const features = computeFeatures({
+      ...(real as unknown as Omit<FeatureSources, "content" | "env">),
+      content: { cases: [], logos: [], depoimentos: [], time: [], posts: [] },
+      env: { whatsappNumber: "", ga4Id: "" },
+    });
+    expect(features.hasDiscoveryDuration).toBe(true);
+    expect(features.hasDiscoveryFormat).toBe(false);
+    expect(features.confirm.atendeExterior).toBe(true);
   });
 
   it("decisão 6: GitHub, LinkedIn e Medium publicados", () => {
@@ -170,6 +195,8 @@ describe("mensagens de validação em pt-BR, com o campo a corrigir", () => {
     ["agenda sem https", (d) => void (d.agenda.url = "http://agenda.exemplo"), /agenda\.url: deixe "" ou use uma URL https/],
     ["5 faixas", (d) => void d.qualificacao.faixas.push(d.qualificacao.faixas[0]), /qualificacao\.faixas: exatamente 4 faixas/],
     ["score D sem confirmação", (d) => void (d.qualificacao.scoreD.ativo = true), /qualificacao\.scoreD\.ativo: exige confirmacoes\.scoreDRecebeDiagnostico/],
+    ["exterior sem outras cidades (D31)", (d) => void (d.confirmacoes.outrasCidades = false), /confirmacoes\.atendeExterior: exige confirmacoes\.outrasCidades = true/],
+    ["atendeExterior que não é sim/não", (d) => void (d.confirmacoes.atendeExterior = "sim"), /confirmacoes\.atendeExterior: tipo errado: esperava true ou false/],
     ["unidade errada", (d) => void (d.precos.sustentacao = { faixa: { pt: "a", en: "a", es: "a" }, unidade: "projeto", fatores: { pt: ["x"], en: ["x"], es: ["x"] } }), /precos\.sustentacao\.unidade: unidade de "sustentacao" é "mes"/],
     ["encarregado malformado", (d) => void (d.privacidade.encarregado = "pequeno"), /privacidade\.encarregado: use "pequeno_porte" ou/],
     ["data da Política", (d) => void (d.privacidade.atualizadaEm = "19/10/2026"), /privacidade\.atualizadaEm: data "AAAA-MM-DD"/],

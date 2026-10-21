@@ -5,14 +5,21 @@
  * "Serviço"; subtítulo que une o serviço ao método; CTA →
  * /orcamento?servico={slug}&origem={slug}-hero (pré-marca o wizard, §7.1);
  * WhatsApp com a mensagem do serviço (§7.7); microcopy
- * "Gratuito · 45 minutos · devolutiva por escrito".
+ * "Sem compromisso · 45 minutos · devolutiva por escrito" (F41).
  * No MVP, o trecho depois dos dois-pontos vira uma linha menor dentro do
  * mesmo H1, sem mudar o texto (services._notes.mvp_h1: CTA acima da dobra em 360×640).
+ * Também no MVP (auditoria de conversão F01 e F12): com confirmacoes.nda, a
+ * microcopy ganha "· NDA se você pedir"; e, abaixo dela, o link terciário
+ * "Quanto custa e quanto tempo leva um MVP? ↓" para o FAQ (#perguntas), onde
+ * preço e prazo são as duas primeiras perguntas (cta_click, origem
+ * mvp-hero-preco, para comparar com o CTA mvp-hero).
  */
 import Breadcrumb from "@/components/shell/Breadcrumb.astro";
 import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
 import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
-import { SERVICE_PARAM, urlFor, type ServiceKey } from "@/config/routes";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import { getFeatures } from "@/config/features";
+import { ANCHORS, SERVICE_PARAM, urlFor, type ServiceKey } from "@/config/routes";
 import { t, tDynamic, type Locale } from "@/i18n";
 
 import PageHero from "./kit/PageHero.astro";
@@ -25,6 +32,12 @@ interface Props {
 
 const { locale, service, whatsappMessage } = Astro.props;
 const origem = `${SERVICE_PARAM[service]}-hero`;
+const features = await getFeatures();
+const isMvp = service === "mvp";
+const microcopy =
+  isMvp && features.confirm.nda
+    ? `${t(locale, "shared.cta.microcopy_diagnosis")} · ${t(locale, "services.mvp.hero_nda_note")}`
+    : t(locale, "shared.cta.microcopy_diagnosis");
 const crumbs = [
   { label: t(locale, "shared.breadcrumb.home"), href: urlFor("home", locale) },
   { label: t(locale, "shared.breadcrumb.services"), href: urlFor("services_hub", locale) },
@@ -36,12 +49,34 @@ const crumbs = [
   eyebrow={t(locale, "services.template.eyebrow")}
   title={tDynamic(locale, `services.${service}.h1`)}
   subtitle={tDynamic(locale, `services.${service}.subtitle`)}
-  microcopy={t(locale, "shared.cta.microcopy_diagnosis")}
-  splitTitle={service === "mvp"}
+  microcopy={microcopy}
+  splitTitle={isMvp}
 >
   <Breadcrumb slot="breadcrumb" locale={locale} items={crumbs} />
   <Fragment slot="actions">
     <CtaDiagnosis locale={locale} origem={origem} servico={service} />
     <WhatsAppCta locale={locale} message={whatsappMessage} source={origem} />
   </Fragment>
+  {
+    isMvp && (
+      <div slot="after" class="service-hero__faq-link">
+        <ArrowLink
+          href={`#${ANCHORS.faq}`}
+          text={t(locale, "services.mvp.hero_price_link")}
+          icon="arrow-down"
+          size="sm"
+          data-track="cta_click"
+          data-cta-id="price_faq"
+          data-origem="mvp-hero-preco"
+        />
+      </div>
+    )
+  }
 </PageHero>
+
+<style>
+  /* Logo abaixo da microcopy, colado nela (o gap do hero separa body e "after"). */
+  .service-hero__faq-link {
+    margin-block-start: calc(-1 * var(--space-3));
+  }
+</style>

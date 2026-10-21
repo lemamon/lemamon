@@ -2,7 +2,9 @@
 /**
  * Como trabalhamos §6.2 #10 `comparison` — always. Dono: pages.
  * Tabela "Como costuma ser × Com o método da Lemamon", 5 linhas (preço, prazo,
- * escopo, acompanhamento, depois do lançamento). Nunca nomeia concorrente.
+ * escopo, acompanhamento, depois do lançamento) e a 6ª, "Código", só com o
+ * rascunho answer_draft de confirmacoes.codigoProprietario (auditoria de
+ * conversão F01). Nunca nomeia concorrente.
  * Acessível e legível no mobile (cartões, sem scroll horizontal).
  *
  * A linha `how_we_work.engineering.profiles_fallback` ("Perfil público: a
@@ -15,6 +17,8 @@
 import ComparisonTable from "@/components/services/kit/ComparisonTable.astro";
 import SectionHeader from "@/components/ui/SectionHeader.astro";
 import Section from "@/components/ui/Section.astro";
+import { confirmacoes } from "@/config/confirmacoes";
+import { getFeatures } from "@/config/features";
 import { getSection, t, type Locale } from "@/i18n";
 
 interface Props {
@@ -22,7 +26,11 @@ interface Props {
 }
 
 const { locale } = Astro.props;
-const rows = Object.entries(getSection(locale, "how_we_work.comparison.rows")).map(([id, row]) => ({
+const features = await getFeatures();
+const codeOwned = features.confirm.codigoProprietario && confirmacoes.codigoProprietario === "answer_draft";
+const rows = Object.entries(getSection(locale, "how_we_work.comparison.rows"))
+  .filter(([id]) => id !== "code" || codeOwned)
+  .map(([id, row]) => ({
   id,
   dimension: row.dimension,
   without: row.without,

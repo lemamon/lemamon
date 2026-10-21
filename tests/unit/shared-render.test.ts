@@ -24,6 +24,7 @@ import Investment from "@/components/shared/Investment.astro";
 import MethodTimeline from "@/components/shared/MethodTimeline.astro";
 import Profiles from "@/components/shared/Profiles.astro";
 import Term from "@/components/shared/Term.astro";
+import { empresa } from "@/config/empresa";
 import { PRICE_LINE_IDS } from "@/config/precos";
 import { t, type Locale } from "@/i18n";
 import HomeView from "@/views/HomeView.astro";
@@ -64,6 +65,18 @@ describe("MethodTimeline (§5.1)", () => {
     expect(full).toContain('href="#diagnostico"');
     const none = await render(MethodTimeline, { locale: "pt", variant: "compact", links: "none" });
     expect(none).not.toMatch(/<a\b/);
+  });
+
+  it("D42: a duração típica da Descoberta só nas variantes full e highlight (a compacta fica curta)", async () => {
+    for (const locale of LOCALES) {
+      const tag = t(locale, "shared.method_timeline.stages.discovery.tag_long_with_duration", { duracao_descoberta: "§" });
+      const [before] = tag.split("§");
+      const full = decode(await render(MethodTimeline, { locale, variant: "full" }));
+      const highlight = decode(await render(MethodTimeline, { locale, variant: "highlight", highlight: "discovery" }));
+      const compact = decode(await render(MethodTimeline, { locale, variant: "compact" }));
+      for (const html of [full, highlight]) expect(html, locale).toContain(before);
+      expect(compact, locale).not.toContain(before);
+    }
   });
 
   it("highlight: uma etapa com aria-current=step e o selo 'Próximo passo'", async () => {
@@ -118,7 +131,16 @@ describe("when_data com o dado real (dados/dono.json)", () => {
       }
       expect(trust).toContain('id="confira"');
       expect(trust).toContain(t(locale, "home.trust_profiles.title"));
+      // F14: os perfis são uma linha de links (sem cards) e a frase de apoio é a prova de existência (razão social · CNPJ).
+      expect(trust).toMatch(/class="profiles-inline\b/);
+      expect(trust).not.toMatch(/class="[^"]*\bprofile\b/);
+      expect(decode(trust)).toContain(
+        t(locale, "home.trust_profiles.text_with_company", { razao_social: empresa.razaoSocial, cnpj: empresa.cnpj }),
+      );
     }
+    // F70: em en/es, o CNPJ vem explicado.
+    expect(decode(await render(HomeTrustProfiles, { locale: "en" }))).toContain(`Brazilian company registration (CNPJ) ${empresa.cnpj}`);
+    expect(decode(await render(HomeTrustProfiles, { locale: "es" }))).toContain(`Registro de empresa en Brasil (CNPJ) ${empresa.cnpj}`);
   });
 });
 
@@ -126,6 +148,10 @@ describe("Compromissos, decisão, CTA final e termos", () => {
   it("compromissos: 4 itens sem título, com selo e aria-label", async () => {
     const html = await render(Commitments, { locale: "pt" });
     expect(count(html, /<li\b/g)).toBe(4);
+    // F01: com o código do cliente aprovado (answer_draft), o 4º item é o código, não a sustentação.
+    expect(html).toContain('data-id="code_owned"');
+    expect(html).toContain(t("pt", "shared.commitments.items.code_owned"));
+    expect(html).not.toContain(t("pt", "shared.commitments.items.after_launch"));
     expect(html).not.toMatch(/<h[1-6]\b/);
     expect(html).toContain(t("pt", "shared.commitments.location_seal"));
     expect(html).toContain(`aria-label="${t("pt", "shared.commitments.aria_label")}"`);

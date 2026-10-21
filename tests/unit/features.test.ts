@@ -15,13 +15,20 @@ describe("features — estado do repositório (dados/dono.json)", () => {
     expect(CONFIG_SOURCES).toEqual(CONFIG_SOURCES_REAIS);
   });
 
-  it("só as decisões do dono ligam flags: faixas da P5, perfis, empresa (razão social + CNPJ), mudança de escopo, código do cliente e NDA", () => {
+  it("só as decisões do dono ligam flags: faixas da P5, perfis, empresa (razão social + CNPJ), escopo, código do cliente, NDA, outras cidades e exterior (D31) e duração da Descoberta (D42)", () => {
     const features = computeFeatures(realSources());
     const on = Object.entries(features).filter(([key, value]) => key.startsWith("has") && value === true);
-    expect(on.map(([key]) => key).sort()).toEqual(["hasBudgetTiers", "hasCompanyData", "hasProfiles"]);
+    expect(on.map(([key]) => key).sort()).toEqual(["hasBudgetTiers", "hasCompanyData", "hasDiscoveryDuration", "hasProfiles"]);
     expect(features.profiles).toEqual({ github: true, linkedin: true, medium: true });
     expect(features.pricingLines).toEqual([]);
-    expect(Object.entries(features.confirm).filter(([, value]) => value).map(([key]) => key).sort()).toEqual(["codigoProprietario", "escopoMudanca", "nda"]);
+    expect(Object.entries(features.confirm).filter(([, value]) => value).map(([key]) => key).sort()).toEqual([
+      "atendeExterior",
+      "codigoProprietario",
+      "duracaoDescoberta",
+      "escopoMudanca",
+      "nda",
+      "outrasCidades",
+    ]);
   });
 
   it("vazio (baseSources): toda flag when_data desligada", () => {

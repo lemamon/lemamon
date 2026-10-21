@@ -11,13 +11,20 @@
  *   sistema para começar?"): a 1ª pergunta abre sozinha (§5.6), e a diferença
  *   entre sustentação e evolução já foi definida em what_it_is, logo depois
  *   dos sinais (painel de design).
+ * - Garantias à vista (auditoria de conversão F01, F12, F15): o NDA nunca sai
+ *   pelo teto onde aparece (sistemas web, aplicativos e MVP; no MVP logo
+ *   depois de code_ownership). Em integrações, `data_access` ("Vocês assinam
+ *   NDA? E quem acessa os dados dos meus sistemas?") entra perto do topo no
+ *   lugar de how_follow_progress e do condicional nda, que repetiria a mesma
+ *   resposta. No MVP, how_long_mvp vem logo depois de price (preço e prazo nas
+ *   duas primeiras perguntas) e what_is_mvp desce para a ordem de remoção.
  *
- * Teto de 9 visíveis; acima disso, saem na ordem de FAQ_REMOVAL. Nunca saem:
- * price, why_discovery_paid, how_long_*, how_follow_progress, wont_stall,
- * scope_change e code_ownership. start_with_part (sistemas web) e
- * store_publishing (aplicativos) entram na ordem de remoção para
- * code_ownership caber quando a flag ligar (pior caso testado em
- * tests/unit/pages-faq.test.ts).
+ * Teto de 9 visíveis; acima disso, cada página tira os itens na ordem da SUA
+ * lista em SERVICE_FAQ_REMOVAL. Nunca saem: SERVICE_FAQ_NEVER_REMOVED (price,
+ * why_discovery_paid, how_long_*, wont_stall, scope_change, code_ownership,
+ * nda e data_access). how_follow_progress pode sair em sistemas web e
+ * aplicativos: wont_stall, logo acima, já diz que a cada 2 semanas você recebe
+ * uma parte funcionando. Pior caso testado em tests/unit/pages-faq.test.ts.
  */
 import type { ServiceKey } from "@/config/routes";
 
@@ -51,34 +58,35 @@ export const SERVICE_FAQ: Readonly<Record<ServiceKey, readonly FaqEntry[]>> = {
     { cond: "scope_change" },
     { bank: "how_follow_progress" },
     { cond: "code_ownership" },
+    { cond: "nda" },
     { cond: "invoice" },
   ],
   integrations: [
     { own: "integrate_existing" },
     { bank: "need_tech_knowledge" },
+    { own: "data_access" },
     { own: "integrate_or_replace" },
     { own: "price" },
     { bank: "why_discovery_paid" },
     { own: "how_long_integration" },
     { bank: "wont_stall" },
     { cond: "scope_change" },
-    { bank: "how_follow_progress" },
     { cond: "code_ownership" },
     { cond: "skip_discovery" },
-    { cond: "nda" },
     { cond: "invoice" },
   ],
   mvp: [
     { own: "price" },
+    { own: "how_long_mvp" },
     { bank: "why_discovery_paid" },
     { cond: "discovery_duration" },
     { own: "wont_stall" },
     { cond: "code_ownership" },
-    { own: "how_long_mvp" },
+    { cond: "nda" },
     { cond: "scope_change" },
     { own: "what_goes_in" },
-    { own: "what_is_mvp" },
     { own: "after_mvp" },
+    { own: "what_is_mvp" },
     { cond: "discovery_plan_ownership" },
     { cond: "third_party_system" },
     { cond: "skip_discovery" },
@@ -101,23 +109,21 @@ export const SERVICE_FAQ_DIAGNOSIS_LINK: Readonly<Partial<Record<ServiceKey, rea
 };
 
 /**
- * Ordem de remoção acima do teto de 9 (services._notes.faq_composition), mais
- * start_with_part (sistemas web: com wont_stall, migração, mudança de escopo e
- * código ligados ao mesmo tempo, a página teria 10) e store_publishing.
+ * Ordem de remoção acima do teto de 9, por página (services._notes.faq_composition).
+ * Com os dados de hoje (escopo, código, NDA e duração da Descoberta ligados):
+ * sistemas web tira need_tech_knowledge e start_with_part; aplicativos,
+ * store_publishing e how_follow_progress; integrações, need_tech_knowledge;
+ * MVP, what_is_mvp e after_mvp.
  */
-export const SERVICE_FAQ_REMOVAL = [
-  "invoice",
-  "nda",
-  "skip_discovery",
-  "need_tech_knowledge",
-  "start_with_part",
-  "store_publishing",
-  "what_is_mvp",
-  "third_party_system",
-  "discovery_plan_ownership",
-] as const;
+export const SERVICE_FAQ_REMOVAL: Readonly<Record<ServiceKey, readonly string[]>> = {
+  web_systems: ["invoice", "skip_discovery", "need_tech_knowledge", "start_with_part", "how_follow_progress"],
+  mobile_apps: ["invoice", "store_publishing", "how_follow_progress"],
+  integrations: ["invoice", "skip_discovery", "need_tech_knowledge"],
+  mvp: ["skip_discovery", "what_is_mvp", "third_party_system", "discovery_plan_ownership", "after_mvp"],
+  support: ["invoice", "skip_discovery"],
+};
 
-/** Perguntas que o teto nunca tira (as objeções de dinheiro, prazo, risco, mudança e código). */
+/** Perguntas que o teto nunca tira (as objeções de dinheiro, prazo, risco, mudança, código e sigilo). */
 export const SERVICE_FAQ_NEVER_REMOVED = [
   "price",
   "why_discovery_paid",
@@ -125,8 +131,9 @@ export const SERVICE_FAQ_NEVER_REMOVED = [
   "how_long_app",
   "how_long_integration",
   "how_long_mvp",
-  "how_follow_progress",
   "wont_stall",
   "scope_change",
   "code_ownership",
+  "nda",
+  "data_access",
 ] as const;

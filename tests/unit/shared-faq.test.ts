@@ -91,6 +91,20 @@ describe("bankItems", () => {
     expect(answerText(item as FaqItem)).toContain(t("pt", "faq.items.how_much.answer_with_pricing_suffix"));
   });
 
+  it("wont_stall cita o código só com o rascunho answer_draft aprovado (auditoria F42)", () => {
+    for (const locale of LOCALES) {
+      const plain = t(locale, "faq.items.wont_stall.answer");
+      const withCode = t(locale, "faq.items.wont_stall.answer_with_code_ownership");
+      expect(withCode.startsWith(plain), locale).toBe(true);
+      expect(bankItems(locale, ["wont_stall"], empty)[0]?.answer).toBe(plain);
+      expect(bankItems(locale, ["wont_stall"], full, { codeOwnership: "answer_draft" })[0]?.answer).toBe(withCode);
+      expect(bankItems(locale, ["wont_stall"], full, { codeOwnership: "answer_draft_alt" })[0]?.answer).toBe(plain);
+    }
+    // composeFaq usa o rascunho das fontes injetadas.
+    const alt = { ...owner, confirmacoes: { ...owner.confirmacoes, codigoProprietario: "answer_draft_alt" as const } };
+    expect(composeFaq("pt", { features: full, bank: ["wont_stall"], sources: alt })[0]?.answer).toBe(t("pt", "faq.items.wont_stall.answer"));
+  });
+
   it("abatimento da Descoberta só com a flag e só quando a página pede", () => {
     const base = t("pt", "faq.items.why_discovery_paid.answer");
     const suffix = t("pt", "faq.conditional.discovery_credit.cost_suffix");
@@ -141,13 +155,63 @@ describe("conditionalItems", () => {
     }
   });
 
-  it("discovery_duration: formato completo > confirmação > nada", () => {
+  it("discovery_duration (D42): duração típica (com ou sem o formato) > só a confirmação > nada", () => {
+    // Formato completo: a duração entra, sempre com "depende" e "combinada antes".
     const withFormat = conditionalItems("pt", ["discovery_duration"], full, owner)[0];
-    expect(withFormat?.answer).toContain(owner.descoberta.duracao?.pt);
+    expect(withFormat?.answer).toBe(
+      t("pt", "faq.conditional.discovery_duration.answer_with_duration", { duracao_descoberta: owner.descoberta.duracao?.pt ?? "" }),
+    );
+    // Só a duração + a confirmação do dono (os outros 3 campos vazios), nos 3 idiomas.
+    const onlyDuration = {
+      ...owner,
+      descoberta: { ...baseSources().descoberta, duracao: { pt: "em geral 1 semana", en: "usually 1 week", es: "en general 1 semana" } },
+    };
+    const durationFeatures = computeFeatures(baseSources(onlyDuration));
+    expect(durationFeatures.hasDiscoveryFormat).toBe(false);
+    expect(durationFeatures.hasDiscoveryDuration).toBe(true);
+    for (const locale of LOCALES) {
+      const answer = conditionalItems(locale, ["discovery_duration"], durationFeatures, onlyDuration)[0]?.answer ?? "";
+      expect(answer, locale).toContain(onlyDuration.descoberta.duracao[locale]);
+      expect(answer, locale).toBe(
+        t(locale, "faq.conditional.discovery_duration.answer_with_duration", { duracao_descoberta: onlyDuration.descoberta.duracao[locale] }),
+      );
+    }
+    expect(conditionalItems("pt", ["discovery_duration"], durationFeatures, onlyDuration)[0]?.answer).toMatch(/^Depende do tamanho do problema/);
+    // Só a confirmação, sem duração: resposta sem número.
     const onlyFlag = computeFeatures(baseSources({ confirmacoes: owner.confirmacoes }));
     expect(conditionalItems("pt", ["discovery_duration"], onlyFlag, { ...owner, descoberta: baseSources().descoberta })[0]?.answer).toBe(
       t("pt", "faq.conditional.discovery_duration.answer_draft"),
     );
+    // Duração sem a confirmação e sem o formato completo: nada.
+    const noFlag = { ...onlyDuration, confirmacoes: { ...owner.confirmacoes, duracaoDescoberta: false } };
+    expect(conditionalItems("pt", ["discovery_duration"], computeFeatures(baseSources(noFlag)), noFlag)).toEqual([]);
+  });
+
+  it("other_cities (D31): uma pergunta só; com atendeExterior, a variante com o exterior", () => {
+    for (const locale of LOCALES) {
+      const abroad = conditionalItems(locale, ["other_cities"], full, owner)[0];
+      expect(abroad?.question).toBe(t(locale, "faq.conditional.other_cities.question_with_abroad"));
+      expect(abroad?.answer).toBe(t(locale, "faq.conditional.other_cities.answer_with_abroad"));
+      const brazil = { ...owner, confirmacoes: { ...owner.confirmacoes, atendeExterior: false } };
+      const onlyBrazil = conditionalItems(locale, ["other_cities"], computeFeatures(baseSources(brazil)), brazil)[0];
+      expect(onlyBrazil?.question).toBe(t(locale, "faq.conditional.other_cities.question"));
+      expect(onlyBrazil?.answer).toBe(t(locale, "faq.conditional.other_cities.answer_draft"));
+      // atendeExterior sem outrasCidades não publica nada (e o validate.ts recusa o dado).
+      const incoherent = { ...owner, confirmacoes: { ...owner.confirmacoes, outrasCidades: false } };
+      expect(conditionalItems(locale, ["other_cities"], computeFeatures(baseSources(incoherent)), incoherent)).toEqual([]);
+    }
+  });
+
+  it("other_cities com exterior: afirma só o confirmado (a distância, idiomas, mesmo processo; moeda e contrato por escrito)", () => {
+    const answers = LOCALES.map((locale) => t(locale, "faq.conditional.other_cities.answer_with_abroad"));
+    expect(answers[0]).toMatch(/a distância/);
+    expect(answers[0]).toMatch(/português, inglês ou espanhol/);
+    expect(answers[0]).toMatch(/combinados por escrito antes de começar/);
+    expect(answers[1]).toMatch(/remotely/);
+    expect(answers[1]).toMatch(/agreed in writing before we start/);
+    expect(answers[2]).toMatch(/a distancia/);
+    expect(answers[2]).toMatch(/por escrito antes de empezar/);
+    for (const answer of answers) expect(answer).not.toMatch(/fuso|time zone|huso|GMT|UTC|USD|US\$|exporta|foro|jurisdic/i);
   });
 });
 

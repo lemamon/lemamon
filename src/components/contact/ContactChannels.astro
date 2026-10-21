@@ -5,7 +5,8 @@
  * cheio da seção, §8.6) · WhatsApp (botão contornado, o mesmo peso do WhatsApp
  * do hero; sem número; some sem PUBLIC_WHATSAPP_NUMBER) · E-mail em texto com
  * "Copiar" (com NDA confirmado, a variante que cita NDA) · LinkedIn, GitHub,
- * Medium · "São Paulo, SP, Brasil".
+ * Medium numa linha só, depois dos cards (auditoria de conversão F14: perfil
+ * ainda sem conteúdo não ganha card antes do formulário) · "São Paulo, SP, Brasil".
  *
  * Perfis: BLUEPRINT §6.9 e §4 tratam os três como canais confirmados e os
  * listam sempre (como o footer, CONTRACT §15.1); a nota contact._notes.profiles
@@ -14,12 +15,11 @@
  * Ritmo vertical: <Section spacing="compact" trim="start"> (B211), emendada no hero.
  *
  * Primitivos (B214): cada canal é um <Card as="li" padding="sm"> (o destaque do
- * diagnóstico só troca a cor da borda) e cada perfil um <Card as="a"
- * interactive padding="sm">, como os perfis da Home (shared/Profiles.astro).
+ * diagnóstico só troca a cor da borda). Os perfis são links em linha (ícone +
+ * nome), o mesmo desenho do Profiles variant="inline" dos serviços.
  * Aqui não há borda, raio, respiro nem fundo de cartão próprios.
  * Grade (B222): calha var(--grid-gap) e 1 coluna abaixo de 1024px; a partir
- * de 1024px, 4+4+4 com os três canais e 6+6 sem o WhatsApp (data-count). Os
- * perfis são 4+4+4 a partir de 768px, com a mesma calha.
+ * de 1024px, 4+4+4 com os três canais e 6+6 sem o WhatsApp (data-count).
  */
 import CopyEmail from "@/components/shell/CopyEmail.astro";
 import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
@@ -71,30 +71,22 @@ const channelCount = features.hasWhatsapp ? 3 : 2;
       </Card>
     </ul>
 
-    <ul class="contact-channels__profiles" role="list">
-      {
-        profileOrder.map((id) => (
-          <li>
-            <Card
-              as="a"
-              interactive
-              padding="sm"
-              class="profile"
-              href={perfis[id].url}
-              target="_blank"
-              rel="noopener"
-              data-track="profile_click"
-              data-profile={id}
-            >
-              <Icon name={id} size={20} />
-              <span class="profile__name">{profiles[id].name}</span>
-              <span class="profile__text">{profiles[id].text}</span>
-              <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
-            </Card>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="contact-channels__profiles">
+      <p>{channels.profiles_line}</p>
+      <ul role="list">
+        {
+          profileOrder.map((id) => (
+            <li>
+              <a href={perfis[id].url} target="_blank" rel="noopener" data-track="profile_click" data-profile={id}>
+                <Icon name={id} size={16} />
+                {profiles[id].name}
+                <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
 
     <p class="contact-channels__location">
       <Icon name="map-pin" size={18} />
@@ -169,44 +161,34 @@ const channelCount = features.hasWhatsapp ? 3 : 2;
     color: var(--color-text-secondary);
   }
 
+  /* Perfis em linha (F14): frase de apoio + links com ícone, como o
+     Profiles variant="inline" (alvo de toque ≥ 44px). */
   .contact-channels__profiles {
-    display: grid;
-    gap: var(--grid-gap);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .contact-channels__profiles p {
+    color: var(--color-text-secondary);
+  }
+
+  .contact-channels__profiles ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  @media (min-width: 768px) {
-    .contact-channels__profiles {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  /* Os três cards com a mesma altura na linha (o texto do LinkedIn quebra). */
-  .contact-channels__profiles > li {
-    display: flex;
-  }
-
-  /* Raiz = <Card as="a" interactive padding="sm"> (borda, raio, respiro, hover
-     só com ponteiro fino, B192): aqui só o arranjo do ícone, nome e texto. */
-  .contact-channels__profiles :global(.profile) {
-    flex: 1 1 auto;
-    display: grid;
-    grid-template-columns: auto 1fr;
+  .contact-channels__profiles a {
+    display: inline-flex;
     align-items: center;
-    column-gap: var(--space-3);
-  }
-
-  .profile__name {
+    gap: var(--space-2);
+    min-block-size: var(--target-min);
     font-weight: var(--font-weight-bold);
-  }
-
-  .profile__text {
-    grid-column: 2;
-    font-size: var(--text-sm);
-    line-height: var(--leading-sm);
-    color: var(--color-text-secondary);
   }
 
   .contact-channels__location {

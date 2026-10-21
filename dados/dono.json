@@ -45,11 +45,12 @@
     "escopoMudanca": true,
     "codigoProprietario": "answer_draft",
     "notaFiscal": false,
-    "outrasCidades": false,
+    "outrasCidades": true,
+    "atendeExterior": true,
     "nda": true,
     "sistemaTerceiros": false,
     "semDescoberta": false,
-    "duracaoDescoberta": false,
+    "duracaoDescoberta": true,
     "planoDoCliente": false,
     "descobertaAbatida": false,
     "descobertaUnicoCusto": false,
@@ -102,7 +103,7 @@
     "formato": null,
     "participantes": null,
     "ritmo": null,
-    "duracao": null,
+    "duracao": { "pt": "em geral 1 semana", "en": "usually 1 week", "es": "en general 1 semana" },
     "naoInclui": null
   },
   "sustentacao": {

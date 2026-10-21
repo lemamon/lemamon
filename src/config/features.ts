@@ -26,6 +26,8 @@
  *   hasAboutIntro       empresa.apresentacao nos 3 idiomas
  *   hasAboutStory       empresa.historia (≥ 1 parágrafo) nos 3 idiomas
  *   hasDiscoveryFormat  os 4 campos de descoberta.ts nos 3 idiomas
+ *   hasDiscoveryDuration  descoberta.duracao nos 3 idiomas + (confirmacoes.duracaoDescoberta
+ *                       ou hasDiscoveryFormat): a duração típica sai sozinha (D42)
  *   hasDiscoveryExclusions  descoberta.naoInclui com ≥ 1 item nos 3 idiomas
  *   hasSupportFormat    inclui + contratacao + canais nos 3 idiomas
  *   hasEngineering      ≥ 1 campo de engenharia.ts nos 3 idiomas
@@ -103,6 +105,15 @@ export interface Features {
   hasAboutStory: boolean;
   /** Os 4 campos de descoberta.ts completos. */
   hasDiscoveryFormat: boolean;
+  /**
+   * Duração típica da Descoberta publicável (D42): descoberta.duracao nos 3
+   * idiomas e, além dela, a confirmação do dono (duracaoDescoberta) ou o
+   * formato completo. Libera a duração no FAQ discovery_duration
+   * (answer_with_duration), na tag da etapa 2 (tag_long_with_duration) e no
+   * hero de /sprint-de-descoberta, sempre com "depende do tamanho do problema"
+   * e "combinada antes de começar". Não exige formato, participantes nem ritmo.
+   */
+  hasDiscoveryDuration: boolean;
   /** "O que a Descoberta não inclui": descoberta.naoInclui com ≥ 1 item nos 3 idiomas (B354). */
   hasDiscoveryExclusions: boolean;
   /** inclui + contratacao + canais completos em sustentacao.ts. */
@@ -327,6 +338,8 @@ export function computeFeatures(src: FeatureSources): Features {
     codigoProprietario: c.codigoProprietario !== false,
     notaFiscal: c.notaFiscal,
     outrasCidades: c.outrasCidades,
+    // D31: a variante "…ou de fora do Brasil?" só vale junto com outrasCidades (validate.ts).
+    atendeExterior: c.atendeExterior && c.outrasCidades,
     nda: c.nda,
     sistemaTerceiros: c.sistemaTerceiros,
     semDescoberta: c.semDescoberta,
@@ -352,6 +365,7 @@ export function computeFeatures(src: FeatureSources): Features {
 
   const d = src.descoberta;
   const s = src.sustentacao;
+  const hasDiscoveryFormat = [d.formato, d.participantes, d.ritmo, d.duracao].every((value) => isFilledText(value));
   const companies = new Set(src.content.logos.map((logo) => (logo.empresa ?? logo.id).trim().toLocaleLowerCase("pt-BR")));
   const hasTestimonials = src.content.depoimentos.length >= THRESHOLDS.testimonials;
 
@@ -368,7 +382,8 @@ export function computeFeatures(src: FeatureSources): Features {
       (isValidCnpj(src.empresa.cnpj) || (src.modoFicticio === true && src.empresa.cnpj.trim() === CNPJ_FICTICIO)),
     hasAboutIntro: isFilledText(src.empresa.apresentacao),
     hasAboutStory: isFilledList(src.empresa.historia, 1),
-    hasDiscoveryFormat: [d.formato, d.participantes, d.ritmo, d.duracao].every((value) => isFilledText(value)),
+    hasDiscoveryFormat,
+    hasDiscoveryDuration: isFilledText(d.duracao) && (c.duracaoDescoberta || hasDiscoveryFormat),
     hasDiscoveryExclusions: isFilledList(d.naoInclui, 1),
     hasSupportFormat: SUPPORT_REQUIRED_FIELDS.every((field) => isFilledText(s[field])),
     hasEngineering: engineeringFields.length >= 1,

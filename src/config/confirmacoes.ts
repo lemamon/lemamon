@@ -2,7 +2,10 @@
  * ============================================================================
  *  confirmacoes.ts — CONFIRMAÇÕES DO DONO (BLUEPRINT §4 e §14).
  *  O DADO MORA EM dados/dono.json › confirmacoes.
- *  Decidido pelo dono: escopoMudanca = true (FAQ "E se eu mudar o escopo?").
+ *  Decidido pelo dono: escopoMudanca = true (FAQ "E se eu mudar o escopo?");
+ *  outrasCidades e atendeExterior = true (D31, 21/10/2026: atende empresas de
+ *  qualquer país); duracaoDescoberta = true (D42, 21/10/2026: "depende do
+ *  cliente, mas no geral 1 semana", em descoberta.duracao).
  * ============================================================================
  *
  * PARA O DONO — o que preencher (em dados/dono.json, não aqui)
@@ -14,10 +17,14 @@
  *     escopoMudanca           FAQ "E se eu mudar o escopo no meio?" (prioridade nº 1, §14)
  *     notaFiscal              FAQ "Vocês emitem nota fiscal?"
  *     outrasCidades           FAQ "Atendem fora de São Paulo?" (afeta en/es)
+ *     atendeExterior          variante do mesmo FAQ "…ou de fora do Brasil?" + linha da
+ *                             Home (eyebrow). EXIGE outrasCidades = true (quem atende
+ *                             qualquer país atende outras cidades; o build confere)
  *     nda                     FAQ "Vocês assinam NDA?" (+ texto do card de e-mail em /contato)
  *     sistemaTerceiros        FAQ "Cuidam de sistema feito por outra empresa?"
  *     semDescoberta           FAQ "Dá para pular a Descoberta?"
- *     duracaoDescoberta       FAQ "Quanto dura a Descoberta?"
+ *     duracaoDescoberta       FAQ "Quanto dura a Descoberta?" (com descoberta.duracao
+ *                             preenchida, a resposta e a tag da etapa citam a duração típica)
  *     planoDoCliente          FAQ "O plano da Descoberta é meu se eu não seguir?"
  *     descobertaAbatida       FAQ "O valor da Descoberta é abatido?" (só abatimento integral)
  *     descobertaUnicoCusto    frase "é o único valor que você assume"
@@ -53,13 +60,22 @@ export interface Confirmacoes {
   notaFiscal: boolean;
   /** faq.conditional.other_cities. */
   outrasCidades: boolean;
+  /**
+   * D31: atende empresas de qualquer país, a distância. Liga a variante
+   * question_with_abroad/answer_with_abroad de faq.conditional.other_cities e
+   * home.hero.eyebrow_with_abroad. Exige outrasCidades (validate.ts).
+   */
+  atendeExterior: boolean;
   /** faq.conditional.nda. */
   nda: boolean;
   /** faq.conditional.third_party_system. */
   sistemaTerceiros: boolean;
   /** faq.conditional.skip_discovery. */
   semDescoberta: boolean;
-  /** faq.conditional.discovery_duration (answer_draft). */
+  /**
+   * faq.conditional.discovery_duration: answer_draft; com descoberta.duracao
+   * preenchida, answer_with_duration (features.hasDiscoveryDuration).
+   */
   duracaoDescoberta: boolean;
   /** faq.conditional.discovery_plan_ownership. */
   planoDoCliente: boolean;

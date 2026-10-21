@@ -2,9 +2,11 @@
 /**
  * Home §6.1 #1 `hero` — always. Dono: home. ÚNICO H1 da página.
  *
- * Eyebrow (o que constrói + São Paulo), H1 com a promessa do método,
- * subtítulo, CTA primário (→ /orcamento?origem=home-hero) + WhatsApp em
- * outline, microcopy "Gratuito · 45 minutos · devolutiva por escrito" e, ao
+ * Eyebrow (o que constrói + São Paulo; com confirmacoes.atendeExterior, D31,
+ * + "Atendemos o mundo todo": home.hero.eyebrow_with_abroad), H1 com a
+ * promessa do método, subtítulo, CTA primário (→ /orcamento?origem=home-hero)
+ * + WhatsApp em outline, microcopy "Sem compromisso · 45 minutos · devolutiva
+ * por escrito" (auditoria F41: "gratuito" já está no botão) e, ao
  * lado (abaixo dos CTAs no mobile), o plano do método: a linha compacta com a
  * etapa 1 em "Comece aqui". O cartão inteiro é um link para #como-trabalhamos
  * (um único <a> esticado, para não haver 4 links iguais).
@@ -23,6 +25,7 @@ import type { TermId } from "@/components/shared/terms";
 import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
 import Icon from "@/components/ui/Icon.astro";
 import Section from "@/components/ui/Section.astro";
+import { getFeatures } from "@/config/features";
 import { ANCHORS } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 
@@ -35,6 +38,9 @@ interface Props {
 
 const { locale, whatsappMessage, terms = { subtitle: ["mvp"], micro: ["written_feedback"] } } = Astro.props;
 const planLabel = t(locale, "home.method.eyebrow");
+const features = await getFeatures();
+// D31: a mesma eyebrow + o atendimento fora do Brasil (home.hero.eyebrow fica igual ao do /orcamento e do OG).
+const eyebrow = t(locale, features.confirm.atendeExterior ? "home.hero.eyebrow_with_abroad" : "home.hero.eyebrow");
 ---
 
 <Section id="inicio" spacing="hero" labelledby="hero-title" class="home-hero">
@@ -42,7 +48,7 @@ const planLabel = t(locale, "home.method.eyebrow");
     <div class="hero__copy">
       {/* Um único item flex, para a quebra cair antes do "·" (NoBreakText separator). */}
       <p class="eyebrow">
-        <span><NoBreakText text={t(locale, "home.hero.eyebrow")} separator /></span>
+        <span><NoBreakText text={eyebrow} separator /></span>
       </p>
       <h1 id="hero-title" class="hero__title">{t(locale, "home.hero.title")}</h1>
       <p class="hero__subtitle">
@@ -55,7 +61,7 @@ const planLabel = t(locale, "home.method.eyebrow");
       <p class="hero__micro">
         <Icon name="check" size={16} strokeWidth={2.5} />
         <span>
-          <TermText locale={locale} text={t(locale, "shared.cta.microcopy_diagnosis")} terms={terms.micro ?? []} />
+          <TermText locale={locale} text={t(locale, "shared.cta.microcopy_diagnosis")} terms={terms.micro ?? []} separator />
         </span>
       </p>
     </div>

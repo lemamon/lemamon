@@ -29,6 +29,7 @@ import HomeTrustProfiles from "@/components/home/HomeTrustProfiles.astro";
 import Commitments from "@/components/shared/Commitments.astro";
 import CtaFinal from "@/components/shared/CtaFinal.astro";
 import { homeFaqItems } from "@/components/home/home-faq";
+import { riskAnswers } from "@/components/home/home-risks";
 import { homeSectionPlan, optionalText } from "@/components/home/home-sections";
 import Faq from "@/components/shared/Faq.astro";
 import Investment from "@/components/shared/Investment.astro";
@@ -70,13 +71,13 @@ const chapterOf = (key: "cases" | "team") =>
 
 /* Termos §5.9: onde fica a 1ª menção de cada um, na ordem de leitura. */
 const TERMS: TermId[] = ["mvp", "written_feedback", "prioritized_scope", "prototype"];
-const risks = getSection(locale, "home.risks.pairs");
+const risks = riskAnswers(locale, features);
 const method = getSection(locale, "home.method.stages");
 const termPlan = planFirstMentions(
   [
     ["hero.subtitle", t(locale, "home.hero.subtitle")],
     ["hero.micro", t(locale, "shared.cta.microcopy_diagnosis")],
-    ...Object.entries(risks).map(([id, pair]) => [`risks.${id}`, pair.answer] as const),
+    ...Object.entries(risks).map(([id, answer]) => [`risks.${id}`, answer] as const),
     ...Object.entries(method).map(([id, stage]) => [`method.${id}`, stage.text] as const),
   ],
   TERMS.map((term) => ({ term, label: termLabel(t(locale, `shared.terms.${term}`)) })),

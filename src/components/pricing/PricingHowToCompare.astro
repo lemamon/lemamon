@@ -5,7 +5,10 @@
  * uma com o porquê e, logo abaixo, a resposta da Lemamon (pricing._notes.how_to_compare).
  * Ordem: out_of_scope · fixed_or_hourly · when_working · scope_change
  * (condicional: confirmacoes.escopoMudanca, com lemamon_with_scope_change) ·
- * after_launch · before_paying. Sem a flag, 5 perguntas.
+ * after_launch · before_paying · code_ownership (condicional: o rascunho
+ * answer_draft de confirmacoes.codigoProprietario, com
+ * lemamon_with_code_ownership; auditoria de conversão F37). Sem as flags, 5
+ * perguntas; com as duas, 7.
  * Primeira menção de "protótipo" (when_working) e de "escopo priorizado"
  * (before_paying) recebem a explicação de shared.terms (§5.9).
  * Fecha com o link "Começar pelo diagnóstico gratuito" → ?origem=preco-comparar.
@@ -20,6 +23,7 @@ import Term from "@/components/shared/Term.astro";
 import SectionHeader from "@/components/ui/SectionHeader.astro";
 import TextCta from "@/components/services/kit/TextCta.astro";
 import Section from "@/components/ui/Section.astro";
+import { confirmacoes } from "@/config/confirmacoes";
 import { getFeatures } from "@/config/features";
 import { getSection, t, type Locale } from "@/i18n";
 
@@ -45,6 +49,13 @@ const all: { id: string; question: string; why: string; answer: string; term?: T
   },
   { id: "after_launch", ...q.after_launch, answer: q.after_launch.lemamon, show: true },
   { id: "before_paying", ...q.before_paying, answer: q.before_paying.lemamon, term: "prioritized_scope", show: true },
+  {
+    id: "code_ownership",
+    question: q.code_ownership.question,
+    why: q.code_ownership.why,
+    answer: q.code_ownership.lemamon_with_code_ownership,
+    show: features.confirm.codigoProprietario && confirmacoes.codigoProprietario === "answer_draft",
+  },
 ];
 const questions = all.filter((item) => item.show);
 ---

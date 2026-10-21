@@ -4,12 +4,17 @@
  * Breadcrumb Início › Como trabalhamos › Sprint de Descoberta (BreadcrumbList,
  * §8.7); eyebrow "Etapa 2 de 4"; CTA "Começar pelo diagnóstico gratuito" →
  * /orcamento?entrada=descoberta&origem=descoberta-hero; secundário "Tirar
- * dúvidas no WhatsApp"; microcopy (o primeiro passo é gratuito).
+ * dúvidas no WhatsApp"; microcopy (o primeiro passo é gratuito). Com a
+ * duração típica da Descoberta (D42, features.hasDiscoveryDuration),
+ * microcopy_with_duration ("…dura em geral 1 semana, com valor e duração
+ * combinados antes de começar"; auditoria F58).
  */
 import Breadcrumb from "@/components/shell/Breadcrumb.astro";
 import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
 import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
 import PageHero from "@/components/services/kit/PageHero.astro";
+import { descoberta } from "@/config/descoberta";
+import { getFeatures } from "@/config/features";
 import { urlFor } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 
@@ -19,6 +24,11 @@ interface Props {
 }
 
 const { locale, whatsappMessage } = Astro.props;
+const features = await getFeatures();
+const duration = features.hasDiscoveryDuration ? descoberta.duracao?.[locale]?.trim() : undefined;
+const microcopy = duration
+  ? t(locale, "discovery_sprint.hero.microcopy_with_duration", { duracao_descoberta: duration })
+  : t(locale, "discovery_sprint.hero.microcopy");
 const crumbs = [
   { label: t(locale, "shared.breadcrumb.home"), href: urlFor("home", locale) },
   { label: t(locale, "shared.breadcrumb.how_we_work"), href: urlFor("how_we_work", locale) },
@@ -30,7 +40,7 @@ const crumbs = [
   eyebrow={t(locale, "discovery_sprint.hero.eyebrow")}
   title={t(locale, "discovery_sprint.hero.title")}
   subtitle={t(locale, "discovery_sprint.hero.subtitle")}
-  microcopy={t(locale, "discovery_sprint.hero.microcopy")}
+  microcopy={microcopy}
 >
   <Breadcrumb slot="breadcrumb" locale={locale} items={crumbs} />
   <Fragment slot="actions">

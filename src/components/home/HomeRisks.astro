@@ -16,15 +16,24 @@
  * seção escura logo abaixo (#como-trabalhamos). Por isso a <Section> não tem
  * respiro embaixo (trim="end") e abre com a linha de 1px (divider).
  * index: numeração da eyebrow (a HomeView calcula, B216).
+ *
+ * Garantias à vista (auditoria de conversão F01 e F37): com o código do
+ * cliente aprovado, a resposta de "O fornecedor que some" cita o código
+ * (./home-risks.ts); o par dos orçamentos impossíveis de comparar termina com
+ * um link para a régua "Como comparar orçamentos" de /quanto-custa.
  */
 import TermText from "@/components/shared/TermText.astro";
 import type { TermId } from "@/components/shared/terms";
 import Card from "@/components/ui/Card.astro";
 import Icon from "@/components/ui/Icon.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
 import Section from "@/components/ui/Section.astro";
 import SectionHeader from "@/components/ui/SectionHeader.astro";
-import { getSection, t, type Locale } from "@/i18n";
+import { getFeatures } from "@/config/features";
+import { anchorFor } from "@/config/routes";
+import { getSection, hasText, t, tDynamic, type Locale } from "@/i18n";
 
+import { riskAnswers } from "./home-risks";
 import { optionalText } from "./home-sections";
 
 interface Props {
@@ -36,7 +45,13 @@ interface Props {
 }
 
 const { locale, terms = {}, index } = Astro.props;
+const features = await getFeatures();
 const pairs = getSection(locale, "home.risks.pairs");
+const answers = riskAnswers(locale, features);
+/** Link no fim da resposta (par com `link_text`): a régua de comparação de /quanto-custa. */
+const linkOf = (id: string) =>
+  hasText(locale, `home.risks.pairs.${id}.link_text`) ? tDynamic(locale, `home.risks.pairs.${id}.link_text`) : undefined;
+const compareHref = anchorFor("pricing", locale, "como-comparar");
 const fearLabel = t(locale, "home.risks.fear_label");
 const answerLabel = t(locale, "home.risks.answer_label");
 ---
@@ -68,8 +83,9 @@ const answerLabel = t(locale, "home.risks.answer_label");
               {answerLabel}
             </span>
             <span class="risk__answer-text">
-              <TermText locale={locale} text={pair.answer} terms={terms[id] ?? []} />
+              <TermText locale={locale} text={answers[id] ?? pair.answer} terms={terms[id] ?? []} />
             </span>
+            {linkOf(id) && <ArrowLink href={compareHref} text={linkOf(id)} size="sm" class="risk__link" />}
           </dd>
         </Card>
       ))
@@ -142,6 +158,9 @@ const answerLabel = t(locale, "home.risks.answer_label");
   }
   .risk__label :global(svg) {
     flex: none;
+  }
+  .risk__answer :global(.risk__link) {
+    justify-self: start;
   }
 
   /* Frase-ponte: o traço desce até encostar na seção do método. */

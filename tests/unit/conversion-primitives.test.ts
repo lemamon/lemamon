@@ -85,11 +85,13 @@ describe("páginas de conversão usam os primitivos de UI (B214)", () => {
     expect(read("src/components/quote-sent/SentMeanwhile.astro")).toMatch(/<Divider\b/);
   });
 
-  it("os cartões da conversão são <Card> (canais e perfis do /contato, resumo do pedido, aviso sem JS)", () => {
+  it("os cartões da conversão são <Card> (canais do /contato, resumo do pedido, aviso sem JS)", () => {
     const channels = read("src/components/contact/ContactChannels.astro");
     expect(channels).toMatch(/<Card\s+as="li"[^>]*class="channel channel--featured"/);
     expect(channels.match(/<Card\s+as="li"[^>]*class="channel"/g)?.length).toBe(2);
-    expect(channels).toMatch(/<Card\s+as="a"\s+interactive[^>]*class="profile"/);
+    // Perfis do /contato: links em linha depois dos cards, sem card próprio (auditoria de conversão F14).
+    expect(channels).not.toMatch(/<Card\s+as="a"/);
+    expect(channels).toMatch(/<div class="contact-channels__profiles">/);
     expect(read("src/components/quote-sent/SentSummary.astro")).toMatch(/<Card\s+padding="none">\s*<details/);
     expect(read("src/views/QuoteView.astro")).toMatch(/<noscript>\s*<Card\s+surface="subtle"[^>]*class="quote-noscript"/);
   });
@@ -104,7 +106,6 @@ describe("páginas de conversão usam os primitivos de UI (B214)", () => {
 describe("grades de seção da conversão (B222)", () => {
   const SECTION_GRIDS: Array<[string, string]> = [
     ["src/components/contact/ContactChannels.astro", ".contact-channels__grid"],
-    ["src/components/contact/ContactChannels.astro", ".contact-channels__profiles"],
     ["src/components/quote/QuoteAfterSend.astro", ".after-send__steps"],
     ["src/components/quote-sent/SentConfirmation.astro", ".sent-confirmation__steps"],
     ["src/components/quote-sent/SentMeanwhile.astro", ".sent-meanwhile__case-list"],
