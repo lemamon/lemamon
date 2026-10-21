@@ -57,7 +57,7 @@ Critério de aceite: lista com status por contato; indicações recebidas por co
 - [ ] O que conta como indicação: o parceiro avisa por e-mail antes **e** o pedido chega com a UTM do parceiro, ou o cliente confirma a indicação.
 - [ ] Janela de atribuição: [PREENCHER] meses a partir do aviso.
 - [ ] Quando paga: [PREENCHER] dias depois de cada recebimento; contra nota fiscal do parceiro.
-- [ ] Quais contratos entram (Descoberta, desenvolvimento, sustentação: decidir).
+- [ ] Quais contratos entram (desenvolvimento, sustentação: decidir). A Descoberta é gratuita e não gera comissão (D44).
 - [ ] Sem exclusividade; vigência e rescisão.
 - [ ] Confidencialidade.
 - [ ] **LGPD:** o parceiro só passa contato de alguém com a autorização da pessoa; o melhor caminho é o indicado entrar pelo link.
@@ -106,9 +106,9 @@ Workana, 99Freelas e similares: margem baixa, concorrência por preço. **Recome
 | Prospecção leve | 10 a 20 conexões por semana com perfis de decisão em empresas-alvo, sem oferta na primeira mensagem |
 
 **Pilares de conteúdo** (sempre com as regras do BLUEPRINT §12):
-1. **O método na prática:** por que o preço sai da Descoberta; o que o cliente decide e quando; o que é "software funcionando a cada 2 semanas".
+1. **O método na prática:** por que o preço só sai depois de entender o problema (e quando a Descoberta, gratuita, é necessária); o que o cliente decide e quando; o que é "software funcionando a cada 2 semanas".
 2. **Bastidor real:** uma decisão técnica explicada pelo efeito no negócio (sem nome de cliente sem autorização).
-3. **Para quem não é técnico:** protótipo, escopo priorizado, API ("a porta de conexão de um sistema"), MVP.
+3. **Para quem não é técnico:** escopo priorizado, API ("a porta de conexão de um sistema"), MVP.
 4. **Perguntas para qualquer fornecedor:** a régua de `/quanto-custa` ("Como comparar propostas de software").
 
 Links com `utm_source=linkedin&utm_medium=organico&utm_campaign=post-{aaaa-mm}`. Medição: pedidos com origem LinkedIn no CRM; sessões de `linkedin` no GA4. O perfil já está com `perfis.linkedin.publicar = true` (decisão 6); vale a regra única do [00](00-DADOS-DO-DONO.md) §B3: sem pelo menos 1 post publicado no dia do deploy de produção, publique o primeiro post ou tire o perfil do ar (D35).

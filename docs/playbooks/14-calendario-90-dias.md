@@ -41,7 +41,7 @@ Legenda: **D** = dono · **C** = comercial · **I** = integrador/agentes de cód
 - [ ] **D** Premissas do negócio, custo-hora e piso de margem; política comercial assinada — [02](02-proposta-e-politica-comercial.md) §1 a §4
 - [ ] **D** Meta de MRR e de conversão em sustentação: números atuais e metas trimestrais com data registrados — [13](13-kpis-e-rituais.md) §5
 - [ ] **D** Processo de entrega lido e adotado (kickoff, ciclo de 2 semanas, go-live, subcontratado) — [16](16-processo-de-entrega.md)
-- [ ] **D** Modelos de proposta (Descoberta, desenvolvimento e sustentação de sistema já no ar) prontos — [02](02-proposta-e-politica-comercial.md) §7, §8 e §8b
+- [ ] **D** Modelos de proposta (desenvolvimento e sustentação de sistema já no ar) e o plano da Descoberta, gratuita, prontos — [02](02-proposta-e-politica-comercial.md) §7, §8 e §8b
 - [ ] **D** Palavras-chave validadas no Keyword Planner — [08](08-search-console-e-seo-local.md) §2
 - [ ] **D** Perfil da Empresa no Google criado e em verificação, com área de serviço em São Paulo, SP (D38); Rich Results Test da Home sem erros — [08](08-search-console-e-seo-local.md) §3
 - [ ] **D** Lista de 30–50 contatos e início das mensagens de indicação — [12](12-canais-indicacao-linkedin-conteudo.md) §2

@@ -28,8 +28,8 @@ Confirmado por escrito em: [PREENCHER data]. Revise na revisão trimestral (play
 | Etapa (BLUEPRINT §1.2) | Público no site | Interno (este playbook) |
 |---|---|---|
 | Diagnóstico | Gratuito, 45 min, devolutiva por escrito | roteiro e modelo (01) |
-| Sprint de Descoberta | Paga, valor combinado antes; 4 entregáveis (§5.2) | escopo, duração, preço, condição de pagamento, exclusões |
-| Desenvolvimento | Entregas a cada 2 semanas; prazo e preço fechados no plano da Descoberta | preço por escopo, marcos, garantia, exclusões |
+| Sprint de Descoberta | **Gratuita**, só quando o diagnóstico mostra que é necessária (necessidade e duração definidas com o cliente no diagnóstico); 3 entregáveis (BLUEPRINT §5.2); sem duração publicada (D44, 21/10/2026) | escopo da Descoberta, duração combinada, exclusões, horas internas (custo de pré-venda, sem preço) |
+| Desenvolvimento | Entregas a cada 2 semanas; prazo e preço fechados antes de começar (no plano da Descoberta, quando ela acontece) | preço por escopo, marcos, garantia, exclusões |
 | Sustentação e evolução | Contínua | planos, canais, tratamento de urgência, preço mensal |
 
 **Squad Dedicado (B041, B291):** não faz parte do posicionamento nem do site (BLUEPRINT não o lista). Recomendação: tratar como **continuidade** para cliente que já passou pelo desenvolvimento, negociada caso a caso, nunca anunciada. Registre a decisão em [15-registro-de-decisoes.md](15-registro-de-decisoes.md). Para virar oferta pública, precisa de capacidade real, mudança no BLUEPRINT e copy novo.
@@ -62,13 +62,13 @@ Preço mínimo = (horas estimadas × (1 + colchão de risco) × F) ÷ (1 − G �
 
 - Proposta abaixo do preço mínimo só com aprovação do sócio e motivo registrado no CRM.
 - O preço apresentado ao cliente é o **valor da entrega**, nunca horas × taxa (§4).
-- Critério de aceite: cada oferta (Descoberta, desenvolvimento por tipo, sustentação) tem a conta feita na planilha com margem ≥ G.
+- Critério de aceite: cada oferta paga (desenvolvimento por tipo, sustentação) tem a conta feita na planilha com margem ≥ G. A Sprint de Descoberta é gratuita (D44): as horas dela são custo de pré-venda e entram na linha D (recomendação; confirme na próxima revisão da planilha). Acompanhe a taxa Descoberta → desenvolvimento (13 §1) para saber quanto esse custo rende.
 
 ## 4. Política comercial (B355)
 
 Texto para adotar, assinar e compartilhar com quem vende:
 
-1. **Preço fechado por escopo** é o modelo principal do desenvolvimento. Ele só existe depois da Sprint de Descoberta, ou de um escopo já documentado quando `confirmacoes.semDescoberta` estiver ligada.
+1. **Preço fechado por escopo** é o modelo principal do desenvolvimento. Ele só existe com escopo fechado antes de começar: o do plano da Sprint de Descoberta, quando o diagnóstico mostra que ela é necessária, ou o escopo já documentado, quando ela não é (D44, 21/10/2026). Nada é cobrado antes do desenvolvimento.
 2. **Recorrente** (mensal) para sustentação e evolução.
 3. **Hora** só como exceção interna (pequena extensão para cliente atual, auditoria pontual). Nunca anunciada, nunca no site, nunca como linha "horas × taxa" em proposta.
 4. **Toda proposta traz o que NÃO está incluído**, com o mesmo destaque do que está.
@@ -84,10 +84,10 @@ Conferência no site: o copy não oferece hora. `grep -ni "por hora\|preço-hora
 
 **Apontamento de horas:** cada projeto ativo registra horas orçadas e horas realizadas por marco (planilha ou ferramenta). Ao fechar o projeto, calcule `desvio = horas realizadas ÷ horas orçadas`. Na revisão trimestral, recalibre o colchão com a mediana dos desvios.
 
-**Teto da Descoberta obrigatória (B356):** acima de [PREENCHER] (07 sugere um valor de referência; defina o seu), nenhum preço fechado de desenvolvimento sai sem Sprint de Descoberta.
+**Teto da Descoberta obrigatória (B356):** acima de [PREENCHER] (07 sugere um valor de referência; defina o seu), nenhum preço fechado de desenvolvimento sai sem Sprint de Descoberta. **A revisar (D04) com a D44 (21/10/2026):** no site, a necessidade da Descoberta é "definida com você no diagnóstico". O teto, se ficar, é só um critério interno para você recomendar a Descoberta na conversa; nunca aparece no site.
 
 **Pacotes abaixo do teto (B383) — conflito a decidir:** 07-negocios sugere pacotes fechados para escopos pequenos sem Descoberta. Isso só é coerente com o site se:
-- você ligar `confirmacoes.semDescoberta`, **e só depois** que existirem as variantes de todas as chaves listadas em i18n `faq._notes.skip_discovery` (25 em 20/10/2026; a nota é a fonte da lista; pedido ao `shell` e ao redator). Ligar a flag hoje acrescenta o FAQ "Posso começar direto pelo desenvolvimento? Em alguns casos…" e as variantes do wizard, mas deixa no ar textos que se contradizem (conferido em `src/i18n/pt.json` em 20/10/2026): a Home diz "Quatro etapas, nesta ordem", `/sprint-de-descoberta` diz que "qualquer preço de desenvolvimento é chute" as 4 páginas de projeto dizem que o prazo "sai da Descoberta, junto com o preço" e que o preço "fecha na Sprint de Descoberta" (FAQ de preço), o fechamento de "o que pesa no preço" dessas páginas diz que a Descoberta "fecha prazo e preço antes do desenvolvimento", e a P5 do `/orcamento` (com as faixas ligadas) e os blocos de investimento dizem que o preço fechado "sai da Sprint de Descoberta". Antes de ligar em produção, confira com a camada fictícia (porta local, 00 Parte C) a conferência descrita no fim da própria nota: em `/`, `/como-trabalhamos`, `/sprint-de-descoberta`, `/quanto-custa`, `/servicos`, nas 4 páginas de projeto e no passo P5 do `/orcamento`, nos 3 idiomas, nenhuma dessas frases aparece mais;
+- ~~você ligar `confirmacoes.semDescoberta` só depois das variantes das chaves de i18n `faq._notes.skip_discovery`~~ **Resolvido pela D44 (21/10/2026):** a Descoberta só acontece quando o diagnóstico mostra que é necessária, e essas chaves já foram reescritas para todo lead ("antes do desenvolvimento" / "quando necessária"). Ligar `confirmacoes.semDescoberta` agora só publica o FAQ "Posso começar direto pelo desenvolvimento?", com texto alinhado à D44; não é pré-requisito do pacote. O texto abaixo fica como registro do conflito original. Ligar a flag hoje acrescenta o FAQ "Posso começar direto pelo desenvolvimento? Em alguns casos…" e as variantes do wizard, mas deixa no ar textos que se contradizem (conferido em `src/i18n/pt.json` em 20/10/2026): a Home diz "Quatro etapas, nesta ordem", `/sprint-de-descoberta` diz que "qualquer preço de desenvolvimento é chute" as 4 páginas de projeto dizem que o prazo "sai da Descoberta, junto com o preço" e que o preço "fecha na Sprint de Descoberta" (FAQ de preço), o fechamento de "o que pesa no preço" dessas páginas diz que a Descoberta "fecha prazo e preço antes do desenvolvimento", e a P5 do `/orcamento` (com as faixas ligadas) e os blocos de investimento dizem que o preço fechado "sai da Sprint de Descoberta". Antes de ligar em produção, confira com a camada fictícia (porta local, 00 Parte C) a conferência descrita no fim da própria nota: em `/`, `/como-trabalhamos`, `/sprint-de-descoberta`, `/quanto-custa`, `/servicos`, nas 4 páginas de projeto e no passo P5 do `/orcamento`, nos 3 idiomas, nenhuma dessas frases aparece mais;
 - o pacote estiver dentro dos serviços confirmados (site e landing page estão **fora** da lista confirmada do BLUEPRINT §1.5);
 - o pacote passar pela conta da §3 com margem ≥ G (40%, nunca abaixo).
 
@@ -107,13 +107,13 @@ Pacote com margem calculada abaixo de 40% não entra na tabela. Exceção só co
 
 **Roteamento do lead abaixo do teto:** o pacote só é oferecido **depois do diagnóstico gratuito**, quando o escopo do lead cabe inteiro num pacote da tabela e o valor estimado fica abaixo do teto D04. Registre no CRM `proposta_oferta = pacote` (nome do pacote em `observacoes`, na linha do lead e na da aba `Propostas`, [05](05-crm-e-funil.md) §5); a recomendação de pacote sai do diagnóstico ([01](01-diagnostico-e-devolutiva.md) §5 e §6); a proposta segue o modelo da §8 sem a referência à Descoberta e é apresentada ao vivo (§9). Escopo que não cabe inteiro num pacote passa pela Descoberta.
 
-**Teto D04 e as faixas da P5:** recomendação: alinhar o teto D04 ao limite superior da faixa `tier_1` em `dados/dono.json › qualificacao` (o corte de MQL é `tier_2`, decisão 7). Assim, `tier_1` é o público do pacote e `tier_2` em diante passa pela Descoberta. Enquanto D03 não for decidido, o lead `tier_1` recebe o mesmo caminho de todos: diagnóstico gratuito, devolutiva por escrito e, se fizer sentido, proposta da Descoberta, com a resposta franca do 04 §2 quando o investimento indicado não couber no que ele descreveu.
+**Teto D04 e as faixas da P5:** recomendação: alinhar o teto D04 ao limite superior da faixa `tier_1` em `dados/dono.json › qualificacao` (o corte de MQL é `tier_2`, decisão 7). Assim, `tier_1` é o público do pacote e `tier_2` em diante passa pela Descoberta. Enquanto D03 não for decidido, o lead `tier_1` recebe o mesmo caminho de todos: diagnóstico gratuito, devolutiva por escrito e, se fizer sentido, a Descoberta gratuita (quando necessária) ou a proposta de desenvolvimento, com a resposta franca do 04 §2 quando o investimento indicado não couber no que ele descreveu.
 
 ## 6. Condições de pagamento (B366)
 
 | Oferta | Regra | Valor |
 |---|---|---|
-| Sprint de Descoberta | pagamento antes do início | [PREENCHER] (à vista ou parcelas) |
+| Sprint de Descoberta | gratuita, sem cobrança (D44, 21/10/2026) | — |
 | Desenvolvimento | entrada antes do kickoff + parcelas por marco | [PREENCHER] (07 sugere 30% na assinatura, 40% no marco intermediário, 30% no go-live) |
 | Sustentação | mensal | [PREENCHER] dia de vencimento, pagamento antecipado ou postecipado |
 
@@ -121,13 +121,13 @@ Pacote com margem calculada abaixo de 40% não entra na tabela. Exceção só co
 
 Quando o texto estiver aprovado e igual ao contrato, ele pode ir ao site em `confirmacoes.pagamento` (00 §B5).
 
-## 7. Modelo de proposta da Sprint de Descoberta (B354)
+## 7. Modelo do plano da Sprint de Descoberta, gratuita (B354)
 
-Use o idioma do cliente. Mantenha os **4 entregáveis exatamente como o site** (BLUEPRINT §5.2); qualquer entregável a mais só depois de confirmado e escrito também no site.
+Desde a D44 (21/10/2026), a Descoberta é gratuita: este documento é o registro escrito do que foi combinado no diagnóstico, sem preço nem validade. Use o idioma do cliente. Mantenha os **3 entregáveis exatamente como o site** (BLUEPRINT §5.2); qualquer entregável a mais só depois de confirmado e escrito também no site. O protótipo não é entregue na Descoberta (opção "Sem protótipo" do dono: quando fizer parte do escopo, entra no desenvolvimento; o site não diz isso).
 
 ```
-PROPOSTA — SPRINT DE DESCOBERTA
-{Empresa} · Pedido {protocolo} · {data} · Válida até {data + validade (§4, item 5)}
+PLANO DA SPRINT DE DESCOBERTA (gratuita)
+{Empresa} · Pedido {protocolo} · {data}
 
 1. Contexto
 {2 a 4 linhas: o problema, nas palavras da devolutiva. O cliente precisa se reconhecer.}
@@ -139,8 +139,7 @@ para o desenvolvimento, antes de construir.
 3. O que você recebe
 - Entendimento do problema: {o que será mapeado neste caso}
 - Escopo priorizado: o que entra primeiro e o que pode esperar
-- Protótipo: para ver e validar antes de construir ({o que será prototipado})
-- Plano com prazo e preço fechados para o desenvolvimento
+- Plano com prazo e preço fechados para o desenvolvimento (a proposta de desenvolvimento, §8)
 
 4. O que NÃO está incluído
 - Código de produção, implantação ou integração real
@@ -149,32 +148,33 @@ para o desenvolvimento, antes de construir.
 - Garantia de que o desenvolvimento caberá em um orçamento definido antes da Descoberta
 
 5. Como acontece
-Formato: [PREENCHER]   Participantes: [PREENCHER]   Ritmo: [PREENCHER]   Duração: [PREENCHER]
-{Mesmo texto de dados/dono.json › descoberta quando ele estiver preenchido.}
+Formato: [PREENCHER]   Participantes: [PREENCHER]   Ritmo: [PREENCHER]
+Duração: {a combinada com você no diagnóstico}
+{Formato, participantes e ritmo: mesmo texto de dados/dono.json › descoberta quando ele estiver
+ preenchido. A duração é só a deste caso; o site não publica duração (D44).}
 O que a gente precisa de você: {acesso às pessoas, exemplos, sistemas}
 
-6. Investimento
-Valor: [PREENCHER]   Condição: [PREENCHER]
-{Só se confirmacoes.descobertaAbatida (integral): "Se você seguir para o desenvolvimento
- com a Lemamon.dev, o valor pago pela Sprint de Descoberta é descontado do preço do desenvolvimento."}
-{Só se confirmacoes.planoDoCliente: "Tudo o que a Descoberta entrega fica com você."}
+6. Custo
+A Sprint de Descoberta é gratuita. Você só paga se seguir para o desenvolvimento, com
+escopo, prazo e preço fechados antes de começar.
+{Só se confirmacoes.planoDoCliente (hoje false): "Tudo o que a Descoberta entrega fica com você."}
 
 7. Depois da Descoberta
 Com o plano em mãos, você decide se segue para o desenvolvimento, com entregas a cada 2 semanas.
 
-8. Aceite
-Nome, cargo, empresa, data.
+8. Combinado
+Nome, cargo, empresa, data de início.
 ```
 
-**"4. O que NÃO está incluído" parte de `dados/dono.json › descoberta.naoInclui`** (00 §B8): os itens publicados no site entram na proposta, na mesma redação, e as exclusões específicas do caso vêm depois deles. Se uma exclusão nova valer para toda proposta, acrescente-a também ao `naoInclui` (até 5 itens), para site e proposta não se contradizerem. Enquanto o `naoInclui` estiver vazio, use os itens do modelo acima e preencha o campo antes de publicar prazo ou faixa da Descoberta (00 §B7 e §B8).
+**"4. O que NÃO está incluído" parte de `dados/dono.json › descoberta.naoInclui`** (00 §B8): os itens publicados no site entram na proposta, na mesma redação, e as exclusões específicas do caso vêm depois deles. Se uma exclusão nova valer para toda proposta, acrescente-a também ao `naoInclui` (até 5 itens), para site e proposta não se contradizerem. Enquanto o `naoInclui` estiver vazio, use os itens do modelo acima e preencha o campo antes de publicar o formato da Descoberta (00 §B8).
 
-**Página de apoio:** envie https://lemamon.dev/sprint-de-descoberta junto. Ela foi feita para o comprador justificar o gasto ao sócio.
+**Página de apoio:** envie https://lemamon.dev/sprint-de-descoberta junto. Ela foi feita para o comprador mostrar ao sócio o que a Descoberta entrega.
 
 ## 8. Modelo de proposta de desenvolvimento (com sustentação pré-precificada, B109)
 
 ```
 PROPOSTA — DESENVOLVIMENTO
-{Empresa} · Referência: plano da Sprint de Descoberta de {data} · Válida até {data + validade (§4, item 5)}
+{Empresa} · Referência: plano da Sprint de Descoberta de {data} (ou devolutiva de {data}, quando a Descoberta não foi necessária) · Válida até {data + validade (§4, item 5)}
 
 1. O que vamos construir
 {Resumo do escopo priorizado. O detalhamento item a item vai no anexo de escopo (§10).}
@@ -260,7 +260,7 @@ O lead que recebeu esta proposta segue as mesmas regras de apresentação ao viv
 
 ## 9. Apresentação ao vivo (B363)
 
-**Regra:** toda proposta, dos 3 modelos (Descoberta §7, desenvolvimento §8, sustentação e evolução §8b), é apresentada em uma conversa de até [PREENCHER] minutos, em até [PREENCHER] dias úteis depois do envio (07 sugere 5). Nunca "mandar e esperar".
+**Regra:** toda proposta paga, dos 2 modelos (desenvolvimento §8, sustentação e evolução §8b), é apresentada em uma conversa de até [PREENCHER] minutos, em até [PREENCHER] dias úteis depois do envio (07 sugere 5). Nunca "mandar e esperar".
 
 Roteiro de 30 minutos:
 
@@ -327,10 +327,12 @@ O comprador precisa justificar a contratação ao sócio. Hoje ele já tem: a de
 Lemamon.dev — software sob medida · São Paulo, SP
 O que a gente faz: sistemas web, aplicativos, integrações e automação, MVPs, sustentação e evolução.
 Como trabalha: 1) Diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
-               2) Sprint de Descoberta, paga: escopo priorizado, protótipo e plano com prazo e preço fechados.
+               2) Sprint de Descoberta, gratuita, quando necessária: entendimento do problema, escopo
+                  priorizado e plano com prazo e preço fechados.
                3) Desenvolvimento com entregas a cada 2 semanas: software funcionando, não apresentação de slide.
                4) Sustentação e evolução contínua.
-Onde você decide: depois da devolutiva e depois do plano.
+Onde você decide: depois da devolutiva e antes do desenvolvimento, com o plano na mão.
+               Você não paga nada antes do desenvolvimento.
 {Dados da empresa, só com dados/dono.json › empresa preenchido: razão social e CNPJ.}
 {Cases e depoimentos, só os publicados e autorizados.}
 Contato: {e-mail} · WhatsApp · lemamon.dev

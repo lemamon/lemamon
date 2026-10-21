@@ -33,7 +33,7 @@
 9. **Dado fictício nunca vai no `dono.json` (nem num case ou post).** Use o `dono.ficticio.json` como modelo de ESTRUTURA, nunca de conteúdo. O build recusa, com o campo:
    - nome, empresa, e-mail ou URL com "Exemplo", `example.com`, o CNPJ `00.000.000/0000-00` ou imagem de `dados/ficticio/` ("parece dado fictício");
    - **qualquer texto** marcado como exemplo: "(exemplo)", "(example)", "(ejemplo)", começando por "Exemplo:", "Texto de exemplo", "Condições de exemplo", "Depoimento de exemplo", "Conteúdo de exemplo" (e os equivalentes em inglês e espanhol), ou com "fictício" ("texto de EXEMPLO da camada fictícia"). "Por exemplo" no meio da frase é normal e passa;
-   - **qualquer valor copiado** do `dono.ficticio.json` ou dos MDX de `dados/ficticio/`, mesmo sem a marca ("valor copiado de dados/dono.ficticio.json › descoberta.duracao.pt"); vale também para frases copiadas para um case ou post em `src/content/` e para imagens copiadas de `dados/ficticio/imagens/`.
+   - **qualquer valor copiado** do `dono.ficticio.json` ou dos MDX de `dados/ficticio/`, mesmo sem a marca ("valor copiado de dados/dono.ficticio.json › descoberta.formato.pt"); vale também para frases copiadas para um case ou post em `src/content/` e para imagens copiadas de `dados/ficticio/imagens/`.
 
    Dado de exemplo mora na **camada fictícia** (Parte C).
 10. **Os três idiomas.** Espanhol neutro latino-americano, com "tú". Termos fixos: diagnóstico gratuito → EN "free assessment" / ES "diagnóstico gratuito"; devolutiva por escrito → EN "written feedback" / ES "conclusiones por escrito"; Sprint de Descoberta → "Discovery Sprint" / "Sprint de Descubrimiento".
@@ -49,7 +49,7 @@
 | Razão social e CNPJ (20/10/2026, D39) | `empresa.razaoSocial`, `empresa.cnpj` | `Lemamon.dev LTDA` e `69.700.690/0001-98` (dígitos verificadores válidos), os dois informados pelo dono. `hasCompanyData` ligado e `empresa` fora da trava de lançamento; falta só a sua conferência contra o cartão CNPJ (§A2) |
 | Praça (20/10/2026, D38) | não é campo do `dono.json` | São Paulo, SP (antes Florianópolis, SC). Está no i18n e em `ADDRESS` de `src/config/site.ts` (JSON-LD); o que muda fora do código está no [08](08-search-console-e-seo-local.md) §3 |
 | Atende fora do Brasil (21/10/2026, D31) | `confirmacoes.outrasCidades`, `confirmacoes.atendeExterior` | `true` e `true` ("atendemos o mundo todo"). O FAQ "Vocês atendem empresas de outras cidades ou de fora do Brasil?" e a linha "Atendemos o mundo todo" no eyebrow da Home vão ao ar nos 3 idiomas. O site afirma só atendimento a distância, em português, inglês ou espanhol, com o mesmo processo; moeda, contrato e forma de pagamento "combinados por escrito antes de começar". `atendeExterior` exige `outrasCidades` (o build confere) |
-| Duração da Descoberta (21/10/2026, D42) | `descoberta.duracao`, `confirmacoes.duracaoDescoberta` | `{ "pt": "em geral 1 semana", "en": "usually 1 week", "es": "en general 1 semana" }` e `true` ("depende do cliente, mas no geral 1 semana"). `formato`, `participantes`, `ritmo` e `naoInclui` continuam `null`. A duração vai ao FAQ "Quanto dura?", à tag da etapa 2 na linha do método e ao hero de `/sprint-de-descoberta`, sempre com "depende do tamanho do problema" e "combinada antes de começar" |
+| Sprint de Descoberta gratuita, só quando necessária, sem protótipo (21/10/2026, D44; revoga a D42) | `descoberta.duracao`, `confirmacoes.duracaoDescoberta`, `precos` | `descoberta.duracao` = `null` (aqui e no `dono.ficticio.json`; o build recusa outro valor) e `duracaoDescoberta` = `true`: o FAQ "Quanto dura?" responde sem número ("a necessidade e a duração são definidas com você no diagnóstico"). A Descoberta é gratuita: `precos` não tem mais a linha `descoberta`, e `confirmacoes.descobertaAbatida` e `.descobertaUnicoCusto` saíram do arquivo e do schema. `formato`, `participantes`, `ritmo` e `naoInclui` continuam `null`; `planoDoCliente` continua `false` |
 
 Todo o resto (os outros campos de `empresa`, Política, pessoas, depoimentos, logos, agenda, formatos) está vazio, esperando você.
 
@@ -226,7 +226,7 @@ Software sob medida com escopo, prazo e preço combinados antes de começar. Sã
 ## Como a gente trabalha
 
 1. **Diagnóstico gratuito** de 45 minutos, com devolutiva por escrito.
-2. **Sprint de Descoberta**, paga: entendimento do problema, escopo priorizado, protótipo e um plano com prazo e preço fechados para o desenvolvimento.
+2. **Sprint de Descoberta**, gratuita, quando o diagnóstico mostra que ela é necessária: entendimento do problema, escopo priorizado e um plano com prazo e preço fechados para o desenvolvimento.
 3. **Desenvolvimento** com entregas a cada 2 semanas: software funcionando, que você usa, não apresentação de slide.
 4. **Sustentação e evolução** contínua.
 
@@ -236,6 +236,8 @@ Sistemas web · Aplicativos · Integrações e automação · MVP e produtos dig
 
 [Pedir diagnóstico gratuito](https://lemamon.dev/orcamento?utm_source=github&utm_medium=perfil&utm_campaign=org-readme) · [lemamon.dev](https://lemamon.dev/?utm_source=github&utm_medium=perfil&utm_campaign=org-readme)
 ```
+
+> Se este README já estiver publicado em `lemamon-dev/.github`, atualize lá também (decisão D44, 21/10/2026: a Descoberta deixou de ser paga e de entregar protótipo).
 
 Isso tira o GitHub do zero (`public_repos` passa a 1) e dá ao avaliador técnico de `/como-trabalhamos` o método por escrito. Um repositório público com código real (uma biblioteca ou ferramenta que a Lemamon.dev usa de verdade, sem código de cliente) prova mais; só publique se existir.
 
@@ -275,11 +277,9 @@ Ligue cada item **só depois de conferir que a frase publicada é verdade** no c
 | `atendeExterior` | Atende empresas de outros países, a distância? **Decidido: sim (D31, 21/10/2026).** Exige `outrasCidades = true` | variante "…ou de fora do Brasil?" do FAQ `other_cities` (uma pergunta só) e a linha "Atendemos o mundo todo" no eyebrow da Home. Antes do 1º cliente de fora: moeda, nota fiscal de exportação e foro (o site não afirma nenhum dos três) |
 | `nda` | O NDA mútuo revisado por advogado **e** o documento de respostas de segurança ([02](02-proposta-e-politica-comercial.md) §11) existem e podem ser enviados em até 1 dia útil? Só então ligue. O site passa a dizer que a Lemamon.dev assina o acordo e responde ao questionário de segurança | FAQ `nda` ("…assina o acordo antes de você compartilhar os detalhes e também responde ao questionário de segurança da sua empresa"); card de e-mail em `/contato` ("Para enviar NDA, questionário de segurança…") |
 | `sistemaTerceiros` | Assume sistema feito por outra empresa, depois de avaliação? | FAQ `third_party_system` |
-| `semDescoberta` | Em que casos começa direto pelo desenvolvimento? | FAQ `skip_discovery` (exige revisar textos que dizem que o preço só sai da Descoberta) |
-| `duracaoDescoberta` | A duração é combinada antes, junto com o valor? **Decidido: sim (D42, 21/10/2026)** | FAQ `discovery_duration`. Com `descoberta.duracao` preenchida (mesmo sem os outros 3 campos), a resposta usa a duração típica ("Depende do tamanho do problema: em geral 1 semana…") e a tag da etapa 2 também (`hasDiscoveryDuration`) |
-| `planoDoCliente` | O plano da Descoberta fica com o cliente mesmo sem seguir? | FAQ `discovery_plan_ownership` |
-| `descobertaAbatida` | O valor da Descoberta é descontado **integralmente** do desenvolvimento? | FAQ `discovery_credit` |
-| `descobertaUnicoCusto` | "É o único valor que você assume" é verdade? | páginas do método |
+| `semDescoberta` | Aprova o texto do FAQ "Posso começar direto pelo desenvolvimento?" (a necessidade da Descoberta é definida com o cliente no diagnóstico)? | FAQ `skip_discovery`. Os textos que diziam que o preço só sai da Descoberta já foram revistos na D44 (21/10/2026); a flag liga só este FAQ |
+| `duracaoDescoberta` | Publicar o FAQ "Quanto dura?" sem número? **Decidido: sim (D44, 21/10/2026, revoga a D42)** | FAQ `discovery_duration` com a resposta "Depende do tamanho do problema. Quando a Descoberta é necessária, a necessidade e a duração são definidas com você no diagnóstico." Nenhuma duração vai ao site |
+| `planoDoCliente` | Os 3 entregáveis da Descoberta ficam com o cliente mesmo sem seguir? **Por ora não (D44 mantém `false`)** | FAQ `discovery_plan_ownership` |
 | `migracaoDados` | Faz migração de planilha/sistema antigo no escopo? | FAQ `data_migration` |
 | `ligacao` | Liga para quem escolher "Ligação"? | opção "Ligação" no wizard |
 | `valoresNoDiagnostico` | Responde sobre valores no diagnóstico? | FAQ rápido do `/orcamento` e resumo do wizard |
@@ -311,19 +311,22 @@ Registre cada confirmação, com data, em [15-registro-de-decisoes.md](15-regist
 
 ```json
 "precos": {
-  "descoberta": {
-    "faixa": { "pt": "[PREENCHER] faixa com a moeda", "en": "…", "es": "…" },
-    "unidade": "projeto",
-    "fatores": { "pt": ["[PREENCHER]", "[PREENCHER]"], "en": ["…", "…"], "es": ["…", "…"] }
+  "desenvolvimento": {
+    "sistemas": {
+      "faixa": { "pt": "[PREENCHER] faixa com a moeda", "en": "…", "es": "…" },
+      "unidade": "projeto",
+      "fatores": { "pt": ["[PREENCHER]", "[PREENCHER]"], "en": ["…", "…"], "es": ["…", "…"] }
+    },
+    "aplicativos": null,
+    "integracoes": null,
+    "mvp": null
   },
-  "desenvolvimento": { "sistemas": null, "aplicativos": null, "integracoes": null, "mvp": null },
   "sustentacao": null
 }
 ```
 
-- Cada linha: `faixa` até 80 caracteres por idioma; `fatores` de 1 a 3 itens de até 120; `unidade` `"projeto"` (Descoberta e desenvolvimento) ou `"mes"` (sustentação, obrigatório).
-- **Libera (`hasPricing` = ≥ 1 linha completa):** blocos de investimento na Home, Como trabalhamos, Sprint de Descoberta, serviços e no topo de Quanto custa (cada página só com as linhas dela); variantes de FAQ "Quanto custa?"; faixas lado a lado no resumo do wizard. **Só as linhas completas renderizam.**
-- **Pré-condição de `precos.descoberta` (B354):** preencha `descoberta.naoInclui` (§B8) **no mesmo deploy**. Faixa de preço da Descoberta sem a lista "O que a Descoberta não inclui" é oferta sem exclusões, e isso descumpre o B354.
+- Cada linha: `faixa` até 80 caracteres por idioma; `fatores` de 1 a 3 itens de até 120; `unidade` `"projeto"` (desenvolvimento) ou `"mes"` (sustentação, obrigatório). **A Sprint de Descoberta é gratuita e não tem linha** (D44, 21/10/2026): uma linha `descoberta` derruba o build com "campo desconhecido".
+- **Libera (`hasPricing` = ≥ 1 linha completa):** blocos de investimento na Home, Como trabalhamos, serviços e no topo de Quanto custa (cada página só com as linhas dela, mais as linhas fixas "Diagnóstico: gratuito" e "Sprint de Descoberta: gratuita, se for necessária"); variantes de FAQ "Quanto custa?"; faixas lado a lado no resumo do wizard. **Só as linhas completas renderizam.**
 
 ### B8. Formato da Descoberta, da sustentação e engenharia
 
@@ -331,11 +334,11 @@ Todos os campos: `{ pt, en, es }`, até 300 caracteres por idioma, ou `null`. Ex
 
 | Seção | Campos | Libera |
 |---|---|---|
-| `descoberta` | `formato`, `participantes`, `ritmo`, `duracao` — **os 4**; e `naoInclui`: lista `{ pt: [...], en: [...], es: [...] }` de **1 a 5 itens**, até **120 caracteres** cada, sem valor em dinheiro, ou `null` | os 4 campos: "Como a Descoberta acontece" em `/sprint-de-descoberta` (`hasDiscoveryFormat`). Só `duracao` (com `confirmacoes.duracaoDescoberta`, D42): a duração típica no FAQ `discovery_duration`, na tag da etapa 2 da linha do método e no hero de `/sprint-de-descoberta` (`hasDiscoveryDuration`); hoje está assim, com "em geral 1 semana". `naoInclui` com ≥ 1 item nos 3 idiomas: "O que a Descoberta não inclui" (`#o-que-nao-inclui`, flag `hasDiscoveryExclusions`), logo depois de "O que você recebe" e com o mesmo destaque. Faltou um idioma, o bloco some inteiro |
+| `descoberta` | `formato`, `participantes`, `ritmo` — **os 3** (`duracao` fica sempre `null`: a duração é definida com o cliente no diagnóstico e não vai ao site, D44); e `naoInclui`: lista `{ pt: [...], en: [...], es: [...] }` de **1 a 5 itens**, até **120 caracteres** cada, sem valor em dinheiro, ou `null` | os 3 campos: "Como a Descoberta acontece" em `/sprint-de-descoberta` (`hasDiscoveryFormat`), sem duração. `naoInclui` com ≥ 1 item nos 3 idiomas: "O que a Descoberta não inclui" (`#o-que-nao-inclui`, flag `hasDiscoveryExclusions`), logo depois de "O que você recebe" e com o mesmo destaque. Faltou um idioma, o bloco some inteiro |
 | `sustentacao` | `inclui`, `contratacao`, `canais` obrigatórios; `urgencias` opcional | "Formato e contratação" em `/servicos/sustentacao`. Sem SLA, horas ou monitoramento que você não cumpre hoje |
 | `engenharia` | `tests`, `ci_cd`, `code_review`, `repository`, `documentation`, `handover`, `people`, `security` | cada campo completo vira uma linha de "Como a gente constrói" em `/como-trabalhamos` (`hasEngineering` = ≥ 1) |
 
-**Regra da Descoberta (B354):** preencha `descoberta.naoInclui` **no mesmo deploy** em que preencher `precos.descoberta` (§B7) ou os 4 campos de formato. Oferta com prazo e faixa publicados sem a lista do que não inclui descumpre o B354; não conte com o build para lembrar. A mesma lista vai na seção "4. O que NÃO está incluído" da proposta ([02](02-proposta-e-politica-comercial.md) §7), para site e proposta não se contradizerem. Exemplo:
+**Regra da Descoberta (B354):** preencha `descoberta.naoInclui` **no mesmo deploy** em que preencher os 3 campos de formato (a Descoberta não tem linha em `precos`, D44). Formato publicado sem a lista do que não inclui descumpre o B354; não conte com o build para lembrar. A mesma lista vai na seção "4. O que NÃO está incluído" do plano da Descoberta ([02](02-proposta-e-politica-comercial.md) §7), para site e proposta não se contradizerem. Exemplo:
 
 ```json
 "naoInclui": {
@@ -467,7 +470,7 @@ Enquanto pessoas, dados da empresa, depoimentos e logos não chegam, dá para ve
 1. **Em produção a camada é ignorada.** Com `CONTEXT=production` (Netlify), mesmo com a variável ligada, a integração `src/integrations/dados-ficticios.ts` nem lê o arquivo fictício (o módulo virtual sai vazio) e registra o aviso `PUBLIC_DADOS_FICTICIOS=true IGNORADO`. No runtime, `src/config/dono.ts` confere a mesma regra de novo com `isProductionDeploy()`: as duas travas precisam concordar para a camada ligar. Com o dado real preenchido, o site de produção com a variável ligada sai **byte a byte igual** ao site sem ela (teste automático).
 2. **Build local fictício nunca fica em `dist/`.** Fora de *deploy preview*/*branch deploy* do Netlify, a camada ligada manda o build para `dist-ficticio/`, comparando o caminho REAL (link simbólico para `dist/` não engana). Se `dist-ficticio/` for um link para `dist/`, o build cai. E **deploy manual de pasta local é proibido**: produção sai só do build do Netlify.
 3. **Cópia da camada no projeto derruba o build, em qualquer modo.** Antes de tudo, o build confere TODO arquivo de `src/`, `public/` e `dados/` (menos a própria camada e os poucos arquivos que descrevem a camada) e para com "valor copiado de dados/dono.ficticio.json …" quando acha:
-   - no `dono.json`, valor igual a um do `dono.ficticio.json` ("de duas a três semanas (exemplo)", "R$ 8 mil a R$ 15 mil (exemplo)", "Condições de exemplo: …"), com o caminho do campo;
+   - no `dono.json`, valor igual a um do `dono.ficticio.json` ("R$ 60 mil a R$ 150 mil (exemplo)", "Condições de exemplo: …"), com o caminho do campo;
    - em qualquer arquivo de texto (código sem os comentários), nome, razão social, CNPJ, e-mail, URL ou slug da camada, uma frase de case ou post fictício, o nome de uma imagem fictícia ou uma imagem fictícia em base64;
    - um JSON com a estrutura ou os textos do `dono.ficticio.json` (por exemplo, o arquivo fictício copiado para `src/`, mesmo com os nomes trocados);
    - uma imagem fictícia — idêntica, **com bytes a mais ou a menos** (o build procura pedaços do arquivo original em qualquer arquivo) ou **recodificada, convertida (JPG, WebP), redimensionada, sem cor ou sem a faixa EXEMPLO** (o build compara o desenho das imagens). Foto fictícia "salva de novo" no Preview não passa.
@@ -508,8 +511,7 @@ Preencha a seção no `dono.json`: ela passa a valer na hora, inclusive com a ca
 | `qualificacao` | `hasBudgetTiers`, `hasMonthlyTiers` | 4 faixas (+ 4 mensais e `corteMqlMensal`) | P5 com faixas, score com corte de MQL |
 | `precos` | `hasPricing`, `pricingLines` | ≥ 1 linha completa | blocos de investimento, FAQ com faixas, preço no resumo |
 | `agenda` | `hasAgenda` | URL https | agenda no pós-envio, rótulo "Agendar" |
-| `descoberta` | `hasDiscoveryFormat` | 4 campos | "Como a Descoberta acontece" |
-| `descoberta.duracao` + `confirmacoes.duracaoDescoberta` | `hasDiscoveryDuration` | duração nos 3 idiomas + a confirmação (ou os 4 campos) | duração típica no FAQ "Quanto dura?", na tag da etapa 2 e no hero de `/sprint-de-descoberta` (D42) |
+| `descoberta` | `hasDiscoveryFormat` | 3 campos (formato, participantes, ritmo) | "Como a Descoberta acontece" (sem duração, D44) |
 | `descoberta.naoInclui` | `hasDiscoveryExclusions` | ≥ 1 item nos 3 idiomas | "O que a Descoberta não inclui" em `/sprint-de-descoberta` |
 | `sustentacao` | `hasSupportFormat` | 3 campos | "Formato e contratação" |
 | `engenharia` | `hasEngineering` | ≥ 1 campo | "Como a gente constrói" |

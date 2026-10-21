@@ -45,7 +45,7 @@ Critério de aceite: o contrato padrão vigente tem a cláusula, e os contratos 
 
 **Gatilho:** quando a linha do projeto no CRM recebe `go_live_em` (playbook [05](05-crm-e-funil.md) §5; o go-live em si está no playbook [16](16-processo-de-entrega.md) §5). Nesse momento, `status_prova` começa em `nao_pedida` e `depoimento_status` em `nao_pedido`; a linha fica vermelha até o pedido sair e volta a ficar vermelha se o depoimento seguir sem resposta depois do `prazo_depoimento_dias` (aba `Config` do 05). No mesmo dia do go-live de todo projeto:
 
-- [ ] Registrar as métricas de "antes" que existiam na Descoberta e combinar quando medir o "depois" (data: [PREENCHER]).
+- [ ] Registrar as métricas de "antes" levantadas no diagnóstico ou na Descoberta (quando houve) e combinar quando medir o "depois" (data: [PREENCHER]).
 - [ ] Capturar telas reais do sistema funcionando (sem dados pessoais; ver §9).
 - [ ] Pedir o depoimento enquanto a satisfação está no pico: a entrevista (§5 e §7) ou, se o cliente não tem 30 minutos, o pedido curto por escrito (§5.1). No CRM: `depoimento_status = pedido` no dia do pedido; depois `autorizado` (com `depoimento_autorizado_em`) ou `recusado`. **`autorizado`** só com o termo assinado com "Depoimento escrito" marcado (§6), o texto aprovado por escrito e nome completo, cargo e empresa: é o depoimento que entra em `dados/dono.json › depoimentos` (§11).
 - [ ] Pedir a autorização de logo.

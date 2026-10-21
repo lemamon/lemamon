@@ -39,9 +39,9 @@ A Home trata o medo de contratar software como algo que "costuma dar errado", nu
 
 | O que costuma dar errado | Como o método evita |
 |---|---|
-| Orçamentos impossíveis de comparar, porque cada fornecedor entendeu uma coisa | Problema entendido e escopo priorizado com você, na Sprint de Descoberta |
+| Orçamentos impossíveis de comparar, porque cada fornecedor entendeu uma coisa | O problema e o escopo priorizado com você ficam por escrito, e só depois vem o preço |
 | Meses de projeto sem ver nada funcionando | Software funcionando a cada 2 semanas |
-| Escopo que ninguém escreveu e preço que só cresce | Escopo e protótipo validados por você, e preço fechado sobre esse escopo |
+| Escopo que ninguém escreveu e preço que só cresce | Escopo validado por você e por escrito, e preço fechado sobre esse escopo |
 | O fornecedor que some depois do lançamento | Sustentação e evolução contínua, se você quiser |
 
 ### O método: as únicas promessas do site
@@ -49,11 +49,11 @@ A Home trata o medo de contratar software como algo que "costuma dar errado", nu
 | Etapa | Custo | Você recebe |
 |---|---|---|
 | 1. Diagnóstico | Gratuito · 45 minutos | uma devolutiva por escrito sobre o seu caso |
-| 2. Sprint de Descoberta | Paga · valor combinado antes | entendimento do problema, escopo priorizado, protótipo e plano com prazo e preço fechados para o desenvolvimento |
+| 2. Sprint de Descoberta | Gratuita · se for necessária | entendimento do problema, escopo priorizado e plano com prazo e preço fechados para o desenvolvimento |
 | 3. Desenvolvimento | Entregas a cada 2 semanas | software funcionando, que você usa, não apresentação de slide |
 | 4. Sustentação e evolução | Contínua, com valor combinado antes de começar | o sistema cuidado e evoluindo depois que entra no ar |
 
-**Onde o cliente decide:** em dois momentos. Depois da devolutiva, se quer fazer a Sprint de Descoberta. Depois do plano, já com prazo e preço fechados, se segue para o desenvolvimento. A frase que resume: "Você não assina o projeto inteiro no escuro."
+**Onde o cliente decide:** em dois momentos. Depois da devolutiva, se segue (a Sprint de Descoberta, quando necessária, é gratuita). Com prazo e preço fechados no plano, se segue para o desenvolvimento. Até aprovar o desenvolvimento, não paga nada (D44, 21/10/2026). A frase que resume: "Você não assina o projeto inteiro no escuro."
 
 ### Para quem o texto é escrito
 
@@ -67,15 +67,15 @@ Nenhum valor é publicado. A pergunta "quanto custa?" recebe uma resposta honest
 
 ### Regras que o copy respeita
 
-- Só afirma os fatos confirmados. Os únicos números de serviço são "45 minutos", "a cada 2 semanas" e a duração típica da Descoberta, "em geral 1 semana" (D42, vinda de `descoberta.duracao`, sempre com "depende do tamanho do problema" e "combinada antes de começar"); "6 perguntas" descreve o próprio formulário.
+- Só afirma os fatos confirmados. Os únicos números de serviço são "45 minutos" e "a cada 2 semanas"; "6 perguntas" descreve o próprio formulário. A duração da Descoberta não é publicada: ela é definida com o cliente no diagnóstico (D44, 21/10/2026, revoga a D42).
 - Afirma o atendimento a distância fora do Brasil, em português, inglês ou espanhol (D31, `confirmacoes.atendeExterior`), sem citar moeda, nota fiscal de exportação, foro ou fuso: esses ficam "combinados por escrito antes de começar".
-- Não cita clientes, número de projetos, anos de mercado, tamanho ou nomes do time, certificações, prêmios, percentuais, depoimentos, logos, duração do MVP, duração da Descoberta além da típica confirmada, prazo da devolutiva, preços, garantias contratuais além das confirmadas pelo dono (o código da empresa por contrato, com `codigoProprietario = "answer_draft"`, e o NDA antes dos detalhes), prazo de resposta nem superlativos ("melhor", "líder", "referência").
+- Não cita clientes, número de projetos, anos de mercado, tamanho ou nomes do time, certificações, prêmios, percentuais, depoimentos, logos, duração do MVP, duração da Descoberta (definida com o cliente no diagnóstico), preço, abatimento ou protótipo da Descoberta, quem decide se a Descoberta é necessária além de "definido com você no diagnóstico", que o plano fica com o cliente se ele não seguir, custo total do projeto, prazo da devolutiva, preços, garantias contratuais além das confirmadas pelo dono (o código da empresa por contrato, com `codigoProprietario = "answer_draft"`, e o NDA antes dos detalhes), prazo de resposta nem superlativos ("melhor", "líder", "referência").
 - Cases, depoimentos, logos, time e preços são escritos só como estrutura (título, introdução, rótulos) e aparecem quando o dado existir. O texto dessas seções faz sentido com 1 ou mais itens.
 - Sustentação fala de "o sistema" que entra no ar, nunca promete assumir sistema feito por outra empresa (isso depende de `confirmacoes.sistemaTerceiros`).
 
 ### Tom de voz
 
-Concreto, franco e sem pompa. "A gente" e "você". A frase começa pelo problema do cliente. Jargão só com explicação curta na primeira menção (protótipo, escopo priorizado, MVP, API).
+Concreto, franco e sem pompa. "A gente" e "você". A frase começa pelo problema do cliente. Jargão só com explicação curta na primeira menção (escopo priorizado, MVP, API).
 
 ### Termos fixos por idioma
 
@@ -164,13 +164,13 @@ Ordem das seções conforme o BLUEPRINT §6.1. Hoje vão ao ar 8 seções; as co
 - **Pares medo → resposta**
   - **`incomparable_quotes`**
     - **Medo**: Orçamentos impossíveis de comparar, porque cada fornecedor entendeu uma coisa
-    - **Resposta**: Problema entendido e escopo priorizado com você, na Sprint de Descoberta.
+    - **Resposta**: O problema e o escopo priorizado com você ficam por escrito, e só depois vem o preço.
   - **`nothing_working`**
     - **Medo**: Meses de projeto sem ver nada funcionando
     - **Resposta**: Software funcionando a cada 2 semanas, para você usar e dar retorno.
   - **`unwritten_scope`**
     - **Medo**: Escopo que ninguém escreveu e preço que só cresce
-    - **Resposta**: Escopo e protótipo validados por você, e preço fechado sobre esse escopo.
+    - **Resposta**: Escopo validado por você e por escrito, e preço fechado sobre esse escopo.
   - **`vendor_disappears`**
     - **Medo**: O fornecedor que some depois do lançamento
     - **Resposta**: Sustentação e evolução contínua: a gente segue com você, se quiser.
@@ -180,14 +180,14 @@ Ordem das seções conforme o BLUEPRINT §6.1. Hoje vão ao ar 8 seções; as co
 
 - **Sobretítulo**: Como trabalhamos
 - **Título**: Primeiro a gente combina. Depois a gente constrói.
-- **Introdução**: Quatro etapas, nesta ordem. Em cada uma, você sabe o que recebe.
+- **Introdução**: Em cada etapa, você sabe o que recebe. A Descoberta só entra quando o diagnóstico mostra que ela é necessária.
 - **Etapas**
   - **Diagnóstico**
     - **Título-benefício**: Seu caso ouvido antes de qualquer gasto
     - **Texto**: Você conta o problema na língua do seu negócio e tira as suas dúvidas. A gente faz as perguntas que importam.
   - **Sprint de Descoberta**
     - **Título-benefício**: Daqui saem escopo, prazo e preço fechados
-    - **Texto**: Você valida o escopo priorizado e vê no protótipo como o software vai funcionar. Assim, prazo e preço deixam de ser chute.
+    - **Texto**: Sem custo, o problema vira um escopo priorizado e validado por você. Assim, prazo e preço deixam de ser chute.
   - **Desenvolvimento**
     - **Título-benefício**: Você acompanha usando o próprio software
     - **Texto**: Cada entrega é uma parte do sistema funcionando. O que precisa de ajuste aparece cedo, e não no fim do projeto.
@@ -209,9 +209,8 @@ Ordem das seções conforme o BLUEPRINT §6.1. Hoje vão ao ar 8 seções; as co
     - **Você recebe**: uma devolutiva por escrito sobre o seu caso
   - **Sprint de Descoberta**
     - **Nome**: Sprint de Descoberta
-    - **Tag**: Paga · valor combinado antes
-    - **Tag longa**: Paga · valor combinado antes de começar
-    - **Você recebe**: entendimento do problema, escopo priorizado, protótipo e plano com prazo e preço fechados para o desenvolvimento
+    - **Tag**: Gratuita · se for necessária (a mesma nas 3 variantes; sem tag longa nem duração, D44)
+    - **Você recebe**: entendimento do problema, escopo priorizado e plano com prazo e preço fechados para o desenvolvimento
   - **Desenvolvimento**
     - **Nome**: Desenvolvimento
     - **Tag**: Entregas a cada 2 semanas
@@ -226,8 +225,8 @@ Ordem das seções conforme o BLUEPRINT §6.1. Hoje vão ao ar 8 seções; as co
 
 - **Título**: Onde você decide
 - **Introdução**: Você não assina o projeto inteiro no escuro: só segue para o desenvolvimento com escopo, prazo e preço fechados na mão.
-- **`after_feedback`**: Depois da devolutiva por escrito, se fizer sentido seguir, você recebe a proposta da Sprint de Descoberta e decide se quer fazê-la.
-- **`after_plan`**: Depois do plano da Descoberta, já com prazo e preço fechados, você decide se segue para o desenvolvimento.
+- **`after_feedback`**: Com a devolutiva por escrito em mãos, você decide se segue. A Sprint de Descoberta, quando necessária, é gratuita.
+- **`after_plan`**: Com prazo e preço fechados no plano, você decide se segue para o desenvolvimento.
 
 > 7. Depoimento: **condicional** (`hasTestimonials`, nominal). Rótulos em `shared.proof`.
 
@@ -287,7 +286,7 @@ Perguntas, nesta ordem (as respostas completas estão em [Perguntas frequentes �
 
 1. Quanto custa um projeto de software? · `faq.items.how_much`
 2. Quanto tempo leva para desenvolver um sistema ou aplicativo? · `faq.items.how_long`
-3. Por que a Sprint de Descoberta é paga? · `faq.items.why_discovery_paid`
+3. Pago alguma coisa antes do desenvolvimento? · `faq.items.pay_before_development`
 4. O diagnóstico gratuito tem algum compromisso? · `faq.items.diagnosis_commitment`
 5. Preciso entender de tecnologia para contratar? · `faq.items.need_tech_knowledge`
 6. Como eu acompanho o andamento? · `faq.items.how_follow_progress`
@@ -304,7 +303,7 @@ Condicionais (entram quando o dono ligar a flag):
 #### 14. CTA final · `home.cta_final`
 
 - **Título**: Comece por 45 minutos de conversa
-- **Texto**: Não precisa ter escopo pronto: você conta o problema e recebe uma devolutiva por escrito, contratando ou não. A Descoberta, paga e com valor combinado antes, só começa se você quiser.
+- **Texto**: Você conta o problema, mesmo sem escopo pronto, e recebe uma devolutiva por escrito.
 
 > O CTA final da Home leva também o bloco 'Como funciona' em 3 passos (`shared.cta_final.how_it_works_steps`) e a linha de e-mail e localização (ver Componentes compartilhados).
 
@@ -316,7 +315,7 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
 
 - **Sobretítulo**: Como trabalhamos
 - **Título**: Desenvolvimento de software com escopo, prazo e preço fechados
-- **Subtítulo**: São 4 etapas, nesta ordem, e a primeira é um diagnóstico gratuito de 45 minutos. Abaixo, o que acontece em cada uma, o que você recebe e onde você decide.
+- **Subtítulo**: Diagnóstico e Sprint de Descoberta gratuitos, e desenvolvimento com preço fechado. Nada é cobrado antes do desenvolvimento, e você decide se segue.
 - **Rótulo do índice**: Etapas do método
 
 #### Texto da imagem de compartilhamento · `how_we_work.og_image_headline`
@@ -329,20 +328,20 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
 - **Itens**
   - **`scope_price`**
     - **Título**: Escopo, prazo e preço fechados antes do desenvolvimento
-    - **Texto**: Saem por escrito da Sprint de Descoberta, para você aprovar o desenvolvimento sabendo o que vai receber, quando e por quanto.
+    - **Texto**: Vêm por escrito, para você aprovar o desenvolvimento sabendo o que vai receber, quando e por quanto.
   - **`every_two_weeks`**
     - **Título**: Software funcionando a cada 2 semanas
     - **Texto**: Você acompanha o projeto pelo que já roda, não por relatório de andamento.
   - **`you_decide`**
     - **Título**: Você decide se segue, em dois momentos
-    - **Texto**: Um depois da devolutiva do diagnóstico, outro depois do plano da Descoberta.
+    - **Texto**: Um depois da devolutiva do diagnóstico, outro depois do plano com prazo e preço. Até o segundo, você não paga nada.
 
 #### 3. Por que nesta ordem · `how_we_work.why_this_order`
 
 - **Título**: Por que a gente combina antes de construir
 - **Parágrafos**:
   1. Um preço dado antes de entender o seu problema é chute. Ou vem alto, para cobrir o risco de quem orçou, ou vem baixo e cresce no meio do caminho, quando aparece o que ninguém tinha previsto.
-  2. Por isso a Sprint de Descoberta vem antes: com o problema entendido e o escopo priorizado (o que entra primeiro e o que pode esperar), prazo e preço são fechados por escrito. Depois, você acompanha o desenvolvimento usando o software a cada 2 semanas.
+  2. Por isso prazo e preço só saem fechados, por escrito, depois de entender o problema e priorizar o escopo. Quando o diagnóstico mostra que isso pede uma Sprint de Descoberta, ela é gratuita.
 - **Destaque**: Primeiro a gente combina. Depois a gente constrói.
 
 > 4. Linha do método completa: `shared.method_timeline` (texto na Home, item 6a).
@@ -361,15 +360,15 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
   2. Separe exemplos do que existe hoje: planilhas, telas, mensagens ou rascunhos da ideia.
   3. Liste os sistemas e as ferramentas que vocês já usam.
 - **Rótulo 'depois'**: Depois
-- **Depois**: Se fizer sentido seguir, você recebe a proposta da Sprint de Descoberta e decide se quer fazer.
+- **Depois**: Se fizer sentido seguir, a gente define com você se a Sprint de Descoberta é necessária e quanto ela dura. Ela é gratuita.
 
 #### 6. Etapa 2: Sprint de Descoberta · `how_we_work.stage_discovery`
 
 - **Título**: Sprint de Descoberta
-- **Texto**: É aqui que o seu problema vira um plano. O escopo é priorizado com você, e um protótipo mostra como o software vai funcionar antes de ele ser construído.
-- **Você recebe**: entendimento do problema, escopo priorizado, protótipo e plano com prazo e preço fechados para o desenvolvimento
+- **Texto**: É aqui que o seu problema vira um plano. O escopo é priorizado com você, e prazo e preço do desenvolvimento saem fechados, por escrito.
+- **Você recebe**: entendimento do problema, escopo priorizado e plano com prazo e preço fechados para o desenvolvimento
 - **Rótulo de custo**: Custo
-- **Custo**: Etapa paga, com valor combinado antes de começar, na proposta que você recebe depois do diagnóstico, se fizer sentido seguir.
+- **Custo**: Gratuita. Só acontece quando o diagnóstico mostra que ela é necessária, e a duração é definida com você.
 - **Rótulo 'depois'**: Depois
 - **Depois**: Com o plano em mãos, já com prazo e preço fechados, você decide se segue para o desenvolvimento.
 - **Link**: Entender por que a Sprint de Descoberta vem antes
@@ -399,7 +398,7 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
 #### 9. Você decide com informação na mão · `how_we_work.decide`
 
 - **Título**: Você decide com informação na mão
-- **Introdução**: Até a primeira decisão, você não paga nada. Na segunda, já sabe quanto o desenvolvimento vai custar.
+- **Introdução**: Até aprovar o desenvolvimento, você não paga nada. E aprova já sabendo quanto ele vai custar.
 
 #### 10. Sem combinado × com o método · `how_we_work.comparison`
 
@@ -412,7 +411,7 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
   - **`price`**
     - **Dimensão**: Preço
     - **Sem**: Um “a partir de”, dado antes de entender o problema
-    - **Com**: Fechado na Descoberta, antes de o desenvolvimento começar
+    - **Com**: Fechado por escrito, antes de o desenvolvimento começar
   - **`deadline`**
     - **Dimensão**: Prazo
     - **Sem**: Estimado no escuro, antes de conhecer o escopo
@@ -420,7 +419,7 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
   - **`scope`**
     - **Dimensão**: Escopo
     - **Sem**: Uma lista de desejos que cresce durante o projeto
-    - **Com**: Priorizado e validado em protótipo antes de construir
+    - **Com**: Priorizado e validado com você antes de construir
   - **`follow_up`**
     - **Dimensão**: Acompanhamento
     - **Sem**: Progresso medido em reunião e slide
@@ -462,7 +461,7 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
 
 Perguntas, nesta ordem (as respostas completas estão em [Perguntas frequentes — banco central](#perguntas-frequentes--banco-central)):
 
-1. Por que a Sprint de Descoberta é paga? · `faq.items.why_discovery_paid`
+1. Pago alguma coisa antes do desenvolvimento? · `faq.items.pay_before_development`
 2. Quanto tempo leva para desenvolver um sistema ou aplicativo? · `faq.items.how_long`
 3. O diagnóstico gratuito tem algum compromisso? · `faq.items.diagnosis_commitment`
 4. Preciso entender de tecnologia para contratar? · `faq.items.need_tech_knowledge`
@@ -473,7 +472,7 @@ Condicionais (entram quando o dono ligar a flag):
 - E se eu precisar mudar o escopo no meio do projeto? · `faq.conditional.scope_change`
 - O código fica com a minha empresa? · `faq.conditional.code_ownership`
 - O plano da Descoberta é meu se eu não seguir com a Lemamon.dev? · `faq.conditional.discovery_plan_ownership`
-- Quanto tempo dura a Sprint de Descoberta? · `faq.conditional.discovery_duration`
+- Quanto tempo dura a Sprint de Descoberta? · `faq.conditional.discovery_duration` (resposta sem número, D44)
 - Posso começar direto pelo desenvolvimento? · `faq.conditional.skip_discovery`
 - Vocês assinam acordo de confidencialidade (NDA)? · `faq.conditional.nda`
 - Como é feito o pagamento? · `faq.conditional.payment_terms`
@@ -487,14 +486,14 @@ Teto de 9 perguntas visíveis; a ordem de remoção está em `how_we_work._notes
 
 ### Sprint de Descoberta (`/sprint-de-descoberta`)
 
-Página da primeira etapa paga. Ordem conforme o BLUEPRINT §6.3.
+Página da etapa 2, gratuita e só quando o diagnóstico mostra que é necessária (D44, 21/10/2026). Ordem conforme o BLUEPRINT §6.3.
 
 #### 1. Hero · `discovery_sprint.hero`
 
 - **Sobretítulo**: Etapa 2 de 4
 - **Título**: Sprint de Descoberta: do problema ao plano com escopo, prazo e preço fechados
-- **Subtítulo**: Você sai dela com o que entra primeiro, um protótipo para ver antes de construir e o prazo e o preço do desenvolvimento já fechados. Só então decide se segue.
-- **Texto de apoio**: O primeiro passo é o diagnóstico gratuito de 45 minutos. A Descoberta é paga, com valor combinado antes de começar.
+- **Subtítulo**: Sem pagar nada, você sai com o escopo priorizado e um plano com prazo e preço fechados para o desenvolvimento. Só então decide se segue.
+- **Texto de apoio**: O primeiro passo é o diagnóstico gratuito de 45 minutos. Nele, a gente define com você se a Descoberta, também gratuita, é necessária.
 
 #### Texto da imagem de compartilhamento · `discovery_sprint.og_image_headline`
 
@@ -517,10 +516,10 @@ Página da primeira etapa paga. Ordem conforme o BLUEPRINT §6.3.
     - **Dimensão**: Escopo
     - **Sem**: Escopo discutido no meio do projeto
     - **Com**: O que entra e o que fica de fora, decidido antes
-  - **`first_screen`**
-    - **Dimensão**: Primeira tela
-    - **Sem**: Só aparece durante o desenvolvimento
-    - **Com**: Protótipo para ver e validar antes de construir
+  - **`deadline`** _(no lugar de `first_screen`, o protótipo, desde a D44)_
+    - **Dimensão**: Prazo
+    - **Sem**: Estimado antes de conhecer o escopo
+    - **Com**: Fechado no plano, junto com o preço
   - **`decision`**
     - **Dimensão**: Decisão
     - **Sem**: Projeto inteiro aprovado sobre uma estimativa
@@ -529,9 +528,9 @@ Página da primeira etapa paga. Ordem conforme o BLUEPRINT §6.3.
 #### 3. O que você recebe · `discovery_sprint.deliverables`
 
 - **Título**: O que você recebe
-- **Introdução**: A Descoberta termina com quatro entregas:
+- **Introdução**: A Descoberta termina com três entregas:
 
-#### 3a. Os 4 entregáveis · `shared.discovery_deliverables`
+#### 3a. Os 3 entregáveis · `shared.discovery_deliverables`
 > Componente compartilhado.
 
 - **`problem_understanding`**
@@ -540,9 +539,6 @@ Página da primeira etapa paga. Ordem conforme o BLUEPRINT §6.3.
 - **`prioritized_scope`**
   - **Título**: Escopo priorizado
   - **Texto**: O que entra primeiro e o que pode esperar, para você saber o que está contratando antes de contratar.
-- **`prototype`**
-  - **Título**: Protótipo
-  - **Texto**: Para você ver e validar como o software vai funcionar antes de ele ser construído.
 - **`plan`**
   - **Título**: Plano com prazo e preço fechados
   - **Texto**: O prazo e o preço da fase de desenvolvimento, já fechados, para você decidir se segue.
@@ -562,34 +558,29 @@ Página da primeira etapa paga. Ordem conforme o BLUEPRINT §6.3.
     - **Texto**: Quando cada fornecedor entendeu uma coisa, não dá para comparar os números. Na Descoberta, o escopo vem escrito antes do preço, e você sabe o que o número cobre.
   - **`approve_with_partners`** _(variante: só quando o dado indicado existir)_
     - **Título**: Você precisa de um número confiável para sócios ou diretoria
-    - **Texto**: Com escopo e plano por escrito, e um protótipo para mostrar, você leva aos sócios, à diretoria ou aos investidores um preço que se explica, não uma estimativa.
+    - **Texto**: Com escopo e plano por escrito, você leva aos sócios, à diretoria ou aos investidores um preço que se explica, não uma estimativa.
 - **Fechamento**: Se você se reconheceu em algum destes casos, o primeiro passo leva 45 minutos e não custa nada.
 
 #### 5. Antes e depois da Descoberta · `discovery_sprint.where_it_fits`
 
 - **Título**: Antes e depois da Descoberta
 - **`before_label`**: Antes
-- **`before_text`**: Um diagnóstico gratuito de 45 minutos, com devolutiva por escrito. Se fizer sentido seguir, você recebe a proposta da Descoberta, já com o valor, e decide se quer fazer.
+- **`before_text`**: Um diagnóstico gratuito de 45 minutos, com devolutiva por escrito. Nele, a gente define com você se a Descoberta é necessária e quanto ela dura.
 - **Rótulo 'depois'**: Depois
-- **`after_text`**: Com o plano em mãos, você decide se segue. Se seguir, o desenvolvimento começa, com entregas a cada 2 semanas.
+- **`after_text`**: Com o plano em mãos, você decide se segue. Se seguir, começa o desenvolvimento, a primeira etapa paga, com entregas a cada 2 semanas.
 
 #### 6. Como ela acontece · `discovery_sprint.how_it_happens`
-> **Condicional:** `hasDiscoveryFormat` (descoberta.ts com formato, participantes, ritmo e duração).
+> **Condicional:** `hasDiscoveryFormat` (descoberta.ts com formato, participantes e ritmo; a duração não é publicada, D44).
 
 - **Título**: Como a Descoberta acontece
-- **Introdução**: Como a Descoberta é organizada, quem participa e quanto tempo ela leva.
+- **Introdução**: Como a Descoberta é organizada e quem participa. A duração é definida com você no diagnóstico.
 - **Campos**
   - **`format`**: Formato
   - **`participants`**: Quem participa
   - **`rhythm`**: Ritmo
-  - **`duration`**: Duração
 
-#### 7. Investimento · `discovery_sprint.investment`
-> **Condicional:** linha `descoberta` preenchida em precos.ts.
-
-- **Título**: Investimento na Sprint de Descoberta
-- **Introdução**: Referência para você se planejar antes da conversa.
-- **Nota**: Referência, não proposta. O valor exato é combinado antes de começar.
+#### 7. ~~Investimento~~ · `discovery_sprint.investment`
+> **Saiu em 21/10/2026 (D44):** a Descoberta é gratuita e não tem faixa de preço; `precos.descoberta` deixou de existir.
 
 #### 8. Perguntas frequentes (título) · `discovery_sprint.faq`
 
@@ -599,22 +590,23 @@ Página da primeira etapa paga. Ordem conforme o BLUEPRINT §6.3.
 
 Perguntas, nesta ordem (as respostas completas estão em [Perguntas frequentes — banco central](#perguntas-frequentes--banco-central)):
 
-1. Quanto custa a Sprint de Descoberta? · `faq.items.discovery_cost`
-2. Por que a Sprint de Descoberta é paga? · `faq.items.why_discovery_paid`
-3. Preciso seguir com a Lemamon.dev depois da Descoberta? · `faq.items.obliged_to_continue`
-4. Preciso já saber o que quero? · `faq.items.need_scope_ready`
+1. Quanto custa a Sprint de Descoberta? · `faq.items.discovery_cost` ("Nada")
+2. Toda empresa precisa da Sprint de Descoberta? · `faq.items.when_discovery`
+3. Quanto tempo dura a Sprint de Descoberta? · `faq.conditional.discovery_duration` (condicional; resposta sem número)
+4. Preciso seguir com a Lemamon.dev depois da Descoberta? · `faq.items.obliged_to_continue`
+5. Preciso já saber o que quero? · `faq.items.need_scope_ready`
 
 Condicionais (entram quando o dono ligar a flag):
 
-- O valor da Descoberta é abatido do desenvolvimento? · `faq.conditional.discovery_credit`
-- Quanto tempo dura a Sprint de Descoberta? · `faq.conditional.discovery_duration`
 - O plano da Descoberta é meu se eu não seguir com a Lemamon.dev? · `faq.conditional.discovery_plan_ownership`
+
+Saíram em 21/10/2026 (D44): `faq.items.why_discovery_paid` e `faq.conditional.discovery_credit`.
 
 #### 9. CTA final · `discovery_sprint.cta_final`
 
 - **Título**: A Descoberta começa por uma conversa gratuita
 - **Texto**: São 45 minutos de diagnóstico, com devolutiva por escrito. Se o software tem data para ficar pronto, conte na conversa: o plano mostra o que cabe até lá.
-- **`already_diagnosed`**: Já recebeu a proposta da Descoberta? Para combinar o início, responda pelo WhatsApp ou pelo e-mail.
+- **`already_diagnosed`**: Já fez o diagnóstico e a Descoberta ficou definida? Para combinar o início, responda pelo WhatsApp ou pelo e-mail.
 
 ### Quanto custa (`/quanto-custa`)
 
@@ -623,7 +615,7 @@ Página da busca nº 1 do comprador. Funciona sem números. Ordem conforme o BLU
 #### 1. Hero · `pricing.hero`
 
 - **Título**: Quanto custa desenvolver um sistema ou aplicativo sob medida?
-- **Abertura**: Resposta honesta: depende do escopo. O primeiro passo é gratuito: um diagnóstico de 45 minutos sobre o seu caso. Depois, o preço fechado do desenvolvimento sai por escrito da Sprint de Descoberta, uma etapa paga, antes de ele começar.
+- **Abertura**: O preço sai fechado antes do desenvolvimento, e nada é cobrado antes dele: o diagnóstico e a Sprint de Descoberta, quando necessária, são gratuitos. Com o preço do seu escopo em mãos, você decide se segue.
 
 #### Texto da imagem de compartilhamento · `pricing.og_image_headline`
 
@@ -659,7 +651,7 @@ Página da busca nº 1 do comprador. Funciona sem números. Ordem conforme o BLU
     - **Texto**: Informações que hoje estão em planilhas ou em sistemas antigos e precisam entrar no novo.
   - **`deadline`**
     - **Título**: Prazo
-    - **Texto**: Com data fixa, a Descoberta mostra o que cabe até lá, e o preço é fechado sobre esse escopo.
+    - **Texto**: Com data fixa, o plano mostra o que cabe até lá, e o preço é fechado sobre esse escopo.
 - **`app_subtitle`**: E quanto custa desenvolver um aplicativo?
 - **`app_intro`**: Além dos fatores acima, num aplicativo pesam:
 - **`app_items`**
@@ -668,7 +660,7 @@ Página da busca nº 1 do comprador. Funciona sem números. Ordem conforme o BLU
   - **`notifications`**: Notificações no celular
   - **`offline`**: Uso sem internet
 - **`app_link`**: Ver o que pesa no preço de desenvolver um aplicativo
-- **Fechamento**: Você não precisa ter essas respostas para pedir o diagnóstico: organizar isso é o trabalho da Sprint de Descoberta. Se já tem um valor em mente, conte na conversa, para a proposta levar esse valor em conta.
+- **Fechamento**: Você não precisa ter essas respostas para pedir o diagnóstico: a gente organiza isso com você, sem custo, no diagnóstico e, se for necessária, na Sprint de Descoberta.
 
 #### 4. Por que a gente não dá preço por formulário · `pricing.why_not_by_form`
 
@@ -684,11 +676,11 @@ Página da busca nº 1 do comprador. Funciona sem números. Ordem conforme o BLU
     - **Custo**: Gratuito
     - **Texto**: 45 minutos de conversa e uma devolutiva por escrito.
   - **Sprint de Descoberta**
-    - **Custo**: Etapa paga, com valor combinado antes de começar
+    - **Custo**: Gratuita, quando necessária
     - **Texto**: Termina no plano, com prazo e preço fechados. Com ele em mãos, você decide se segue.
     - **Link**: Ver o que a Sprint de Descoberta entrega
   - **Desenvolvimento**
-    - **Custo**: Preço fechado no plano da Descoberta
+    - **Custo**: Preço fechado no plano, antes de começar
     - **Texto**: Software funcionando, com entregas a cada 2 semanas.
   - **Sustentação e evolução**
     - **Custo**: Valor combinado antes de começar
@@ -703,15 +695,15 @@ Página da busca nº 1 do comprador. Funciona sem números. Ordem conforme o BLU
   - **`out_of_scope`**
     - **Pergunta**: O que está fora do escopo?
     - **Por quê**: Uma proposta que não diz o que ficou de fora não dá para comparar com outra.
-    - **`lemamon`**: Na Lemamon.dev: o escopo sai por escrito da Descoberta, com o que entra, o que fica de fora e o que pode esperar.
+    - **`lemamon`**: Na Lemamon.dev: o escopo vem por escrito antes do desenvolvimento, com o que entra, o que fica de fora e o que pode esperar.
   - **`fixed_or_hourly`**
     - **Pergunta**: O preço é fechado ou cobrado por hora?
     - **Por quê**: A resposta mostra se o valor pode mudar no meio do projeto.
-    - **`lemamon`**: Na Lemamon.dev: fechado no plano da Descoberta, antes do desenvolvimento.
+    - **`lemamon`**: Na Lemamon.dev: fechado no plano, antes do desenvolvimento.
   - **`when_working`**
     - **Pergunta**: Quando eu vejo software funcionando?
     - **Por quê**: Progresso é software que você consegue usar, não relatório de andamento.
-    - **`lemamon`**: Na Lemamon.dev: a cada 2 semanas, durante o desenvolvimento. Antes disso, na Descoberta, você já vê e valida um protótipo de como ele vai funcionar.
+    - **`lemamon`**: Na Lemamon.dev: a cada 2 semanas, durante o desenvolvimento, para você usar.
   - **`scope_change`**
     - **Pergunta**: O que acontece se o escopo mudar?
     - **Por quê**: Mudança acontece. Pergunte antes de assinar como ela é tratada e como afeta prazo e preço.
@@ -722,8 +714,8 @@ Página da busca nº 1 do comprador. Funciona sem números. Ordem conforme o BLU
     - **`lemamon`**: Na Lemamon.dev: se você quiser, a gente segue cuidando do sistema no ar, na sustentação e evolução contínua, com valor combinado com você antes de começar.
   - **`before_paying`**
     - **Pergunta**: O que eu recebo antes de pagar pelo desenvolvimento?
-    - **Por quê**: Ver escopo e plano por escrito, e um protótipo do software, antes do desenvolvimento evita contratar no escuro.
-    - **`lemamon`**: Na Lemamon.dev: sem custo, a devolutiva por escrito do diagnóstico. Na Descoberta, que é paga: entendimento do problema, escopo priorizado, protótipo e plano com prazo e preço fechados.
+    - **Por quê**: Se nada estiver por escrito antes do desenvolvimento, você aprova o projeto no escuro.
+    - **`lemamon`**: Na Lemamon.dev: tudo o que vem antes do desenvolvimento é gratuito. Do diagnóstico, a devolutiva por escrito. Da Sprint de Descoberta, quando necessária: entendimento do problema, escopo priorizado e plano com prazo e preço fechados.
 - **Fechamento**: Quer ver essas respostas aplicadas ao seu projeto? O primeiro passo leva 45 minutos.
 
 #### 7. Perguntas frequentes (título) · `pricing.faq`
@@ -735,7 +727,7 @@ Página da busca nº 1 do comprador. Funciona sem números. Ordem conforme o BLU
 Perguntas, nesta ordem (as respostas completas estão em [Perguntas frequentes — banco central](#perguntas-frequentes--banco-central)):
 
 1. O orçamento é gratuito? · `faq.items.free_estimate`
-2. Por que a Sprint de Descoberta é paga? · `faq.items.why_discovery_paid`
+2. Pago alguma coisa antes do desenvolvimento? · `faq.items.pay_before_development`
 3. Por que não existe tabela de preços? · `faq.items.no_price_table`
 4. Consigo ter uma ideia de valor antes de conversar? · `faq.items.reference_before_talking`
 5. Preciso seguir com a Lemamon.dev depois da Descoberta? · `faq.items.obliged_to_continue`
@@ -760,24 +752,26 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
 
 - **`how_much`**
   - **Pergunta**: Quanto custa um projeto de software?
-  - **Resposta**: Depende do escopo, e a gente não chuta número. O diagnóstico de 45 minutos é gratuito. A Sprint de Descoberta é paga, com valor combinado antes de começar, e termina com prazo e preço fechados. Você decide se segue para o desenvolvimento já sabendo quanto ele vai custar.
+  - **Resposta**: Depende do que o software precisa fazer. O diagnóstico e a Sprint de Descoberta, quando necessária, são gratuitos. Antes do desenvolvimento, você recebe o preço fechado e só então decide se segue. Tem um valor em mente? Indique a faixa no pedido de diagnóstico.
   - **`answer_with_pricing_suffix`** _(só com faixas de preço preenchidas)_: Para se planejar, veja as faixas de referência de investimento.
 - **`how_long`**
   - **Pergunta**: Quanto tempo leva para desenvolver um sistema ou aplicativo?
-  - **Resposta**: Depende do escopo. O prazo é fechado na Sprint de Descoberta, junto com o preço. Se você tem uma data, como um lançamento ou um piloto, conte no diagnóstico: o plano mostra o que dá para entregar até lá. No desenvolvimento, você recebe software funcionando a cada 2 semanas.
-- **`why_discovery_paid`**
-  - **Pergunta**: Por que a Sprint de Descoberta é paga?
-  - **Resposta**: Porque é trabalho de verdade, com entrega concreta: entendimento do problema, escopo priorizado, protótipo e plano com prazo e preço fechados. Sem esse trabalho, qualquer orçamento é estimativa. O valor da Descoberta é combinado com você antes de começar.
+  - **Resposta**: Depende do escopo, por isso o prazo sai fechado antes do desenvolvimento, junto com o preço. Tem uma data, como um lançamento ou um piloto? Conte no diagnóstico: o plano mostra o que dá para entregar até lá.
+- **`pay_before_development`** _(no lugar de `why_discovery_paid`, D44, 21/10/2026)_
+  - **Pergunta**: Pago alguma coisa antes do desenvolvimento?
+  - **Resposta**: Não. O diagnóstico e a Sprint de Descoberta, quando ela é necessária, são gratuitos. As etapas pagas são o desenvolvimento, com escopo, prazo e preço fechados antes de começar, e a sustentação, se você quiser.
 - **`discovery_cost`**
   - **Pergunta**: Quanto custa a Sprint de Descoberta?
-  - **Resposta**: O valor é combinado com você antes de começar. Se fizer sentido seguir depois do diagnóstico gratuito, ele vem na proposta que você recebe, e você decide se quer fazer a Descoberta.
-  - **`answer_with_pricing_suffix`** _(só com faixas de preço preenchidas)_: Para se planejar, veja a faixa de referência da Descoberta nesta página.
+  - **Resposta**: Nada. A Sprint de Descoberta é gratuita, como o diagnóstico. Você só começa a pagar se aprovar o desenvolvimento, com escopo, prazo e preço fechados.
+- **`when_discovery`** _(novo, D44)_
+  - **Pergunta**: Toda empresa precisa da Sprint de Descoberta?
+  - **Resposta**: Não. Ela só acontece quando o diagnóstico gratuito mostra que é necessária, e isso é definido com você. Quando não é, o escopo, o prazo e o preço do desenvolvimento são fechados do mesmo jeito, antes de começar.
 - **`diagnosis_commitment`**
   - **Pergunta**: O diagnóstico gratuito tem algum compromisso?
   - **Resposta**: Não. São 45 minutos de conversa e uma devolutiva por escrito. Depois, você decide se quer seguir.
 - **`need_tech_knowledge`**
   - **Pergunta**: Preciso entender de tecnologia para contratar?
-  - **Resposta**: Não. Você traz o problema na linguagem do seu negócio. Na Sprint de Descoberta, ele vira um escopo priorizado (o que entra primeiro e o que pode esperar) e um protótipo, para você ver como o software vai funcionar antes de ele ser construído.
+  - **Resposta**: Não. Você traz o problema na linguagem do seu negócio, e ele vira, com você, um escopo priorizado: o que entra primeiro e o que pode esperar.
 - **`how_follow_progress`**
   - **Pergunta**: Como eu acompanho o andamento?
   - **Resposta**: Usando o próprio software. A cada 2 semanas você recebe uma parte funcionando para usar e dar o seu retorno. Se algo sair do previsto, você percebe cedo, nas entregas, e não só no fim do projeto.
@@ -789,25 +783,25 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
   - **Resposta**: Uma conversa de 45 minutos para entender o seu caso: o problema, quem sofre com ele e o que já foi tentado. Não precisa de preparação técnica. Depois, você recebe uma devolutiva por escrito.
 - **`need_scope_ready`**
   - **Pergunta**: Preciso já saber o que quero?
-  - **Resposta**: Não. No diagnóstico gratuito, você conta o problema do seu jeito. Organizar o que você precisa e decidir o que entra primeiro e o que pode esperar é o trabalho da Sprint de Descoberta.
+  - **Resposta**: Não. No diagnóstico gratuito, você conta o problema do seu jeito. Se faltar organizar o que você precisa e decidir o que entra primeiro, esse é o trabalho da Sprint de Descoberta, que também é gratuita.
 - **`obliged_to_continue`**
   - **Pergunta**: Preciso seguir com a Lemamon.dev depois da Descoberta?
-  - **Resposta**: Não. Com o plano em mãos, já com prazo e preço fechados, você decide se segue para o desenvolvimento.
+  - **Resposta**: Não. A Descoberta é gratuita e, com o plano em mãos, já com prazo e preço fechados, você decide se segue para o desenvolvimento.
 - **`free_estimate`**
   - **Pergunta**: O orçamento é gratuito?
-  - **Resposta**: O diagnóstico, sim: 45 minutos, devolutiva por escrito e, se fizer sentido seguir, a proposta da Sprint de Descoberta com o valor dela. A Descoberta, que é paga, fecha o preço do desenvolvimento antes de você decidir se segue.
+  - **Resposta**: Sim. O diagnóstico de 45 minutos, com devolutiva por escrito, é gratuito. A Sprint de Descoberta, quando necessária, também, e fecha o preço do desenvolvimento antes de você decidir se segue. Você só começa a pagar se aprovar o desenvolvimento.
 - **`no_price_table`**
   - **Pergunta**: Por que não existe tabela de preços?
-  - **Resposta**: Porque dois sistemas com o mesmo nome podem ter escopos muito diferentes. Uma tabela viraria uma média que não serve para o seu caso, ou um “a partir de” que cresce depois. Por isso o preço do desenvolvimento é fechado sobre o seu escopo, na Sprint de Descoberta.
+  - **Resposta**: Porque dois sistemas com o mesmo nome podem ter escopos muito diferentes. Uma tabela viraria uma média que não serve para o seu caso, ou um “a partir de” que cresce depois. Por isso o preço do desenvolvimento é fechado sobre o seu escopo, antes de ele começar.
   - **`question_with_pricing`** _(só com faixas de preço preenchidas)_: Por que as faixas não são o preço do meu projeto?
-  - **`answer_with_pricing`** _(só com faixas de preço preenchidas)_: Porque dois sistemas com o mesmo nome podem ter escopos muito diferentes. As faixas dão a ordem de grandeza para você se planejar; o preço do desenvolvimento do seu projeto é fechado sobre o seu escopo, na Sprint de Descoberta.
+  - **`answer_with_pricing`** _(só com faixas de preço preenchidas)_: Porque dois sistemas com o mesmo nome podem ter escopos muito diferentes. As faixas dão a ordem de grandeza para você se planejar; o preço do desenvolvimento do seu projeto é fechado sobre o seu escopo, antes de ele começar.
 - **`reference_before_talking`**
   - **Pergunta**: Consigo ter uma ideia de valor antes de conversar?
-  - **`answer_with_pricing`** _(só com faixas de preço preenchidas)_: Sim. As faixas de referência de investimento ajudam a se planejar. O preço do desenvolvimento é fechado na Sprint de Descoberta, antes de ele começar.
-  - **`answer_without_pricing`**: Antes da conversa, não: um número antes de entender o escopo seria chute, por isso a gente não publica tabela. Se você tem um valor em mente, informe no pedido de diagnóstico, para a proposta levar esse valor em conta. Se fizer sentido seguir, a proposta da Sprint de Descoberta já vem com o valor dela.
+  - **`answer_with_pricing`** _(só com faixas de preço preenchidas)_: Sim. As faixas de referência de investimento ajudam a se planejar. O preço do desenvolvimento é fechado antes de ele começar.
+  - **`answer_without_pricing`**: Um número para o seu caso sai depois de entender o escopo. O que dá para saber já: os 7 fatores desta página mostram o que encarece ou barateia o projeto. E até o preço fechado do desenvolvimento chegar por escrito, você não paga nada. Tem um valor em mente? Indique a faixa no pedido.
 
 #### Perguntas condicionais · `faq.conditional`
-> **Condicional:** cada pergunta tem a sua flag em config/confirmacoes.ts (ex.: `escopoMudanca`, `codigoProprietario`, `notaFiscal`, `outrasCidades`, `nda`, `sistemaTerceiros`, `semDescoberta`, `duracaoDescoberta`, `planoDoCliente`, `descobertaAbatida`, `migracaoDados`, `formatoDiagnostico`, `pagamento`). Sem a flag, a pergunta não aparece.
+> **Condicional:** cada pergunta tem a sua flag em config/confirmacoes.ts (ex.: `escopoMudanca`, `codigoProprietario`, `notaFiscal`, `outrasCidades`, `nda`, `sistemaTerceiros`, `semDescoberta`, `duracaoDescoberta`, `planoDoCliente`, `migracaoDados`, `formatoDiagnostico`, `pagamento`). Sem a flag, a pergunta não aparece. `descobertaAbatida` e `descobertaUnicoCusto` saíram em 21/10/2026 (D44: a Descoberta é gratuita).
 
 - **`diagnosis_format`**
   - **Pergunta**: Como é o diagnóstico e com quem eu falo?
@@ -829,7 +823,7 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
   - **`answer_with_terms`** _(variante: só quando o dado indicado existir)_: {condicoes_pagamento}
 - **`other_cities`**
   - **Pergunta**: Vocês atendem empresas de outras cidades?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. A Lemamon.dev fica em São Paulo, SP, e atende empresas de outras cidades do Brasil a distância, com o mesmo processo: diagnóstico, Sprint de Descoberta e entregas a cada 2 semanas.
+  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. A Lemamon.dev fica em São Paulo, SP, e atende empresas de outras cidades do Brasil a distância, com o mesmo processo: diagnóstico, Sprint de Descoberta quando necessária e entregas a cada 2 semanas.
 - **`nda`**
   - **Pergunta**: Vocês assinam acordo de confidencialidade (NDA)?
   - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Se o seu projeto pede sigilo, a gente assina o acordo antes de você compartilhar os detalhes. É só pedir pelo WhatsApp ou pelo e-mail lemamon.dev@gmail.com.
@@ -838,21 +832,16 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
   - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim, depois de uma avaliação. Antes de assumir, a gente precisa entender o que está no ar, onde ele roda e o que pede atenção. Essa avaliação começa no diagnóstico gratuito de 45 minutos, e o que vem depois é combinado com você antes de começar.
 - **`skip_discovery`**
   - **Pergunta**: Posso começar direto pelo desenvolvimento?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Em alguns casos. Se você já tem um escopo definido e documentado, o diagnóstico é o momento de avaliar se ele basta. Quando basta, a proposta de desenvolvimento já vem com escopo, prazo e preço fechados sobre ele. Quando faltam definições, a Sprint de Descoberta vem antes.
+  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag; texto alinhado à D44)_: Em alguns casos. A necessidade da Sprint de Descoberta é definida com você no diagnóstico gratuito. Quando ela não é necessária, a proposta de desenvolvimento já vem com escopo, prazo e preço fechados. Quando é, a Descoberta, também gratuita, vem antes.
 - **`discovery_duration`**
   - **Pergunta**: Quanto tempo dura a Sprint de Descoberta?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Depende do tamanho do problema. A duração é combinada com você antes de começar, junto com o valor.
-  - **`answer_with_format`** _(variante: só quando o dado indicado existir)_: A Sprint de Descoberta dura {duracao_descoberta}. O valor é combinado com você antes de começar.
+  - **`answer_draft`** _(no ar com `duracaoDescoberta`; sem número, D44)_: Depende do tamanho do problema. Quando a Descoberta é necessária, a necessidade e a duração são definidas com você no diagnóstico.
 - **`discovery_plan_ownership`**
   - **Pergunta**: O plano da Descoberta é meu se eu não seguir com a Lemamon.dev?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Tudo o que a Descoberta entrega fica com você: entendimento do problema, escopo priorizado, protótipo e plano. O escopo e o protótipo servem de base para seguir com a Lemamon.dev ou para pedir proposta a outro fornecedor.
-- **`discovery_credit`**
-  - **Pergunta**: O valor da Descoberta é abatido do desenvolvimento?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Se você seguir para o desenvolvimento com a Lemamon.dev, o valor pago pela Sprint de Descoberta é descontado do preço do desenvolvimento.
-  - **`cost_suffix`**: Se você seguir com a Lemamon.dev, o valor da Descoberta é descontado do desenvolvimento.
+  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag; `planoDoCliente` continua `false`)_: Sim. Tudo o que a Descoberta entrega fica com você: entendimento do problema, escopo priorizado e plano. O escopo e o plano servem de base para seguir com a Lemamon.dev ou para pedir proposta a outro fornecedor.
 - **`data_migration`**
   - **Pergunta**: Vocês migram os dados da planilha ou do sistema atual?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Na Sprint de Descoberta, a gente define com você quais dados precisam vir das planilhas ou do sistema antigo e como isso vai acontecer. A migração entra no escopo, prazo e preço fechados.
+  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Antes do desenvolvimento, a gente define com você quais dados precisam vir das planilhas ou do sistema antigo e como isso vai acontecer. A migração entra no escopo, prazo e preço fechados.
 
 ### Serviços — hub (`/servicos`)
 
@@ -924,7 +913,7 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
 - **`how_it_works_title`**: Como funciona um projeto de {servico_frase}
 - **`discovery_defines_title`**: O que a Sprint de Descoberta define neste tipo de projeto
 - **`engineering_link`**: Ver como a gente constrói
-- **`price_factors_closing`**: O peso de cada ponto no seu caso fica claro na Sprint de Descoberta, que termina com o preço fechado antes do desenvolvimento: um número para levar a quem decide com você.
+- **`price_factors_closing`**: A gente pesa cada ponto no seu caso e fecha prazo e preço antes do desenvolvimento, sem cobrar nada até lá.
 - **`price_factors_cta_lead`**: Você não precisa ter essas respostas para conversar:
 - **`price_factors_link`**: Ver o que define o preço de um projeto
 - **`price_factors_link_with_pricing`** _(só com faixas de preço preenchidas)_: Ver quanto custa um projeto de software
@@ -975,7 +964,7 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
     - **Texto**: Cursos e trilhas para a sua equipe ou para os seus clientes, com acesso e progresso controlados.
 - **Etapas do método nesta página**
   - **Diagnóstico**: Você mostra como o processo funciona hoje e onde ele trava.
-  - **Sprint de Descoberta**: Módulos priorizados, protótipo das telas e plano com prazo e preço fechados.
+  - **Sprint de Descoberta**: Módulos priorizados e plano com prazo e preço fechados.
   - **Desenvolvimento**: A cada 2 semanas, uma parte do sistema funcionando para a sua equipe usar.
   - **Sustentação e evolução**: Sustentação e evolução, combinadas com você, para o sistema acompanhar a operação.
 - **O que a Descoberta define**:
@@ -1012,10 +1001,10 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
     - **Resposta**: Dá. A Descoberta prioriza o escopo, e as entregas a cada 2 semanas seguem essa ordem: o que mais pesa na operação vem primeiro.
   - **`price`**
     - **Pergunta**: Quanto custa um sistema sob medida?
-    - **Resposta**: Depende de quantos processos entram, dos perfis de acesso, das regras, das integrações e dos relatórios. O preço do sistema fecha na Sprint de Descoberta. Se fizer sentido seguir depois do diagnóstico gratuito, você recebe a proposta da Descoberta, com o valor dela. Se você já tem um valor em mente, conte na conversa.
+    - **Resposta**: Depende de quantos processos entram, dos perfis de acesso, das regras, das integrações e dos relatórios. O preço do sistema sai fechado antes do desenvolvimento, e nada é cobrado antes dele: o diagnóstico e a Sprint de Descoberta, quando necessária, são gratuitos. Se você já tem um valor em mente, conte no diagnóstico: o escopo priorizado mostra o que cabe nele.
   - **`how_long_system`**
     - **Pergunta**: Quanto tempo leva para desenvolver um sistema?
-    - **Resposta**: Depende do escopo, e a gente não chuta prazo: ele sai da Descoberta, junto com o preço. Se o sistema precisa estar no ar numa data, conte no diagnóstico: ela entra no plano, e você sabe antes de começar o que cabe até lá.
+    - **Resposta**: O prazo sai fechado antes do desenvolvimento, junto com o preço, e depende do escopo. Se o sistema precisa estar no ar numa data, conte no diagnóstico: ela entra no plano, e você sabe antes de começar o que cabe até lá.
 - **Linha em 'outros serviços'**: Gestão, painéis e portais feitos para o jeito que a sua empresa trabalha.
 - **Texto da imagem de compartilhamento**: Sistema sob medida com preço fechado
 - **CTA final**
@@ -1060,7 +1049,7 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
   3. Painel administrativo
 - **Etapas do método nesta página**
   - **Diagnóstico**: Quem vai usar o app, onde e para resolver o quê.
-  - **Sprint de Descoberta**: O que o app faz primeiro, protótipo das telas e plano com prazo e preço fechados.
+  - **Sprint de Descoberta**: O que o app faz primeiro e plano com prazo e preço fechados.
   - **Desenvolvimento**: A cada 2 semanas, uma versão funcionando para você instalar e testar no celular.
   - **Sustentação e evolução**: Atualizações e melhorias depois do lançamento, conforme o uso real.
 - **O que a Descoberta define**:
@@ -1097,16 +1086,16 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
     - **Resposta**: Uso no celular, em campo ou pelo seu cliente final tende a pedir app. Uso no escritório, no computador, costuma ser bem atendido por um sistema web. O diagnóstico gratuito ajuda a decidir.
   - **`ios_android`**
     - **Pergunta**: iOS, Android ou os dois?
-    - **Resposta**: Dá para atender os dois. A escolha é feita na Descoberta, a partir de quem vai usar o app e de quais aparelhos essas pessoas têm, porque cada plataforma a mais amplia a construção e os testes.
+    - **Resposta**: Dá para atender os dois. A escolha é feita com você antes do desenvolvimento, a partir de quem vai usar o app e de quais aparelhos essas pessoas têm, porque cada plataforma a mais amplia a construção e os testes.
   - **`store_publishing`**
     - **Pergunta**: Vocês publicam o app nas lojas?
-    - **Resposta**: A publicação na App Store e no Google Play pode fazer parte do escopo. Um app só para uso da sua equipe, por exemplo, pode não precisar ficar aberto ao público nas lojas. Isso é definido na Descoberta, junto com o resto do projeto.
+    - **Resposta**: A publicação na App Store e no Google Play pode fazer parte do escopo. Um app só para uso da sua equipe, por exemplo, pode não precisar ficar aberto ao público nas lojas. Isso é definido com você antes do desenvolvimento, junto com o resto do escopo.
   - **`price`**
     - **Pergunta**: Quanto custa desenvolver um aplicativo?
-    - **Resposta**: Depende principalmente das plataformas (iOS, Android ou as duas), das telas e fluxos do app e das integrações, como pagamento e mapas. O preço do app fecha na Sprint de Descoberta. Se fizer sentido seguir depois do diagnóstico gratuito, você recebe a proposta da Descoberta, com o valor dela. Se já existe um orçamento para o app, conte no diagnóstico.
+    - **Resposta**: Depende principalmente das plataformas (iOS, Android ou as duas), das telas e fluxos do app e das integrações, como pagamento e mapas. O preço do app sai fechado antes do desenvolvimento, e nada é cobrado antes dele: o diagnóstico e a Sprint de Descoberta, quando necessária, são gratuitos. Se já existe um orçamento para o app, conte no diagnóstico.
   - **`how_long_app`**
     - **Pergunta**: Quanto tempo leva para desenvolver um aplicativo?
-    - **Resposta**: Depende do escopo, e a gente não chuta prazo: ele sai da Descoberta, junto com o preço. Se o app tem data de lançamento, conte no diagnóstico: a Descoberta prioriza o que precisa estar pronto até lá.
+    - **Resposta**: O prazo sai fechado antes do desenvolvimento, junto com o preço, e depende do escopo. Se o app tem data de lançamento, conte no diagnóstico: a data entra no plano, e você sabe antes do desenvolvimento o que dá para ter pronto até lá.
 - **Linha em 'outros serviços'**: Apps para seus clientes ou sua equipe resolverem pelo celular.
 - **Texto da imagem de compartilhamento**: Aplicativo sob medida com preço fechado
 - **CTA final**
@@ -1186,10 +1175,10 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
     - **Resposta**: Se o sistema atual resolve a maior parte do trabalho, integrar costuma sair mais barato do que trocar. Quando ele trava a operação, trocar pode valer mais. O diagnóstico gratuito existe para essa decisão.
   - **`price`**
     - **Pergunta**: Quanto custa uma integração de sistemas?
-    - **Resposta**: Depende de quantos sistemas entram, do que cada um permite e de os dados passarem uma vez por dia ou a cada pedido. O preço da integração fecha na Sprint de Descoberta, depois de confirmar cada conexão. Se fizer sentido seguir depois do diagnóstico gratuito, você recebe a proposta da Descoberta, com o valor dela. Se você já tem um valor em mente, conte na conversa.
+    - **Resposta**: Depende de quantos sistemas entram, do que cada um permite e de os dados passarem uma vez por dia ou a cada pedido. O preço da integração sai fechado antes do desenvolvimento, depois de confirmar cada conexão. Nada é cobrado antes disso: o diagnóstico e a Sprint de Descoberta, quando necessária, são gratuitos. Se você já tem um valor em mente, conte no diagnóstico.
   - **`how_long_integration`**
     - **Pergunta**: Quanto tempo leva uma integração de sistemas?
-    - **Resposta**: Depende do que cada sistema permite, e a gente não chuta prazo: ele sai da Descoberta, junto com o preço, depois de confirmar cada conexão. Se há uma data, como a troca de um sistema, conte no diagnóstico: ela entra no plano.
+    - **Resposta**: O prazo sai fechado antes do desenvolvimento, junto com o preço, depois de confirmar o que cada sistema permite. Se há uma data, como a troca de um sistema, conte no diagnóstico: ela entra no plano.
 - **Linha em 'outros serviços'**: Os sistemas que você já usa conversando entre si, e as tarefas repetitivas rodando sozinhas.
 - **Texto da imagem de compartilhamento**: Seus sistemas conversando, com preço fechado
 - **CTA final**
@@ -1232,7 +1221,7 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
     - **Texto**: O mínimo para você tocar o produto no dia a dia: cadastrar, aprovar e acompanhar.
 - **Etapas do método nesta página**
   - **Diagnóstico**: O problema, para quem, o que você já tem (ideia, telas ou protótipo) e a sua data.
-  - **Sprint de Descoberta**: O corte do MVP (o que entra agora), protótipo e plano com prazo e preço fechados.
+  - **Sprint de Descoberta**: O corte do MVP (o que entra agora) e plano com prazo e preço fechados.
   - **Desenvolvimento**: A cada 2 semanas, produto funcionando para mostrar a usuários, sócios ou investidores.
   - **Sustentação e evolução**: Se você quiser, o produto segue evoluindo com o que os usuários mostrarem.
 - **O que a Descoberta define**:
@@ -1260,17 +1249,17 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
 - **Perguntas frequentes**
   - **`price`**
     - **Pergunta**: Quanto custa desenvolver um MVP?
-    - **Resposta**: Depende principalmente do tamanho da primeira versão. O preço do MVP fecha na Sprint de Descoberta. Se fizer sentido seguir depois do diagnóstico gratuito, você recebe a proposta da Descoberta, com o valor dela. Se você já tem um valor em mente, conte no diagnóstico: com o escopo priorizado, você sabe antes do desenvolvimento o que cabe nele.
+    - **Resposta**: O preço do MVP sai fechado antes do desenvolvimento, e o que mais pesa nele é o tamanho da primeira versão. Tem um valor em mente? Conte no diagnóstico gratuito: o escopo priorizado mostra o que cabe nele. A Sprint de Descoberta, quando necessária, também é gratuita.
   - **`wont_stall`**
     - **Pergunta**: Como eu sei que o projeto não vai parar no meio?
     - **Resposta**: Projeto costuma parar quando o orçamento acaba antes de o produto ficar pronto, ou quando ninguém vê software funcionando antes do fim. Aqui, escopo, prazo e preço ficam fechados antes do desenvolvimento, e a cada 2 semanas você recebe uma parte funcionando: se algo sair do rumo, aparece na entrega seguinte, não no fim.
     - **`answer_with_code_ownership`** _(variante: só quando o dado indicado existir)_: Projeto costuma parar quando o orçamento acaba antes de o produto ficar pronto, ou quando ninguém vê software funcionando antes do fim. Aqui, escopo, prazo e preço ficam fechados antes do desenvolvimento, e a cada 2 semanas você recebe uma parte funcionando: se algo sair do rumo, aparece na entrega seguinte, não no fim. E o código desenvolvido é da sua empresa.
   - **`how_long_mvp`**
     - **Pergunta**: Quanto tempo leva um MVP?
-    - **Resposta**: Depende do que a primeira versão precisa provar, e a gente não chuta prazo: ele sai da Descoberta, junto com o preço. Se há uma data de captação ou de piloto, conte no diagnóstico: o plano mostra o que cabe até lá.
+    - **Resposta**: O prazo sai fechado antes do desenvolvimento, junto com o preço, e depende do que a primeira versão precisa provar. Tem data de captação ou de piloto? Conte no diagnóstico: o plano mostra o que cabe até lá. No desenvolvimento, você recebe software funcionando a cada 2 semanas.
   - **`what_goes_in`**
     - **Pergunta**: O que entra na primeira versão?
-    - **Resposta**: O mínimo para provar a ideia. Decidir o que entra e o que fica para depois é um dos entregáveis da Descoberta: o escopo priorizado.
+    - **Resposta**: O mínimo para provar a ideia. O que entra e o que fica para depois é decidido com você antes do desenvolvimento: é o escopo priorizado.
   - **`what_is_mvp`**
     - **Pergunta**: O que é um MVP, na prática?
     - **Resposta**: MVP (produto mínimo viável) é a menor versão do produto que já resolve o problema principal para usuários reais. Não é protótipo nem demonstração: é software funcionando, com o resto deixado para depois de propósito.
@@ -1392,10 +1381,9 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
     - **Resposta**: Um orçamento fechado, ainda não. No fim das 6 perguntas, você vê o que influencia prazo e preço no seu caso e o caminho até o software rodando.
     - **`answer_no_pricing_variant`** _(variante)_: Um orçamento, ainda não: o resumo não mostra valores. No fim das 6 perguntas, você vê o que influencia prazo e preço no seu caso e o caminho até o software rodando.
     - **`answer_with_pricing_suffix`** _(só com faixas de preço preenchidas)_: Dependendo do seu caso, o resumo também mostra uma referência de investimento.
-    - **`answer_2`**: Preço dado antes de entender o projeto costuma virar cobrança extra no meio do caminho. Por isso, para construir algo novo, prazo e preço fechados saem da Sprint de Descoberta, a etapa em que o problema vira escopo e plano.
-    - **`answer_2_skip_variant`** _(variante)_: Preço dado antes de entender o projeto costuma virar cobrança extra no meio do caminho. Por isso, prazo e preço fechados saem de um escopo bem definido: o seu, se ele já bastar, ou o da Sprint de Descoberta.
-    - **`answer_3`**: A Descoberta é paga, com valor combinado antes de começar. Já no diagnóstico gratuito, a gente explica o que faz o preço e o prazo de um caso como o seu subirem ou descerem.
-    - **`answer_3_with_values`** _(variante: só quando o dado indicado existir)_: A Descoberta é paga, com valor combinado antes de começar. Já no diagnóstico gratuito, você pode perguntar sobre valores: a gente explica o que faz o preço e o prazo de um caso como o seu subirem ou descerem.
+    - **`answer_2`** _(desde a D44, o texto da antiga variante `skip`, que saiu)_: Preço dado antes de entender o projeto costuma virar cobrança extra no meio do caminho. Por isso, prazo e preço fechados saem de um escopo bem definido: o seu, se ele já bastar, ou o da Sprint de Descoberta.
+    - **`answer_3`**: A Sprint de Descoberta é gratuita e só acontece quando o diagnóstico mostra que ela é necessária. Nela, o problema vira escopo e plano.
+    - **`answer_3_with_values`** _(variante: só quando o dado indicado existir)_: A Sprint de Descoberta é gratuita e só acontece quando o diagnóstico mostra que ela é necessária. No diagnóstico gratuito, você já pode perguntar sobre valores.
   - **`really_free`**
     - **Pergunta**: O diagnóstico é gratuito mesmo?
     - **Resposta**: É. São 45 minutos de conversa, com devolutiva por escrito, sem compromisso de contratar. O que vem depois só acontece se você decidir seguir.
@@ -1429,7 +1417,7 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
     - **`conversation`**: Uma conversa de 45 minutos sobre o problema que você quer resolver.
     - **`feedback`**: Depois da conversa, você recebe a devolutiva por escrito.
   - **`schedule_variant`** _(variante)_: Você escolhe o horário logo depois de enviar, ou a gente fala com você para marcar.
-  - **`next_step_note`**: Para construir algo novo, se fizer sentido seguir, o próximo passo é a Sprint de Descoberta: a etapa paga que termina num plano com prazo e preço fechados.
+  - **`next_step_note`**: Para construir algo novo, se fizer sentido seguir, a gente define com você se a Sprint de Descoberta é necessária. Ela é gratuita e termina num plano com prazo e preço fechados.
   - **`next_step_note_live_variant`** _(variante)_: Para o sistema que você já tem, se fizer sentido seguir, escopo, prazo e preço do que vem depois são combinados com você antes de começar.
   - **`next_step_decision`**: Quem decide se segue é você, com a devolutiva na mão.
   - **Link**: Ver como trabalhamos
@@ -1568,7 +1556,7 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
   - **Rótulo curto**: Investimento
   - **`question_tiers`**: Quanto você pretende investir neste projeto?
   - **`question_tiers_monthly`**: Quanto você pretende investir por mês para manter e evoluir o sistema?
-  - **`helper_tiers`**: É uma referência para a conversa começar do tamanho certo. Não é proposta nem compromisso: o preço fechado sai da Sprint de Descoberta.
+  - **`helper_tiers`**: Escolha uma opção. Serve para a conversa começar do tamanho certo, sem compromisso. O preço fechado vem antes do desenvolvimento.
   - **`helper_tiers_live_variant`** _(variante)_: É uma referência para a conversa começar do tamanho certo. Não é proposta nem compromisso: o preço é combinado com você antes de começar.
   - **`helper_tiers_monthly`**: É uma referência para a conversa começar do tamanho certo, sem compromisso.
   - **`helper_maintain_note`**: Se for sustentação e evolução contínua, pense no total de um ano.
@@ -1608,9 +1596,8 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
 - **`path_title_live_variant`** _(variante)_: O caminho a partir do sistema que você tem
 - **`path_all_stages`**: Ver as 4 etapas
 - **`emphasis`**
-  - **`discovery_default`**: É na Sprint de Descoberta que você fica sabendo quanto o desenvolvimento custa e quando fica pronto, antes de começar a construir.
-  - **`discovery_scope_defined`**: Na Sprint de Descoberta, o que você já sabe vira um plano com prazo e preço fechados, antes de começar a construir.
-  - **`discovery_scope_defined_skip_variant`** _(variante)_: No diagnóstico, a gente vê se o que você já tem basta para fechar escopo, prazo e preço. Se faltar definição, a Sprint de Descoberta vem antes.
+  - **`discovery_default`**: Na Sprint de Descoberta, que é gratuita, você fica sabendo quanto o desenvolvimento custa e quando fica pronto, antes de começar a construir.
+  - **`discovery_scope_defined`** _(desde a D44, a antiga variante `skip`, com "gratuita")_: No diagnóstico, a gente vê com você se o que você já tem basta para fechar escopo, prazo e preço. Se faltar definição, a Sprint de Descoberta, gratuita, vem antes.
   - **`live_system`**: No diagnóstico, a gente entende como o seu sistema funciona hoje e conversa sobre por onde faz sentido começar.
 - **`deep_dive_title`**: No diagnóstico, a gente vai aprofundar
 - **`topics`**
@@ -1633,23 +1620,20 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
   - **`factor_app`**: iPhone, Android ou os dois, e se a publicação nas lojas entra no escopo
   - **`factor_integration`**: O quanto os sistemas que você já usa permitem conexão
   - **`factor_automation`**: Quantas tarefas entram na automação e de quais sistemas ela depende
-  - **`factor_multi`**: Mais de um tipo de software no mesmo projeto: a Descoberta define o que vem primeiro
-  - **`factor_multi_skip_variant`** _(variante)_: Mais de um tipo de software no mesmo projeto: a ordem entre eles é combinada antes de começar
+  - **`factor_multi`** _(desde a D44, o texto da antiga variante `skip`)_: Mais de um tipo de software no mesmo projeto: a ordem entre eles é combinada antes de começar
   - **`factor_deadline`**: Urgência ou data marcada: o que entra primeiro é combinado antes de começar
   - **`factor_deadline_window`** _(P4 = nos próximos 3 meses)_: Uma janela de 3 meses: o que entra na primeira entrega é combinado antes de começar
   - **`factor_scope`**: Quantos processos e tipos de usuário entram na primeira versão
   - **`factor_scope_live`**: O tamanho do sistema atual e o que precisa mudar primeiro
   - **`factor_default`**: O que entra primeiro e o que pode esperar
 - **`price_title`**: E o preço?
-- **`price_empty`**: O preço fechado sai no fim da Sprint de Descoberta, junto com o prazo. Ela é paga, com valor combinado antes de começar, e só acontece se você quiser.
-- **`price_empty_2`**: Antes disso, no diagnóstico gratuito, a gente mostra o que faz o preço de um projeto como o seu subir ou descer.
-- **`price_empty_skip_variant`** _(variante)_: Se o seu escopo já bastar, o preço fechado sai direto dele. Se faltar definição, sai da Sprint de Descoberta, que é paga, tem valor combinado antes de começar e só acontece se você quiser.
+- **`price_empty`**: No diagnóstico gratuito, a gente já mostra o que faz o preço de um projeto como o seu subir ou descer.
+- **`price_empty_2`**: Diagnóstico e Sprint de Descoberta são gratuitos. A primeira etapa paga é o desenvolvimento, com preço fechado antes de ele começar.
 - **`price_empty_live`**: Escopo, prazo e preço do que vem depois do diagnóstico são combinados com você antes de começar, e você decide se segue.
 - **`price_empty_live_2`**: No diagnóstico, a gente explica o que pesa no preço de cuidar e evoluir o seu sistema.
 - **`price_empty_live_2_with_values`** _(variante: só quando o dado indicado existir)_: No diagnóstico, você pode perguntar sobre valores: a gente explica o que pesa no preço de cuidar e evoluir o seu sistema.
-- **`price_ranges_intro`**: Faixas de referência para você ter uma ordem de grandeza. Cada uma vale para uma etapa ou um tipo de projeto.
-- **`price_note`**: Referência, não proposta. O preço do desenvolvimento é fechado no fim da Descoberta.
-- **`price_note_skip_variant`** _(variante)_: Referência, não proposta. O preço do desenvolvimento é fechado antes de começar.
+- **`price_ranges_intro`**: Faixas de referência para você ter uma ordem de grandeza. Cada uma vale para um tipo de projeto.
+- **`price_note`**: Referência, não proposta. O preço do desenvolvimento é fechado antes de começar, e nada é cobrado até lá.
 - **`deadline_note`**: Com prazo apertado ou data marcada, quanto antes a gente conversar, mais opções você tem para a primeira entrega.
 - **`deadline_note_window`** _(P4 = nos próximos 3 meses)_: Com 3 meses pela frente, quanto antes a gente conversar, mais opções você tem para a primeira entrega.
 - **CTA primário**: Pedir meu diagnóstico gratuito
@@ -2027,7 +2011,7 @@ Página de confirmação (noindex).
 - **Título**: Para que usamos
 - **Corpo**: Usamos os dados para:
 - **Itens**
-  - **`respond`**: Responder ao seu pedido, marcar e conduzir o diagnóstico, enviar a devolutiva por escrito e, se você quiser continuar, a proposta da Sprint de Descoberta.
+  - **`respond`**: Responder ao seu pedido, marcar e conduzir o diagnóstico, enviar a devolutiva por escrito e, se você quiser continuar, combinar os próximos passos com você.
   - **`service_order`**: Organizar a ordem de atendimento dos pedidos. As respostas de múltipla escolha geram uma classificação automática de cada pedido, usada para organizar essa ordem.
   - **`service_order_with_routing`** _(variante: só quando o dado indicado existir)_: Organizar a ordem e a forma de atendimento dos pedidos. As respostas de múltipla escolha geram uma classificação automática de cada pedido, usada para isso.
   - **`follow_up`**: Retomar o contato se a conversa não chegar a ser marcada e responder a mensagens sobre outros assuntos.
@@ -2243,8 +2227,8 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 #### CTA final (padrão do site) · `shared.cta_final`
 
 - **`title_default`**: Comece por 45 minutos de conversa
-- **`text_default`**: Você conta o problema, mesmo sem escopo pronto, e recebe uma devolutiva por escrito, contratando ou não. A Sprint de Descoberta é paga e só começa se você quiser.
-- **`deadline_line`**: Tem uma data que o software precisa cumprir? Conte no diagnóstico. Ela entra no plano da Sprint de Descoberta, e você sabe antes do desenvolvimento o que cabe até lá.
+- **`text_default`**: Você conta o problema, mesmo sem escopo pronto, e recebe uma devolutiva por escrito, contratando ou não. Até aprovar o desenvolvimento, você não paga nada.
+- **`deadline_line`**: Tem uma data que o software precisa cumprir? Conte no diagnóstico. Ela entra no plano com prazo e preço, e você sabe antes do desenvolvimento o que cabe até lá.
 - **`how_it_works_title`**: Como funciona
 - **`how_it_works_steps`**
   - **Resposta**: Você responde 6 perguntas de múltipla escolha e vê o resumo do seu projeto antes de deixar o seu contato.
@@ -2259,10 +2243,10 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 > **Condicional:** `hasPricing`. Some por inteiro sem faixas.
 
 - **Título**: Faixas de referência de investimento
-- **Introdução**: Servem para você se planejar antes da conversa. O preço fechado do desenvolvimento do seu projeto sai da Sprint de Descoberta.
+- **Introdução**: Servem para você se planejar antes da conversa. O preço do desenvolvimento do seu projeto é fechado antes de ele começar.
 - **`diagnosis_line`**: Diagnóstico: gratuito
-- **`row_labels`**
-  - **Sprint de Descoberta**: Sprint de Descoberta
+- **`discovery_line`** _(linha fixa, fora da sustentação; D44)_: Sprint de Descoberta: gratuita, se for necessária
+- **`row_labels`** _(sem linha da Descoberta desde a D44)_
   - **`development_web_systems`**: Desenvolvimento de sistema web
   - **`development_mobile_apps`**: Desenvolvimento de aplicativo
   - **`development_integrations`**: Integrações e automação
@@ -2307,11 +2291,10 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 
 #### Termos explicados · `shared.terms`
 
-- **`prototype`**: Protótipo: uma demonstração de como o software vai funcionar, para você ver e validar antes de ele ser construído.
 - **`prioritized_scope`**: Escopo priorizado: a lista do que o software vai fazer, em ordem, com o que entra primeiro e o que fica para depois.
 - **`mvp`**: MVP (produto mínimo viável): a menor versão do produto que já resolve o problema principal para usuários reais.
 - **`api`**: API: a porta de conexão de um sistema, por onde outros sistemas trocam informações com ele.
-- **`discovery_sprint`**: Sprint de Descoberta: a etapa paga antes do desenvolvimento, em que o problema vira escopo priorizado, protótipo e um plano com prazo e preço fechados.
+- **`discovery_sprint`**: Sprint de Descoberta: a etapa gratuita antes do desenvolvimento, quando o diagnóstico mostra que ela é necessária. Nela, o problema vira escopo priorizado e um plano com prazo e preço fechados.
 - **Sustentação e evolução**: Sustentação: o cuidado com o sistema depois que ele entra no ar, com correções, atualizações e novas funcionalidades.
 - **`written_feedback`**: Devolutiva por escrito: o retorno que você recebe depois dos 45 minutos de conversa. Por ser escrita, dá para ler com calma e repassar a quem decide com você.
 - **`written_feedback_with_content`** _(variante: só quando o dado indicado existir)_: Devolutiva por escrito: o retorno depois dos 45 minutos de conversa, com {conteudo_da_devolutiva}. Dá para repassar a quem decide com você.
@@ -2369,10 +2352,10 @@ O que aparece no Google e na prévia de links (WhatsApp, LinkedIn). Title até 6
   - **Descrição**: Software sob medida: sistemas, apps, integrações e MVPs com escopo, prazo e preço fechados antes de construir. Peça o diagnóstico gratuito de 45 minutos.
 - **`how_we_work`**
   - **Título**: Desenvolvimento de software com preço fechado | Lemamon.dev
-  - **Descrição**: Escopo, prazo e preço fechados antes de construir: diagnóstico gratuito de 45 min e Sprint de Descoberta. Depois, entregas a cada 2 semanas e sustentação.
+  - **Descrição**: Escopo, prazo e preço fechados antes de construir o seu software. Diagnóstico de 45 min e Sprint de Descoberta gratuitos; entregas a cada 2 semanas.
 - **`discovery_sprint`**
   - **Título**: Sprint de Descoberta: do problema ao preço fechado | Lemamon.dev
-  - **Descrição**: A etapa em que o seu problema vira escopo priorizado, protótipo e plano com prazo e preço fechados. Discovery de produto paga, após o diagnóstico gratuito.
+  - **Descrição**: O seu problema vira escopo priorizado e plano com prazo e preço fechados. Discovery de produto gratuito, feito após o diagnóstico de 45 minutos.
 - **`services_hub`**
   - **Título**: Serviços de desenvolvimento de software | Lemamon.dev
   - **Descrição**: Sistemas web, aplicativos, integrações e MVPs com escopo, prazo e preço combinados antes de começar, e sustentação e evolução depois que entram no ar.
@@ -2381,7 +2364,7 @@ O que aparece no Google e na prévia de links (WhatsApp, LinkedIn). Title até 6
   - **Descrição**: Sistema de gestão, ERP, CRM, painéis e portal do cliente feitos para o processo da sua empresa, com escopo, prazo e preço fechados antes de construir.
 - **`services_mobile_apps`**
   - **Título**: Desenvolvimento de aplicativo sob medida | Lemamon.dev
-  - **Descrição**: Criar aplicativo para a sua empresa: iOS e Android para clientes ou equipe, com protótipo e preço fechado antes de construir e entregas a cada 2 semanas.
+  - **Descrição**: Desenvolvimento de aplicativo sob medida para empresas, no iOS e no Android: escopo e preço fechados antes de construir e entregas a cada 2 semanas.
 - **`services_integrations`**
   - **Título**: Integração de sistemas e automação de processos | Lemamon.dev
   - **Descrição**: Integração de sistemas e automação: ERP, e-commerce, pagamento e CRM trocando dados sozinhos. Escopo, prazo e preço combinados antes de começar.
@@ -2396,7 +2379,7 @@ O que aparece no Google e na prévia de links (WhatsApp, LinkedIn). Title até 6
   - **Descrição**: O que pesa no preço de um sistema ou aplicativo, como comparar propostas e como chegar a escopo, prazo e preço fechados antes do desenvolvimento.
 - **`quote`**
   - **Título**: Orçamento de software: diagnóstico gratuito | Lemamon.dev
-  - **Descrição**: Orçamento de desenvolvimento de software: 6 perguntas, o resumo antes do contato e diagnóstico gratuito de 45 minutos. O preço sai da Sprint de Descoberta.
+  - **Descrição**: Orçamento de desenvolvimento de software: em 6 perguntas, veja o que pesa no prazo e no preço do seu caso e peça o diagnóstico gratuito de 45 minutos.
 - **`quote_sent`**
   - **Título**: Pedido recebido | Lemamon.dev
   - **Descrição**: Seu pedido de diagnóstico gratuito chegou à Lemamon.dev. Veja o que acontece agora e como aproveitar os 45 minutos de conversa.
@@ -2459,7 +2442,6 @@ As listas abaixo vieram dos revisores. Algumas foram escritas na rodada 3 e marc
 - Sprint de Descoberta: escopo, prazo e preço fechados antes do desenvolvimento
 - Sprint de Descoberta: saiba o que construir e quanto custa antes de começar (pergunta do comprador)
 - Sprint de Descoberta: um preço que você consegue defender para os sócios (aprovação com sócio)
-- Sprint de Descoberta: veja o protótipo e o preço fechado antes de construir (protótipo)
 
 ### Quanto custa (H1 e abertura)
 
@@ -2497,8 +2479,8 @@ As listas abaixo vieram dos revisores. Algumas foram escritas na rodada 3 e marc
 |---|---|---|
 | Title da Home (resultado do Google) | Desenvolvimento de software sob medida \| Lemamon.dev (48 caracteres, keyword exata) | Software sob medida com prazo e preço fechados \| Lemamon.dev · Software sob medida: escopo, prazo e preço fechados (sem marca, 51) · Software sob medida com preço fechado antes de começar (sem marca, 54) · Desenvolvimento de software sob medida com preço fechado (sem marca, 56; disputa a keyword de Como trabalhamos) |
 | Título do CTA final padrão | Comece por 45 minutos de conversa | O primeiro passo é gratuito: 45 minutos · Antes de qualquer preço, 45 minutos de conversa · Seu caso, 45 minutos, devolutiva por escrito |
-| Tag da Descoberta na linha do método | Paga · valor combinado antes | Paga (texto-guia do BLUEPRINT) |
-| Item do menu de serviços | Antes de construir: Sprint de Descoberta | Todo projeto passa por aqui: Sprint de Descoberta |
+| Tag da Descoberta na linha do método | Gratuita · se for necessária (D44) | Gratuita · quando necessária · Gratuita |
+| Item do menu de serviços | Antes de construir: Sprint de Descoberta | ("Todo projeto passa por aqui" saiu: desde a D44, a Descoberta só acontece quando necessária) |
 
 ---
 
@@ -2546,14 +2528,14 @@ Marcar só os perfis com conteúdo público recente. Libera "Confira antes de co
 
 ### 4.6 Sprint de Descoberta
 
-- **Duração (`duracaoDescoberta` ou `descoberta.ts` com `hasDiscoveryFormat`):** a duração entra no subtítulo de /sprint-de-descoberta, no texto da etapa 2, na description da página e no FAQ "Quanto dura?"; libera a seção "Como ela acontece". Na página de MVP, "Quanto tempo leva um MVP?" pode citar a duração, argumento forte para quem tem data de captação.
-- **Valor abatido do desenvolvimento (`descobertaAbatida`):** a tag passa a "Paga · abatida do desenvolvimento" e o custo da etapa 2 ganha "abatido do desenvolvimento se você seguir". Responde "por que pagar antes?".
-- **O plano é do cliente (`planoDoCliente`):** "e ficam com você, mesmo que não siga com a Lemamon.dev" nos entregáveis e em "Antes e depois da Descoberta". É o argumento mais forte para justificar a Descoberta ao sócio.
-- **Começar sem Descoberta (`semDescoberta`):** "nesta ordem" ganha a ressalva "em alguns casos, a Descoberta pode ser dispensada"; publica `skip_discovery` e uma linha para quem já chega com escopo ("Já tem escopo definido? Dá para começar pelo plano"). Atende o Marcos.
+- **Decisão do dono de 21/10/2026 (D44, revoga a D42):** a Sprint de Descoberta é gratuita, só acontece quando o diagnóstico mostra que é necessária (necessidade e duração definidas com o cliente no diagnóstico) e não entrega protótipo. Saíram do site: a duração típica, o valor e o abatimento da Descoberta, o protótipo e a seção de investimento de /sprint-de-descoberta.
+- **Duração (`duracaoDescoberta`):** ligada, só com a resposta sem número ("a necessidade e a duração são definidas com você no diagnóstico"). `descoberta.duracao` fica sempre `null`; "Como ela acontece" sai com formato, participantes e ritmo.
+- **O plano é do cliente (`planoDoCliente`):** continua `false`. Se ligar, "e ficam com você, mesmo que não siga com a Lemamon.dev" nos 3 entregáveis e em "Antes e depois da Descoberta".
+- **Começar sem Descoberta (`semDescoberta`):** a D44 já tornou a Descoberta condicional em todo o site ("nesta ordem" saiu, e as variantes `skip` do /orcamento viraram o texto base). A flag passa a publicar só o FAQ `skip_discovery`, com texto alinhado à D44; ligar = o dono aprovar esse texto. Atende o Marcos.
 
 ### 4.7 Preço e qualificação
 
-- **Faixas de preço (`precos.ts`, `hasPricing`):** liga a seção Investimento em todo o site (filtrada por página), as faixas no topo de /quanto-custa (com "As faixas de referência estão logo abaixo" no lead), o link "Ver faixas de referência" nos FAQs de preço, as variantes `answer_with_pricing` e o bloco de preço no resumo do orçamento. Também troca o rótulo dos links para /quanto-custa nas páginas de serviço para "Ver quanto custa…". Para a Cláudia, a linha `descoberta` é o número que mais pesa.
+- **Faixas de preço (`precos.ts`, `hasPricing`):** liga a seção Investimento em todo o site (filtrada por página), as faixas no topo de /quanto-custa (com "As faixas de referência estão logo abaixo" no lead), o link "Ver faixas de referência" nos FAQs de preço, as variantes `answer_with_pricing` e o bloco de preço no resumo do orçamento. Também troca o rótulo dos links para /quanto-custa nas páginas de serviço para "Ver quanto custa…". A Descoberta é gratuita e não tem linha (D44): o Investimento mostra "Sprint de Descoberta: gratuita, se for necessária" como linha fixa.
 - **Faixas do orçamento (`qualificacao.ts`, `hasBudgetTiers`, `hasMonthlyTiers`):** a pergunta 5 do wizard passa a usar faixas, com rótulos e moeda definidos por você. Atenção à trava de score D (seção 6).
 - **Condições de pagamento (`pagamento`):** publica `faq.conditional.payment_terms` com o texto que você aprovar.
 
@@ -2681,10 +2663,10 @@ Todos foram resolvidos no texto da v5 do pt-BR. Os que tinham voltado nas tradu�
 | Método e preço | `pricing.how_to_compare.questions.scope_change` | A régua mandava perguntar e a Lemamon.dev não respondia | Resolvido: a pergunta inteira só aparece com `escopoMudanca`; sem a flag, a régua tem 5 perguntas, todas respondidas. |
 | Método e preço | `pricing.how_price_closes.stages.support.cost` | "Custo: Contínua" | Resolvido: "Valor combinado antes de começar". |
 | Método e preço | `how_we_work.stage_*.you_get` | Diferente da linha do método | Resolvido no pt; no en, o diagnóstico foi alinhado na mesclagem. O verificador confere a igualdade. |
-| Método e preço | `pricing.hero.lead` | Abria com "depende" e "paga", sem o passo gratuito | Resolvido: o lead traz o diagnóstico gratuito antes da etapa paga. |
+| Método e preço | `pricing.hero.lead` | Abria com "depende" e "paga", sem o passo gratuito | Resolvido: o lead traz o diagnóstico gratuito antes da etapa paga. Desde a D44 (21/10/2026), diz que nada é cobrado antes do desenvolvimento. |
 | Método e preço | 4 chaves com "único valor que você assume" | Garantia de custo não confirmada | Resolvido: a frase saiu. |
 | Método e preço | `how_we_work.proof.intro` | Plural "projetos reais" | Resolvido: "para quem já passou por ele". |
-| Método e preço | `pricing.factors.intro` e `before_paying.why` | "Protótipo" e "MVP" sem explicação | Resolvido: MVP explicado no texto; protótipo recebe o termo explicado na primeira menção. |
+| Método e preço | `pricing.factors.intro` e `before_paying.why` | "Protótipo" e "MVP" sem explicação | Resolvido: MVP explicado no texto; protótipo recebe o termo explicado na primeira menção. Desde a D44 (21/10/2026), o protótipo saiu do site. |
 | Serviços | `services.template.price_factors_link` | Prometia preço que o destino não mostra | Resolvido: "Ver o que define o preço de um projeto", com variante para quando houver faixas. |
 | Serviços | `services.mvp.faq.wont_stall.answer_with_code_ownership` | "Desde o início" contradizia um dos rascunhos | Resolvido: "E o código desenvolvido é da sua empresa." |
 | Serviços | `services.support.subtitle` | Prometia cuidar de qualquer sistema | Resolvido: a ressalva "a gente avalia com você se faz sentido para o seu caso" está no hero. O en usava "your live system" e foi alinhado. |

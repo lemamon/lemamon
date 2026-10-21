@@ -13,8 +13,8 @@
 |---|---|---|---|---|
 | Leads por mês | pedidos `briefing` + pedidos de outras origens registrados | CRM, aba `Relatório` (05 §8) | [PREENCHER] | linha de base + [PREENCHER] % em 90 dias (§2) |
 | % de leads A+B | (A + B) ÷ total, pelo `score` original | CRM (05 §8) e GA4 (`lead_submitted` por `score`) | [PREENCHER] | [PREENCHER] (07 cita 40%) |
-| Taxa de fechamento | ganhos ÷ propostas apresentadas | CRM (05 §8, "Proposta → ganho") | [PREENCHER] | [PREENCHER] |
-| Margem bruta por projeto | (preço − custo direto) ÷ preço, com custo direto = horas reais × custo-hora | horas reais (apontamento por marco, 02 §5) × custo-hora (02 §3), por projeto entregue no mês | [PREENCHER] | ≥ [PREENCHER] % (07 sugere 40%) |
+| Taxa de fechamento | ganhos pagos (desenvolvimento, sustentação) ÷ propostas apresentadas; a Descoberta, gratuita, não conta como ganho (D44) | CRM (05 §8, "Proposta → ganho") | [PREENCHER] | [PREENCHER] |
+| Margem bruta por projeto | (preço − custo direto) ÷ preço, com custo direto = horas reais × custo-hora (recomendação, a decidir: incluir as horas da Sprint de Descoberta do mesmo cliente, que é gratuita desde a D44; Descobertas que não viram projeto entram como custo de pré-venda, 02 §3, linha D) | horas reais (apontamento por marco, 02 §5) × custo-hora (02 §3), por projeto entregue no mês | [PREENCHER] | ≥ [PREENCHER] % (07 sugere 40%) |
 | Cobertura do custo fixo pelo MRR | MRR ÷ custo fixo mensal | financeiro (MRR) e contabilidade (custo fixo, 02 §1) | [PREENCHER] | [PREENCHER] em 6 meses; 100% em [PREENCHER] meses (07 cita 30% em 6 meses e 100% em 12) |
 
 Os 5 ficam numa linha por mês na aba `Financeiro` (§5), atualizada no ritual mensal (§6).

@@ -17,7 +17,7 @@
 
 **O CTA final de todo post é do template:** depois do corpo, a página mostra `blog.post.end_cta` ("Vamos olhar o seu caso?", botão do diagnóstico gratuito, rastreado com `?origem=blog-final`). O `<CtaMeio />` usa `midCtaText` (ou o texto padrão) e é rastreado com `?origem=blog-meio`. Por isso o corpo **não** leva link próprio para o wizard: o último parágrafo prepara o CTA final.
 
-**Se uma confirmação mudar:** os rascunhos seguem o que o site afirma hoje. Se `confirmacoes.semDescoberta` ligar, revise no Post 1 a frase "qualquer preço de desenvolvimento é um chute" e, no Post 2, "O preço fechado do desenvolvimento sai da Sprint de Descoberta" (mesma lista de i18n `faq._notes.skip_discovery`). Se `descobertaAbatida`, `planoDoCliente` ou `devolutivaConteudo` forem confirmadas, o autor pode acrescentar a frase confirmada, com o texto de 00 §B5.
+**Se uma confirmação mudar:** os rascunhos seguem o que o site afirma hoje. Desde a D44 (21/10/2026), a Sprint de Descoberta é gratuita, só acontece quando o diagnóstico mostra que é necessária e não entrega protótipo; os 3 posts já seguem isso. Se `planoDoCliente` ou `devolutivaConteudo` forem confirmadas, o autor pode acrescentar a frase confirmada, com o texto de 00 §B5.
 
 **Cuidados de MDX:** no corpo, nada de chaves `{ }` (MDX lê como código) nem de `<` fora do `<CtaMeio />`. Nenhuma linha do corpo pode começar com "Exemplo" (a trava de conteúdo fictício derruba o build).
 
@@ -31,14 +31,14 @@
 |---|---|
 | Slug | `o-que-receber-de-uma-sprint-de-descoberta` |
 | Palavra-chave (08 §2) | `sprint de descoberta` · secundária `discovery de produto` |
-| Leitor | quem recebeu a proposta de uma Descoberta paga e precisa justificar o gasto ao sócio |
+| Leitor | quem vai fazer uma Sprint de Descoberta, combinada no diagnóstico, e quer saber o que conferir no fim |
 | Pergunta que o post responde | o que eu deveria ter nas mãos no fim de uma Sprint de Descoberta? |
 | Link interno | `/sprint-de-descoberta` (12 §7, pauta 2) e `/como-trabalhamos` |
 
 ```yaml
 ---
 titulo: "O que você deveria receber de uma Sprint de Descoberta"
-resumo: "Entendimento do problema, escopo priorizado, protótipo e um plano com prazo e preço fechados: o que conferir antes de aprovar o desenvolvimento."
+resumo: "Entendimento do problema, escopo priorizado e um plano com prazo e preço fechados: o que conferir antes de aprovar o desenvolvimento."
 capa:
   src: "[PREENCHER] ../imagens/<cartão 1200×630 do post>"
   alt: "Cartão do post com o título O que você deveria receber de uma Sprint de Descoberta, sobre fundo azul-escuro da Lemamon.dev"
@@ -51,7 +51,7 @@ publicadoEm: "[PREENCHER AAAA-MM-DD]"
 midCtaText: "Não sabe se o seu projeto precisa de uma Sprint de Descoberta? Em 45 minutos de diagnóstico gratuito, a gente entende o seu caso e você recebe uma devolutiva por escrito."
 relacionados: ["preco-fechado-ou-por-hora", "sistema-pronto-ou-sob-medida"]
 seoTitle: "O que receber de uma Sprint de Descoberta"
-seoDescription: "O que uma Sprint de Descoberta deve entregar antes do desenvolvimento: problema entendido, escopo priorizado, protótipo e plano com prazo e preço."
+seoDescription: "O que uma Sprint de Descoberta deve entregar antes do desenvolvimento: problema entendido, escopo priorizado e plano com prazo e preço fechados."
 rascunho: true
 ---
 ```
@@ -59,13 +59,13 @@ rascunho: true
 **Corpo:**
 
 ```mdx
-Você pediu orçamento para um sistema e recebeu de volta uma proposta de Sprint de Descoberta: uma etapa paga, antes de qualquer código. É natural desconfiar. Este texto mostra o que você deveria ter nas mãos quando ela termina, para saber se o investimento valeu.
+Você pediu orçamento para um sistema e, no diagnóstico, ficou combinado que antes vem uma Sprint de Descoberta. É natural querer saber o que ela entrega. Este texto mostra o que você deveria ter nas mãos quando ela termina.
 
 ## Por que existe uma etapa antes de construir
 
 Sem entender o problema, qualquer preço de desenvolvimento é um chute. Um chute baixo costuma virar aditivo no meio do projeto. Um chute alto faz você pagar por uma margem de segurança que ninguém explica.
 
-A Descoberta existe para trocar o chute por um plano. O valor dela é combinado antes de começar, e ela termina antes do desenvolvimento.
+A Descoberta existe para trocar o chute por um plano. Na Lemamon.dev, ela é gratuita e termina antes do desenvolvimento.
 
 ## O que você deveria receber
 
@@ -77,10 +77,6 @@ O problema escrito com as palavras da sua operação: quem faz o quê hoje, onde
 
 A lista do que entra primeiro e do que pode esperar. Prioridade tem corte: se tudo é essencial, nada foi priorizado.
 
-### Um protótipo
-
-Telas para você ver e validar antes de alguém escrever código. Mudar um protótipo custa pouco. Mudar um sistema pronto custa caro.
-
 ### Um plano com prazo e preço fechados
 
 O plano diz o que será construído, em que ordem, em quanto tempo e por quanto. É com ele na mão que você decide se segue para o desenvolvimento.
@@ -91,18 +87,18 @@ O plano diz o que será construído, em que ordem, em quanto tempo e por quanto.
 
 - O documento final fala de tecnologia e quase nada do seu problema.
 - Não existe uma lista do que ficou de fora.
-- O protótipo não passou por quem vai usar o sistema no dia a dia.
+- O escopo não passou por quem vai usar o sistema no dia a dia.
 - O preço do desenvolvimento continua "a partir de" ou "estimado".
 
 Se algum desses sinais aparecer, pergunte antes de aprovar o próximo passo. Uma boa pergunta agora custa menos do que um aditivo depois.
 
 ## Onde você decide
 
-Na Lemamon.dev, você decide depois da devolutiva por escrito do diagnóstico gratuito e, de novo, depois do plano da Descoberta. Seguir para o desenvolvimento é escolha sua, com escopo, prazo e preço combinados antes de começar.
+Na Lemamon.dev, você decide depois da devolutiva por escrito do diagnóstico gratuito e, de novo, antes do desenvolvimento, com o plano na mão. Seguir para o desenvolvimento é escolha sua, com escopo, prazo e preço combinados antes de começar, e até lá você não paga nada.
 
 No desenvolvimento, você recebe software funcionando a cada 2 semanas, não apresentação de slide. Os detalhes da etapa estão na página da [Sprint de Descoberta](/sprint-de-descoberta), e o caminho inteiro está em [Como trabalhamos](/como-trabalhamos).
 
-Se você ainda não sabe se o seu caso precisa de uma Descoberta, o primeiro passo é o diagnóstico gratuito: 45 minutos de conversa sobre o problema, com devolutiva por escrito.
+Se você ainda não sabe se o seu caso precisa de uma Descoberta, o primeiro passo é o diagnóstico gratuito: 45 minutos de conversa sobre o problema, com devolutiva por escrito. É nele que a necessidade e a duração da Descoberta são definidas com você.
 ```
 
 ---
@@ -168,7 +164,7 @@ As respostas dizem mais do que o valor no fim da proposta. A lista completa, com
 
 ## Como a Lemamon.dev trabalha
 
-Na Lemamon.dev, escopo, prazo e preço são combinados antes de começar. O preço fechado do desenvolvimento sai da Sprint de Descoberta, uma etapa paga, com valor combinado antes, que transforma o problema em escopo priorizado, protótipo e um plano com prazo e preço fechados.
+Na Lemamon.dev, escopo, prazo e preço são combinados antes de começar. O preço fechado do desenvolvimento sai antes de ele começar: quando é necessária, da Sprint de Descoberta, que é gratuita e transforma o problema em escopo priorizado e um plano com prazo e preço fechados.
 
 No desenvolvimento, você recebe software funcionando, não apresentação de slide. As entregas a cada 2 semanas existem para você perceber cedo o que precisa mudar. Se a mudança mexer no escopo, escopo, prazo e preço são combinados de novo antes de seguir.
 
@@ -246,7 +242,7 @@ Há uma terceira opção que pouca gente considera: manter o sistema pronto que 
 
 ## Como a Lemamon.dev ajuda a decidir
 
-Antes de qualquer proposta, vem o diagnóstico gratuito: 45 minutos para entender o problema. Se fizer sentido construir, a Sprint de Descoberta transforma o problema em escopo priorizado, protótipo e um plano com prazo e preço fechados. Se você decidir seguir, recebe software funcionando a cada 2 semanas.
+Antes de qualquer proposta, vem o diagnóstico gratuito: 45 minutos para entender o problema. Se fizer sentido construir e a Descoberta for necessária, ela é gratuita e transforma o problema em escopo priorizado e um plano com prazo e preço fechados. Se você decidir seguir, recebe software funcionando a cada 2 semanas.
 
 Veja como funciona um projeto de [sistemas web sob medida](/servicos/sistemas-web) e, se a dúvida é conectar o que já existe, a página de [integrações e automação](/servicos/integracoes).
 
@@ -306,7 +302,7 @@ rascunho: true
 | Nenhuma promessa não confirmada (duração de Descoberta ou MVP, prazo de devolutiva, SLA, abatimento da Descoberta, "o plano fica com você", "atendemos todo o Brasil") | sim | sim | sim |
 | "Sprint de Descoberta" por extenso na primeira menção, depois "Descoberta" | sim | sim | sim |
 | "escopo, prazo e preço" nessa ordem | sim | sim | sim |
-| Teste da negação: o contrário soaria absurdo para um concorrente? | "você decide depois da devolutiva e depois do plano" | "o preço fechado sai da Descoberta" | "antes de qualquer proposta, o diagnóstico" |
+| Teste da negação: o contrário soaria absurdo para um concorrente? | "você decide depois da devolutiva e antes do desenvolvimento" | "o preço fechado sai antes do desenvolvimento" | "antes de qualquer proposta, o diagnóstico" |
 | CTA único, terminando no diagnóstico gratuito | `<CtaMeio />` + CTA final do template | idem | idem |
 
 O autor refaz o checklist depois da revisão: qualquer frase que ele mudar precisa passar de novo.

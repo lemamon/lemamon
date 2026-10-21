@@ -7,7 +7,7 @@
 
 ## 1. O que o site promete, e só isso
 
-O site promete exatamente: **diagnóstico gratuito, 45 minutos, devolutiva por escrito, sem compromisso de contratar.** Depois do envio, "a gente fala com você para marcar o horário". Se fizer sentido seguir, o próximo passo é a **proposta da Sprint de Descoberta**. O cliente decide em dois pontos: depois da devolutiva e depois do plano da Descoberta.
+O site promete exatamente: **diagnóstico gratuito, 45 minutos, devolutiva por escrito, sem compromisso de contratar.** Depois do envio, "a gente fala com você para marcar o horário". Se fizer sentido seguir, **a necessidade e a duração da Sprint de Descoberta, que é gratuita, são definidas com o cliente no diagnóstico** (D44, 21/10/2026). Quando ela não é necessária, o próximo passo é a proposta de desenvolvimento, com escopo, prazo e preço fechados. O cliente decide em dois pontos: depois da devolutiva e antes do desenvolvimento, com o plano (prazo e preço fechados) na mão. Nada é cobrado antes do desenvolvimento.
 
 O site **não** promete (BLUEPRINT §12): prazo de entrega da devolutiva, conteúdo da devolutiva, formato da conversa, preço ou prazo do desenvolvimento. Tudo o que este playbook define nesses pontos é **regra interna** até você confirmar e preencher `confirmacoes.devolutivaConteudo` e `confirmacoes.formatoDiagnostico` (ver [00-DADOS-DO-DONO.md](00-DADOS-DO-DONO.md) B5).
 
@@ -61,7 +61,7 @@ ES (leads de `/es/`, con "tú"):
 | 15–23 | Quem usa e o que já foi tentado | Usuários, volume, sistemas, tentativas anteriores | "Quem usa isso no dia a dia, e quantas pessoas?" · "Que sistemas e planilhas entram nisso?" · "Vocês já tentaram resolver? Com software pronto, outro fornecedor? O que não funcionou?" |
 | 23–31 | Como seria o "deu certo" (prazo) | Resultado esperado, prioridade e data real | "Daqui a seis meses, o que mudou para você dizer que deu certo?" · "O que precisa funcionar primeiro?" · "Existe uma data que trava isso? Qual e por quê?" |
 | 31–37 | Decisão e investimento | Quem aprova, como, e se há verba prevista | "Como a decisão é tomada aí, e quem assina?" · "O investimento para isso já está previsto, em definição, ou ainda não?" (ver regra de valores abaixo) |
-| 37–43 | Próximo passo | Explicar o caminho e os pontos de decisão | O que vem na devolutiva; o que é a Sprint de Descoberta (os 4 entregáveis: entendimento do problema, escopo priorizado, protótipo, plano com prazo e preço fechados) e que o valor dela é combinado antes; "Depois da devolutiva, você decide se quer fazer a Descoberta." |
+| 37–43 | Próximo passo | Explicar o caminho e os pontos de decisão | O que vem na devolutiva; **definir com o cliente se a Sprint de Descoberta é necessária neste caso e quanto ela dura**; o que ela entrega (entendimento do problema, escopo priorizado e plano com prazo e preço fechados para o desenvolvimento) e que é gratuita: "Você não paga nada antes de decidir seguir para o desenvolvimento." Não diga que o plano fica com o cliente se ele não seguir (`planoDoCliente = false`). |
 | 43–45 | Fechamento | Confirmar envio e encerrar no horário | "Para quem eu mando a devolutiva, e por qual canal?" |
 
 **Regra de valores:** com `confirmacoes.valoresNoDiagnostico = false` (padrão), você explica **o que faz o preço e o prazo subirem ou descerem** no caso dele (os fatores da página de serviço e de `/quanto-custa`) e **não dá número**. Só fale em ordem de grandeza se você ligar essa confirmação e aprovar o texto correspondente (i18n `quote._notes.pending_owner` 4).
@@ -83,8 +83,8 @@ ES (leads de `/es/`, con "tú"):
 
 ### 4.3 O que não dizer na conversa (BLUEPRINT §12)
 
-- Nenhum prazo de desenvolvimento, de MVP ou de duração da Descoberta sem confirmação.
-- Nenhum preço de desenvolvimento. O valor da Descoberta é "combinado antes de começar".
+- Nenhum prazo de desenvolvimento ou de MVP sem confirmação. A duração da Descoberta é só a deste caso, combinada com o cliente nesta conversa, nunca uma "duração típica" (D44).
+- Nenhum preço de desenvolvimento. A Descoberta é gratuita: não fale em valor, abatimento nem protótipo da Descoberta.
 - Nada de "assumimos sistemas de terceiros", "atendemos todo o Brasil" ou "você fala com quem escreve o código" sem a confirmação correspondente.
 - Nada de nome de cliente sem autorização.
 
@@ -102,9 +102,10 @@ Tentativas anteriores:
 Usuários e volume:
 "Deu certo" =
 Data que trava / prazo do cliente:
+Descoberta necessária? sim | não (combinado com o cliente) · Duração combinada:
 Investimento: previsto | em definição | não pensado | prefere não dizer
 Riscos / pontos de atenção:
-Recomendação: Descoberta | proposta direta (só com semDescoberta) | pacote {nome} (só com D03 = sim, escopo inteiro dentro de um pacote do 02 §5 e valor abaixo do teto D04) | software pronto | fora de perfil | sustentação após avaliação
+Recomendação: Descoberta (gratuita) | proposta direta de desenvolvimento (Descoberta não necessária) | pacote {nome} (só com D03 = sim, escopo inteiro dentro de um pacote do 02 §5 e valor abaixo do teto D04) | software pronto | fora de perfil | sustentação após avaliação
 Score revisado (A/B/C/D) e motivo:
 Próximo passo + data:
 Frases que podem virar depoimento (só com autorização futura):
@@ -136,8 +137,8 @@ DEVOLUTIVA DO DIAGNÓSTICO
 
 5. O caminho que a gente recomenda
 {Uma recomendação só, com o motivo em 2 linhas. Opções honestas:
- - Sprint de Descoberta (padrão para construir algo novo);
- - proposta direta de desenvolvimento, se o escopo já basta (só com confirmacoes.semDescoberta);
+ - Sprint de Descoberta, gratuita, quando combinamos na conversa que ela é necessária;
+ - proposta direta de desenvolvimento, quando combinamos que ela não é (o escopo já basta);
  - pacote {nome}, se o escopo cabe inteiro num pacote da tabela interna (só com D03 = sim,
    escopo inteiro dentro de um pacote do 02 §5 e valor abaixo do teto D04);
  - um software pronto, se ele atende (diga qual tipo e por quê);
@@ -145,11 +146,16 @@ DEVOLUTIVA DO DIAGNÓSTICO
  - não é o nosso tipo de projeto, com uma alternativa quando houver.}
 
 6. Próximo passo
-Se fizer sentido seguir, a proposta da Sprint de Descoberta vai junto com esta devolutiva.
-Ela entrega: entendimento do problema, escopo priorizado, protótipo e um plano com prazo e
-preço fechados para o desenvolvimento. O valor é combinado antes de começar.
+Como combinamos na conversa, o próximo passo é a Sprint de Descoberta, que é gratuita,
+com duração de {duração combinada}. Ela entrega o entendimento do problema, o escopo
+priorizado e um plano com prazo e preço fechados para o desenvolvimento. Você não paga
+nada antes de decidir seguir para o desenvolvimento.
 Mais detalhes: https://lemamon.dev/sprint-de-descoberta
 Você decide se segue.
+
+{Se combinamos que a Descoberta não é necessária, troque o parágrafo acima por:
+ Como combinamos, a Descoberta não é necessária no seu caso: a proposta de desenvolvimento,
+ com escopo, prazo e preço fechados, vai junto com esta devolutiva. Você decide se segue.}
 
 {Se a recomendação for um pacote (só com D03 = sim), troque o parágrafo acima por:
  A proposta do pacote {nome}, com o que inclui, o que não inclui, prazo e preço, vai junto
@@ -171,11 +177,11 @@ Esta devolutiva é sua. Pode repassar a quem decide com você.
 
 ### Envio da devolutiva
 
-> Oi, {primeiro nome}. Segue a devolutiva do nosso diagnóstico ({protocolo}). Junto vai a proposta da Sprint de Descoberta, se fizer sentido seguir. Posso te apresentar a proposta em uma conversa curta? Tenho {opção 1} ou {opção 2}.
+> Oi, {primeiro nome}. Segue a devolutiva do nosso diagnóstico ({protocolo}). Como combinamos, o próximo passo é a Sprint de Descoberta, que é gratuita. Podemos marcar o início? Tenho {opção 1} ou {opção 2}.
 
-Se a recomendação for um pacote (só com D03 = sim), troque "a proposta da Sprint de Descoberta" por "a proposta do pacote {nome}".
+Se combinamos que a Descoberta não é necessária: "…Junto vai a proposta de desenvolvimento. Posso te apresentar a proposta em uma conversa curta? Tenho {opção 1} ou {opção 2}." Se a recomendação for um pacote (só com D03 = sim), troque "a proposta de desenvolvimento" por "a proposta do pacote {nome}".
 
-(A proposta é sempre apresentada ao vivo: playbook [02](02-proposta-e-politica-comercial.md) §9.)
+(Toda proposta paga é apresentada ao vivo: playbook [02](02-proposta-e-politica-comercial.md) §9. O plano da Descoberta, gratuita, segue o 02 §7.)
 
 ## 7. Agenda e limite semanal de diagnósticos (B359, B053)
 
@@ -201,5 +207,6 @@ Se a recomendação for um pacote (só com D03 = sim), troque "a proposta da Spr
 |---|---|---|---|
 | Comparecimento | diagnósticos feitos ÷ marcados | CRM | [PREENCHER] |
 | Devolutiva no prazo interno | devolutivas no prazo ÷ devolutivas enviadas | CRM | 100% |
-| Diagnóstico → proposta | propostas enviadas ÷ diagnósticos feitos | CRM | [PREENCHER] (07 §7.9.1 cita 70% como estimativa de mercado) |
+| Diagnóstico → Descoberta iniciada | Descobertas iniciadas ÷ diagnósticos feitos | CRM | [PREENCHER] |
+| Diagnóstico → proposta de desenvolvimento | propostas de desenvolvimento enviadas ÷ diagnósticos feitos | CRM | [PREENCHER] (07 §7.9.1 cita 70% de diagnóstico → proposta como estimativa de mercado) |
 | Tempo do pedido ao diagnóstico | mediana em dias úteis | CRM | [PREENCHER] |

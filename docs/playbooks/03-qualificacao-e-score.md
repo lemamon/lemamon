@@ -35,7 +35,7 @@
 |---|---|---|
 | `problem_unclear` | tem um problema na operação, não sabe o que construir | candidato natural à Descoberta |
 | `product_idea` | tem uma ideia de produto | fundador; perguntar a data (captação, piloto) |
-| `scope_defined` | já sabe o que precisa ser construído | conferir se o escopo basta; Descoberta continua sendo o padrão |
+| `scope_defined` | já sabe o que precisa ser construído | conferir se o escopo basta; a necessidade da Descoberta (gratuita) é definida com o cliente no diagnóstico (D44) |
 | `evolve_live_system` | tem sistema ou produto no ar e quer evoluir | entender quem desenvolveu e o acesso ao código |
 | `maintain_live_system` | tem sistema no ar e precisa de quem cuide | sustentação; **não prometa assumir sistema de terceiros** sem `confirmacoes.sistemaTerceiros` |
 

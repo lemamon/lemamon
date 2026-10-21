@@ -120,7 +120,7 @@ protocolo,recebido_em,formulario,lang,nome,empresa,email,telefone,canal,score,sc
 | `retomada_reativou` | o toque que trouxe o lead de volta (respondeu, marcou ou mandou pedido novo pelo link); vazio = não reativou (04 §5.2) |
 | `fu_d3`, `fu_d7`, `fu_d14` | calculadas sozinhas quando a proposta é apresentada; são as 3 tarefas do playbook 04 §4: `=SE(proposta_apresentada_em="";"";proposta_apresentada_em+3)`, `+7` e `+14` |
 | `fu_d3_feito_em`, `fu_d7_feito_em`, `fu_d14_feito_em` | data em que o toque foi enviado; preenchida à mão ao enviar a mensagem do 04 §4. É ela que apaga o vermelho da `fu_dN` (formatação condicional abaixo) |
-| `proposta_oferta`, `proposta_valor`, `proposta_apresentada_em` | a proposta **em curso** deste lead. `proposta_oferta` aceita só `descoberta` · `desenvolvimento` · `sustentacao` · `pacote`, os mesmos valores de `oferta` da aba `Propostas` (abaixo); com `pacote`, o nome do pacote vai em `observacoes` (tabela interna do 02 §5, só com D03 = sim). O histórico de todas as propostas, com a data de envio, fica na aba `Propostas` (abaixo). Proposta seguinte na mesma linha (o desenvolvimento depois da Descoberta): a anterior já está na aba `Propostas` com o resultado; aqui, troque os três campos pelos da nova, apague os três `fu_dN_feito_em` e volte a `etapa` para "6 Proposta apresentada" até o resultado da nova. **Nunca apague** `go_live_em` nem as três colunas `sustentacao_*`: o MRR e a conversão em sustentação (13 §5) saem delas, não da `etapa`. Projeto novo de quem já é cliente ganha linha nova (protocolo novo) |
+| `proposta_oferta`, `proposta_valor`, `proposta_apresentada_em` | a proposta **em curso** deste lead. `proposta_oferta` aceita só `desenvolvimento` · `sustentacao` · `pacote`, os mesmos valores de `oferta` da aba `Propostas` (abaixo; a Sprint de Descoberta é gratuita e não gera proposta desde a D44, 21/10/2026: o início vai na `etapa` "7 Descoberta em andamento" e a duração combinada em `observacoes`); com `pacote`, o nome do pacote vai em `observacoes` (tabela interna do 02 §5, só com D03 = sim). O histórico de todas as propostas, com a data de envio, fica na aba `Propostas` (abaixo). Proposta seguinte na mesma linha (a sustentação depois do desenvolvimento, ou um projeto novo): a anterior já está na aba `Propostas` com o resultado; aqui, troque os três campos pelos da nova, apague os três `fu_dN_feito_em` e volte a `etapa` para "6 Proposta apresentada" até o resultado da nova. **Nunca apague** `go_live_em` nem as três colunas `sustentacao_*`: o MRR e a conversão em sustentação (13 §5) saem delas, não da `etapa`. Projeto novo de quem já é cliente ganha linha nova (protocolo novo) |
 | `kickoff_em` | data da reunião de início do desenvolvimento; só preencher com `primeira_parcela_em` já preenchida (02 §6) |
 | `go_live_em` | data em que o sistema entrou no ar (playbook [16](16-processo-de-entrega.md) §5). Preenchida, dispara o checklist de prova do 09 §4. Fica vazia no lead que chegou com sistema já no ar e só contratou sustentação (02 §8b) |
 | `sustentacao_contrato_em` | data de assinatura do contrato recorrente de sustentação e evolução, inclusive quando ele é assinado antes do go-live, junto com o desenvolvimento (02 §8, item 6), e no caso do 02 §8b |
@@ -146,9 +146,9 @@ protocolo,recebido_em,formulario,lang,nome,empresa,email,telefone,canal,score,sc
 | 2 Contatado | a primeira mensagem humana sai |
 | 3 Diagnóstico marcado | data combinada |
 | 4 Diagnóstico feito | a conversa acontece |
-| 5 Devolutiva enviada | devolutiva + proposta da Descoberta enviadas |
+| 5 Devolutiva enviada | devolutiva enviada, com a Descoberta combinada (quando necessária) ou com a proposta de desenvolvimento |
 | 6 Proposta apresentada | apresentação ao vivo feita (02 §9) |
-| 7 Ganho: Descoberta | aceite e pagamento da Descoberta |
+| 7 Descoberta em andamento | início da Sprint de Descoberta, gratuita, combinado (sem pagamento; D44). Não conta como ganho |
 | 8 Ganho: Desenvolvimento | contrato assinado e 1ª parcela recebida |
 | 9 Sustentação ativa | contrato recorrente assinado; `sustentacao_contrato_em` e `sustentacao_valor_mensal` preenchidas |
 | Sustentação encerrada | com `sustentacao_encerrada_em` |
@@ -196,7 +196,7 @@ janela_sustentacao_dias,[PREENCHER dias corridos depois do go-live em que a assi
 
 Crie os intervalos nomeados `inicio_expediente` e `fim_expediente` (as duas células de valor, formatadas como hora), `prazo_apresentacao`, `prazo_depoimento_dias` e `janela_sustentacao_dias` (células de valor, como número) e `feriados` (uma coluna com as datas dos feriados nacionais, do estado de São Paulo e da cidade de São Paulo do ano, por exemplo 25/01, aniversário da cidade, e 09/07, feriado estadual; atualize todo janeiro; até 20/10/2026 a lista era a de Florianópolis, D38). O aceite do alerta de SLA está no 04 §1 ("Teste do alerta").
 
-**Aba `Propostas`** (B363) — **uma linha por proposta**, não por lead: o mesmo lead pode ter a da Descoberta, depois a do desenvolvimento e, no go-live, a da sustentação. Cabeçalho para colar:
+**Aba `Propostas`** (B363) — **uma linha por proposta**, não por lead: o mesmo lead pode ter a do desenvolvimento e, no go-live, a da sustentação (a Descoberta é gratuita e não gera proposta, D44). Cabeçalho para colar:
 
 ```
 protocolo,oferta,enviada_em,apresentada_em,dias_uteis_ate_apresentar,participantes,objecao,resultado,resultado_em,motivo_perda,observacoes
@@ -205,7 +205,7 @@ protocolo,oferta,enviada_em,apresentada_em,dias_uteis_ate_apresentar,participant
 | Coluna | Como preencher |
 |---|---|
 | `protocolo` | o mesmo da linha do lead em `Pedidos` |
-| `oferta` | `descoberta` · `desenvolvimento` · `sustentacao` · `pacote` (modelos do 02 §7, §8 e §8b; `pacote` usa o 02 §8 sem a referência à Descoberta, só com D03 = sim, e o nome do pacote vai em `observacoes`) |
+| `oferta` | `desenvolvimento` · `sustentacao` · `pacote` (modelos do 02 §8 e §8b; `pacote` usa o 02 §8 sem a referência à Descoberta, só com D03 = sim, e o nome do pacote vai em `observacoes`) |
 | `enviada_em` | data em que a proposta foi enviada ao cliente |
 | `apresentada_em` | data da apresentação ao vivo (02 §9); vazia até ela acontecer |
 | `dias_uteis_ate_apresentar` | `=SE(apresentada_em="";"";DIATRABALHOTOTAL.INTL(enviada_em;apresentada_em;1;feriados)-1)` |
@@ -231,7 +231,7 @@ codigo,empresa,contato,acordo_assinado_em,indicacoes,contratos,comissoes_pagas
 | `empresa`, `contato` | empresa parceira e a pessoa de contato (dado pessoal: mesma retenção e acesso restrito da planilha, §9) |
 | `acordo_assinado_em` | data da assinatura do acordo por escrito (12 §3) |
 | `indicacoes` | soma sozinha os pedidos que chegaram pelo link e os apresentados sem o link (protocolo `PAR-…` com o código em `observacoes`). Na linha 2, com o código em `A2`: `=CONT.SES(Pedidos!utm_source;"parceiro";Pedidos!utm_campaign;A2) + CONT.SES(Pedidos!protocolo;"PAR-*";Pedidos!observacoes;"*"&A2&"*")` |
-| `contratos` | contratos fechados com clientes indicados por este parceiro (Descoberta, desenvolvimento, sustentação, conforme o acordo) |
+| `contratos` | contratos fechados com clientes indicados por este parceiro (desenvolvimento, sustentação, conforme o acordo; a Descoberta é gratuita e não gera comissão) |
 | `comissoes_pagas` | soma das comissões já pagas, contra nota fiscal do parceiro; o detalhe de cada pagamento fica no financeiro |
 
 **Aba `Contato`** — formulário `contato`: `recebido_em, lang, nome, email, telefone, assunto, mensagem, origem, entrada, utm_source, utm_medium, utm_campaign, gclid, gbraid, wbraid, responsavel, respondido_em, virou_pedido, observacoes, excluir_em`.
@@ -296,11 +296,12 @@ Aba `Relatório`, por mês de `recebido_em` (exemplo em Google Sheets pt-BR, com
 | % A+B | Leads A+B ÷ Leads no mês |
 | Lead → diagnóstico | leads do mês com `diagnostico_em` preenchido (`diagnostico_em;"<>"`) ÷ leads do mês |
 | Diagnóstico → proposta apresentada | com `proposta_apresentada_em;"<>"` ÷ com `diagnostico_em;"<>"` |
-| Proposta → ganho | com `resultado;"Ganho*"` ÷ com `proposta_apresentada_em;"<>"` |
+| Proposta → ganho | com `resultado;"Ganho*"` ÷ com `proposta_apresentada_em;"<>"` (só "8 Ganho: Desenvolvimento" conta como ganho; a Descoberta, gratuita, não, D44) |
+| Descoberta → desenvolvimento | Descobertas encerradas no período que viraram contrato de desenvolvimento ÷ Descobertas encerradas no período |
 | % propostas apresentadas ao vivo (B363, por trimestre) | aba `Propostas`: `=CONT.SES(prop_enviada_em;">="&início_do_tri;prop_enviada_em;"<"&início_do_tri_seguinte;prop_apresentada_em;"<>") / CONT.SES(prop_enviada_em;">="&início_do_tri;prop_enviada_em;"<"&início_do_tri_seguinte)` (meta 100%) |
 | % apresentadas no prazo (B363) | o mesmo denominador; no numerador, troque `prop_apresentada_em;"<>"` por `prop_dias_uteis_ate_apresentar;"<="&prazo_apresentacao` |
 | % propostas com resultado registrado (B363) | o mesmo denominador; no numerador, `prop_resultado;"<>"` |
-| Proposta → ganho, por proposta | aba `Propostas`: `CONT.SES(prop_resultado;"ganho";…)` ÷ `CONT.SES(prop_apresentada_em;"<>";…)` no período; acrescente `prop_oferta;"descoberta"` (ou `"desenvolvimento"`) para separar as ofertas |
+| Proposta → ganho, por proposta | aba `Propostas`: `CONT.SES(prop_resultado;"ganho";…)` ÷ `CONT.SES(prop_apresentada_em;"<>";…)` no período; acrescente `prop_oferta;"desenvolvimento"` (ou `"sustentacao"`) para separar as ofertas |
 | Ciclo médio (dias) | `=MÉDIA.SE(ciclo_dias;"<>")` filtrando os contratos do mês |
 | Mediana do 1º contato (h úteis) | `=MED(FILTER(horas_ate_1o_contato;horas_ate_1o_contato<>""))` |
 | Leads fora do SLA | `=CONT.SES(fora_do_sla;VERDADEIRO;recebido_em;">="&DATA(2026;11;1);recebido_em;"<"&DATA(2026;12;1))` (por score: acrescente `score;"A"`) |
