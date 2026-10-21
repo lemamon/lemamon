@@ -31,7 +31,7 @@
  *         when_data (Home); produção com o aviso de cookies: Home 15,3 KiB
  *         com ele;
  *       JS (scripts /_astro + ilha + imports estáticos seguidos + inline)
- *         ≤ 12 KiB em toda página e ≤ 100 KiB SÓ nas rotas da ilha do wizard
+ *         ≤ 12 KiB em toda página e ≤ 101 KiB SÓ nas rotas da ilha do wizard
  *         (ISLAND_ROUTES: "quote" de src/config/routes.ts, /orcamento,
  *         /en/quote, /es/cotizacion). O limite vem da ROTA, não da presença de
  *         <astro-island>: uma ilha nova na Home ficaria com 12 KiB (B097).
@@ -43,7 +43,16 @@
  *         dois pixels (com ou sem PUBLIC_GA4_ID); Home 7,5 / 9,4 KiB.
  *         Carregar os pixels por import() dinâmico NÃO reduz: o helper de
  *         preload do Vite entra no grafo estático (/contato iria a 12,0 KiB).
- *         Continua bem abaixo da meta do 04-tecnico (JS de entrada < 30 kB);
+ *         Continua bem abaixo da meta do 04-tecnico (JS de entrada < 30 kB).
+ *         Wizard: era 100 KiB; 101 KiB desde 21/out/2026 (auditoria de
+ *         conversão, achados F07, F11, F26, F34, F81 e F82: sugestão de
+ *         e-mail, atribuição do /contato, toque de campanha entre abas,
+ *         "Ref.: G-…" no WhatsApp, gbraid/wbraid e ?debug_analytics=1). Medido
+ *         na rota do wizard: dist 92,6 → 94,6 KiB; dist-ficticio 98,3 →
+ *         100,3 KiB. O caminho para descer de novo é o F53 (Preact). Nas
+ *         outras páginas, +1,0 KiB (Home 7,5 → 8,5); o /contato ficou MAIS
+ *         leve (9,6 → 8,8 KiB): o aprimoramento do formulário carrega no
+ *         ocioso ou no 1º toque (ContactForm.astro);
  *       HTML ≤ 25 KiB;
  *     O que conta (B097, rodada do revisor cético): TODO CSS e TODO JS do
  *     mesmo site que a página baixa, de qualquer pasta (não só /_astro: um
@@ -183,7 +192,7 @@ export const WEIGHT_BUDGET = {
   /** CSS da página com as folhas when_data e a do aviso de cookies. Temporário: baixar para cssGz (pedido a home/gated). */
   cssGzOwnerData: 17 * KIB,
   jsGz: 12 * KIB,
-  jsGzIsland: 100 * KIB,
+  jsGzIsland: 101 * KIB,
   htmlGz: 25 * KIB,
   jsFileRaw: 250 * KIB,
   font: 30 * KIB,
