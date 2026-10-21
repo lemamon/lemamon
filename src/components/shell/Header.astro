@@ -453,9 +453,11 @@ const crowded = links.length > 3 ? "true" : undefined;
      um texto só, em qualquer largura (BLUEPRINT §8.6, B167). Para caber, como
      manda o _notes.cta (compactar antes de trocar o rótulo): o WhatsApp fica só
      com o ícone (o nome acessível continua "WhatsApp") e o CTA perde 4px de
-     padding de cada lado; com Cases e Sobre no menu (data-crowded), o seletor
-     de idioma sai (continua no rodapé), o espaço entre os blocos cai para 4px
-     e os links do menu ficam a 10px (regra de ≥ 1024px acima). Pior caso, es a 1024px com Cases, Sobre,
+     padding de cada lado; o espaço entre os blocos cai para 4px e os links do
+     menu ficam a 10px, com ou sem Cases e Sobre (sem eles, o seletor de idioma
+     fica no header, e em es a 1024px a fonte renderizada no Linux estourava
+     5–12px no CI); com Cases e Sobre no menu (data-crowded), o seletor de
+     idioma sai (continua no rodapé). Pior caso, es a 1024px com Cases, Sobre,
      agenda ("Agenda tu diagnóstico gratuito", 239px) e um item ativo em negrito:
      ~20px livres entre o menu e as ações, sem rolagem horizontal, header em 72px.
      tests/e2e/shell-header-cta.spec.ts confere 1024, 1100 e 1279px nos 3 idiomas. */
@@ -463,8 +465,10 @@ const crowded = links.length > 3 ? "true" : undefined;
     .site-header :global(.site-header__cta) {
       padding-inline: var(--space-3);
     }
-    .site-header[data-crowded="true"] {
+    .site-header {
       --header-gap: var(--space-1);
+      --nav-gap: var(--space-0-5);
+      --nav-pad: var(--space-1);
     }
     .site-header__logo :global(.logo) {
       font-size: var(--text-lg);
