@@ -15,7 +15,8 @@ Visitante → botão de WhatsApp ───────────────�
 
 - O **Netlify Forms é o registro de origem** de todo pedido do site. O CRM é onde o pedido é trabalhado.
 - O navegador nunca chama webhook de terceiros (decisão do BLUEPRINT §15.3). Qualquer integração sai do painel do Netlify.
-- Nomes dos campos (iguais nos 3 idiomas): `briefing` = `name, email, phone, channel, company, details, answers, summary, score, protocol, subject, lang, attribution, gclid, bot-field`; `contato` = `name, email, phone, subject, message, lang, origin, bot-field`.
+- Nomes dos campos (iguais nos 3 idiomas): `briefing` = `name, email, phone, channel, company, details, answers, summary, score, protocol, subject, lang, attribution, gclid, bot-field`; `contato` = `name, email, phone, subject, message, lang, origin, attribution, gclid, bot-field`.
+- `attribution` (JSON) e `gclid` saem com as mesmas regras nos dois formulários (`src/lib/attribution.ts`, achado F11 da auditoria de conversão): `utm_*`, `origem`/`servico`/`entrada`/`ref` do CTA, `referrer`, `landing` (página de entrada da visita) e `entry_page` (página do formulário). Clique de anúncio no iPhone chega como `gbraid` ou `wbraid` dentro do `attribution` (F81), com as mesmas regras do `gclid`. No modo consentimento, quem não aceitou o aviso de cookies chega sem nenhum dos três.
 
 ## 2. Verificação em produção depois do deploy (B380)
 
@@ -52,7 +53,7 @@ Faça no dia do lançamento e depois de qualquer mudança nos formulários.
 
    Campo vazio ou ausente que deveria estar preenchido: avise o agente `conversion` (lista única em `src/lib/forms.ts`, com teste de contrato).
 5. **Notificação** chega ao e-mail do comercial em menos de 5 minutos (§3).
-6. **Repita para `/contato`** com assunto "Outro" e mensagem `TESTE INTERNO`.
+6. **Repita para `/contato`**, aberto como `https://lemamon.dev/contato?utm_source=teste-interno&origem=teste`, com assunto "Outro" e mensagem `TESTE INTERNO`. Em Forms › `contato`, `attribution` contém `utm_source` = `teste-interno`, `origem` = `teste` e `entry_page` = `/contato`; `gclid` vazio.
 7. **Apague os envios de teste** no painel e registre a verificação (data, quem fez, resultado campo a campo) em [15-registro-de-decisoes.md](15-registro-de-decisoes.md) §2.
 
 Critério de aceite (B380, B381): envio feito em produção aparece em Forms › `briefing` com **todos** os campos da tabela do passo 4 preenchidos como esperado (empresa, prazo, faixa e UTM inclusive), e a notificação chega em até 5 minutos. A execução depende do primeiro deploy de produção.
@@ -92,7 +93,7 @@ Registre a escolha em [15-registro-de-decisoes.md](15-registro-de-decisoes.md).
 **Aba `Pedidos`** — uma linha por lead (e, depois do ganho, por projeto). Cabeçalho para colar:
 
 ```
-protocolo,recebido_em,formulario,lang,nome,empresa,email,telefone,canal,score,score_revisado,motivo_revisao,p1_stage,p2_build_type,p3_dor,p4_prazo,data_que_trava,p5_orcamento,p6_papel,resumo,origem,servico,entrada,ref,utm_source,utm_medium,utm_campaign,utm_content,utm_term,gclid,responsavel,etapa,primeiro_contato_em,horas_ate_1o_contato,meta_sla_h,horas_sla,fora_do_sla,retomada_toque,retomada_reativou,diagnostico_em,devolutiva_enviada_em,proposta_oferta,proposta_valor,proposta_apresentada_em,fu_d3,fu_d7,fu_d14,fu_d3_feito_em,fu_d7_feito_em,fu_d14_feito_em,objecao,proximo_passo,proximo_passo_em,resultado,motivo_perda,valor_fechado,contrato_em,primeira_parcela_em,kickoff_em,go_live_em,sustentacao_contrato_em,sustentacao_valor_mensal,sustentacao_encerrada_em,status_prova,depoimento_status,depoimento_autorizado_em,ciclo_dias,horas_pre_venda,conversoes_ads_enviadas,newsletter_optin,newsletter_optin_em,newsletter_optin_canal,newsletter_optin_texto,newsletter_descadastro_em,nao_contatar,excluir_em,observacoes
+protocolo,recebido_em,formulario,lang,nome,empresa,email,telefone,canal,score,score_revisado,motivo_revisao,p1_stage,p2_build_type,p3_dor,p4_prazo,data_que_trava,p5_orcamento,p6_papel,resumo,origem,servico,entrada,ref,utm_source,utm_medium,utm_campaign,utm_content,utm_term,gclid,gbraid,wbraid,responsavel,etapa,primeiro_contato_em,horas_ate_1o_contato,meta_sla_h,horas_sla,fora_do_sla,retomada_toque,retomada_reativou,diagnostico_em,devolutiva_enviada_em,proposta_oferta,proposta_valor,proposta_apresentada_em,fu_d3,fu_d7,fu_d14,fu_d3_feito_em,fu_d7_feito_em,fu_d14_feito_em,objecao,proximo_passo,proximo_passo_em,resultado,motivo_perda,valor_fechado,contrato_em,primeira_parcela_em,kickoff_em,go_live_em,sustentacao_contrato_em,sustentacao_valor_mensal,sustentacao_encerrada_em,status_prova,depoimento_status,depoimento_autorizado_em,ciclo_dias,horas_pre_venda,conversoes_ads_enviadas,newsletter_optin,newsletter_optin_em,newsletter_optin_canal,newsletter_optin_texto,newsletter_descadastro_em,nao_contatar,excluir_em,observacoes
 ```
 
 **Como escrever as fórmulas:** os nomes de coluna abaixo valem para a célula **da mesma linha** (na linha 2, troque `recebido_em` por `B2`, `primeiro_contato_em` pela célula dessa coluna, e assim por diante). Os nomes `inicio_expediente`, `fim_expediente`, `feriados` e `Config` são da aba `Config` (abaixo). Funções em Google Sheets pt-BR; no Excel ou Sheets em inglês: `SE` = IF, `DIATRABALHOTOTAL.INTL` = NETWORKDAYS.INTL, `MED` = MEDIAN, `AGORA` = NOW, `HOJE` = TODAY, `PROCV` = VLOOKUP, `CONT.SES` = COUNTIFS, `CONT.SE` = COUNTIF, `E` = AND, `OU` = OR.
@@ -105,8 +106,9 @@ protocolo,recebido_em,formulario,lang,nome,empresa,email,telefone,canal,score,sc
 | `score_revisado`, `motivo_revisao` | depois do primeiro contato (playbook 03 §6) |
 | `p1_stage` … `p6_papel` | ids do `answers` (dicionário no playbook 03 §2) |
 | `origem`, `servico`, `entrada`, `ref` | do `attribution` (`origem` é o id do CTA que levou ao wizard, ex.: `home-hero`; não é o canal) |
-| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term` | do `attribution`, **só o que veio no pedido**. Linha criada à mão fica com eles vazios; o canal dela está no prefixo do `protocolo`. `utm_content` guarda o código de quem indicou (12 §2) e o toque da retomada (04 §5); `utm_term` guarda a palavra-chave do Google Ads (07 §2) |
+| `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term` | do `attribution`, **só o que veio no pedido**. Linha criada à mão fica com eles vazios; o canal dela está no prefixo do `protocolo`. **Exceção (achado F34):** linha `WA-…` cuja primeira mensagem termina com `Ref.: G-{campanha}` (o site acrescenta essa linha às mensagens de WhatsApp de quem chegou por anúncio do Google): `utm_source` = `google`, `utm_medium` = `cpc`, `utm_campaign` = o que vem depois de `G-` (com `Ref.: G-ads`, `utm_campaign` = `ads`, campanha não identificada). Essa linha nunca tem `gclid`. `utm_content` guarda o código de quem indicou (12 §2) e o toque da retomada (04 §5); `utm_term` guarda a palavra-chave do Google Ads (07 §2) |
 | `gclid` | do campo próprio; usado na importação offline (playbook 07 §4) |
+| `gbraid`, `wbraid` | do `attribution` (clique de anúncio vindo de iPhone, achado F81): mesmas regras do `gclid`, inclusive `nao_contatar` (§9); importação no 07 §4.4 |
 | `etapa` | lista fixa (abaixo) |
 | `horas_sla` | horas úteis desde `recebido_em` até `primeiro_contato_em`, ou até agora se ainda não houve contato (unidade do 04 §1): `=SE(recebido_em="";"";24*((DIATRABALHOTOTAL.INTL(recebido_em;SE(primeiro_contato_em="";AGORA();primeiro_contato_em);1;feriados)-1)*(fim_expediente-inicio_expediente)+SE(DIATRABALHOTOTAL.INTL(SE(primeiro_contato_em="";AGORA();primeiro_contato_em);SE(primeiro_contato_em="";AGORA();primeiro_contato_em);1;feriados);MED(MOD(SE(primeiro_contato_em="";AGORA();primeiro_contato_em);1);fim_expediente;inicio_expediente);fim_expediente)-MED(DIATRABALHOTOTAL.INTL(recebido_em;recebido_em;1;feriados)*MOD(recebido_em;1);fim_expediente;inicio_expediente)))`. O `1` é o fim de semana sábado e domingo; se você atende no sábado, troque por `11` |
 | `horas_ate_1o_contato` | `=SE(primeiro_contato_em="";"";horas_sla)`: horas úteis até o 1º contato (usada na mediana do §8) |
@@ -230,20 +232,25 @@ codigo,empresa,contato,acordo_assinado_em,indicacoes,contratos,comissoes_pagas
 | `contratos` | contratos fechados com clientes indicados por este parceiro (Descoberta, desenvolvimento, sustentação, conforme o acordo) |
 | `comissoes_pagas` | soma das comissões já pagas, contra nota fiscal do parceiro; o detalhe de cada pagamento fica no financeiro |
 
-**Aba `Contato`** — formulário `contato`: `recebido_em, lang, nome, email, telefone, assunto, mensagem, origem, responsavel, respondido_em, virou_pedido, observacoes, excluir_em`.
+**Aba `Contato`** — formulário `contato`: `recebido_em, lang, nome, email, telefone, assunto, mensagem, origem, entrada, utm_source, utm_medium, utm_campaign, gclid, gbraid, wbraid, responsavel, respondido_em, virou_pedido, observacoes, excluir_em`.
+
+- `origem`: o campo `origin` (o `?origem=` do link, ou a página do site de onde a pessoa veio).
+- `entrada`: a primeira página da visita, `landing` do `attribution` (aqui não é o `?entrada=` do CTA da aba `Pedidos`, que o `/contato` não usa).
+- `utm_source`, `utm_medium`, `utm_campaign`, `gbraid`, `wbraid`: do `attribution`; `gclid`: do campo próprio (achado F11). Mesmas regras da aba `Pedidos`.
+- Mensagem que **vira pedido** (`virou_pedido` = sim): a linha nova em `Pedidos` copia `utm_*`, `gclid`, `gbraid` e `wbraid` daqui, para a importação offline (07 §4.4) e o custo por pedido do Ads (07 §7) verem esse lead.
 
 ## 6. Rotina
 
 | Quando | O quê |
 |---|---|
-| A cada notificação | criar a linha na aba `Pedidos` ou `Contato` (2 minutos) e fazer o primeiro contato dentro do SLA |
+| A cada notificação | criar a linha na aba `Pedidos` ou `Contato` (2 minutos), com as colunas de atribuição do `attribution` e o `gclid` (os dois formulários mandam), e fazer o primeiro contato dentro do SLA |
 | Ao enviar uma proposta | linha nova na aba `Propostas` com `enviada_em`; marcar a apresentação ao vivo dentro do `prazo_apresentacao` (02 §9) |
 | Ao enviar um toque de follow-up | preencher `fu_d3_feito_em`, `fu_d7_feito_em` ou `fu_d14_feito_em` com a data (04 §4) |
 | Diário | olhar os vermelhos da planilha (SLA estourado, toques de follow-up vencidos e não registrados, propostas sem status depois do D+14, propostas enviadas e não apresentadas no prazo, kickoff sem 1ª parcela, projeto no ar sem pedido de prova, depoimento sem resposta depois do `prazo_depoimento_dias`) |
 | No go-live de um projeto | preencher `go_live_em` (`status_prova` começa em `nao_pedida` e `depoimento_status` em `nao_pedido`), rodar o checklist do 09 §4 e atualizar as duas colunas |
 | Ao assinar ou encerrar uma sustentação | assinatura: `sustentacao_contrato_em`, `sustentacao_valor_mensal` e etapa "9 Sustentação ativa"; fim: `sustentacao_encerrada_em` e etapa "Sustentação encerrada" (16 §6) |
 | Semanal | conferir Forms › Spam submissions; **reconciliar contagens**: envios no Netlify × linhas no CRM × `lead_submitted` no GA4 na mesma semana (diferença grande = lead perdido, adblock ou falha de medição) |
-| Semanal | registrar conversas de WhatsApp que viraram oportunidade (protocolo `WA-…`, canal `whatsapp`) |
+| Semanal | registrar conversas de WhatsApp que viraram oportunidade (protocolo `WA-…`, canal `whatsapp`); se a primeira mensagem termina com `Ref.: G-…`, preencher `utm_source`, `utm_medium` e `utm_campaign` (§5) |
 | Mensal | relatório do funil (§8) e rotina de exclusão (playbook 10 §6) |
 
 O painel do Netlify permite baixar os envios de um formulário em CSV; use para a reconciliação ou para recuperar um pedido que não gerou linha.
@@ -309,4 +316,4 @@ Critério de aceite do B375: o relatório mostra as 3 taxas de conversão e o ci
 - Só os campos da §5. Não copie IP, user agent nem o JSON inteiro do Netlify.
 - Acesso só para quem atende; verificação em duas etapas na conta que guarda a planilha.
 - `excluir_em` preenchido em toda linha; a rotina mensal apaga ou anonimiza o que venceu (playbook 10 §6), inclusive no painel do Netlify e no e-mail.
-- `nao_contatar = sim` também bloqueia a importação do `gclid` no Google Ads (oposição, playbook 07 §4).
+- `nao_contatar = sim` também bloqueia a importação do `gclid`, do `gbraid` e do `wbraid` no Google Ads (oposição, playbook 07 §4).

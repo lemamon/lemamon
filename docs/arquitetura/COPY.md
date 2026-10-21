@@ -1728,6 +1728,7 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
 - **`post_submit_generic`**: Olá! Acabei de pedir o diagnóstico gratuito pelo site da Lemamon e queria adiantar a conversa por aqui.
 - **`entry_direct`**: Olá! Vim pela página de orçamento da Lemamon e prefiro conversar por aqui sobre o meu projeto.
 - **`wizard_question`**: Olá! Estou preenchendo o pedido de diagnóstico no site da Lemamon e tenho uma dúvida.
+- **`wrong_contact`** _(pós-envio, "Algum dado errado?")_: Olá! O contato do meu pedido {protocolo} saiu errado. O certo é:
 
 ### Pedido enviado (`/orcamento/enviado`)
 
@@ -1742,9 +1743,9 @@ Página de confirmação (noindex).
   - **`read`**: A gente lê as suas respostas.
   - **`contact`**: A gente fala com você para marcar o seu diagnóstico.
   - **`contact_by_channel`**
-    - **WhatsApp**: A gente fala com você pelo WhatsApp para marcar o seu diagnóstico.
-    - **E-mail**: A gente escreve para você por e-mail para marcar o seu diagnóstico.
-    - **`phone_call`**: A gente liga para você para marcar o seu diagnóstico.
+    - **WhatsApp**: A gente fala com você pelo WhatsApp {contato} para marcar o seu diagnóstico.
+    - **E-mail**: A gente escreve para {contato} para marcar o seu diagnóstico. A mensagem sai de {email}. Se não estiver na caixa de entrada, confira o spam.
+    - **`phone_call`**: A gente liga para {contato} para marcar o seu diagnóstico.
   - **`contact_schedule_variant`** _(variante)_: Escolha um horário logo abaixo, ou a gente fala com você para marcar o seu diagnóstico.
   - **`feedback`**: Depois da conversa, você recebe a devolutiva por escrito.
 - **`protocol_label`**: Código do seu pedido
@@ -1752,9 +1753,14 @@ Página de confirmação (noindex).
   - **Título**: Quer adiantar? Escolha um horário agora
   - **Botão**: Escolher horário
   - **Nota**: São os 45 minutos do seu diagnóstico gratuito.
+- **`wrong_contact`** _(abaixo do 2º passo, só com o contato do pedido na tela)_
+  - **Texto**: Algum dado errado?
+  - **Link**: Mande o certo pelo WhatsApp com o código do pedido.
+  - **`text_no_whatsapp`** _(variante sem WhatsApp configurado)_: Algum dado errado? Escreva o certo para {email} e cite o código do pedido.
 - **`whatsapp_now`**
-  - **Texto**: Prefere adiantar pelo WhatsApp?
-  - **Botão**: Falar no WhatsApp agora
+  - **Texto**: Quer agilizar? Mande um “oi” agora
+  - **Botão**: Mandar oi no WhatsApp
+  - **Apoio** _(só quando a mensagem já leva o código)_: A mensagem já leva o código do seu pedido e a conversa fica no seu WhatsApp.
 - **`email_fallback`**: Quer adiantar? Escreva para {email} e cite o código do seu pedido.
 - **`email_fallback_generic`**: Quer adiantar? Escreva para {email}.
 - **`prepare`**
@@ -1829,9 +1835,10 @@ Página de confirmação (noindex).
       - **Rótulo**: Mensagem
       - **Exemplo no campo**: Conte em poucas linhas o que você precisa e por quê.
       - **Erro (campo vazio)**: Escreva a sua mensagem.
-  - **`new_project_tip_lead`**: Projeto novo?
-  - **`new_project_tip`**: Pedir diagnóstico gratuito: 6 perguntas e o resumo do seu projeto na hora
-  - **`existing_system_tip`**: O diagnóstico gratuito também vale para sistema no ar: em 6 perguntas, você conta o que pede atenção e vê o resumo na hora.
+  - **`new_project_tip_lead`**: Pode escrever por aqui.
+  - **`new_project_tip`**: Se preferir, responda 6 perguntas e veja o resumo do seu projeto na hora
+  - **`existing_system_tip_lead`**: Pode escrever por aqui.
+  - **`existing_system_tip`**: Se preferir, responda 6 perguntas sobre o sistema no ar e veja o resumo na hora
   - **Botão de envio**: Enviar mensagem
   - **Enviando**: Enviando a sua mensagem…
   - **`privacy_notice`**: Usamos estes dados para responder à sua mensagem e registramos como você chegou ao site, por exemplo por um anúncio. Os detalhes estão na {politica}.
@@ -1988,7 +1995,7 @@ Página de confirmação (noindex).
   - **`technical`**: No envio: dados técnicos que o serviço de recebimento dos formulários pode registrar, como o endereço IP e o navegador.
   - **`conversations`**: Pelo WhatsApp ou por e-mail: o que você enviar nessas conversas.
 - **Rascunho**: Enquanto você responde ao formulário de orçamento, um rascunho com as suas respostas e a origem da visita fica guardado no seu navegador, para você continuar depois.
-- **`draft_measurement`**: A origem da visita também é medida, desde a chegada ao site, pelas ferramentas descritas em Dados de navegação.
+- **`draft_measurement`**: Desde a chegada ao site, a primeira página aberta e a origem da visita (o anúncio, a campanha ou o site que trouxe você) ficam guardadas no seu navegador enquanto a aba estiver aberta e seguem junto com o pedido se você enviar o formulário de orçamento ou o de contato. Se você abrir o site em outra aba enquanto essa continuar aberta, a aba nova usa a mesma origem. Se o pedido vier de um clique em anúncio do Google que não ficou guardado na aba, o identificador desse clique pode ser lido do cookie do Google Ads. Depois de um clique em anúncio do Google, as mensagens de WhatsApp que o site prepara levam uma referência curta da campanha (por exemplo, “Ref.: G-mvp”), que você vê e pode apagar antes de enviar. A origem da visita também é medida pelas ferramentas descritas em Dados de navegação.
 - **`draft_ttl`**: Se o rascunho ficar 30 dias sem mudança, ele deixa de valer e é apagado na próxima vez que você abrir o site. Você também pode apagá-lo limpando os dados do site no navegador.
 - **`after_send`**: Depois do envio, o rascunho é apagado, e um resumo do pedido fica só na aba aberta, para mostrar a página de confirmação, até você fechá-la.
 - **Fechamento**: Nenhum campo pede dados sensíveis, como saúde, religião, opinião política ou biometria, e pedimos que você não os inclua nas mensagens.
@@ -2317,6 +2324,7 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 - **`optional_suffix`**: (opcional)
 - **`required_hint`**: obrigatório
 - **Enviando**: Enviando…
+- **`email_suggestion`** _(abaixo do e-mail, sem bloquear o envio)_: Você quis dizer {email}? · botão **Corrigir**
 
 #### Mensagens de erro · `shared.errors`
 

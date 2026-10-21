@@ -15,14 +15,15 @@ Conta: `AW-16881353870`. Conversão "Solicitar cotação": `AW-16881353870/cEi0C
 - [ ] GA4 no ar e conferido (playbook 06).
 - [ ] Notificação de formulário e SLA funcionando (playbooks 05 e 04).
 - [ ] Monitor de uptime ativo (06 §8).
+- [ ] **Eventos conferidos no deploy preview com `?debug_analytics=1`** (achado F82): abra qualquer página do preview com esse parâmetro e faça o caminho (CTA, wizard, envio, pós-envio, WhatsApp, `/contato`). Cada evento, a conversão do Ads e o aviso ao New Relic aparecem no console do navegador com o prefixo `[analytics:debug]`, **sem sair nada** da aba; vale nas próximas páginas da mesma aba e desliga com `?debug_analytics=0` ou fechando a aba. No preview o GA4 não carrega (só em produção), então o modo é o jeito de ver os parâmetros de cada evento antes do lançamento.
 - [ ] Toda URL final responde **200 sem redirect** (§3).
 - [ ] **Estratégia de lances de cada campanha = CPC manual ou Maximizar cliques com limite de CPC máximo de R$ [PREENCHER]** enquanto a ação principal for de formulário ("Solicitar cotação" ou "Pedido enviado (página)", isto é, enquanto o gatilho da D09 não for batido). **Nunca** Maximizar conversões, CPA desejado, Maximizar valor da conversão nem ROAS desejado com a ação de formulário como principal: essas estratégias otimizam na ação principal, e o Ads passaria a buscar volume bruto de formulário, inclusive pedido fora de perfil. Onde: §5, linha "Lances".
 - [ ] **Aplicação automática de recomendações desligada para lances e orçamento:** Campanhas › Recomendações › **Aplicar automaticamente** (o nome muda com a interface) › desmarque tudo de "Lances e orçamentos" (em especial "Ajustar lances com Maximizar conversões" e "Usar CPA desejado"). Sem isso, o Ads pode trocar a estratégia sozinho.
 
 ## 2. Configurações da conta
 
-1. **Codificação automática (auto-tagging): ligada.** Admin › Configurações da conta. Sem `gclid`, não há importação offline: o wizard grava o `gclid` no pedido.
-2. **Sufixo de URL final por campanha:** `utm_source=google&utm_medium=cpc&utm_campaign=<nome-da-campanha>&utm_term={keyword}`. O wizard grava as UTMs em `attribution`, e o CRM mostra a campanha de cada pedido.
+1. **Codificação automática (auto-tagging): ligada.** Admin › Configurações da conta. Sem `gclid`, não há importação offline: o wizard e o formulário de `/contato` gravam o `gclid` no pedido (e o `gbraid`/`wbraid` dos cliques de iPhone, dentro do `attribution`).
+2. **Sufixo de URL final por campanha:** `utm_source=google&utm_medium=cpc&utm_campaign=<nome-da-campanha>&utm_term={keyword}`. O wizard e o `/contato` gravam as UTMs em `attribution`, e o CRM mostra a campanha de cada pedido. Use nomes de campanha curtos e sem dado pessoal (ex.: `mvp-sp`): o nome também aparece no fim das mensagens de WhatsApp de quem chegou pelo anúncio, como `Ref.: G-mvp-sp` (§4.6).
 3. **Rede:** só Pesquisa. Desligue Rede de Display e parceiros de pesquisa nas campanhas de pesquisa.
 4. **Local:** alinhado a `confirmacoes.outrasCidades`. A praça é **São Paulo, SP** desde 20/10/2026 (D38 em [15](15-registro-de-decisoes.md); antes, Florianópolis, SC). Enquanto você não confirmar que atende outras cidades, segmente [PREENCHER: cidade de São Paulo / Grande São Paulo / estado de SP] (D29). Confirmado, pode abrir para o Brasil. Nada de segmentação fora do Brasil (o site não diz que atende; decisão D31 em [15](15-registro-de-decisoes.md)). Em **Configurações › Locais › Opções de local**, marque **Presença** (pessoas que estão ou costumam estar nos locais segmentados), não "Presença ou interesse": essa opção mostra o anúncio também a quem só pesquisa sobre a área, inclusive fora do Brasil. **Campanha já criada com Florianópolis ou SC:** troque o local agora (Campanhas › a campanha › **Configurações** › **Locais**) e registre a data na D29.
 5. **Idioma:** português. Campanhas em inglês ou espanhol só com decisão registrada (D31).
@@ -80,7 +81,7 @@ O Ads aprende a buscar pedidos que viram cliente, não só pedidos baratos.
    - `Diagnóstico realizado`
    - `Proposta apresentada`
    - `Contrato assinado` (com valor)
-2. **Toda semana**, monte o CSV a partir do CRM (só linhas com `gclid`, sem `nao_contatar`, com o evento depois do clique e dentro da janela de validade do `gclid`, de até 90 dias):
+2. **Toda semana**, monte o CSV a partir do CRM (só linhas com `gclid`, sem `nao_contatar`, com o evento depois do clique e dentro da janela de validade do `gclid`, de até 90 dias; as linhas da aba `Pedidos` que vieram de uma mensagem de `/contato` copiam o `gclid` de lá, playbook 05 §5):
 
 ```csv
 Parameters:TimeZone=-0300
@@ -89,6 +90,7 @@ Google Click ID,Conversion Name,Conversion Time,Conversion Value,Conversion Curr
 <gclid>,Contrato assinado,2026-11-20 10:00:00,[PREENCHER valor],BRL
 ```
 
+   **Pedido só com `gbraid` ou `wbraid`** (clique de iPhone, sem `gclid`; achado F81): na hora do upload, confira no modelo de arquivo que o Ads oferece (Metas › Envios › baixar o modelo) se há coluna para esse id. Se houver, envie com o mesmo nome de conversão; se não houver, a linha fica fora do CSV e só conta na conferência do §7. Mesmas regras do `gclid`: nunca com `nao_contatar`.
 3. Metas › **Envios (uploads)** › enviar o arquivo; confira o relatório de erros.
 4. Marque no CRM (`conversoes_ads_enviadas`) o que já foi enviado.
 5. **Gatilho da troca (B120; D09 do [15](15-registro-de-decisoes.md)):** torne `Lead qualificado` a ação **PRINCIPAL** e rebaixe "Solicitar cotação" a **SECUNDÁRIA** quando houver **≥ 30 conversões `Lead qualificado` em 30 dias** (referência do Google para lances automáticos). Confira no ritual mensal ([13](13-kpis-e-rituais.md) §6): Metas › Conversões › `Lead qualificado`, período "Últimos 30 dias", coluna de conversões **por horário da conversão** (em inglês, "Conv. (by conv. time)"; acrescente pelo seletor de colunas, o nome em português muda com a interface; a coluna "Conversões" padrão conta pela data do clique e, com o upload semanal atrasado, mostra menos do que aconteceu). Batido o gatilho, faça a troca no mesmo dia e registre a data na D09. O número 30 é o padrão; para usar outro, troque aqui e na D09. Se a ação de formulário principal for "Pedido enviado (página)" (decisão D08), é ela que vira secundária. Nunca deixe duas ações de lead qualificado como principais ao mesmo tempo (a do §4.5 e esta): o mesmo pedido contaria duas vezes nos lances. Enquanto o gatilho não for batido, **nenhuma campanha usa lance por conversão** (regra do §1 e da §5, linha "Lances"): com a ação de formulário como principal, o lance automático otimiza volume bruto de formulário, e com pouco volume de lead qualificado ele aprende mal. Só **depois** da troca, com `Lead qualificado` (ou `lead_qualified`, §4.5) como principal e o gatilho batido, uma campanha pode passar para Maximizar conversões (e, mais tarde, CPA desejado); registre a data e a campanha na D09.
@@ -116,6 +118,15 @@ Fonte mais rápida de "lead qualificado" no Ads, porque **não depende de `gclid
 - **(b) recomendado:** tornar `lead_qualified` (GA4) a principal mesmo abaixo de 30 conversões, rebaixar "Solicitar cotação" a secundária e **manter Maximizar cliques com teto** (ou CPC manual). A coluna "Conversões" passa a contar lead qualificado, que é o que você otimiza à mão, e o lance não depende do volume. O lance por conversão continua proibido até a principal bater os 30 em 30 dias.
 
 Registre a escolha e a data na D09.
+
+### 4.6 `contact_submitted` e `whatsapp_click` importados do GA4 — só como secundárias (achados F11 e F34)
+
+Lead de anúncio também chega pelo `/contato` e pelo WhatsApp, e nenhum dos dois dispara "Solicitar cotação". Para o Ads ver esses caminhos sem otimizar por eles:
+
+1. GA4: marque `contact_submitted` e `whatsapp_click` como **eventos-chave** ([06](06-ga4-e-medicao.md) §5).
+2. Ads: Metas › Conversões › **Nova ação** › **Importar** › **Google Analytics 4** › propriedades da Web › marque `contact_submitted` e `whatsapp_click` › Importar e continuar.
+3. Contagem: `contact_submitted` **Uma**; `whatsapp_click` **Uma** (o mesmo visitante clicando várias vezes conta uma). As duas **secundárias**, sempre: `whatsapp_click` é um clique no botão, não uma conversa, e `contact_submitted` mistura assunto de projeto com parceria e "outro". Nunca entram nos lances.
+4. Leitura: elas mostram que palavra-chave e anúncio trazem gente que escreve em vez de pedir pelo wizard. A conversa de WhatsApp que vira oportunidade entra no CRM como linha `WA-…` com as UTMs da `Ref.: G-…` (playbook 05 §5) e conta nos critérios do §6 e na conferência do §7.
 
 **LGPD:** a Política já diz que a Lemamon informa ao Google Ads que um pedido foi enviado depois de um clique e como ele evoluiu (`purposes.items.attribution`). Quem se opuser por e-mail (`controls_opposition`) fica fora dos envios. O prazo `conversoesGoogleAds` da Política depende da revisão jurídica (`_notes.legal_review` itens a, i, j).
 
@@ -170,6 +181,8 @@ Os cenários do 06-marketing §6.7 são **estimativas de mercado**, não dado da
 | Aumentar a verba só se, por 4 semanas | GA4 medindo o funil · SLA do score A cumprido · CPL do Ads ≤ [PREENCHER] · % de pedidos A+B vindos do Ads ≥ [PREENCHER] · capacidade de atender · prova publicada (≥ 2 cases, `hasCases`) |
 | Reduzir ou pausar se, por 4 semanas | CPL > [PREENCHER] ou nenhum diagnóstico vindo do Ads |
 
+**O que conta como "vindo do Ads"** nos critérios acima: pedido (`Pedidos`) ou mensagem de `/contato` com `gclid`, `gbraid`, `wbraid` ou `utm_medium = cpc`, **e** as linhas `WA-…` com `utm_medium = cpc` (conversa de WhatsApp aberta com `Ref.: G-…`, playbook 05 §5). Sem as linhas `WA-…`, a palavra-chave que gera conversa no WhatsApp parece não converter e o corte de verba erra.
+
 Registre em [15-registro-de-decisoes.md](15-registro-de-decisoes.md) e revise nas revisões de 60 e 90 dias (playbook 13).
 
 ## 7. Rotina
@@ -180,12 +193,13 @@ Registre em [15-registro-de-decisoes.md](15-registro-de-decisoes.md) e revise na
 | Mensal | custo por pedido, custo por pedido A+B, custo por diagnóstico realizado (CRM); comparação das conversões por evento e por URL (até decidir); ajuste de palavras-chave; **gatilho da ação principal** (§4.4, passo 5): conversões `Lead qualificado` e `lead_qualified` nos últimos 30 dias × 30; **estratégia de lances**: antes da troca da D09, a coluna "Tipo de estratégia de lances" mostra só "Maximizar cliques" ou "CPC manual" em todas as campanhas, e a aplicação automática de recomendações de lances continua desligada (§1 e §5, linha "Lances"); **pedidos de Ads sem `gclid`** (abaixo) |
 | Trimestral | estrutura de campanhas, URLs finais, verba (com o playbook 13) |
 
-**Pedidos de Ads sem `gclid` (B120), conferência mensal.** A importação offline (§4.4) só casa pedido que chegou com `gclid`. O site guarda o clique no toque da sessão, que vive só enquanto a aba vive (BLUEPRINT §10.3), e no rascunho do wizard (30 dias). Quem clica no anúncio e volta outro dia, ou abre o `/orcamento` em outra aba, sem ter começado o wizard antes, chega ao CRM sem `gclid` e sem UTM. Por isso a conta usa duas fontes:
+**Pedidos de Ads sem `gclid` (B120), conferência mensal.** A importação offline (§4.4) só casa pedido que chegou com `gclid`. O site guarda o clique no toque da sessão, que vive só enquanto a aba vive (BLUEPRINT §10.3), e no rascunho do wizard (30 dias). Desde a auditoria de conversão, três caminhos que perdiam o clique foram fechados: a aba nova (Cmd+clique num CTA) adota o toque de campanha de outra aba do site que ainda esteja aberta (F26, BroadcastChannel, sem gravar nada além da aba); sem `gclid` na URL e na aba, o pedido leva o do cookie `_gcl_aw` que o próprio Google Ads grava (F26, abaixo); e o `/contato` também envia `attribution` e `gclid` (F11). Continua sem `gclid` quem volta outro dia por outro caminho, com o cookie do Ads recusado ou apagado, e o clique de iPhone, que chega como `gbraid`/`wbraid` (F81). Por isso a conta usa duas fontes:
 
 1. **Ads × CRM:** em Metas › Conversões, anote as conversões "Solicitar cotação" do mês (coluna de conversões por horário da conversão, a mesma do §4.4, passo 5, para comparar com a data de chegada do pedido no CRM). O Ads conta também quem voltou outro dia, porque o cookie dele lembra o clique. No CRM, conte os pedidos do mês com `gclid`: `=CONT.SES(gclid;"<>";recebido_em;">="&início_do_mês;recebido_em;"<"&início_do_mês_seguinte)`. **% de pedidos de Ads sem `gclid`** = `1 − pedidos_com_gclid ÷ conversões_solicitar_cotacao`.
-2. **UTM sem `gclid`:** no CRM, os pedidos do mês com `utm_medium = cpc` (o sufixo do §2 grava `utm_source = google` junto) e `gclid` vazio: `=CONT.SES(utm_medium;"cpc";gclid;"";recebido_em;">="&início_do_mês;recebido_em;"<"&início_do_mês_seguinte)`. Qualquer número acima de zero aqui indica que o `gclid` se perdeu no caminho: confira a codificação automática (§2, item 1) e se algum redirect corta a query string.
+2. **UTM sem `gclid`:** no CRM, os pedidos do mês com `utm_medium = cpc` (o sufixo do §2 grava `utm_source = google` junto), `gclid` vazio e **sem** `gbraid`/`wbraid` (clique de iPhone não tem `gclid`, e está certo): `=CONT.SES(utm_medium;"cpc";gclid;"";gbraid;"";wbraid;"";protocolo;"<>WA-*";recebido_em;">="&início_do_mês;recebido_em;"<"&início_do_mês_seguinte)` (as linhas `WA-…` ficam de fora: nunca têm `gclid`). Qualquer número acima de zero aqui indica que o `gclid` se perdeu no caminho: confira a codificação automática (§2, item 1) e se algum redirect corta a query string.
+3. **Conversas de WhatsApp do Ads:** as linhas `WA-…` do mês com `utm_medium = cpc` (`Ref.: G-…`, playbook 05 §5): `=CONT.SES(protocolo;"WA-*";utm_medium;"cpc";recebido_em;">="&início_do_mês;recebido_em;"<"&início_do_mês_seguinte)`. Elas não entram na importação offline (sem `gclid`), mas contam no §6.
 
-**Se o item 1 passar de 30%:** peça ao agente `conversion` um fallback do `gclid` lido do cookie de primeira parte `_gcl_aw` (formato `GCL.<timestamp>.<gclid>`), em `buildAttribution` (`src/islands/wizard/lead.ts`), **só quando o `gclid` da URL e o do toque da sessão estiverem vazios**. Antes do pedido, confirme que o texto `privacy.sections.navigation_data.items.google_ads` ("o identificador desse clique segue junto com ele") cobre a leitura do cookie nos 3 idiomas; se houver dúvida, leve ao advogado junto com a revisão jurídica da Política (`_notes.legal_review`). Registre o pedido e o resultado do mês seguinte em [15](15-registro-de-decisoes.md) §2.
+**Fallback do cookie `_gcl_aw` (achado F26, já no ar):** sem `gclid`, `gbraid` ou `wbraid` na URL e no toque da aba, o pedido (wizard e `/contato`) leva o `gclid` do cookie de primeira parte `_gcl_aw` (formato `GCL.<timestamp>.<gclid>`, `buildAttribution` em `src/lib/attribution.ts`). O cookie só existe se o Google Ads o gravou (no modo consentimento, só depois do aceite), e o envio segue as mesmas regras de permissão do `gclid`. A Política descreve a leitura em `privacy.sections.data_collected.draft_measurement` nos 3 idiomas, e o item (q) de `_notes.legal_review` leva o texto ao advogado. **Se o item 1 ainda passar de 30%** depois disso, registre em [15](15-registro-de-decisoes.md) §2 e avalie com o agente `conversion` o próximo passo; enquanto isso, a ação `lead_qualified` do GA4 (§4.5) não depende do `gclid` no pedido.
 
 ## 8. O que não fazer agora
 
