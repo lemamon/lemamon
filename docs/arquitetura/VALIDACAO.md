@@ -427,7 +427,7 @@ Resolvido e provado no build de produção, no navegador ou por teste automatiza
 | B142 | Migrar o schema do wizard para IDs semânticos | IDs semânticos no wizard (problem_unclear, mobile_app…). |
 | B143 | Recolher a descrição livre e rotulá-la como opcional | Detalhes recolhidos atrás de '+ Quer contar mais alguma coisa? (opcional)'. |
 | B144 | Aplicar máscara de telefone brasileiro | Máscara (48) 99999-8888 no wizard e no /contato. |
-| B145 | Tirar o mailto como CTA e exibir o e-mail como texto copiável | E-mail como texto com 'Copiar'; 0 mailto. |
+| B145 | Tirar o mailto como CTA e exibir o e-mail como texto copiável | E-mail como texto com 'Copiar'; 0 mailto no HTML. Desde a auditoria de conversão F49, no toque (pointer: coarse) o script transforma o endereço num mailto: com assunto; "Copiar" continua sendo a ação principal. |
 | B147 | Exibir um número de protocolo na confirmação | Protocolo LEM-AAAAMMDD-XXXX na tela e no registro do Netlify. |
 | B148 | Mostrar o resumo do escopo na confirmação, com opção de receber cópia | Resumo do pedido na confirmação, com 'Copiar resumo'. |
 | B150 | Limpar o rascunho do orçamento só depois do sucesso confirmado | O rascunho só é apagado no sucesso; no erro, as 6 respostas ficam. |

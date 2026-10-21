@@ -7,12 +7,32 @@
  *   componente anuncia "E-mail copiado"; evento email_copy {source}.
  * - Sem a API de clipboard (contexto inseguro, permissão negada): seleciona o
  *   endereço para a pessoa copiar e anuncia a instrução (data-failed-label).
+ * - No toque (pointer: coarse, auditoria F49), o endereço vira um link
+ *   mailto: com o assunto de data-mailto-subject; com mouse, continua texto
+ *   selecionável. O HTML publicado nunca tem mailto (B145).
  */
 
 import { track } from "@/lib/analytics";
 
 const RESET_MS = 2500;
 const timers = new WeakMap<HTMLElement, number>();
+
+/** Endereço → link mailto: com assunto, só no toque (F49). */
+export function linkAddresses(root: ParentNode = document, coarse = window.matchMedia?.("(pointer: coarse)").matches): void {
+  if (!coarse) return;
+  for (const address of root.querySelectorAll<HTMLElement>("[data-copy-address]")) {
+    if (address.querySelector("a")) continue;
+    const email = address.textContent?.trim() ?? "";
+    if (!email) continue;
+    const link = document.createElement("a");
+    const subject = address.dataset.mailtoSubject;
+    link.href = `mailto:${email}${subject ? `?subject=${encodeURIComponent(subject)}` : ""}`;
+    link.textContent = email;
+    address.replaceChildren(link);
+  }
+}
+
+linkAddresses();
 
 function selectAddress(root: HTMLElement): void {
   const address = root.querySelector("[data-copy-address]");

@@ -8,6 +8,11 @@
  * largura) e a região aria-live anuncia "E-mail copiado"; evento
  * email_copy {source}. {email} vem de config/empresa.ts. Lógica em
  * src/scripts/copy-email.ts (um listener para a página inteira).
+ * No toque (pointer: coarse), o script transforma o endereço num link
+ * mailto: com assunto (data-mailto-subject, shared.clipboard.mailto_subject;
+ * auditoria F49): no celular, copiar e colar é mais lento que abrir o app de
+ * e-mail. Com mouse, o endereço continua texto selecionável, e o HTML
+ * publicado não tem mailto (B145). "Copiar" segue sendo a ação principal.
  */
 import Icon from "@/components/ui/Icon.astro";
 import { empresa } from "@/config/empresa";
@@ -24,7 +29,7 @@ const email = empresa.email;
 ---
 
 <span class="copy-email" data-copy-email>
-  <span class="copy-email__address" data-copy-address>{email}</span>
+  <span class="copy-email__address" data-copy-address data-mailto-subject={t(locale, "shared.clipboard.mailto_subject")}>{email}</span>
   <button
     type="button"
     class="copy-email__button"

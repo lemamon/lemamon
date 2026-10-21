@@ -29,6 +29,8 @@
  * preenche no envio, e no POST sem JS eles vão vazios. data-ads-consent-required
  * (baseAnuncios = "consentimento"): o gclid só vai com o aceite do aviso de cookies.
  *
+ * Logo abaixo do título, por onde vem a resposta (form.reply_line, auditoria F39).
+ *
  * Ritmo vertical: <Section spacing="compact" trim="start"> (B211), emendada nos canais.
  *
  * Links para o wizard (dicas do assunto e confirmação) = <ArrowLink> (B214): o
@@ -85,7 +87,10 @@ const emailSuggestion = getSection(locale, "shared.forms.email_suggestion");
 
 <Section id="formulario" spacing="compact" trim="start" labelledby="contact-form-title" class="contact-form">
   <div class="contact-form__inner">
-    <h2 id="contact-form-title" class="contact-form__title">{form.title}</h2>
+    <div class="contact-form__head">
+      <h2 id="contact-form-title" class="contact-form__title">{form.title}</h2>
+      <p class="contact-form__reply">{features.hasWhatsapp ? form.reply_line : form.reply_line_no_whatsapp}</p>
+    </div>
 
     <div id="mensagem-enviada" class="contact-form__success" tabindex="-1" data-contact-success>
       <h3 class="contact-form__success-title">
@@ -330,6 +335,15 @@ const emailSuggestion = getSection(locale, "shared.forms.email_suggestion");
   .contact-form__title {
     font-size: var(--text-h3);
     line-height: var(--leading-h3);
+  }
+
+  .contact-form__head {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .contact-form__reply {
+    color: var(--color-text-secondary);
   }
 
   .contact-form__form {

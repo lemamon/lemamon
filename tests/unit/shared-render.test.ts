@@ -179,12 +179,14 @@ describe("Compromissos, decisão, CTA final e termos", () => {
     expect(count(html, /<li\b/g)).toBe(2);
   });
 
+  // Sem mailto no HTML (B145): o link mailto: só nasce no toque, pelo copy-email.ts (F49, copy-email.test.ts).
   it("CTA final: origem, e-mail copiável, sem mailto, 'Como funciona' em 3 passos", async () => {
     for (const locale of LOCALES) {
       const html = decode(await render(CtaFinal, { locale, origem: "home-final", whatsappMessage: "x", showHowItWorks: true }));
       expect(html).toMatch(/href="[^"]*\?origem=home-final"/);
       expect(html).not.toContain("mailto:");
       expect(html).toContain("data-copy=");
+      expect(html).toContain(`data-mailto-subject="${t(locale, "shared.clipboard.mailto_subject")}"`);
       expect(html).toContain(t(locale, "shared.cta.microcopy_no_commitment"));
       expect(count(html.split(t(locale, "shared.cta_final.how_it_works_title"))[1] ?? "", /<li\b/g)).toBe(3);
     }

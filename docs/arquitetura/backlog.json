@@ -3783,7 +3783,7 @@
     "needs_owner_input": "contact_info",
     "description": "O mailto é o canal com maior taxa de falha silenciosa. Ele deve sair como CTA e o endereço deve ficar só como texto copiável no rodapé, de preferência num domínio próprio.",
     "proposed_fix": "Trocar o CTA por WhatsApp ou wizard; no rodapé, mostrar o e-mail como texto com botão 'copiar'. O dono define o e-mail comercial no domínio lemamon.dev.",
-    "acceptance_criteria": "Nenhum CTA principal usa mailto, e o e-mail exibido é o comercial confirmado pelo dono.",
+    "acceptance_criteria": "Nenhum CTA principal usa mailto, e o e-mail exibido é o comercial confirmado pelo dono. Auditoria de conversão F49 (21/10/2026): o HTML continua sem mailto; só no toque (pointer: coarse) o endereço vira link mailto: com assunto, e 'Copiar' segue como ação principal.",
     "files": [
       "src/components/Contact/index.tsx",
       "src/components/Footer/index.tsx"

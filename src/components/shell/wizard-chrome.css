@@ -122,6 +122,14 @@
 .wizard-footer .wizard-footer__sep {
   color: var(--color-text-tertiary);
 }
+/* Abaixo de 640px (escala de breakpoints, B079) o e-mail pode descer para a
+   linha de baixo, e o "·" ficava pendurado no fim da linha da Política (F49);
+   sem ele, o respiro entre os dois é o gap da linha. */
+@media (max-width: 639.98px) {
+  .wizard-footer .wizard-footer__sep {
+    display: none;
+  }
+}
 .wizard-footer .wizard-footer__company {
   flex-basis: 100%;
   margin: 0;

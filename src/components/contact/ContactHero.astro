@@ -4,11 +4,14 @@
  * Para projeto novo (ou sistema no ar), o caminho mais rápido é o diagnóstico
  * gratuito (→ /orcamento?origem=contato-hero: origem única por posição,
  * backlog B047); para o resto, os canais. WhatsApp
- * como secundário (some sem número).
+ * como secundário (some sem número). Por último, a âncora "Prefere escrever?
+ * Ir para o formulário" (auditoria F39: no celular, o formulário ficava a 2,4
+ * telas do topo); os botões continuam, são os únicos CTAs da 1ª tela.
  * Ritmo vertical: <Section spacing="hero-compact"> (B211).
  */
 import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
 import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
+import Icon from "@/components/ui/Icon.astro";
 import Section from "@/components/ui/Section.astro";
 import { t, type Locale } from "@/i18n";
 
@@ -29,6 +32,10 @@ const { locale, whatsappMessage } = Astro.props;
       <WhatsAppCta locale={locale} message={whatsappMessage} source="contato-hero" />
     </div>
     <p class="contact-hero__microcopy">{t(locale, "shared.cta.microcopy_diagnosis")}</p>
+    <a class="contact-hero__form-link" href="#formulario">
+      {t(locale, "contact.hero.form_link")}
+      <Icon name="arrow-down" size={16} />
+    </a>
   </div>
 </Section>
 
@@ -51,5 +58,13 @@ const { locale, whatsappMessage } = Astro.props;
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
     color: var(--color-text-secondary);
+  }
+
+  .contact-hero__form-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-block-size: var(--target-min);
+    font-weight: var(--font-weight-bold);
   }
 </style>

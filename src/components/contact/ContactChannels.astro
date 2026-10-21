@@ -6,7 +6,9 @@
  * do hero; sem número; some sem PUBLIC_WHATSAPP_NUMBER) · E-mail em texto com
  * "Copiar" (com NDA confirmado, a variante que cita NDA) · LinkedIn, GitHub,
  * Medium numa linha só, depois dos cards (auditoria de conversão F14: perfil
- * ainda sem conteúdo não ganha card antes do formulário) · "São Paulo, SP, Brasil".
+ * ainda sem conteúdo não ganha card antes do formulário) · "São Paulo, SP, Brasil"
+ * (com hasCompanyData, razão social · CNPJ · cidade, logo antes do formulário:
+ * auditoria F39). Os perfis ficam numa linha só também no celular (F39).
  *
  * Perfis: BLUEPRINT §6.9 e §4 tratam os três como canais confirmados e os
  * listam sempre (como o footer, CONTRACT §15.1); a nota contact._notes.profiles
@@ -27,6 +29,7 @@ import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
 import Card from "@/components/ui/Card.astro";
 import Icon from "@/components/ui/Icon.astro";
 import Section from "@/components/ui/Section.astro";
+import { empresa } from "@/config/empresa";
 import { getFeatures } from "@/config/features";
 import { PROFILE_IDS, perfis } from "@/config/perfis";
 import { getSection, t, type Locale } from "@/i18n";
@@ -43,6 +46,9 @@ const profiles = getSection(locale, "shared.profiles");
 const profileOrder = ["linkedin", "github", "medium"] as const satisfies readonly (typeof PROFILE_IDS)[number][];
 // Diagnóstico + e-mail sempre; WhatsApp só com número configurado.
 const channelCount = features.hasWhatsapp ? 3 : 2;
+const location = features.hasCompanyData
+  ? t(locale, "contact.channels.location_with_company", { razao_social: empresa.razaoSocial, cnpj: empresa.cnpj })
+  : channels.location;
 ---
 
 <Section id="canais" spacing="compact" trim="start" labelledby="contact-channels-title" class="contact-channels">
@@ -90,7 +96,7 @@ const channelCount = features.hasWhatsapp ? 3 : 2;
 
     <p class="contact-channels__location">
       <Icon name="map-pin" size={18} />
-      {channels.location}
+      {location}
     </p>
   </div>
 </Section>
@@ -174,10 +180,10 @@ const channelCount = features.hasWhatsapp ? 3 : 2;
     color: var(--color-text-secondary);
   }
 
+  /* Os 3 perfis numa linha só, também a 320px (F39). */
   .contact-channels__profiles ul {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2) var(--space-5);
+    gap: var(--space-4);
     margin: 0;
     padding: 0;
     list-style: none;
