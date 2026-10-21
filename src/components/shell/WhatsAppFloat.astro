@@ -5,6 +5,8 @@
  * mobile a barra fixa o substitui. Mensagem pré-preenchida pela página (§7.7).
  * Some sem PUBLIC_WHATSAPP_NUMBER (sem link morto) e enquanto o rodapé está na
  * tela (src/scripts/whatsapp-float.ts), para não cobrir o seletor de idioma.
+ * @media em `em` (48em), igual à barra fixa: com a fonte do navegador ampliada,
+ * os dois trocam de lugar na mesma largura (F13).
  */
 import Icon from "@/components/ui/Icon.astro";
 import { t, type Locale } from "@/i18n";
@@ -79,7 +81,7 @@ const href = whatsappHref(message);
       transform: translateY(-2px);
     }
   }
-  @media (min-width: 768px) {
+  @media (min-width: 48em) {
     .whatsapp-float {
       display: grid;
     }

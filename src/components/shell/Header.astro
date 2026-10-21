@@ -13,6 +13,11 @@
  *  - tablet 768–1023: logo · Como trabalhamos · CTA · Menu;
  *  - mobile < 768: logo · Menu (drawer em tela cheia).
  * (*) só quando a página existe (features.ts, via nav.ts).
+ * As larguras valem para a fonte padrão de 16px: as @media são em `em` (48em,
+ * 64em, 79.999em), então com o "Tamanho da fonte" do Chrome em 20 ou 24px o
+ * header passa para o layout de tela mais estreita em vez de transbordar
+ * (F13; o mesmo em src/styles/breakpoints.ts, que os scripts usam). Não use
+ * overflow: hidden no .site-header__nav: corta o dropdown de Serviços.
  *
  * O CTA primário vira "Continuar meu pedido" com rascunho (ResumeLabel + script
  * inline do <head>), sem layout shift. Item ativo com aria-current="page".
@@ -408,7 +413,8 @@ const crowded = links.length > 3 ? "true" : undefined;
     display: none !important;
   }
 
-  @media (min-width: 768px) {
+  /* em, não px: 1em de @media é a fonte padrão do navegador (F13, ver o topo). */
+  @media (min-width: 48em) {
     .site-header__nav {
       display: block;
     }
@@ -417,7 +423,7 @@ const crowded = links.length > 3 ? "true" : undefined;
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 64em) {
     .site-header__nav {
       margin-inline-end: auto;
     }
@@ -460,8 +466,9 @@ const crowded = links.length > 3 ? "true" : undefined;
      idioma sai (continua no rodapé). Pior caso, es a 1024px com Cases, Sobre,
      agenda ("Agenda tu diagnóstico gratuito", 239px) e um item ativo em negrito:
      ~20px livres entre o menu e as ações, sem rolagem horizontal, header em 72px.
-     tests/e2e/shell-header-cta.spec.ts confere 1024, 1100 e 1279px nos 3 idiomas. */
-  @media (min-width: 1024px) and (max-width: 1279.98px) {
+     tests/e2e/shell-header-cta.spec.ts confere 1024, 1100 e 1279px nos 3 idiomas,
+     e shell-header-font-size.spec.ts, a fonte do navegador em 20 e 24px. */
+  @media (min-width: 64em) and (max-width: 79.999em) {
     .site-header :global(.site-header__cta) {
       padding-inline: var(--space-3);
     }
