@@ -63,12 +63,13 @@ A Home trata o medo de contratar software como algo que "costuma dar errado", nu
 
 ### Como o site trata o preço
 
-Nenhum valor é publicado. A pergunta "quanto custa?" recebe uma resposta honesta ("depende do escopo"), a lista do que pesa no preço e o caminho até um preço fechado. As faixas de referência existem como estrutura e ficam escondidas até `precos.ts` ser preenchido.
+Nenhum valor é publicado. A pergunta "quanto custa?" recebe uma resposta honesta que começa pelo que já dá para saber ("o preço sai fechado antes do desenvolvimento"), não pela negativa (auditoria de conversão F08), a lista do que pesa no preço e o caminho até um preço fechado. As faixas de referência existem como estrutura e ficam escondidas até `precos.ts` ser preenchido.
 
 ### Regras que o copy respeita
 
-- Só afirma os fatos confirmados. Os únicos números de serviço são "45 minutos" e "a cada 2 semanas" ("6 perguntas" descreve o próprio formulário).
-- Não cita clientes, número de projetos, anos de mercado, tamanho ou nomes do time, certificações, prêmios, percentuais, depoimentos, logos, duração da Descoberta ou do MVP, prazo da devolutiva, preços, garantias contratuais, prazo de resposta nem superlativos ("melhor", "líder", "referência").
+- Só afirma os fatos confirmados. Os únicos números de serviço são "45 minutos", "a cada 2 semanas" e a duração típica da Descoberta, "em geral 1 semana" (D42, vinda de `descoberta.duracao`, sempre com "depende do tamanho do problema" e "combinada antes de começar"); "6 perguntas" descreve o próprio formulário.
+- Afirma o atendimento a distância fora do Brasil, em português, inglês ou espanhol (D31, `confirmacoes.atendeExterior`), sem citar moeda, nota fiscal de exportação, foro ou fuso: esses ficam "combinados por escrito antes de começar".
+- Não cita clientes, número de projetos, anos de mercado, tamanho ou nomes do time, certificações, prêmios, percentuais, depoimentos, logos, duração do MVP, duração da Descoberta além da típica confirmada, prazo da devolutiva, preços, garantias contratuais além das confirmadas pelo dono (o código da empresa por contrato, com `codigoProprietario = "answer_draft"`, e o NDA antes dos detalhes), prazo de resposta nem superlativos ("melhor", "líder", "referência").
 - Cases, depoimentos, logos, time e preços são escritos só como estrutura (título, introdução, rótulos) e aparecem quando o dado existir. O texto dessas seções faz sentido com 1 ou mais itens.
 - Sustentação fala de "o sistema" que entra no ar, nunca promete assumir sistema feito por outra empresa (isso depende de `confirmacoes.sistemaTerceiros`).
 
