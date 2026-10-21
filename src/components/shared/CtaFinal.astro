@@ -17,6 +17,12 @@
  * Slot padrão: linha terciária abaixo do e-mail (ex.: services.template.profiles_line).
  * eyebrow/index (opcionais): rótulo numerado acima do título ("07 / …", Home).
  *
+ * Impressão / PDF (auditoria F46, src/scripts/print.ts, carregado pelo
+ * script do Header para não somar um <script> ao HTML): no papel, a seção
+ * volta aos tokens claros, os FAQs da página abrem e aparece a linha
+ * "Diagnóstico gratuito: lemamon.dev/orcamento" (shared.cta_final.print_line,
+ * [data-print-only], escondida na tela).
+ *
  * Título no papel "display" (tokens.css): maior que o h2 das seções e sempre
  * menor que o H1 da página. "45 minutos"/"45-minute" não quebra no meio
  * (NoBreakText). Desktop: grade de 12 colunas, 7 + 5 com o "Como funciona".
@@ -26,7 +32,7 @@ import Icon from "@/components/ui/Icon.astro";
 import Section from "@/components/ui/Section.astro";
 import { confirmacoes } from "@/config/confirmacoes";
 import { getFeatures } from "@/config/features";
-import type { QuoteAttribution } from "@/config/routes";
+import { SITE_URL, urlFor, type QuoteAttribution } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 
 import CtaDiagnosis from "./CtaDiagnosis.astro";
@@ -85,6 +91,8 @@ const steps = showHowItWorks
     ]
   : [];
 const titleId = `${id}-title`;
+/** Endereço do diagnóstico no papel (F46): domínio + caminho do /orcamento, sem query. */
+const printUrl = `${new URL(SITE_URL).hostname}${urlFor("quote", locale)}`;
 const hasExtra = Astro.slots.has("default");
 const indexLabel = eyebrow && index && index > 0 ? `${String(index).padStart(2, "0")} /` : undefined;
 ---
@@ -113,6 +121,7 @@ const indexLabel = eyebrow && index && index > 0 ? `${String(index).padStart(2, 
         <Icon name="check" size={16} strokeWidth={2.5} />
         {t(locale, "shared.cta.microcopy_no_commitment")}
       </p>
+      <p class="ctaf__print" data-print-only hidden>{t(locale, "shared.cta_final.print_line", { url: printUrl })}</p>
     </div>
 
     {

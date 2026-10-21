@@ -10,7 +10,11 @@
  * Slots:
  *   breadcrumb — trilha (Breadcrumb do shell), antes do eyebrow;
  *   actions    — CTA primário + WhatsApp (no máximo 1 primário, §8.6);
- *   after      — conteúdo depois da microcopy (ex.: índice das etapas).
+ *   visual     — coluna da direita a partir de 1024px (grade 7 + 5; abaixo
+ *                disso, depois do corpo): o índice das etapas em
+ *                /como-trabalhamos (auditoria F47: no notebook, a metade
+ *                direita do hero ficava vazia);
+ *   after      — conteúdo depois da microcopy, na largura toda.
  *
  * `splitTitle` mostra a parte depois de ": " numa linha menor DENTRO do mesmo
  * H1, sem mudar o texto (services._notes.mvp_h1).
@@ -38,10 +42,11 @@ const colon = splitTitle ? title.indexOf(": ") : -1;
 const head = colon > 0 ? title.slice(0, colon + 2) : title;
 const tail = colon > 0 ? title.slice(colon + 2) : "";
 const hasActions = Astro.slots.has("actions");
+const hasVisual = Astro.slots.has("visual");
 ---
 
 <Section spacing="hero-compact" width="full" labelledby="page-hero-title" class="page-hero">
-  <div class="container page-hero__inner">
+  <div class="container page-hero__inner" data-visual={hasVisual ? "" : undefined}>
     <slot name="breadcrumb" />
     <div class="page-hero__body">
       {eyebrow && <p class="eyebrow page-hero__eyebrow">{eyebrow}</p>}
@@ -64,6 +69,13 @@ const hasActions = Astro.slots.has("actions");
         )
       }
     </div>
+    {
+      hasVisual && (
+        <div class="page-hero__visual">
+          <slot name="visual" />
+        </div>
+      )
+    }
     <slot name="after" />
   </div>
 </Section>
@@ -146,6 +158,22 @@ const hasActions = Astro.slots.has("actions");
   @media (min-width: 1024px) {
     .page-hero__body {
       gap: var(--space-5);
+    }
+
+    /* 7 + 5 com o visual (F47); a trilha e o "after" ocupam a linha toda. */
+    .page-hero__inner[data-visual] {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: center;
+    }
+    .page-hero__inner[data-visual] > :global(:not(.page-hero__body, .page-hero__visual)) {
+      grid-column: 1 / -1;
+    }
+
+    .page-hero__visual {
+      padding: var(--space-6);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-lg);
+      background-color: var(--color-bg-surface);
     }
   }
 </style>

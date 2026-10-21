@@ -187,6 +187,9 @@ const crowded = links.length > 3 ? "true" : undefined;
 <script>
   import "@/scripts/header";
   import "@/scripts/drawer";
+  // Impressão e PDF (auditoria F46): aqui, e não no CtaFinal, para não somar um
+  // <script> ao HTML da Home (no limite do orçamento de HTML do verify-build).
+  import "@/scripts/print";
 </script>
 
 <style>

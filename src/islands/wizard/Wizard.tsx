@@ -2019,10 +2019,15 @@ function WizardFlow(props: WizardProps) {
         : view === "resumo"
           ? copy.progress.summary_label
           : copy.progress.contact_label;
+    // Rótulo curto ("6/6", "Resumo", "Contato") quando o header fica estreito
+    // para o texto, por zoom ou fonte ampliada (F51; container query no CSS).
+    const short =
+      typeof view === "number" ? `${view}/${TOTAL_QUESTIONS}` : view === "resumo" ? label : copy.progress.contact_label_short;
     return (
       <div className={styles.progress}>
         <span className={styles.progressLabel} aria-hidden="true">
-          {label}
+          <span className={styles.progressLong}>{label}</span>
+          <span className={styles.progressShort}>{short}</span>
         </span>
         <div
           className={styles.progressTrack}

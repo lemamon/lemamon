@@ -65,6 +65,15 @@
   color: var(--color-whatsapp);
 }
 
+/* Tela baixa (zoom de 200% no notebook, celular deitado; auditoria F51): o
+   header sai do sticky e rola com a página; preso, ele e a barra de ação
+   ocupavam até 47% da tela. */
+@media (max-height: 34em) {
+  .wizard-header[data-wizard-header] {
+    position: static;
+  }
+}
+
 /* Abaixo de 380px (ex.: 320px), logo + "Dúvidas? WhatsApp" não cabem numa
    linha (em inglês sobram ~36px): o logo fica só com o símbolo. O nome
    acessível do link continua "Lemamon…" (aria-label). */

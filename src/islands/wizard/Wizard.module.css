@@ -631,6 +631,21 @@ textarea.control {
   }
 }
 
+/* Tela baixa (notebook com zoom de 200%, ~640×350; celular deitado; F51):
+   a barra fica no fluxo, como no desktop baixo. Fixa, ela e o header ocupavam
+   35% a 47% da tela. Com o teclado aberto ela continua (é o único "Enviar"). */
+@media (max-height: 34em) {
+  .actions {
+    position: static;
+    padding-inline: 0;
+    box-shadow: none;
+  }
+
+  .actions[data-keyboard="open"]:not([data-state="error"]) {
+    display: flex;
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * Resumo
  * ------------------------------------------------------------------ */
@@ -1111,6 +1126,24 @@ textarea.control {
   flex: 1 1 auto;
   min-inline-size: 0;
   max-inline-size: 20rem;
+  container-type: inline-size;
+}
+
+/* Rótulo curto ("6/6", "Resumo", "Contato") quando o texto não cabe numa
+   linha: com zoom ou a fonte do navegador ampliada, o longo quebrava em 2 ou 3
+   linhas e o header crescia (F51). Em em: acompanha a fonte da pessoa. */
+.progressShort {
+  display: none;
+}
+
+@container (max-width: 12em) {
+  .progressLong {
+    display: none;
+  }
+
+  .progressShort {
+    display: inline;
+  }
 }
 
 /* Quebra em vez de vazar: "Último paso: tus datos de contacto" não cabe numa

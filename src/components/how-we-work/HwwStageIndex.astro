@@ -3,12 +3,15 @@
  * Índice das 4 etapas de /como-trabalhamos (BLUEPRINT §6.2, notas de UI).
  * Dono: pages.
  *
- * - variant="chips": no hero, só abaixo de 1024px — fila de chips rolável.
+ * - variant="chips": no hero. Abaixo de 1024px, fila de chips rolável; a
+ *   partir de 1024px, a lista das 4 etapas na coluna da direita do hero
+ *   (auditoria F47: a metade direita do hero ficava vazia no notebook).
  * - variant="aside": ao lado das etapas, só a partir de 1024px — sumário
- *   lateral sticky com a etapa ativa em aria-current="location".
- * Cada instância some (display:none) fora do seu breakpoint, então só uma
- * <nav> fica no leitor de tela por vez. O realce da etapa ativa é progressivo:
- * sem JS ou sem IntersectionObserver, o índice continua funcionando.
+ *   lateral sticky com a etapa ativa em aria-current="location". Com as duas
+ *   <nav> na página a partir de 1024px, o aside tem nome próprio
+ *   (how_we_work.hero.index_label_aside), para os landmarks não repetirem.
+ * O realce da etapa ativa é progressivo: sem JS ou sem IntersectionObserver,
+ * o índice continua funcionando.
  *
  * Foco nos chips (B075, WCAG 2.4.7/2.4.11): a fila rola sozinha até o chip
  * focado (focusin → scrollIntoView "nearest"), o respiro interno da fila
@@ -29,7 +32,12 @@ const stages = getSection(locale, "shared.method_timeline.stages");
 const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
 ---
 
-<nav class="stage-index" data-variant={variant} data-stage-index aria-label={t(locale, "how_we_work.hero.index_label")}>
+<nav
+  class="stage-index"
+  data-variant={variant}
+  data-stage-index
+  aria-label={t(locale, variant === "aside" ? "how_we_work.hero.index_label_aside" : "how_we_work.hero.index_label")}
+>
   <p class="stage-index__label" aria-hidden="true">{t(locale, "how_we_work.hero.index_label")}</p>
   <ol role="list" class="stage-index__list">
     {
@@ -105,6 +113,7 @@ const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
     min-block-size: var(--target-min);
     text-decoration: none;
     color: var(--color-text-primary);
+    font-size: var(--text-sm);
     transition: var(--transition-colors);
   }
 
@@ -115,78 +124,73 @@ const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
   }
 
   /* ---------- chips (hero, < 1024px) ---------- */
-  /* Respiro de --space-2 (8px) em volta dos chips: o anel de foco precisa de
-     3px + 2px de offset e era cortado pelo overflow com --space-1 (B075). */
-  .stage-index[data-variant="chips"] .stage-index__list {
-    display: flex;
-    gap: var(--space-2);
-    overflow-x: auto;
-    padding-block: var(--space-2);
-    padding-inline: var(--space-2);
-    margin-inline: calc(-1 * var(--space-2));
-    scroll-padding-inline: var(--space-2);
-    scroll-snap-type: x proximity;
-    scrollbar-width: thin;
-  }
+  @media (max-width: 1023.98px) {
+    /* Respiro de --space-2 (8px) em volta dos chips: o anel de foco precisa de
+       3px + 2px de offset e era cortado pelo overflow com --space-1 (B075). */
+    .stage-index[data-variant="chips"] .stage-index__list {
+      display: flex;
+      gap: var(--space-2);
+      overflow-x: auto;
+      padding: var(--space-2);
+      margin-inline: calc(-1 * var(--space-2));
+      scroll-padding-inline: var(--space-2);
+      scroll-snap-type: x proximity;
+      scrollbar-width: thin;
+    }
 
-  .stage-index[data-variant="chips"] .stage-index__list:focus-within {
-    scroll-snap-type: none;
-  }
+    .stage-index[data-variant="chips"] .stage-index__list:focus-within {
+      scroll-snap-type: none;
+    }
 
-  .stage-index[data-variant="chips"] li {
-    flex: none;
-    scroll-snap-align: start;
-  }
+    .stage-index[data-variant="chips"] li {
+      flex: none;
+      scroll-snap-align: start;
+    }
 
-  .stage-index[data-variant="chips"] .stage-index__link {
-    padding-inline: var(--space-4);
-    border: 1px solid var(--color-border-default);
-    border-radius: var(--radius-full);
-    background-color: var(--color-bg-surface);
-    font-size: var(--text-sm);
-    white-space: nowrap;
-  }
+    .stage-index[data-variant="chips"] .stage-index__link {
+      padding-inline: var(--space-4);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-full);
+      background-color: var(--color-bg-surface);
+      white-space: nowrap;
+    }
 
-  .stage-index[data-variant="chips"] .stage-index__link:hover {
-    border-color: var(--color-border-control);
-    background-color: var(--color-bg-surface-hover);
-  }
-
-  /* ---------- aside (≥ 1024px) ---------- */
-  .stage-index[data-variant="aside"] {
-    display: none;
-  }
-
-  .stage-index[data-variant="aside"] .stage-index__list {
-    display: grid;
-    border-inline-start: 1px solid var(--color-border-subtle);
-  }
-
-  .stage-index[data-variant="aside"] .stage-index__link {
-    padding-inline: var(--space-4) var(--space-2);
-    margin-inline-start: -1px;
-    border-inline-start: 2px solid transparent;
-    color: var(--color-text-secondary);
-    font-size: var(--text-sm);
-  }
-
-  .stage-index[data-variant="aside"] .stage-index__link:hover {
-    color: var(--color-text-primary);
-  }
-
-  .stage-index[data-variant="aside"] .stage-index__link[aria-current="location"] {
-    border-inline-start-color: var(--color-accent);
-    color: var(--color-text-primary);
-    font-weight: var(--font-weight-bold);
-  }
-
-  @media (min-width: 1024px) {
-    .stage-index[data-variant="chips"] {
-      display: none;
+    .stage-index[data-variant="chips"] .stage-index__link:hover {
+      border-color: var(--color-border-control);
+      background-color: var(--color-bg-surface-hover);
     }
 
     .stage-index[data-variant="aside"] {
-      display: block;
+      display: none;
+    }
+  }
+
+  /* ---------- lista (≥ 1024px): o sumário lateral sticky e, no hero, o mapa
+     das 4 etapas na coluna da direita (auditoria F47) ---------- */
+  @media (min-width: 1024px) {
+    .stage-index__list {
+      display: grid;
+      border-inline-start: 1px solid var(--color-border-subtle);
+    }
+
+    .stage-index__link {
+      padding-inline: var(--space-4) var(--space-2);
+      margin-inline-start: -1px;
+      border-inline-start: 2px solid transparent;
+      color: var(--color-text-secondary);
+    }
+
+    .stage-index__link:hover {
+      color: var(--color-text-primary);
+    }
+
+    .stage-index__link[aria-current="location"] {
+      border-inline-start-color: var(--color-accent);
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .stage-index[data-variant="aside"] {
       position: sticky;
       inset-block-start: calc(var(--header-height) + var(--space-8));
     }

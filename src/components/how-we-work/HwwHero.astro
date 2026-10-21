@@ -1,8 +1,10 @@
 ---
 /**
  * Como trabalhamos §6.2 #1 `hero` — always. Dono: pages. ÚNICO H1.
- * O método numa frase + índice das etapas (chips roláveis abaixo de 1024px;
- * no desktop o índice vira o sumário lateral sticky, HwwStageIndex "aside").
+ * O método numa frase + índice das etapas: chips roláveis abaixo de 1024px; a
+ * partir de 1024px, a lista das 4 etapas na coluna da direita do hero (slot
+ * "visual" do PageHero, auditoria F47), além do sumário lateral sticky perto
+ * das etapas (HwwStageIndex "aside").
  * CTA primário → /orcamento?origem=metodo-hero; secundário: WhatsApp (§2.2).
  */
 import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
@@ -30,5 +32,5 @@ const { locale, whatsappMessage } = Astro.props;
     <CtaDiagnosis locale={locale} origem="metodo-hero" />
     <WhatsAppCta locale={locale} message={whatsappMessage} source="metodo-hero" />
   </Fragment>
-  <HwwStageIndex slot="after" locale={locale} variant="chips" />
+  <HwwStageIndex slot="visual" locale={locale} variant="chips" />
 </PageHero>

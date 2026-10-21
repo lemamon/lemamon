@@ -19,6 +19,8 @@
  *    "obrigatório" só depois do envio.
  *  - F24: recarregar a tela de contato mantém o que foi digitado (sessionStorage,
  *    sem o honeypot).
+ *  - F51: tela baixa (notebook com zoom de 200%, ~640×350): header e barra de
+ *    ação no fluxo; com o header estreito, o progresso usa o rótulo curto.
  */
 import { expect, test, type Page } from "@playwright/test";
 
@@ -235,5 +237,27 @@ test.describe("contato (F23, F24)", () => {
     await expect(root.getByRole("textbox", { name: f.name.label, exact: true })).toHaveValue("Ana Teste");
     await expect(root.getByRole("textbox", { name: f.email.label, exact: true })).toHaveValue("ana.teste@example.com");
     await expect(root.locator('input[name="phone"]')).toHaveValue("(48) 99999-8888");
+  });
+});
+
+test.describe("tela baixa e estreita (F51)", () => {
+  test("640×350: header e barra rolam com a página", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 350 });
+    await openWithDraft(page, "pt", 2);
+    expect(await page.locator("[data-wizard-header]").evaluate((el) => getComputedStyle(el).position)).toBe("static");
+    expect(await page.locator("[data-wizard-actions]").evaluate((el) => getComputedStyle(el).position)).toBe("static");
+  });
+
+  test("header estreito: '2/6' no lugar de 'Pergunta 2 de 6'; o nome acessível continua completo", async ({ page }) => {
+    const q = COPY.pt.quote;
+    await page.setViewportSize({ width: 320, height: 640 });
+    await openWithDraft(page, "pt", 2);
+    await page.addStyleTag({ content: "html { font-size: 150% !important; }" });
+    const progress = page.locator("[data-wizard-progress]");
+    await expect(progress.getByText("2/6", { exact: true })).toBeVisible();
+    await expect(progress.locator("[role='progressbar']")).toHaveAttribute(
+      "aria-valuetext",
+      q.progress.label.replace("{n}", "2").replace("{total}", "6"),
+    );
   });
 });
