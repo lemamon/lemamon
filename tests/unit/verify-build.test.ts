@@ -59,7 +59,7 @@ describe("verify-build: orçamento de peso (B097)", () => {
     expect(weightProblems(page('<script type="module" src="/_astro/entry.js"></script>'), read).join()).toMatch(
       new RegExp(`JS .* > ${(WEIGHT_BUDGET.jsGz / 1024).toFixed(1).replace(".", "\\.")} KiB \\(página sem ilha permitida\\)`),
     );
-    // A mesma carga cabe numa página do wizard (limite de 100 KiB, só nas rotas da ilha).
+    // A mesma carga cabe numa página do wizard (limite jsGzIsland, só nas rotas da ilha).
     expect(weightProblems(page("", '<astro-island component-url="/_astro/entry.js"></astro-island>'), read, true)).toEqual([]);
     expect(weightProblems(page("", `<p>${noise(WEIGHT_BUDGET.htmlGz + 2048).toString()}</p>`), read).join()).toMatch(/HTML .* > 25\.0 KiB/);
   });
@@ -81,7 +81,7 @@ describe("verify-build: orçamento de peso (B097)", () => {
     expect(weightProblems(page(plain), read).join()).toMatch(/\(sem as folhas de dado do dono\)/);
   });
 
-  it("ilha React fora do wizard reprova, e o JS dela não ganha o limite de 100 KiB (B097)", async () => {
+  it("ilha React fora do wizard reprova, e o JS dela não ganha o limite jsGzIsland (B097)", async () => {
     const { islandProblems, weightProblems, WEIGHT_BUDGET } = await import("@/integrations/verify-build");
     // Componente de ~80 KiB gzip, como o experimento do revisor (<Contador client:visible /> na Home).
     const assets: Record<string, Buffer> = { "/_astro/x.js": noise(40 * 1024) };

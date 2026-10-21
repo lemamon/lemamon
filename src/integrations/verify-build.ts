@@ -31,7 +31,7 @@
  *         when_data (Home); produção com o aviso de cookies: Home 15,3 KiB
  *         com ele;
  *       JS (scripts /_astro + ilha + imports estáticos seguidos + inline)
- *         ≤ 12 KiB em toda página e ≤ 101 KiB SÓ nas rotas da ilha do wizard
+ *         ≤ 12 KiB em toda página e ≤ 102 KiB SÓ nas rotas da ilha do wizard
  *         (ISLAND_ROUTES: "quote" de src/config/routes.ts, /orcamento,
  *         /en/quote, /es/cotizacion). O limite vem da ROTA, não da presença de
  *         <astro-island>: uma ilha nova na Home ficaria com 12 KiB (B097).
@@ -49,7 +49,10 @@
  *         e-mail, atribuição do /contato, toque de campanha entre abas,
  *         "Ref.: G-…" no WhatsApp, gbraid/wbraid e ?debug_analytics=1). Medido
  *         na rota do wizard: dist 92,6 → 94,6 KiB; dist-ficticio 98,3 →
- *         100,3 KiB. O caminho para descer de novo é o F53 (Preact). Nas
+ *         100,3 KiB. 102 KiB desde o merge dos pacotes A e C (resumo
+ *         reordenado, trava de entrada e progresso de 8 passos do F02/F06/F21
+ *         somados à atribuição): dist-ficticio 101,3 KiB. O caminho para
+ *         descer de novo é o F53 (Preact). Nas
  *         outras páginas, +1,0 KiB (Home 7,5 → 8,5); o /contato ficou MAIS
  *         leve (9,6 → 8,8 KiB): o aprimoramento do formulário carrega no
  *         ocioso ou no 1º toque (ContactForm.astro);
@@ -192,7 +195,7 @@ export const WEIGHT_BUDGET = {
   /** CSS da página com as folhas when_data e a do aviso de cookies. Temporário: baixar para cssGz (pedido a home/gated). */
   cssGzOwnerData: 17 * KIB,
   jsGz: 12 * KIB,
-  jsGzIsland: 101 * KIB,
+  jsGzIsland: 102 * KIB,
   htmlGz: 25 * KIB,
   jsFileRaw: 250 * KIB,
   font: 30 * KIB,
