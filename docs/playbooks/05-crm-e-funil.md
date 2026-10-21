@@ -22,7 +22,7 @@ Visitante → botão de WhatsApp ───────────────�
 
 Faça no dia do lançamento e depois de qualquer mudança nos formulários.
 
-1. **Detecção de formulários ligada:** Netlify › o site › **Forms**. Se aparecer o botão para habilitar a detecção, habilite e faça um deploy novo.
+1. **Detecção de formulários ligada:** Netlify › o site › **Forms**. Se aparecer o botão para habilitar a detecção, habilite e faça um deploy novo. **Feito em 21/10/2026:** detecção ligada e deploy preview do PR #13 refeito; `briefing` e `contato` aparecem em Forms › Active forms.
 2. **Os dois formulários aparecem:** `briefing` e `contato`, com os campos da §1. Se faltar um campo, avise o agente `conversion` (a declaração estática fica em `src/components/quote/NetlifyForms.astro` e tem teste de contrato).
 3. **Envio real em produção:** antes de começar, anote o prazo (P4) e a faixa de investimento (P5) que você vai escolher. Abra `https://lemamon.dev/orcamento?utm_source=teste-interno&origem=teste`, responda as 6 perguntas com essas escolhas e, na tela de contato, preencha **todos** os campos:
    - Nome: `TESTE INTERNO`; e-mail: um e-mail da equipe;
@@ -61,6 +61,8 @@ Critério de aceite (B380, B381): envio feito em produção aparece em Forms ›
 ## 3. Notificação dos formulários
 
 **Onde:** Netlify › o site › **Site configuration › Notifications › Emails and webhooks › Form submission notifications › Add notification** (o caminho pode mudar com o painel; procure por "Form submission notifications").
+
+**Configurado em 21/10/2026:** uma notificação por e-mail para `comercial@lemamon.dev`, evento "New form submission", formulário "Any form" (cobre `briefing` e `contato`), **sem** assunto personalizado no painel, para valer o campo `subject` de cada formulário (ver "Assunto do e-mail" abaixo). Falta o backup da tabela e o filtro no e-mail que recebe.
 
 | Notificação | Formulário | Para | Quando usar |
 |---|---|---|---|
