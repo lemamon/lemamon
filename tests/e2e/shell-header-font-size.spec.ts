@@ -3,10 +3,15 @@
  * AUDITORIA-CONVERSAO. Com o "Tamanho da fonte" do Chrome em Grande (20px) ou
  * Muito grande (24px), o header de desktop (media queries em px) transbordava:
  * 151px de rolagem lateral em 1024@20, 293px em 1280@24, CTA fora da tela.
- * As @media do header, do drawer, da barra fixa e do WhatsApp flutuante agora
- * são em `em` (1em de @media = fonte padrão do navegador), e NAV_QUERIES
- * (src/styles/breakpoints.ts) também: com fonte maior, a janela cai no layout
- * de tela mais estreita (48em/64em/79.999em = 768/1024/1280px × fonte ÷ 16).
+ * As @media do header, do drawer, da barra fixa, do WhatsApp flutuante e do
+ * rodapé agora são em `em` (1em de @media = fonte padrão do navegador), e
+ * NAV_QUERIES (src/styles/breakpoints.ts) também: com fonte maior, a janela cai
+ * no layout de tela mais estreita (48em/64em/79.999em = 768/1024/1280px ×
+ * fonte ÷ 16). O rodapé (40em/64em/80em) vazava até 90px a 1024–1280px @ 24px
+ * pela coluna de contato (botões sem quebra de linha).
+ *
+ * Rode também contra o build com a camada fictícia (agenda, Cases e Sobre:
+ * rótulos mais longos e o header data-crowded), que é o pior caso de largura.
  *
  * Page.setFontSizes (CDP) é o mesmo mecanismo do ajuste do Chrome; ele vale
  * para as navegações seguintes da mesma página. Com 16px, este spec repete as
@@ -35,22 +40,9 @@ async function setBrowserFontSize(page: Page, standard: number): Promise<void> {
   await cdp.send("Page.setFontSizes", { fontSizes: { standard, fixed: standard - 4 } });
 }
 
-/**
- * Rolagem lateral (scrollWidth − clientWidth) da página e da página sem o
- * rodapé. O rodapé tem @media em px (fora do F13, ver o test.fixme no fim):
- * com a fonte ampliada, a coluna de contato vaza entre 1024 e 1280px.
- */
-async function overflow(page: Page): Promise<{ page: number; withoutFooter: number }> {
-  return page.evaluate(() => {
-    const root = document.documentElement;
-    const total = root.scrollWidth - root.clientWidth;
-    const footer = document.querySelector<HTMLElement>("footer.site-footer");
-    if (!footer) return { page: total, withoutFooter: total };
-    footer.style.display = "none";
-    const withoutFooter = root.scrollWidth - root.clientWidth;
-    footer.style.display = "";
-    return { page: total, withoutFooter };
-  });
+/** Rolagem lateral da página inteira, rodapé incluído (scrollWidth − clientWidth). */
+async function overflow(page: Page): Promise<number> {
+  return page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 }
 
 test.describe("header com a fonte do navegador em 16, 20 e 24px (F13)", () => {
@@ -93,9 +85,7 @@ test.describe("header com a fonte do navegador em 16, 20 e 24px (F13)", () => {
           });
 
           expect(m.layout, `${where}: layout`).toBe(layout);
-          const scroll = await overflow(page);
-          expect(scroll.withoutFooter, `${where}: rolagem lateral (sem o rodapé)`).toBeLessThanOrEqual(0);
-          if (font === 16) expect(scroll.page, `${where}: rolagem lateral`).toBeLessThanOrEqual(0);
+          expect(await overflow(page), `${where}: rolagem lateral`).toBeLessThanOrEqual(0);
           expect(m.headerHeight, `${where}: altura do header`).toBeLessThanOrEqual(m.maxHeaderHeight);
 
           if (layout === "mobile") {
@@ -167,7 +157,7 @@ test.describe("header com a fonte do navegador em 16, 20 e 24px (F13)", () => {
         expect(result.hidden, `${path}: links cortados ou cobertos`).toEqual([]);
         expect(result.right, path).toBeLessThanOrEqual(result.viewport);
         expect(result.bottom, path).toBeLessThanOrEqual(result.height);
-        expect((await overflow(page)).page, `${path}: rolagem lateral`).toBeLessThanOrEqual(0);
+        expect(await overflow(page), `${path}: rolagem lateral`).toBeLessThanOrEqual(0);
       }
     });
   }
@@ -207,23 +197,45 @@ test.describe("drawer com a fonte do navegador em 24px (F13)", () => {
   });
 });
 
-// Pendência fora do F13 (que trata header, drawer, seletor e breakpoints.ts):
-// o rodapé (Footer.astro) ainda tem @media em px, e os botões da coluna de
-// contato não quebram linha. Com o dono.json real, vaza 30px (pt), 39px (en) e
-// 61px (es) a 1024px @ 24px, até ~1200px; com agenda, Cases e Sobre (camada
-// fictícia), também 1–18px a 1024px @ 20px e até 90px a 1024–1280px @ 24px.
-// Some quando o rodapé (e o resto do site) passar para em.
-test.fixme("rodapé sem rolagem lateral com a fonte do navegador em 20 e 24px", async ({ page }) => {
-  for (const [font, width] of [
-    [20, 1024],
-    [24, 1024],
-    [24, 1280],
-  ] as const) {
-    await page.setViewportSize({ width, height: 800 });
-    await setBrowserFontSize(page, font);
-    for (const [, path] of HOMES) {
-      await page.goto(path);
-      expect((await overflow(page)).page, `${path} @ ${width}px, fonte ${font}px`).toBeLessThanOrEqual(0);
-    }
+test.describe("rodapé com a fonte do navegador em 16, 20 e 24px (F13)", () => {
+  // As larguras em que a coluna de contato vazava com @media em px (1024–1280px),
+  // mais as bordas das faixas em em: 64em = 1280px @ 20 e 1536px @ 24; 80em =
+  // 1600px @ 20 e 1920px @ 24. Com 16px, as bordas de sempre (40/64/80em).
+  const CASES = [
+    [16, [640, 1023, 1024, 1279, 1280]],
+    [20, [1024, 1100, 1200, 1279, 1280, 1600]],
+    [24, [1024, 1100, 1152, 1200, 1280, 1535, 1536, 1920]],
+  ] as const;
+  for (const [font, widths] of CASES) {
+    test(`${font}px: sem rolagem lateral e botões de contato numa linha`, async ({ page, isMobile }) => {
+      test.skip(isMobile, "larguras de notebook: projeto desktop");
+      await setBrowserFontSize(page, font);
+      for (const width of widths) {
+        await page.setViewportSize({ width, height: 800 });
+        for (const [, path] of HOMES) {
+          await page.goto(path);
+          const where = `${path} @ ${width}px, fonte ${font}px`;
+          expect(await overflow(page), `${where}: rolagem lateral`).toBeLessThanOrEqual(0);
+          const buttons = await page.locator(".site-footer__actions > *").evaluateAll((items) =>
+            items.map((item) => {
+              const box = item.getBoundingClientRect();
+              const column = item.closest(".site-footer__contact")!.getBoundingClientRect();
+              const line = parseFloat(getComputedStyle(item).lineHeight) || 1;
+              const text = [...item.childNodes].find((node) => node.nodeType === Node.TEXT_NODE && node.textContent!.trim());
+              const range = document.createRange();
+              if (text) range.selectNodeContents(text);
+              // Altura do texto do rótulo (não a do botão, que tem altura mínima) ÷ entrelinha.
+              const lines = text ? Math.round(range.getBoundingClientRect().height / line) : 0;
+              return { label: (item.textContent ?? "").trim().slice(0, 40), inside: box.right <= column.right + 0.5, lines };
+            }),
+          );
+          expect(buttons.length, where).toBeGreaterThanOrEqual(1);
+          for (const button of buttons) {
+            expect(button.inside, `${where}: "${button.label}" dentro da coluna de contato`).toBe(true);
+            expect(button.lines, `${where}: "${button.label}" numa linha`).toBe(1);
+          }
+        }
+      }
+    });
   }
 });

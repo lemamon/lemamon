@@ -271,8 +271,12 @@ const printLine = `${new URL(SITE_URL).hostname} · ${empresa.email}`;
   /* Botões de conversão nunca quebram em 2 linhas ("Agenda tu / diagnóstico
      gratuito"): a partir de 640px a coluna de contato tem largura para o maior
      rótulo (ver a grade de 1024–1279px). Abaixo disso os botões ocupam a
-     largura toda e, a 320px, o rótulo longo de es pode quebrar em vez de vazar. */
-  @media (min-width: 640px) {
+     largura toda e, a 320px, o rótulo longo de es pode quebrar em vez de vazar.
+     As @media do rodapé são em em (40em, 64em, 80em = 640, 1024, 1280px com a
+     fonte padrão de 16px), como as do header (F13): com o "Tamanho da fonte" do
+     Chrome em 20 ou 24px a grade muda junto com o texto, e a coluna de contato
+     continua com largura para os botões (em px, vazava até 90px a 1024px). */
+  @media (min-width: 40em) {
     .site-footer__actions > :global(*) {
       white-space: nowrap;
     }
@@ -335,7 +339,7 @@ const printLine = `${new URL(SITE_URL).hostname} · ${empresa.email}`;
     margin-inline: calc(-1 * var(--space-1));
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 64em) {
     .site-footer__legal {
       flex-direction: row;
       flex-wrap: wrap;
@@ -355,7 +359,7 @@ const printLine = `${new URL(SITE_URL).hostname} · ${empresa.email}`;
     }
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 40em) {
     .site-footer__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -372,7 +376,7 @@ const printLine = `${new URL(SITE_URL).hostname} · ${empresa.email}`;
      ("Escríbenos / por WhatsApp", "Agenda tu / diagnóstico gratuito"). A marca
      ocupa a linha de cima (12) e Serviços · Lemamon · Contato ficam lado a
      lado embaixo (4+4+4). */
-  @media (min-width: 1024px) {
+  @media (min-width: 64em) {
     .site-footer__grid {
       grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
       column-gap: var(--grid-gap);
@@ -386,7 +390,7 @@ const printLine = `${new URL(SITE_URL).hostname} · ${empresa.email}`;
   }
 
   /* ≥ 1280px: uma linha só, 4+2+2+4 (marca · Serviços · Lemamon · Contato). */
-  @media (min-width: 1280px) {
+  @media (min-width: 80em) {
     .site-footer__brand,
     .site-footer__contact {
       grid-column: span 4;
