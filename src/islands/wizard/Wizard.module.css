@@ -2,7 +2,9 @@
    Nada de CSS-in-JS nem literal de cor, raio ou sombra.
    Mobile primeiro: opções de largura total com alvo ≥ var(--target-option);
    barra de ação fixa abaixo de 768px (some com o teclado aberto, respeita a
-   safe-area) e sticky no rodapé acima disso (F04). Seleção nunca só por cor: ícone de check + borda + peso do texto. */
+   safe-area) e sticky no rodapé acima disso (F04). Seleção nunca só por cor: ícone de check + borda dupla + fundo (sem
+   negrito desde a auditoria F22: o texto em negrito quebrava em mais linhas e
+   a opção marcada crescia, empurrando as de baixo). */
 
 .root {
   --wizard-measure: 44rem;
@@ -157,11 +159,6 @@
   border-color: var(--color-brand);
   box-shadow: var(--ring-inset) var(--color-brand);
   background-color: var(--color-brand-subtle);
-}
-
-.option[data-checked="true"] .optionText,
-.choice[data-checked="true"] .optionText {
-  font-weight: var(--font-weight-bold);
 }
 
 /* O input nativo fica no lugar (acessível e focável), mas invisível: o
@@ -387,8 +384,7 @@ textarea.control {
 .primary,
 .secondary,
 .whatsapp,
-.back,
-.skip {
+.back {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -437,8 +433,7 @@ textarea.control {
   background-color: var(--color-whatsapp-hover);
 }
 
-.back,
-.skip {
+.back {
   padding-inline: var(--space-3);
   background: none;
   color: var(--color-text-link);
@@ -483,16 +478,9 @@ textarea.control {
   }
 
   .back:hover,
-  .skip:hover,
   .linkButton:hover {
     color: var(--color-text-link-hover);
   }
-}
-
-/* "Pular" (P3) e "Corrigir respostas" (resumo): links no fluxo, fora da barra. */
-.skipLink {
-  align-self: flex-start;
-  font-size: var(--text-base);
 }
 
 /* "Voltar" do contato no fluxo: só no mobile, onde ele sai da barra fixa. */

@@ -154,7 +154,10 @@ export function summaryFactors(answers: Answers): FactorId[] {
   if (has("integration")) factors.push("factor_integration");
   if (has("automation")) factors.push("factor_automation");
   // mvp diz a fase do produto, não é outro tipo de software: mvp + 1 tipo = uma frente.
-  const fronts = types.filter((type) => type !== "mvp" && type !== "not_sure").length;
+  // Integração e automação andam juntas (uma frente só, auditoria F28).
+  const fronts = new Set(
+    types.filter((type) => type !== "mvp" && type !== "not_sure").map((type) => (type === "automation" ? "integration" : type)),
+  ).size;
   if (fronts >= 2 && !live) factors.push("factor_multi");
   if (isDeadlineUrgent(answers)) factors.push("factor_deadline");
   else if (hasDeadlineWindow(answers)) factors.push("factor_deadline_window");

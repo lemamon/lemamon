@@ -81,15 +81,17 @@ test.describe("(d) pré-marcação por ?servico=", () => {
     await expect(root.locator('input[name="build_type"]:checked')).toHaveCount(1);
   });
 
-  test("?servico=sistemas-web marca sistema da operação + portal (en)", async ({ page }) => {
+  test("?servico=sistemas-web marca só o sistema da operação e a linha cita a opção (en, F28)", async ({ page }) => {
     await page.goto("/en/quote?servico=sistemas-web&origem=sistemas-web-final");
+    const q = COPY.en.quote;
+    await expect(page.locator("[data-wizard-context]")).toContainText(`“${q.steps.build_type.options_short.ops_system}”`);
     await start(page);
     const root = wizardRoot(page);
     await root.locator('input[name="stage"][value="problem_unclear"]').check();
     await continueStep(page, "en");
     await expectStep(page, 2);
     await expect(root.locator('input[name="build_type"][value="ops_system"]')).toBeChecked();
-    await expect(root.locator('input[name="build_type"][value="client_platform"]')).toBeChecked();
+    await expect(root.locator('input[name="build_type"]:checked')).toHaveCount(1);
   });
 
   test("?servico=sustentacao marca a P1 = maintain_live_system (es)", async ({ page }) => {

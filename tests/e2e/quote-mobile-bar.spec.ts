@@ -3,8 +3,8 @@
  * B193 e B270; BLUEPRINT §7.2, §7.4(f), §7.5, §11.
  *
  *  - Barra fixa: o primário ocupa ≥ 65% da largura útil, com 48px (uma linha),
- *    em todas as telas, a 320 e 375px, nos 3 idiomas. "Pular" (P3) e
- *    "Corrigir respostas" (resumo) não disputam a barra.
+ *    em todas as telas, a 320 e 375px, nos 3 idiomas. "Corrigir respostas"
+ *    (resumo) não disputa a barra; a P3 não tem mais "Pular" (F22).
  *  - Resumo com um token sem quebra na data travante não alarga a página.
  *  - Tab até a última opção da P2: a opção focada não fica atrás da barra.
  *  - Telefone inválido no envio (toque no celular, clique no desktop): nenhum
@@ -94,7 +94,8 @@ test.describe("barra fixa do mobile (B165, B161)", () => {
           expect(m.ratio, `${step}: largura`).toBeGreaterThanOrEqual(0.65);
           expect(m.height, `${step}: uma linha (48px)`).toBe(48);
           expect(m.scrollWidth, `${step}: sem rolagem lateral`).toBe(m.clientWidth);
-          if (step === 3) expect(m.labels).not.toContain(q.nav.skip);
+          // P3 sem o "Pular" solto (F22): Continuar sem marcar vale como pular.
+          if (step === 3) expect(await page.locator("[data-wizard-root] form > button").count(), "3: sem 'Pular'").toBe(0);
           if (step === "resumo") expect(m.labels).toEqual([q.summary.primary]);
           if (step === "contato") expect(m.labels).toEqual([q.contact_form.submit]);
         }

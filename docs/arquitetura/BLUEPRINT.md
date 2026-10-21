@@ -479,10 +479,10 @@ H1 "Esta página não existe"; 1 frase ("O endereço pode ter mudado. Estes cami
 ### 7.2 Mecânica das telas
 
 - Uma pergunta por tela. Header em modo foco: logo (→ `/`, com o progresso salvo), "Pergunta N de 6" com barra (`role=progressbar`, `aria-valuetext`) e o link "Dúvidas? WhatsApp". O WhatsApp flutuante e a barra fixa mobile ficam ocultos. A barra conta **8 passos** (as 6 perguntas, o resumo e o contato até o envio; `aria-valuemax` 8): P6 = 75%, resumo ≈ 87%, contato ≈ 95%, e 100% só depois do envio. Antes, P6, resumo e contato marcavam 100% e o contato parecia um passo a mais (auditoria F21). O texto continua "Pergunta N de 6".
-- Cada pergunta é um `<fieldset>` cuja `<legend>` é o título visível; o texto de apoio fica ligado por `aria-describedby`. As opções são `<input type=radio|checkbox>` **nativos**, estilizados como cartões de largura total, com área de toque ≥ 56px e seleção indicada por ícone de check, borda e peso do texto, nunca só por cor.
+- Cada pergunta é um `<fieldset>` cuja `<legend>` é o título visível; o texto de apoio fica ligado por `aria-describedby`. As opções são `<input type=radio|checkbox>` **nativos**, estilizados como cartões de largura total, com área de toque ≥ 56px e seleção indicada por ícone de check, borda dupla e fundo, nunca só por cor (o peso do texto saiu na auditoria de conversão F22: em negrito, a opção marcada quebrava em mais linhas e empurrava as outras).
 - **Sem avanço automático** (WCAG 3.2.2): sempre há "Continuar", que fica sempre habilitado. Sem seleção, aparece um erro (`aria-invalid` nas opções, foco na primeira opção e o texto na região `aria-live`). O texto visível fica na nota da barra de ação, logo abaixo do "Continuar", em vermelho e negrito; o aviso "Você já marcou 3" da P3 também. No fluxo, atrás da barra fixa, ninguém via o erro (auditoria F05). "Voltar" preserva as respostas.
 - **Trava de duplo clique:** um clique de ponteiro nos primeiros 400 ms de uma tela nova (700 ms no contato) é o 2º clique de um duplo clique da tela anterior e é ignorado; Enter e Espaço nunca são travados. Sem a trava, o 2º clique marcava uma opção não escolhida (desktop), pulava a P3 (celular) ou caía no envio do contato, que fica quase no mesmo lugar do botão do resumo (auditoria F06 e F21).
-- Multisseleção: contador "N selecionadas"; "Ainda não sei" é exclusiva (marcá-la desmarca as outras e vice-versa). A P3 tem o limite "até 3" e o botão "Pular"; "Continuar" na P3 sem nada marcado conta como "Pular" (`wizard_skip`). Na P3, o contador "Selecionadas: N de 3" fica logo abaixo do texto de apoio, no topo da pergunta.
+- Multisseleção: contador "N selecionadas"; "Ainda não sei" é exclusiva (marcá-la desmarca as outras e vice-versa). A P3 tem o limite "até 3" e é opcional: "Continuar" sem nada marcado vale como pular (`wizard_skip`), e o texto de apoio diz isso ("Se nada disso pesa hoje, é só tocar em Continuar"). O botão "Pular" solto saiu na auditoria de conversão F22 (no celular ele ficava atrás da barra fixa). Na P3, o contador "Selecionadas: N de 3" fica logo abaixo do texto de apoio, no topo da pergunta.
 - A cada passo: `document.title` = "Pergunta N de 6 · Orçamento | Lemamon.dev"; o foco vai para a legend; uma região `aria-live=polite` anuncia o passo.
 - No mobile: barra de ação fixa no rodapé com "Voltar" (texto, à esquerda) e "Continuar" (primário, ~70%). Respeita a safe-area e some com o teclado aberto (a altura dela continua valendo no `scroll-padding`, para o campo trazido à tela não ficar atrás da barra quando o teclado fecha). No desktop (≥ 768px, com altura útil a partir de 34em), a barra gruda no rodapé (`position: sticky`) e o "Continuar" das P2–P5 não fica abaixo da dobra no notebook (auditoria F04). O contato continua numa coluna só. Transições respeitam `prefers-reduced-motion`.
 - Ramificação mínima: **N é sempre 6**. As variações são só de texto ou de conjunto de opções (P2, P3, P5), nunca pulam uma pergunta.
@@ -517,7 +517,7 @@ Pergunta: "O que você precisa construir?" · variante quando a P1 ∈ {`evolve_
 
 Propósito: fit técnico e roteamento (tópicos do resumo, fatores, faixas quando houver, cases relacionados, serviço no CRM). Cobre as 7 categorias atuais do `data.json` em linguagem de negócio. Saem do wizard o "cardápio de cargos" (UX/UI, Front-end, Back-end), as "opções adicionais" que inflavam o escopo antes da Descoberta e "site/landing page", que está fora da lista confirmada.
 
-**P3 — `pain`** (quando a P1 ∉ {`evolve_live_system`, `maintain_live_system`}) · multisseleção, até 3 · **opcional, com "Pular"**
+**P3 — `pain`** (quando a P1 ∉ {`evolve_live_system`, `maintain_live_system`}) · multisseleção, até 3 · **opcional (Continuar sem marcar vale como pular)**
 Pergunta: "O que mais pesa hoje?" · Apoio: "Marque até 3. Isso vira o roteiro da nossa conversa."
 
 | id | Opção |
@@ -531,7 +531,7 @@ Pergunta: "O que mais pesa hoje?" · Apoio: "Marque até 3. Isso vira o roteiro 
 | `new_product` | Preciso lançar um produto novo |
 | `other` | Outro motivo — conto na conversa |
 
-**P3 — `system_pain`** (quando a P1 ∈ {`evolve_live_system`, `maintain_live_system`}) · multisseleção, até 3 · opcional, com "Pular"
+**P3 — `system_pain`** (quando a P1 ∈ {`evolve_live_system`, `maintain_live_system`}) · multisseleção, até 3 · opcional (Continuar sem marcar vale como pular)
 Pergunta: "O que está pedindo atenção no sistema que você tem?" · Apoio: "Marque até 3."
 
 | id | Opção |

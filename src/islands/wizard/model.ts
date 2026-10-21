@@ -337,11 +337,17 @@ export function needsDecider(answers: Answers): boolean {
  * Pré-marcação (§7.1)
  * ------------------------------------------------------------------ */
 
-/** ?servico= → P2 (ou P1 = maintain_live_system em sustentação). */
+/**
+ * ?servico= → P2 (ou P1 = maintain_live_system em sustentação). Uma opção só
+ * por serviço (auditoria F28): com duas, quem vinha de sistemas web ou de
+ * integrações chegava ao resumo com "Mais de um tipo de software no mesmo
+ * projeto" como 1º fator, sem ter marcado nada. A linha de contexto cita a
+ * opção marcada (entry.context_service, {opcao}).
+ */
 export const SERVICE_PREFILL: Record<ServiceKey, Partial<Answers>> = {
-  web_systems: { build_type: ["ops_system", "client_platform"] },
+  web_systems: { build_type: ["ops_system"] },
   mobile_apps: { build_type: ["mobile_app"] },
-  integrations: { build_type: ["integration", "automation"] },
+  integrations: { build_type: ["integration"] },
   mvp: { build_type: ["mvp"] },
   support: { stage: "maintain_live_system" },
 };

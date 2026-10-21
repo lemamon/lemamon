@@ -15,8 +15,11 @@
  *    navegador funciona (popstate) e um passo sem as respostas anteriores manda
  *    para a primeira pendente.
  *  - Uma pergunta por tela, fieldset + legend (o título é um H2 dentro da
- *    legend), inputs nativos, opções ≥ 56px, seleção com ícone + borda + peso,
- *    sem avanço automático, "Continuar" sempre habilitado com erro inline.
+ *    legend), inputs nativos, opções ≥ 56px, seleção com ícone + borda dupla +
+ *    fundo (sem negrito: a opção marcada não cresce, auditoria F22), sem
+ *    avanço automático, "Continuar" sempre habilitado com erro inline. A P3 é
+ *    opcional sem botão "Pular": o helper diz que Continuar sem marcar vale
+ *    (F22), e o evento continua wizard_skip.
  *  - Rascunho em localStorage (lib/draft.ts) a cada mudança; apagado só depois
  *    do sucesso confirmado. Banner de retomada acima do H1 (portal).
  *  - Progresso "Pergunta N de 6" desenhado no alvo [data-wizard-progress] do
@@ -24,8 +27,9 @@
  *    contato; 100% só depois do envio, auditoria F21); o modo foco esconde a
  *    casca estática via html[data-wizard-mode="focus"].
  *  - aria-live anuncia passo, envio e erro; o foco vai para o título de cada tela.
- *  - Mobile: a barra fixa é do primário (~70–100%). "Pular" (P3) e "Revisar
- *    respostas" (resumo) ficam no fluxo; no contato, "Voltar" sai da barra.
+ *  - Mobile: a barra fixa é do primário (~70–100%). "Revisar respostas"
+ *    (resumo) fica no fluxo; no contato, "Voltar" sai da barra. Na P4, marcar
+ *    um prazo traz o campo da data à tela, sem foco (F30).
  *    Desktop (≥ 768px, tela com altura útil): a barra gruda no rodapé
  *    (sticky), e o Continuar das P2–P5 não fica abaixo da dobra (F04).
  *    A altura medida da barra vira --wizard-bar-height e o html ganha
@@ -42,6 +46,13 @@
  *    <details>). Com cases publicados (when_data), até 2 do mesmo tipo que o
  *    pedido, entre a pauta e "E o preço?" (backlog B379); sem case
  *    compatível, nada.
+ *  - WhatsApp (F27): o href dos links do resumo leva só o texto fixo
+ *    summary_link (o clique do meio abre com ele e mede whatsapp_click); o
+ *    clique normal abre a mensagem com as respostas por JS. O "Dúvidas?
+ *    WhatsApp" do header diz a pergunta ("…na pergunta {n} de 6 ({tema})") e,
+ *    no resumo, abre a mensagem com as respostas. Nunca deadline_reason no href.
+ *  - "Alterar" a P1 no resumo que troca a P3 (pain ↔ system_pain) leva à nova
+ *    P3 se ela estiver vazia, antes de voltar ao resumo (F29).
  *  - Medição (§7.11 + backlog): wizard_view, wizard_start (uma vez por página),
  *    wizard_restart, wizard_blocked, wizard_abandon/wizard_return,
  *    wizard_summary_factors_view (F02), eventos de campo, e
@@ -371,6 +382,12 @@ function WizardFlow(props: WizardProps) {
   const entryRef = useRef<{ view: View; at: number }>({ view: "intro", at: -Infinity });
   /** Bloco "O que influencia prazo e preço" do resumo (wizard_summary_factors_view, F02). */
   const factorsRef = useRef<HTMLDivElement>(null);
+  /** Campo "Tem alguma data que não pode passar?" da P4 (F30). */
+  const reasonRef = useRef<HTMLDivElement>(null);
+  /** P3 (pain/system_pain) ao abrir uma resposta pelo "Alterar" do resumo (F29). */
+  const p3AtEditRef = useRef<QuestionId | null>(null);
+  /** Mensagem do "Dúvidas? WhatsApp" do header no resumo (com as respostas, F27); null fora dele. */
+  const helpMessageRef = useRef<string | null>(null);
 
   const waEnabled = flags.hasWhatsapp && hasWhatsapp();
   const waBase = waEnabled ? whatsappHref() : null;
@@ -541,15 +558,20 @@ function WizardFlow(props: WizardProps) {
     const refSlug = params.get("ref") ?? "";
     const caseRef = refSlug && Object.hasOwn(cases, refSlug) ? cases[refSlug] : undefined;
     const prefillService = service ?? caseRef?.services[0] ?? null;
-    prefillRef.current = prefillService ? { ...SERVICE_PREFILL[prefillService] } : {};
+    const prefill: Answers = prefillService ? { ...SERVICE_PREFILL[prefillService] } : {};
+    prefillRef.current = prefill;
     const initial = draft ? recordToAnswers(draft.answers) : { ...prefillRef.current };
     answersRef.current = initial;
     setAnswers(initial);
     if (caseRef && prefillService) {
       contextRef.current = { text: fillTemplate(copy.contextCase, { case: caseRef.name }), step: prefillStep(prefillService) };
     } else if (service && servicePages[service]) {
+      // "Já deixamos marcado “{opcao}”…" (F28): a opção que a pré-marcação marcou.
+      const opcao = prefill.stage
+        ? optionLabel("stage", prefill.stage, prefill, copy, chipCtx)
+        : optionLabel("build_type", prefill.build_type?.[0] ?? "", prefill, copy, chipCtx);
       contextRef.current = {
-        text: fillTemplate(copy.contextService, { servico_frase: servicePages[service] }),
+        text: fillTemplate(copy.contextService, { servico_frase: servicePages[service], opcao }),
         step: prefillStep(service),
       };
     }
@@ -599,6 +621,11 @@ function WizardFlow(props: WizardProps) {
       const element = event.target as Element | null;
       // Ida para o WhatsApp (header, entrada, resumo, erro): troca de canal, não abandono.
       if (element?.closest?.('a[href^="https://wa.me/"]')) abandonRef.current?.markHandoff();
+      // No resumo, o "Dúvidas? WhatsApp" do header abre a mensagem com as respostas (F27).
+      if (helpMessageRef.current && event.button === 0 && element?.closest?.("[data-wizard-help]")) {
+        event.preventDefault();
+        openWhatsapp(helpMessageRef.current);
+      }
       const trigger = element?.closest?.("[data-wizard-start]");
       if (!trigger) return;
       event.preventDefault();
@@ -700,12 +727,21 @@ function WizardFlow(props: WizardProps) {
     }
     wasFocusRef.current = true;
     root.dataset.wizardMode = "focus";
-    const focusHref = whatsappHref(copy.whatsapp.wizard_question);
-    if (help && focusHref) help.href = focusHref;
 
     const total = TOTAL_QUESTIONS;
-    if (typeof view === "number") {
-      const question = questionForStep(view, answersRef.current);
+    // "Dúvidas? WhatsApp" do header (F27): nas perguntas, diz qual pergunta; no
+    // resumo, o href leva o texto fixo do resumo e o clique abre com as respostas.
+    const question = typeof view === "number" ? questionForStep(view, answersRef.current) : undefined;
+    const focusHref = whatsappHref(
+      question
+        ? fillTemplate(copy.whatsapp.wizard_question_step, { n: view, total, tema: copy.steps[question].short_label })
+        : view === "resumo"
+          ? copy.whatsapp.summary_link
+          : copy.whatsapp.wizard_question,
+    );
+    if (help && focusHref) help.href = focusHref;
+
+    if (question) {
       document.title = fillTemplate(copy.progress.document_title, { n: view, total });
       setAnnouncement(
         fillTemplate(copy.progress.live_announcement, {
@@ -848,6 +884,8 @@ function WizardFlow(props: WizardProps) {
   const onSingle = (question: QuestionId, id: string) => {
     setStepError(null);
     updateAnswers(setAnswer(answersRef.current, question, id, modelFlags));
+    // P4 com prazo: o campo da data que não pode passar entra na tela, sem foco (F30).
+    if (question === "deadline" && id !== "not_defined") reasonRef.current?.scrollIntoView({ block: "nearest" });
   };
 
   const onToggle = (question: QuestionId, id: string, checked: boolean) => {
@@ -867,7 +905,16 @@ function WizardFlow(props: WizardProps) {
 
   const advance = (from: StepNumber) => {
     if (editing) {
-      const pending = firstIncompleteStep(answersRef.current, modelFlags);
+      const current = answersRef.current;
+      // A troca da P1 mudou a P3 (pain ↔ system_pain) e a nova está vazia: ela
+      // é perguntada antes do resumo, mesmo sendo opcional (F29).
+      const p3 = questionForStep(3, current);
+      if (from === 1 && p3 !== p3AtEditRef.current && !isAnswered(p3, current, modelFlags)) {
+        p3AtEditRef.current = p3;
+        go(3);
+        return;
+      }
+      const pending = firstIncompleteStep(current, modelFlags);
       if (pending === null) {
         setEditing(false);
         go("resumo");
@@ -897,14 +944,6 @@ function WizardFlow(props: WizardProps) {
     advance(view);
   };
 
-  const onSkip = () => {
-    if (typeof view !== "number") return;
-    const question = questionForStep(view, answersRef.current);
-    updateAnswers(setAnswer(answersRef.current, question, [], modelFlags));
-    track("wizard_skip", { question_id: question });
-    advance(view);
-  };
-
   const onBack = () => {
     track("wizard_back", {});
     if (view === "intro") return;
@@ -920,6 +959,7 @@ function WizardFlow(props: WizardProps) {
 
   const onEdit = (step: StepNumber, question: QuestionId) => {
     track("wizard_answer_edit", { question_id: question });
+    p3AtEditRef.current = questionForStep(3, answersRef.current);
     setEditing(true);
     go(step);
   };
@@ -1223,14 +1263,8 @@ function WizardFlow(props: WizardProps) {
             </p>
           )}
         </fieldset>
-        {isOptional(question) && (
-          // "Pular" fora da barra fixa (B165): no fluxo, logo abaixo das opções.
-          <button type="button" className={`${styles.linkButton} ${styles.skipLink}`} aria-label={copy.nav.skip_aria_label} onClick={onSkip}>
-            {copy.nav.skip}
-          </button>
-        )}
         {question === "deadline" && (
-          <div className={styles.field}>
+          <div ref={reasonRef} className={styles.field}>
             <label className={styles.label} htmlFor={`${uid}-reason`}>
               {copy.steps.deadline.reason_label}
             </label>
@@ -1240,7 +1274,11 @@ function WizardFlow(props: WizardProps) {
               type="text"
               maxLength={300}
               autoComplete="off"
-              placeholder={copy.steps.deadline.reason_placeholder}
+              placeholder={
+                answers.stage === "product_idea" || answers.build_type?.includes("mvp")
+                  ? copy.steps.deadline.reason_placeholder_product_variant
+                  : copy.steps.deadline.reason_placeholder
+              }
               value={answers.deadline_reason ?? ""}
               onChange={(event) => updateAnswers({ ...answersRef.current, deadline_reason: event.currentTarget.value })}
             />
@@ -1403,6 +1441,17 @@ function WizardFlow(props: WizardProps) {
     const note = deadlineNote(answers);
     const titleId = `${uid}-summary`;
     const waMessage = summaryWhatsappMessage(chips, copy.whatsapp, protocol);
+    // Quem recomenda ou decide com sócios ganha um motivo para enviar (F45).
+    const belowPrimary =
+      answers.role === "recommend_to_decider" || answers.role === "decide_with_partners" ? s.below_primary_share : s.below_primary;
+    // Href com o texto fixo do resumo (o clique do meio abre com ele); o clique
+    // normal abre a mensagem com as respostas por JS, fora do href (F27).
+    const waSummary = waEnabled ? whatsappHref(copy.whatsapp.summary_link) : null;
+    const onWaAux = (source: string) => (event: ReactMouseEvent<HTMLAnchorElement>) => {
+      if (event.button !== 1) return;
+      abandonRef.current?.markHandoff();
+      track("whatsapp_click", { source });
+    };
     return (
       <section className={styles.screen} aria-labelledby={titleId}>
         <h2 id={titleId} ref={headingRef} tabIndex={-1} className={styles.title}>
@@ -1478,13 +1527,14 @@ function WizardFlow(props: WizardProps) {
               >
                 {s.primary}
               </a>
-              {waBase && (
+              {waSummary && (
                 <a
-                  href={waBase}
+                  href={waSummary}
                   target="_blank"
                   rel="noopener"
                   className={styles.secondary}
                   onClick={openWa(waMessage, "wizard_summary_top")}
+                  onAuxClick={onWaAux("wizard_summary_top")}
                 >
                   {s.secondary_whatsapp}
                   <span className="sr-only"> {copy.opensNewTab}</span>
@@ -1492,7 +1542,7 @@ function WizardFlow(props: WizardProps) {
               )}
             </div>
             <p id={`${uid}-early-note`} className={styles.earlyNote}>
-              {s.below_primary}
+              {belowPrimary}
             </p>
           </div>
         </div>
@@ -1524,16 +1574,17 @@ function WizardFlow(props: WizardProps) {
             primaryLabel: s.primary,
             primaryType: "button",
             onPrimary: () => go("contato"),
-            note: s.below_primary,
+            note: belowPrimary,
           })}
-          {waBase && (
+          {waSummary && (
             // Secundário (§7.4f, §8.6): contornado e afastado do primário.
             <a
-              href={waBase}
+              href={waSummary}
               target="_blank"
               rel="noopener"
               className={`${styles.secondary} ${styles.altChannel}`}
               onClick={openWa(waMessage, "wizard_summary")}
+              onAuxClick={onWaAux("wizard_summary")}
             >
               {s.secondary_whatsapp}
               <span className="sr-only"> {copy.opensNewTab}</span>
@@ -1989,6 +2040,9 @@ function WizardFlow(props: WizardProps) {
   const progressTarget = target("[data-wizard-progress]");
   const resumeTarget = target("[data-wizard-resume]");
   const contextTarget = target("[data-wizard-context]");
+
+  // "Dúvidas? WhatsApp" do header no resumo: a mensagem com as respostas (F27).
+  helpMessageRef.current = view === "resumo" && waEnabled ? summaryWhatsappMessage(chips, copy.whatsapp, protocol) : null;
 
   let content: ReactNode = null;
   if (view === "resumo") content = renderSummary();

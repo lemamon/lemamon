@@ -185,9 +185,10 @@ describe("trava de entrada de tela (F06, F21)", () => {
 
 describe("pré-marcação e serviços", () => {
   it("?servico= marca a P2 (sustentação marca a P1)", () => {
-    expect(SERVICE_PREFILL.web_systems).toEqual({ build_type: ["ops_system", "client_platform"] });
+    // Uma opção por serviço (F28): duas viravam "mais de um tipo de software" no resumo.
+    expect(SERVICE_PREFILL.web_systems).toEqual({ build_type: ["ops_system"] });
     expect(SERVICE_PREFILL.mobile_apps).toEqual({ build_type: ["mobile_app"] });
-    expect(SERVICE_PREFILL.integrations).toEqual({ build_type: ["integration", "automation"] });
+    expect(SERVICE_PREFILL.integrations).toEqual({ build_type: ["integration"] });
     expect(SERVICE_PREFILL.mvp).toEqual({ build_type: ["mvp"] });
     expect(SERVICE_PREFILL.support).toEqual({ stage: "maintain_live_system" });
   });

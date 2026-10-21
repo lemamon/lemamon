@@ -105,6 +105,16 @@ describe("fatores (até 3; com menos de 2, factor_default completa)", () => {
     ]);
   });
 
+  it("integração + automação contam como uma frente só (F28)", () => {
+    expect(summaryFactors({ stage: "scope_defined", build_type: ["integration", "automation"] }, noPricing)).toEqual([
+      "factor_integration",
+      "factor_automation",
+    ]);
+    expect(summaryFactors({ stage: "scope_defined", build_type: ["ops_system", "integration", "automation"] }, noPricing)).toContain(
+      "factor_multi",
+    );
+  });
+
   it("caminhos comuns nunca entregam um fator só (a promessa da entrada é 'o que influencia')", () => {
     // "Nos próximos 3 meses" (o caminho mais comum) tem fator próprio (F09).
     expect(summaryFactors({ stage: "problem_unclear", build_type: ["ops_system"], deadline: "within_3_months" })).toEqual([
