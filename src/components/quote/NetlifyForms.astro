@@ -9,7 +9,8 @@
  * para a detecção não depender do markup daquela página.
  * O `subject` do briefing leva data-remove-prefix: a ilha manda "[score]
  * protocolo" e o Netlify usa esse valor, sem prefixo, como assunto do e-mail
- * de notificação ao comercial.
+ * de notificação ao comercial. O `subject` do contato ("[Contato] Projeto novo",
+ * lib/forms contactSubject) leva o mesmo atributo.
  */
 import { FORM_FIELDS, FORM_NAMES, HONEYPOT_FIELD } from "@/lib/forms";
 
@@ -23,7 +24,7 @@ const LONG_FIELDS = new Set<string>(["details", "answers", "summary", "attributi
       {FORM_FIELDS[form].map((name) =>
         LONG_FIELDS.has(name) ? (
           <textarea name={name} />
-        ) : form === "briefing" && name === "subject" ? (
+        ) : name === "subject" ? (
           <input type="hidden" name={name} data-remove-prefix />
         ) : (
           <input type="text" name={name} />

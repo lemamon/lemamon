@@ -167,7 +167,7 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
       : form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`);
 
   const valueOf = (name: FieldName): string => {
-    if (name === "subject") return form.querySelector<HTMLInputElement>('input[name="subject"]:checked')?.value ?? "";
+    if (name === "subject") return form.querySelector<HTMLInputElement>('input[name="topic"]:checked')?.value ?? "";
     return form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`)?.value ?? "";
   };
 
@@ -188,7 +188,7 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
       const slot = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
       if (slot) slot.textContent = message;
       const targets =
-        name === "subject" ? [...form.querySelectorAll<HTMLInputElement>('input[name="subject"]')] : element ? [element] : [];
+        name === "subject" ? [...form.querySelectorAll<HTMLInputElement>('input[name="topic"]')] : element ? [element] : [];
       for (const target of targets) {
         if (message) target.setAttribute("aria-invalid", "true");
         else target.removeAttribute("aria-invalid");
@@ -199,7 +199,7 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
 
   for (const name of ORDER) {
     if (name === "subject") {
-      form.querySelectorAll('input[name="subject"]').forEach((radio) =>
+      form.querySelectorAll('input[name="topic"]').forEach((radio) =>
         radio.addEventListener("change", () => {
           touched.add("subject");
           check("subject", true);
@@ -257,7 +257,7 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
     if (invalid.length > 0) {
       const first = invalid[0] as FieldName;
       const target =
-        first === "subject" ? form.querySelector<HTMLInputElement>('input[name="subject"]') : (control(first) as HTMLElement | null);
+        first === "subject" ? form.querySelector<HTMLInputElement>('input[name="topic"]') : (control(first) as HTMLElement | null);
       target?.focus();
       return;
     }
@@ -269,7 +269,11 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
       name: String(data.get("name") ?? "").trim(),
       email: String(data.get("email") ?? "").trim(),
       phone: formatPhone(String(data.get("phone") ?? ""), locale).trim(),
-      subject: valueOf("subject"),
+      // topic = id do assunto; subject = assunto legível do e-mail ao comercial (lib/forms contactSubject).
+      topic: valueOf("subject"),
+      subject:
+        form.querySelector<HTMLInputElement>('input[name="topic"]:checked')?.dataset.subjectLine ??
+        String(data.get("subject") ?? ""),
       message: String(data.get("message") ?? "").trim(),
       lang: String(data.get("lang") ?? ""),
       origin: String(data.get("origin") ?? ""),
@@ -282,7 +286,7 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
 
     if (result.ok || result.reason === "spam") {
       if (result.ok && !result.preview) {
-        track("contact_submitted", { subject: fields.subject ?? "" });
+        track("contact_submitted", { subject: fields.topic ?? "" });
         // O POST passou: a conexão está provada, e uma falha guardada offline sai agora.
         void flushPendingEvents({ reachable: true });
       }
@@ -290,7 +294,7 @@ export function initContactForm(form: HTMLFormElement, startedAt: number = Date.
         const text = success.querySelector<HTMLElement>("[data-contact-success-text]");
         if (text && fields.phone && text.dataset.withPhone) text.textContent = text.dataset.withPhone;
         const project = success.querySelector<HTMLElement>("[data-contact-success-project]");
-        if (project) project.hidden = !(fields.subject === "new_project" || fields.subject === "existing_system");
+        if (project) project.hidden = !(fields.topic === "new_project" || fields.topic === "existing_system");
         success.dataset.visible = "true";
         success.focus();
       }

@@ -27,14 +27,14 @@ test.describe("/contato", () => {
 
     // Envio antes de o aprimoramento carregar: o script espera o módulo e valida (nunca o POST nativo).
     await form.getByRole("button", { name: c.submit, exact: true }).click();
-    await expect(form.locator('input[name="subject"]').first()).toBeFocused();
+    await expect(form.locator('input[name="topic"]').first()).toBeFocused();
     await expect(form).toContainText(c.fields.subject.error_required);
     await expect(form).toContainText(c.fields.name.error_required);
     expect(netlify.bodies).toHaveLength(0);
 
     await form.getByRole("textbox", { name: c.fields.name.label, exact: true }).fill("Bruno Teste");
     await form.getByRole("textbox", { name: c.fields.email.label, exact: true }).fill("bruno.teste@example.com");
-    await form.locator('input[name="subject"][value="partnership"]').check();
+    await form.locator('input[name="topic"][value="partnership"]').check();
     await form.getByRole("textbox", { name: c.fields.message.label, exact: true }).fill("Mensagem de teste automatizado.");
     await waitMinFill(page, startedAt);
     await form.getByRole("button", { name: c.submit, exact: true }).click();
@@ -48,7 +48,9 @@ test.describe("/contato", () => {
     const body = netlify.bodies[0]!;
     expect(body.get("form-name")).toBe("contato");
     for (const key of body.keys()) expect([...FORM_FIELDS.contato, "form-name"]).toContain(key);
-    expect(body.get("subject")).toBe("partnership");
+    expect(body.get("topic")).toBe("partnership");
+    // Assunto do e-mail ao comercial: legível, em pt, sem dado pessoal.
+    expect(body.get("subject")).toBe("[Contato] Parceria");
     expect(body.get("lang")).toBe("pt");
     expect(body.get("origin")).toBe("e2e-contato");
     // F11: a mesma atribuição do wizard (utm_*, gclid, origem, página de entrada).
@@ -69,12 +71,12 @@ test.describe("/contato", () => {
     const subject = await form.locator('fieldset[data-group="subject"]').boundingBox();
     const name = await form.getByRole("textbox", { name: c.fields.name.label, exact: true }).boundingBox();
     expect(subject && name && subject.y < name.y).toBe(true);
-    await form.locator('input[name="subject"][value="new_project"]').check();
+    await form.locator('input[name="topic"][value="new_project"]').check();
     const tip = form.locator('[data-tip="new_project"]');
     await expect(tip).toBeVisible();
     await expect(tip).toContainText(c.new_project_tip_lead);
     await expect(tip.getByRole("link")).toContainText(c.new_project_tip);
-    await form.locator('input[name="subject"][value="existing_system"]').check();
+    await form.locator('input[name="topic"][value="existing_system"]').check();
     await expect(form.locator('[data-tip="existing_system"]')).toContainText(c.existing_system_tip_lead);
   });
 
@@ -106,7 +108,7 @@ test.describe("/contato", () => {
     const form = page.locator("form[data-contact-form]");
     await form.getByRole("textbox", { name: c.fields.name.label, exact: true }).fill("Carla Prueba");
     await form.getByRole("textbox", { name: c.fields.email.label, exact: true }).fill("carla.prueba@example.com");
-    await form.locator('input[name="subject"][value="other"]').check();
+    await form.locator('input[name="topic"][value="other"]').check();
     await form.getByRole("textbox", { name: c.fields.message.label, exact: true }).fill("Mensaje de prueba.");
     await waitMinFill(page, startedAt);
     await form.getByRole("button", { name: c.submit, exact: true }).click();
@@ -127,7 +129,7 @@ test.describe("/contato", () => {
     const form = page.locator("form[data-contact-form]");
     await form.getByRole("textbox", { name: c.fields.name.label, exact: true }).fill("Carla Prueba");
     await form.getByRole("textbox", { name: c.fields.email.label, exact: true }).fill("carla.prueba@example.com");
-    await form.locator('input[name="subject"][value="other"]').check();
+    await form.locator('input[name="topic"][value="other"]').check();
     await form.getByRole("textbox", { name: c.fields.message.label, exact: true }).fill("Mensaje de prueba.");
     const phone = form.locator('input[name="phone"]');
     // Celular de Buenos Aires sem o código do país: antes virava "(11) 2345-6789".
@@ -158,7 +160,7 @@ test.describe("/contato", () => {
     const form = page.locator("form[data-contact-form]");
     await form.getByRole("textbox", { name: c.fields.name.label, exact: true }).fill("Jane Test");
     await form.getByRole("textbox", { name: c.fields.email.label, exact: true }).fill("jane.test@example.com");
-    await form.locator('input[name="subject"][value="other"]').check();
+    await form.locator('input[name="topic"][value="other"]').check();
     await form.getByRole("textbox", { name: c.fields.message.label, exact: true }).fill("Test message.");
     const phone = form.locator('input[name="phone"]');
     await phone.fill("415 555 0134");

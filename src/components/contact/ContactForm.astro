@@ -43,7 +43,7 @@ import { privacidade } from "@/config/privacidade";
 import { quoteHref, urlFor } from "@/config/routes";
 import { deployContext } from "@/config/site";
 import { getSection, t, type Locale } from "@/i18n";
-import { FORM_NAMES, HONEYPOT_FIELD, isPreviewSubmitContext } from "@/lib/forms";
+import { contactSubject, FORM_NAMES, HONEYPOT_FIELD, isPreviewSubmitContext } from "@/lib/forms";
 import { whatsappHref } from "@/lib/whatsapp";
 import { contactMessage } from "@/lib/whatsapp-messages";
 
@@ -60,6 +60,8 @@ const newProjectTip = withPrimaryCtaLabel(form.new_project_tip, ctaLabels, featu
 const successNewProjectLink = withPrimaryCtaLabel(form.success_new_project_link, ctaLabels, features);
 const fields = form.fields;
 const subjects = ["new_project", "existing_system", "partnership", "other"] as const;
+// Assunto do e-mail de notificação (FORM_FIELDS): rótulo em pt em qualquer idioma da página.
+const subjectOptionsPt = getSection("pt", "contact.form").fields.subject.options;
 const privacyLabel = t(locale, "shared.lgpd.privacy_link_label");
 const [privacyBefore, privacyAfter] = t(locale, "contact.form.privacy_notice", { politica: "{politica}" }).split("{politica}");
 const emailMarker = "{email}";
@@ -122,6 +124,7 @@ const emailSuggestion = getSection(locale, "shared.forms.email_suggestion");
       <input type="hidden" name="origin" value="" data-contact-origin />
       <input type="hidden" name="attribution" value="" />
       <input type="hidden" name="gclid" value="" />
+      <input type="hidden" name="subject" value={contactSubject(locale)} data-remove-prefix data-contact-subject />
       <div class="contact-form__hp" aria-hidden="true">
         <input type="text" name={HONEYPOT_FIELD} tabindex="-1" autocomplete="off" />
       </div>
@@ -161,7 +164,7 @@ const emailSuggestion = getSection(locale, "shared.forms.email_suggestion");
           {
             subjects.map((id, index) => (
               <label class="choice">
-                <input type="radio" name="subject" value={id} required={index === 0} />
+                <input type="radio" name="topic" value={id} required={index === 0} data-subject-line={contactSubject(locale, subjectOptionsPt[id])} />
                 <span>{fields.subject.options[id]}</span>
               </label>
             ))

@@ -15,7 +15,7 @@ Visitante → botão de WhatsApp ───────────────�
 
 - O **Netlify Forms é o registro de origem** de todo pedido do site. O CRM é onde o pedido é trabalhado.
 - O navegador nunca chama webhook de terceiros (decisão do BLUEPRINT §15.3). Qualquer integração sai do painel do Netlify.
-- Nomes dos campos (iguais nos 3 idiomas): `briefing` = `name, email, phone, channel, company, details, answers, summary, score, protocol, subject, lang, attribution, gclid, bot-field`; `contato` = `name, email, phone, subject, message, lang, origin, attribution, gclid, bot-field`.
+- Nomes dos campos (iguais nos 3 idiomas): `briefing` = `name, email, phone, channel, company, details, answers, summary, score, protocol, subject, lang, attribution, gclid, bot-field`; `contato` = `name, email, phone, topic, subject, message, lang, origin, attribution, gclid, bot-field` (`topic` é o assunto escolhido, com id estável: `new_project`, `existing_system`, `partnership`, `other`; `subject` é o assunto do e-mail, legível, por exemplo `[Contato] Projeto novo`).
 - `attribution` (JSON) e `gclid` saem com as mesmas regras nos dois formulários (`src/lib/attribution.ts`, achado F11 da auditoria de conversão): `utm_*`, `origem`/`servico`/`entrada`/`ref` do CTA, `referrer`, `landing` (página de entrada da visita) e `entry_page` (página do formulário). Clique de anúncio no iPhone chega como `gbraid` ou `wbraid` dentro do `attribution` (F81), com as mesmas regras do `gclid`. No modo consentimento, quem não aceitou o aviso de cookies chega sem nenhum dos três.
 
 ## 2. Verificação em produção depois do deploy (B380)
@@ -62,7 +62,7 @@ Critério de aceite (B380, B381): envio feito em produção aparece em Forms ›
 
 **Onde:** Netlify › o site › **Site configuration › Notifications › Emails and webhooks › Form submission notifications › Add notification** (o caminho pode mudar com o painel; procure por "Form submission notifications").
 
-**Configurado em 21/10/2026:** uma notificação por e-mail para `comercial@lemamon.dev`, evento "New form submission", formulário "Any form" (cobre `briefing` e `contato`), **sem** assunto personalizado no painel, para valer o campo `subject` de cada formulário (ver "Assunto do e-mail" abaixo). Falta o backup da tabela e o filtro no e-mail que recebe.
+**Configurado em 21/10/2026:** uma notificação por e-mail para `comercial@lemamon.dev`, evento "New form submission", formulário "Any form" (cobre `briefing` e `contato`), **sem** assunto personalizado no painel, para valer o campo `subject` de cada formulário (ver "Assunto do e-mail" abaixo). Um envio de teste (`contato`, TESTE INTERNO, pelo deploy preview) chegou em Verified submissions e na caixa de entrada do Microsoft 365 (aba Destaques, fora do spam) em 21/10/2026. O painel avisa que o campo `subject` do formulário tem prioridade sobre um assunto configurado ali. Falta o backup da tabela e a regra no Outlook que recebe.
 
 | Notificação | Formulário | Para | Quando usar |
 |---|---|---|---|
@@ -75,7 +75,7 @@ Critério de aceite (B380, B381): envio feito em produção aparece em Forms ›
 1. Abra a primeira notificação de teste e crie um filtro a partir dela (menu ⋮ › "Filtrar mensagens como esta"): aplicar o marcador `Leads`, marcar com estrela, **nunca enviar para spam**.
 2. Ative notificação no celular para esse marcador (ou para mensagens importantes), para cumprir o SLA do score A.
 
-**Assunto do e-mail:** o Netlify usa um campo chamado `subject`, quando existe no formulário, como assunto da notificação (confira na documentação atual do Netlify Forms). O `contato` já tem `subject` (o assunto escolhido). O `briefing` tem um campo oculto `subject` com `[score] protocolo`, por exemplo `[A] LEM-20261019-AB12` (sem dado pessoal e sem texto de idioma), declarado com `data-remove-prefix` para o Netlify não acrescentar o prefixo dele. Use o `[A]` no começo do assunto para o filtro do Gmail destacar o score A (SLA). No primeiro envio real em produção (passo 5 acima), confira que o assunto chegou assim; se o painel ignorar o campo, o score continua no corpo.
+**Assunto do e-mail:** o Netlify usa um campo chamado `subject`, quando existe no formulário, como assunto da notificação (confira na documentação atual do Netlify Forms). O `contato` manda `subject` legível, `[Contato] Projeto novo` (rótulo em pt e o idioma da página quando não é pt, por exemplo `[Contato · en] Parceria`; sem dado pessoal), e o id do assunto vai em `topic`. Até 21/10/2026 o `subject` do contato era o id cru (`other`, `new_project`), e o primeiro e-mail de teste chegou com o assunto "other". O `briefing` tem um campo oculto `subject` com `[score] protocolo`, por exemplo `[A] LEM-20261019-AB12` (sem dado pessoal e sem texto de idioma), declarado com `data-remove-prefix` para o Netlify não acrescentar o prefixo dele. Use o `[A]` no começo do assunto para o filtro do Gmail destacar o score A (SLA). No primeiro envio real em produção (passo 5 acima), confira que o assunto chegou assim; se o painel ignorar o campo, o score continua no corpo.
 
 **Spam:** envios marcados como spam pelo filtro do Netlify **não geram notificação**. Confira Forms › Spam submissions **toda semana** e marque como "não é spam" o que for pedido real. Envio com o campo-armadilha `bot-field` preenchido é descartado no próprio navegador e nem chega ao painel.
 

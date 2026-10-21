@@ -28,7 +28,9 @@ export const HONEYPOT_FIELD = "bot-field";
  * idioma), para a triagem por SLA na caixa do comercial (playbook 03/04). O
  * Netlify usa o campo chamado `subject` como assunto da notificação; a
  * declaração estática leva data-remove-prefix (sem o "[Netlify]" na frente).
- * No `contato`, `subject` é o assunto escolhido pela pessoa (id estável).
+ * No `contato`, `topic` é o assunto escolhido pela pessoa (id estável) e
+ * `subject` é o assunto do e-mail, legível (contactSubject): o Netlify usa o
+ * campo `subject` do formulário mesmo com assunto configurado no painel.
  */
 export const FORM_FIELDS = {
   briefing: [
@@ -49,10 +51,20 @@ export const FORM_FIELDS = {
     HONEYPOT_FIELD,
   ],
   // attribution e gclid: as mesmas regras do briefing (lib/attribution), achado F11.
-  contato: ["name", "email", "phone", "subject", "message", "lang", "origin", "attribution", "gclid", HONEYPOT_FIELD],
+  contato: ["name", "email", "phone", "topic", "subject", "message", "lang", "origin", "attribution", "gclid", HONEYPOT_FIELD],
 } as const satisfies Record<FormName, readonly string[]>;
 
 export type FormFieldName<F extends FormName> = (typeof FORM_FIELDS)[F][number];
+
+/**
+ * Assunto da notificação do contato: "[Contato] Projeto novo", com o rótulo
+ * do assunto em pt (quem lê é a equipe) e o idioma da página quando não é pt
+ * ("[Contato · en] Parceria"); sem dado pessoal. Sem assunto escolhido (envio
+ * sem JS), vai o genérico.
+ */
+export function contactSubject(lang: string, topicLabel = "Mensagem pelo site"): string {
+  return `[Contato${lang && lang !== "pt" ? ` · ${lang}` : ""}] ${topicLabel}`;
+}
 
 /** Assunto da notificação do briefing: "[score] protocolo" (ver FORM_FIELDS). */
 export function briefingSubject(score: string, protocol: string): string {
