@@ -752,7 +752,7 @@
       },
       "discovery_duration": {
         "question": "Quanto tempo dura a Sprint de Descoberta?",
-        "answer_draft": "Depende do tamanho do problema. Quando a Descoberta é necessária, a necessidade e a duração são definidas com você no diagnóstico."
+        "answer_draft": "Depende do tamanho do problema. A necessidade e a duração da Descoberta são definidas com você no diagnóstico gratuito."
       },
       "discovery_plan_ownership": {
         "question": "O plano da Descoberta é meu se eu não seguir com a Lemamon.dev?",

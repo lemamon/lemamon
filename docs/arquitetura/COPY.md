@@ -835,7 +835,7 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
   - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag; texto alinhado à D44)_: Em alguns casos. A necessidade da Sprint de Descoberta é definida com você no diagnóstico gratuito. Quando ela não é necessária, a proposta de desenvolvimento já vem com escopo, prazo e preço fechados. Quando é, a Descoberta, também gratuita, vem antes.
 - **`discovery_duration`**
   - **Pergunta**: Quanto tempo dura a Sprint de Descoberta?
-  - **`answer_draft`** _(no ar com `duracaoDescoberta`; sem número, D44)_: Depende do tamanho do problema. Quando a Descoberta é necessária, a necessidade e a duração são definidas com você no diagnóstico.
+  - **`answer_draft`** _(no ar com `duracaoDescoberta`; sem número, D44)_: Depende do tamanho do problema. A necessidade e a duração da Descoberta são definidas com você no diagnóstico gratuito.
 - **`discovery_plan_ownership`**
   - **Pergunta**: O plano da Descoberta é meu se eu não seguir com a Lemamon.dev?
   - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag; `planoDoCliente` continua `false`)_: Sim. Tudo o que a Descoberta entrega fica com você: entendimento do problema, escopo priorizado e plano. O escopo e o plano servem de base para seguir com a Lemamon.dev ou para pedir proposta a outro fornecedor.
