@@ -107,4 +107,10 @@ const startHref = whatsappHref(startMessage);
       }
     </p>
   </CtaFinal>
+  <script>
+    // Leitura da página de entrada (auditoria F84): rolagem e FAQ aberto.
+    import { initScrollDepth, observeFaqOpen } from "@/components/shared/section-events";
+    initScrollDepth();
+    observeFaqOpen();
+  </script>
 </Base>

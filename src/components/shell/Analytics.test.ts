@@ -40,9 +40,13 @@ describe("Analytics.astro", () => {
     expect(html).toContain("AW-16881353870/cEi0CLmh9Z8aEI6J1PE-");
     expect(html).toContain('gtag("set","allow_ad_personalization_signals",false)');
     expect(html).toContain('gtag("set","allow_google_signals",false)');
-    // Sem consentimento (legítimo interesse): nenhum consent default, New Relic com defer.
+    // Sem consentimento (legítimo interesse): nenhum consent default; New Relic
+    // injetado depois do load, no ocioso, e nunca como <script src> no <head> (F56).
     expect(html).not.toContain('gtag("consent"');
-    expect(html).toMatch(/<script[^>]*defer[^>]*src="\/scripts\/newrelic\.js"|<script[^>]*src="\/scripts\/newrelic\.js"[^>]*defer/);
+    expect(html).not.toMatch(/<script[^>]*src="\/scripts\/newrelic\.js"/);
+    const loader = /<script>([^<]*\/scripts\/newrelic\.js[^<]*)<\/script>/.exec(html)?.[1] ?? "";
+    expect(loader).toMatch(/^addEventListener\("load",function\(\)\{\(window\.requestIdleCallback\|\|setTimeout\)/);
+    expect(Buffer.byteLength(loader)).toBeLessThan(1024);
   });
 
   it("GA4 só com PUBLIC_GA4_ID", async () => {

@@ -15,8 +15,13 @@
  *    (navigation_data.items.google_ads, sem remarketing — i18n
  *    _notes.launch_blockers (4)). Ligar remarketing exige trocar a Política antes.
  *  - GA4 pela mesma gtag.js, só com PUBLIC_GA4_ID (vazio = nenhum evento).
- *  - New Relic Browser: public/scripts/newrelic.js com defer (nunca o blob
- *    inline de 69 kB no caminho crítico), sem gravação de sessão (B274).
+ *  - New Relic Browser: public/scripts/newrelic.js (nunca o blob inline de
+ *    69 kB no caminho crítico), sem gravação de sessão (B274). Injetado DEPOIS
+ *    do `load`, no ocioso (requestIdleCallback; setTimeout sem ele), por um
+ *    script inline curto (auditoria F56: com defer no <head>, ele segurava os
+ *    módulos da página, +70 ms no DOMContentLoaded em 4G lento e +147 ms em
+ *    3G). O teto do arquivo em dist continua no verify-build
+ *    (OWN_BUDGET_FILES, 30 KiB gzip).
  *  - Com privacidade.baseAnuncios = "consentimento" (B344): o snippet emite o
  *    consent default denied ANTES de gtag("js") e dos config, aplica a escolha
  *    salva na mesma ordem síncrona, e o New Relic só carrega depois do aceite
@@ -32,6 +37,10 @@ import { gtagInlineScript } from "@/scripts/gtag-inline";
 const production = isProductionDeploy();
 /** Consent Mode v2 + aviso de cookies (B344): só com baseAnuncios = "consentimento". */
 const consent = privacidade.baseAnuncios === "consentimento";
+/** Carrega o agente do New Relic depois do load, no ocioso (F56). Compacto: inline clássico, teto de 1 KiB. */
+const newRelicLoader =
+  'addEventListener("load",function(){(window.requestIdleCallback||setTimeout)(function(){' +
+  `var s=document.createElement("script");s.src=${JSON.stringify(NEW_RELIC_SCRIPT)};document.head.appendChild(s)})});`;
 const gtag = gtagInlineScript({
   adsId: GOOGLE_ADS.id,
   sendTo: GOOGLE_ADS.conversionSendTo,
@@ -48,7 +57,7 @@ const gtag = gtagInlineScript({
       <link rel="dns-prefetch" href="https://bam.nr-data.net" />
       <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS.id}`} />
       <script is:inline set:html={gtag} />
-      {!consent && <script is:inline defer src={NEW_RELIC_SCRIPT} />}
+      {!consent && <script is:inline set:html={newRelicLoader} />}
     </>
   )
 }

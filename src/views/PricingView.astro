@@ -76,4 +76,10 @@ const faqItems = orderedFaq(
     text={t(locale, "pricing.cta_final.text")}
     whatsappMessage={whatsappMessage}
   />
+  <script>
+    // Leitura da página de entrada (auditoria F84): rolagem e FAQ aberto.
+    import { initScrollDepth, observeFaqOpen } from "@/components/shared/section-events";
+    initScrollDepth();
+    observeFaqOpen();
+  </script>
 </Base>

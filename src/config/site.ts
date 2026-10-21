@@ -33,7 +33,7 @@ export const ADDRESS = {
   country: "BR",
 } as const;
 
-/** Script do New Relic Browser (public/scripts/newrelic.js), carregado com defer só em produção. */
+/** Script do New Relic Browser (public/scripts/newrelic.js), injetado depois do load só em produção (Analytics.astro, F56). */
 export const NEW_RELIC_SCRIPT = "/scripts/newrelic.js";
 
 /** Dígitos do WhatsApp de destino. */

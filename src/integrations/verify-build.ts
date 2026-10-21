@@ -71,7 +71,7 @@
  *     <link rel=preload as=script>, os atributos da ilha e os import/import()
  *     dos scripts inline, seguindo os imports estáticos. Exceção POR NOME,
  *     com teto próprio (OWN_BUDGET_FILES): /scripts/newrelic.js (o agente do
- *     New Relic, só em produção, defer) ≤ 30 KiB gzip; qualquer outro arquivo
+ *     New Relic, só em produção, injetado depois do load) ≤ 30 KiB gzip; qualquer outro arquivo
  *     de public/scripts entra no JS da página;
  *     e por arquivo, em TODO o dist (não só _astro): nenhum .js acima de 250
  *     KiB brutos, nenhuma .woff2 acima de 30 KiB. Linha de base (out/2026,
@@ -214,7 +214,7 @@ export const WEIGHT_BUDGET = {
  * src/config/site.ts (tests/unit/verify-build.test.ts confere).
  */
 export const OWN_BUDGET_FILES: Readonly<Record<string, number>> = {
-  /** Agente do New Relic Browser: só em produção, com defer (Analytics.astro). Hoje 21,7 KiB gzip. */
+  /** Agente do New Relic Browser: só em produção, injetado depois do load (Analytics.astro, F56). Hoje 21,7 KiB gzip. */
   "/scripts/newrelic.js": 30 * KIB,
 };
 
