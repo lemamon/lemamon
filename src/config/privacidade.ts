@@ -85,6 +85,9 @@ export const PIXEL_PRAZO_VAR: Record<Pixel, string> = {
   meta: "prazo_meta_pixel",
 };
 
+export const PROVEDORES_EMAIL = ["gmail", "google_workspace", "microsoft_365"] as const;
+export type ProvedorEmail = (typeof PROVEDORES_EMAIL)[number];
+
 export interface Privacidade {
   /** legal_basis.items.ads_measurement ("legitimo_interesse") ou ads_measurement_with_consent ("consentimento"). */
   baseAnuncios: "legitimo_interesse" | "consentimento" | null;
@@ -115,8 +118,13 @@ export interface Privacidade {
    * Google Signals e públicos no GA4/Ads (playbook 06 §10).
    */
   remarketing: boolean;
-  /** E-mail no Google Workspace com aditivo de tratamento assinado (processors.items.email_with_workspace). */
-  emailWorkspace: boolean;
+  /**
+   * Onde está o e-mail da Lemamon (processors.items.*): "gmail" (Gmail pessoal,
+   * items.email), "google_workspace" (com aditivo de tratamento assinado,
+   * items.email_with_workspace) ou "microsoft_365" (contratado pela GoDaddy,
+   * items.email_with_microsoft_365). Playbook 11.
+   */
+  provedorEmail: ProvedorEmail;
   /**
    * A classificação automática também define a FORMA de atendimento (score C em
    * nutrição, D fora de perfil)? true usa as variantes *_with_routing (legal_review e).

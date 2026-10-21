@@ -363,7 +363,7 @@ const privacidadeSchema = z.strictObject({
     .string()
     .refine((value) => value === "" || (/^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value))), 'data "AAAA-MM-DD" ou ""'),
   remarketing: z.boolean(),
-  emailWorkspace: z.boolean(),
+  provedorEmail: z.enum(["gmail", "google_workspace", "microsoft_365"]),
   classificacaoDefineAtendimento: z.boolean(),
   naoVendemosConfirmado: z.boolean(),
   ferramentas: z.strictObject({

@@ -30,7 +30,7 @@ const BASE: PrivacyFlags = {
   dpo: false,
   companyData: true,
   mechanism: false,
-  emailWorkspace: false,
+  emailProvider: "gmail",
   routing: false,
   noSale: false,
 };
@@ -62,7 +62,7 @@ describe("Política de Privacidade: montagem", () => {
     }
   });
 
-  it("variante substitui a base e nunca aparece junto (consentimento, remarketing, workspace)", () => {
+  it("variante substitui a base e nunca aparece junto (consentimento, remarketing, fornecedor do e-mail)", () => {
     const sections = getSection("pt", "privacy.sections");
     const base = textOf(buildPrivacy(sections, FULL_VARS, BASE));
     expect(base).toContain(sections.legal_basis.items.ads_measurement);
@@ -72,12 +72,14 @@ describe("Política de Privacidade: montagem", () => {
     expect(base).not.toContain(sections.processors.items.email_with_workspace);
 
     const consent = textOf(
-      buildPrivacy(sections, FULL_VARS, { ...BASE, consent: true, remarketing: true, emailWorkspace: true }),
+      buildPrivacy(sections, FULL_VARS, { ...BASE, consent: true, remarketing: true, emailProvider: "google_workspace" }),
     );
     expect(consent).not.toContain(sections.legal_basis.items.ads_measurement);
     expect(consent).toContain(sections.navigation_data.items.google_ads_with_remarketing.slice(0, 60));
     expect(consent).not.toContain(sections.navigation_data.items.google_ads);
     expect(consent).toContain(sections.processors.items.email_with_workspace);
+    expect(consent).not.toContain(sections.processors.items.email);
+    expect(consent).not.toContain(sections.processors.items.email_with_microsoft_365);
     expect(consent).not.toContain(sections.navigation_data.controls_opposition.slice(0, 40));
     // Com o aviso de cookies (B344), {preferencias_de_cookies} vira o link interno que reabre o aviso.
     expect(consent).toContain(sections.navigation_data.controls_with_consent.slice(0, 40));
@@ -87,6 +89,12 @@ describe("Política de Privacidade: montagem", () => {
       .flatMap((block) => (block.kind === "p" ? block.segments : block.items.flat()))
       .filter((segment) => segment.href === "#preferencias-de-cookies");
     expect(links).toEqual([{ text: sections.navigation_data.cookie_preferences_link_label, href: "#preferencias-de-cookies", external: false }]);
+
+    // Microsoft 365 pela GoDaddy (playbook 11): uma linha de e-mail só, a dele.
+    const microsoft = textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, emailProvider: "microsoft_365" }));
+    expect(microsoft).toContain(sections.processors.items.email_with_microsoft_365);
+    expect(microsoft).not.toContain(sections.processors.items.email);
+    expect(microsoft).not.toContain(sections.processors.items.email_with_workspace);
   });
 
   it("ferramenta inativa sai da lista (GA4 sem PUBLIC_GA4_ID)", () => {

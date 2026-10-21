@@ -44,7 +44,7 @@
     },
     "atualizadaEm": "2026-01-15",
     "remarketing": false,
-    "emailWorkspace": false,
+    "provedorEmail": "gmail",
     "classificacaoDefineAtendimento": false,
     "naoVendemosConfirmado": false,
     "ferramentas": {

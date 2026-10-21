@@ -232,9 +232,10 @@
           "type": "boolean",
           "description": "Remarketing ligado no Google Ads. Exige baseAnuncios = \"consentimento\"."
         },
-        "emailWorkspace": {
-          "type": "boolean",
-          "description": "E-mail no Google Workspace com aditivo de tratamento assinado."
+        "provedorEmail": {
+          "type": "string",
+          "enum": ["gmail", "google_workspace", "microsoft_365"],
+          "description": "Onde está o e-mail da Lemamon: \"gmail\" (Gmail pessoal), \"google_workspace\" (só com o aditivo de tratamento assinado) ou \"microsoft_365\" (contratado pela GoDaddy). Escolhe o fornecedor de e-mail da Política (playbook 11)."
         },
         "classificacaoDefineAtendimento": {
           "type": "boolean",
@@ -310,7 +311,7 @@
         "prazos",
         "atualizadaEm",
         "remarketing",
-        "emailWorkspace",
+        "provedorEmail",
         "classificacaoDefineAtendimento",
         "naoVendemosConfirmado",
         "ferramentas"

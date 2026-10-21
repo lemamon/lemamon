@@ -1,7 +1,7 @@
 {
   "$schema": "./dono.schema.json",
   "empresa": {
-    "email": "lemamon.dev@gmail.com",
+    "email": "comercial@lemamon.dev",
     "razaoSocial": "Lemamon.dev LTDA",
     "cnpj": "69.700.690/0001-98",
     "anoFundacao": null,
@@ -23,7 +23,7 @@
     },
     "atualizadaEm": "",
     "remarketing": false,
-    "emailWorkspace": false,
+    "provedorEmail": "microsoft_365",
     "classificacaoDefineAtendimento": false,
     "naoVendemosConfirmado": false,
     "ferramentas": {

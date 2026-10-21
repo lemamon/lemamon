@@ -59,9 +59,9 @@ Se uma ferramenta sair do site, o item dela sai da Política e a data muda: a li
 - [ ] **(c)** Encarregado (art. 41): a Lemamon se enquadra como agente de pequeno porte (Res. CD/ANPD 2/2022)? → `encarregado`.
 - [ ] **(d)** Base legal no B2B (art. 7º): quem preenche costuma falar em nome de uma empresa.
 - [ ] **(e)** Classificação automática dos pedidos (arts. 9º e 20): se ela também definir a forma de atendimento (retomada para C, resposta própria para D), ligar `privacidade.classificacaoDefineAtendimento` (usa as variantes `*_with_routing`).
-- [ ] **(f)** Gmail pessoal sem aditivo × Google Workspace com aditivo (`privacidade.emailWorkspace`, playbook 11).
+- [ ] **(f)** Fornecedor do e-mail (`privacidade.provedorEmail`, playbook 11). Hoje é Microsoft 365 contratado pela GoDaddy (D41): confirmar se o termo de tratamento de dados da Microsoft cobre a conta contratada pela GoDaddy e se a GoDaddy, que administra a conta, entra como suboperador à parte.
 - [ ] **(g)** Akismet como suboperador.
-- [ ] **(h)** Prazos de retenção e se a exclusão alcança os backups (lixeira e backups do Gmail, backup do WhatsApp).
+- [ ] **(h)** Prazos de retenção e se a exclusão alcança os backups (lixeira e backups do e-mail, inclusive do Gmail antigo enquanto ele existir; backup do WhatsApp).
 - [ ] **(i)** Papel do Google no Ads e no GA4 (operador ou controlador independente) e o prazo das conversões enviadas.
 - [ ] **(j)** Efeito da oposição por e-mail (a Lemamon deixa de informar ao Ads como o pedido evoluiu).
 - [ ] **(k)** Base e texto do remarketing, se for ativado.

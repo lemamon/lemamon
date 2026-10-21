@@ -87,7 +87,7 @@ Onde: Netlify › o site › **Site configuration › Environment variables**. V
 
 ```json
 "empresa": {
-  "email": "lemamon.dev@gmail.com",
+  "email": "comercial@lemamon.dev",
   "razaoSocial": "Lemamon.dev LTDA",
   "cnpj": "69.700.690/0001-98",
   "anoFundacao": null,
@@ -130,7 +130,7 @@ Os valores são decisão sua com o advogado. Cada campo escolhe uma variante de 
   },
   "atualizadaEm": "AAAA-MM-DD",
   "remarketing": false,
-  "emailWorkspace": false,
+  "provedorEmail": "microsoft_365",
   "classificacaoDefineAtendimento": false,
   "naoVendemosConfirmado": false,
   "ferramentas": { "agenda": null, "crm": null, "emailAcompanhamento": null, "automacao": null, "chatEquipe": null },
@@ -146,7 +146,7 @@ Os valores são decisão sua com o advogado. Cada campo escolhe uma variante de 
 | `prazos.*` | `{ pt, en, es }` até 80 cada | os 6 prazos de retenção; **todos obrigatórios** para lançar. GA4 tem que bater com GA4 › Admin › Retenção de dados |
 | `atualizadaEm` | `"AAAA-MM-DD"` | data da Política; mude sempre que ela mudar |
 | `remarketing` | `true` só com `baseAnuncios = "consentimento"` | troca as frases de anúncios pelas de remarketing |
-| `emailWorkspace` | `true` só com Google Workspace e aditivo assinado (playbook 11) | variante de e-mail |
+| `provedorEmail` | `"gmail"`, `"google_workspace"` (só com o aditivo assinado) ou `"microsoft_365"` (contratado pela GoDaddy; o atual, D41) | o fornecedor de e-mail em "Com quem compartilhamos" (playbook 11) |
 | `classificacaoDefineAtendimento` | `true` se o score define a forma de atendimento (advogado, item e) | variantes `*_with_routing` |
 | `naoVendemosConfirmado` | `true` só com a sua confirmação E a do advogado | publica "Não vendemos dados pessoais." |
 | `ferramentas.<nome>` | `null` ou `{ "fornecedor": "Nome do serviço", "prazo": { pt, en, es } }` | declara a ferramenta em "Com quem compartilhamos" e "Por quanto tempo guardamos". **Agenda ligada sem `ferramentas.agenda` trava o build de produção** |

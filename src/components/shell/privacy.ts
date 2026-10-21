@@ -11,6 +11,7 @@
  * não renderiza); seção sem nenhum bloco some, inclusive do sumário.
  */
 
+import type { ProvedorEmail } from "@/config/privacidade";
 import type { Messages } from "@/i18n";
 
 export type Segment = { text: string; href?: string; external?: boolean };
@@ -38,7 +39,8 @@ export interface PrivacyFlags {
   companyData: boolean;
   /** Mecanismo de transferência internacional preenchido. */
   mechanism: boolean;
-  emailWorkspace: boolean;
+  /** Fornecedor do e-mail da Lemamon (processors.items.email / email_with_workspace / email_with_microsoft_365). */
+  emailProvider: ProvedorEmail;
   /** Classificação define a forma de atendimento (*_with_routing). */
   routing: boolean;
   /** "Não vendemos dados pessoais." confirmado pelo dono e pelo advogado. */
@@ -69,6 +71,13 @@ export const PRIVACY_LINKS = {
 
 type Sections = Messages["privacy"]["sections"];
 type SectionId = keyof Sections;
+
+/** Item de processors que descreve o e-mail da Lemamon, por fornecedor. */
+const EMAIL_ITEM: Record<ProvedorEmail, string> = {
+  gmail: "email",
+  google_workspace: "email_with_workspace",
+  microsoft_365: "email_with_microsoft_365",
+};
 
 /**
  * Qual chave renderizar no lugar de cada chave base (null = não renderiza).
@@ -149,8 +158,9 @@ function chooser(flags: PrivacyFlags): Record<string, (key: string) => string | 
         case "google_ads":
           return flags.googleAds ? key : null;
         case "email":
-          return pick(flags.emailWorkspace, "email_with_workspace", "email");
+          return EMAIL_ITEM[flags.emailProvider];
         case "email_with_workspace":
+        case "email_with_microsoft_365":
           return null;
         case "new_relic":
           return flags.newRelic ? key : null;
