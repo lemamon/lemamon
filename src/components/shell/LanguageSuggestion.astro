@@ -10,7 +10,9 @@
  * sem layout shift, sem redirecionamento. "Fechar" vale para as próximas
  * páginas (localStorage; src/scripts/language-suggestion.ts).
  * O link troca o idioma como o seletor e emite o mesmo language_change
- * {from_lang, to_lang} pelo listener delegado (backlog B329). O rótulo do link
+ * {from_lang, to_lang} pelo listener delegado (backlog B329). No layout do
+ * wizard, só na entrada do /orcamento (auditoria F31): some no modo foco
+ * (wizard-chrome.css), e a troca mantém a query menos o ?etapa=. O rótulo do link
  * nunca quebra no meio ("View" / "in English"): desce inteiro para a linha seguinte.
  */
 import Icon from "@/components/ui/Icon.astro";

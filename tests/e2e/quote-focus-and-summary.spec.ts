@@ -11,7 +11,9 @@
  *    real, conta exatamente 1 no contato (a do slot contactProof).
  *  - 375×812: a legend da P1 fica acima de 200px.
  *  - Entrada com ?servico= (auditoria F03): "Começar as 6 perguntas" acima da
- *    dobra a 360×640 e 390×664; a linha de contexto vem depois do botão.
+ *    dobra a 360×640 e 390×664, com o navegador no idioma da página; a linha
+ *    de contexto vem depois do botão. Com o navegador em outro idioma, o aviso
+ *    de idioma (F31) vem primeiro: aviso e H1 na 1ª tela, como na Home.
  *  - Resumo na ordem da auditoria F02: linha "Para:", fatores (na 1ª tela),
  *    pauta, preço, o próximo passo (nota do prazo e, no desktop, o CTA), os
  *    chips e o método compacto (as 4 etapas num <details> fechado). Com
@@ -144,26 +146,48 @@ test.describe("entrada com ?servico=: 'Começar' acima da dobra no celular (F03)
     { width: 360, height: 640 },
     { width: 390, height: 664 },
   ];
+  const BROWSER_LOCALE: Record<Locale, string> = { pt: "pt-BR", en: "en-US", es: "es-419" };
   for (const locale of ["pt", "en", "es"] as const) {
-    test(`${locale}: botão na 1ª tela e a linha de contexto depois dele`, async ({ page }, testInfo) => {
-      test.skip(testInfo.project.name !== "mobile", "dobra do celular: só no projeto mobile");
-      const q = COPY[locale].quote;
-      for (const size of sizes) {
-        await page.setViewportSize(size);
-        for (const servico of ["aplicativos", "integracoes"]) {
-          await page.goto(`${PATH[locale]}?servico=${servico}&origem=${servico}-hero`);
-          const context = page.locator("[data-wizard-context]");
-          await expect(context).toContainText(q.entry.context_service.split("{")[0]!.trim());
-          const start = page.locator("[data-wizard-start]").first();
-          const box = await start.boundingBox();
-          expect(box, `${size.width}×${size.height} ${servico}`).not.toBeNull();
-          expect(box!.y + box!.height, `${size.width}×${size.height} ${servico}: botão inteiro na 1ª tela`).toBeLessThanOrEqual(size.height);
-          // A linha de contexto vem depois do botão (e do WhatsApp), nunca antes.
-          expect(((await context.boundingBox())?.y ?? 0) > box!.y).toBe(true);
+    test.describe(locale, () => {
+      // Quem chega pelo anúncio lê o idioma da página: sem o aviso "também disponível em…" (F31).
+      test.use({ locale: BROWSER_LOCALE[locale] });
+      test(`${locale}: botão na 1ª tela e a linha de contexto depois dele`, async ({ page }, testInfo) => {
+        test.skip(testInfo.project.name !== "mobile", "dobra do celular: só no projeto mobile");
+        const q = COPY[locale].quote;
+        for (const size of sizes) {
+          await page.setViewportSize(size);
+          for (const servico of ["aplicativos", "integracoes"]) {
+            await page.goto(`${PATH[locale]}?servico=${servico}&origem=${servico}-hero`);
+            const context = page.locator("[data-wizard-context]");
+            await expect(context).toContainText(q.entry.context_service.split("{")[0]!.trim());
+            const start = page.locator("[data-wizard-start]").first();
+            const box = await start.boundingBox();
+            expect(box, `${size.width}×${size.height} ${servico}`).not.toBeNull();
+            expect(box!.y + box!.height, `${size.width}×${size.height} ${servico}: botão inteiro na 1ª tela`).toBeLessThanOrEqual(size.height);
+            // A linha de contexto vem depois do botão (e do WhatsApp), nunca antes.
+            expect(((await context.boundingBox())?.y ?? 0) > box!.y).toBe(true);
+          }
         }
-      }
+      });
     });
   }
+
+  // Navegador em outro idioma (F31): o aviso de idioma vem antes de tudo, como na
+  // Home (§2.8): aviso e H1 na 1ª tela; o "Começar" pode descer para a 2ª.
+  test.describe("navegador em outro idioma", () => {
+    test.use({ locale: "en-US" });
+    test("pt a 360×640: aviso de idioma e H1 na 1ª tela", async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== "mobile", "dobra do celular: só no projeto mobile");
+      await page.setViewportSize({ width: 360, height: 640 });
+      await page.goto(`${PATH.pt}?servico=aplicativos&origem=aplicativos-hero`);
+      const suggestion = page.locator('.lang-suggest[data-lang-target="en"]');
+      await expect(suggestion).toBeVisible();
+      for (const target of [suggestion, page.locator("h1")]) {
+        const box = await target.boundingBox();
+        expect((box?.y ?? Number.POSITIVE_INFINITY) + (box?.height ?? 0)).toBeLessThanOrEqual(640);
+      }
+    });
+  });
 });
 
 test.describe("resumo: o que é do visitante primeiro (F02, F09)", () => {

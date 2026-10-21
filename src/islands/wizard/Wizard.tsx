@@ -586,6 +586,10 @@ function WizardFlow(props: WizardProps) {
 
     window.__lemamonWizardReady = true;
     setReady(true);
+    // O spinner que o script inline pôs no "Começar" tocado antes da hidratação (F25) sai aqui.
+    for (const button of document.querySelectorAll("[data-wizard-start][data-loading]")) {
+      for (const name of ["data-loading", "aria-busy", "aria-disabled"]) button.removeAttribute(name);
+    }
     if (window.__lemamonWizardQueued) {
       window.__lemamonWizardQueued = false;
       startRef.current();

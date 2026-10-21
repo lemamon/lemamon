@@ -14,9 +14,11 @@
  *   <html class="js">, rascunho do wizard → "Continuar meu pedido" sem flash,
  *   limpeza do rascunho vencido em qualquer página, tema escuro antes da 1ª
  *   pintura (escolha salva ou prefers-color-scheme; B208) e o aviso discreto de
- *   idioma (LanguageSuggestion, fora do wizard).
+ *   idioma (LanguageSuggestion; no layout do wizard, só no /orcamento, onde
+ *   some no modo foco, auditoria F31).
  * - variant "wizard" (rotas com layout "wizard" em routes.ts): header e footer
- *   mínimos, sem barra fixa nem WhatsApp flutuante (§8.4).
+ *   mínimos, sem barra fixa nem WhatsApp flutuante (§8.4); o footer mínimo tem
+ *   o seletor de idioma (F31).
  * - <main id="conteudo" tabindex="-1"> é o alvo do skip link (1º focável).
  * - Aviso de cookies (ConsentBanner) só com privacidade.baseAnuncios =
  *   "consentimento": preso ao pé da tela nas páginas comuns, no fluxo (antes do
@@ -207,7 +209,7 @@ const ESTILO_FAIXA =
         </div>
       )
     }
-    {!isWizard && <LanguageSuggestion locale={locale} route={route} params={params} />}
+    {(!isWizard || route === "quote") && <LanguageSuggestion locale={locale} route={route} params={params} />}
     {
       isWizard ? (
         <WizardHeader locale={locale} whatsappMessage={whatsappMessage} />
@@ -229,7 +231,7 @@ const ESTILO_FAIXA =
     {hasConsentBanner && isWizard && <ConsentBanner locale={locale} route={route} placement="inline" />}
     {
       isWizard ? (
-        <WizardFooter locale={locale} />
+        <WizardFooter locale={locale} route={route} />
       ) : (
         <Footer
           locale={locale}

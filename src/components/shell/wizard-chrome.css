@@ -126,3 +126,13 @@
   flex-basis: 100%;
   margin: 0;
 }
+/* Seletor de idioma numa linha própria (F31); o recuo de -space-1 alinha o
+   texto do 1º link com a política, apesar do respiro do alvo de toque. */
+.wizard-footer .wizard-footer__languages {
+  flex-basis: 100%;
+  margin-inline-start: calc(-1 * var(--space-1));
+}
+/* Aviso de idioma (LanguageSuggestion) só na entrada: no modo foco, some (F31). */
+html[data-wizard-mode="focus"] .lang-suggest {
+  display: none !important;
+}

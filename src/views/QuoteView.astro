@@ -9,7 +9,11 @@
  * Modo foco: a ilha marca <html data-wizard-mode="focus"> ao "Começar"; a casca
  * some (o H1 fica só para leitor de tela). Um script inline no <head> faz o
  * mesmo ANTES da pintura quando a URL já traz ?etapa= (retomada, recarga), e
- * guarda o clique em "Começar" feito antes da hidratação.
+ * guarda o clique em "Começar" feito antes da hidratação. Esse clique tem
+ * retorno na hora (auditoria F25): o botão ganha data-loading, aria-busy e
+ * aria-disabled (o spinner do Button.astro) até a ilha montar e limpar, ou
+ * por no máximo 8 s. Sem comentários dentro do script: ele vai ao ar como está
+ * (inline clássico, teto de 1 KiB do verify-build).
  *
  * Também publica a declaração estática dos forms do Netlify (NetlifyForms).
  *
@@ -149,18 +153,28 @@ const entryMessage = quoteEntryMessage(locale);
   <Fragment slot="head">
     <script is:inline>
       (function (w, d) {
-        var root = d.documentElement;
+        var r = d.documentElement;
         try {
-          var params = new URLSearchParams(w.location.search);
-          if (params.get("etapa")) root.setAttribute("data-wizard-mode", "focus");
-          if (params.get("servico") === "sustentacao") root.setAttribute("data-wizard-live", "");
+          var p = new URLSearchParams(w.location.search);
+          if (p.get("etapa")) r.setAttribute("data-wizard-mode", "focus");
+          if (p.get("servico") === "sustentacao") r.setAttribute("data-wizard-live", "");
         } catch (e) {}
         d.addEventListener(
           "click",
-          function (event) {
-            var target = event.target;
-            if (w.__lemamonWizardReady || !target || !target.closest) return;
-            if (target.closest("[data-wizard-start]")) w.__lemamonWizardQueued = true;
+          function (e) {
+            var t = e.target,
+              b = !w.__lemamonWizardReady && t && t.closest && t.closest("[data-wizard-start]"),
+              a = ["data-loading", "aria-busy", "aria-disabled"];
+            if (!b) return;
+            w.__lemamonWizardQueued = true;
+            a.forEach(function (n) {
+              b.setAttribute(n, "true");
+            });
+            setTimeout(function () {
+              a.forEach(function (n) {
+                b.removeAttribute(n);
+              });
+            }, 8000);
           },
           true,
         );

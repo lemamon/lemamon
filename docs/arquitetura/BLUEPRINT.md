@@ -393,7 +393,7 @@ Um único componente alimentado por dados por slug, com 5 páginas. Cada uma pre
 
 **Propósito:** página de conversão. Recebe o 301 de `/projects` e é onde o Ads registra a conversão. A casca é HTML estático e indexável, e a ilha React (`client:load`) cuida das perguntas.
 **Title:** "Orçamento de software sob medida: comece pelo diagnóstico gratuito | Lemamon.dev". **Description:** cita "orçamento" com honestidade e promete o diagnóstico de 45 min.
-**Header reduzido** em toda a rota (§8.4) e footer mínimo (Política de Privacidade + e-mail; com `hasCompanyData`, razão social · CNPJ numa linha própria).
+**Header reduzido** em toda a rota (§8.4) e footer mínimo (Política de Privacidade + e-mail; com `hasCompanyData`, razão social · CNPJ numa linha própria; seletor de idioma numa linha própria, §9).
 
 | # | id | Visib. | Conteúdo | Papel | CTA |
 |---|---|---|---|---|---|
@@ -748,7 +748,7 @@ Em `/servicos/*`, `/sprint-de-descoberta`, `/cases/[slug]` e `/blog/[slug]`, com
 ## 9. Idiomas
 
 - pt-BR na raiz; `/en/` e `/es/` com a mesma árvore e slugs localizados (§3.1). Um **mapa central de rotas** (`chave → {pt, en, es}`) alimenta o seletor, que leva à página equivalente, o hreflang recíproco (pt-BR, en, es + `x-default` → pt-BR) e o sitemap. O `astro:i18n` não localiza slugs sozinho.
-- **Não há redirecionamento automático** por idioma do navegador; no máximo um aviso discreto ("Also available in English"). Implementado assim: o aviso só aparece quando o idioma da página NÃO está entre os idiomas do navegador e algum dos outros dois está; leva à página equivalente; fechar é persistente (localStorage) em todas as páginas; não aparece no wizard.
+- **Não há redirecionamento automático** por idioma do navegador; no máximo um aviso discreto ("Also available in English"). Implementado assim: o aviso só aparece quando o idioma da página NÃO está entre os idiomas do navegador e algum dos outros dois está; leva à página equivalente; fechar é persistente (localStorage) em todas as páginas. No wizard, aparece só na entrada do `/orcamento` e some no modo foco; o footer mínimo do wizard tem o seletor de idioma, e a troca de idioma na entrada mantém a query da URL (`?servico=`, `?origem=`, `?ref=`, UTMs), menos o `?etapa=` (auditoria de conversão F31). Com o aviso, o "Começar" pode descer para a 2ª tela no celular de 360×640; o aviso e o H1 continuam na 1ª, a mesma regra da Home (§2.8): quem não lê o idioma da página precisa do aviso antes do botão. Com o navegador no idioma da página (o visitante do anúncio), não há aviso e o F03 vale.
 - **Espanhol:** neutro latino-americano, com "tú" em todo o site, inclusive wizard, validações, WhatsApp e e-mails de formulário.
 - **Blog:** só pt-BR.
 - **Faixas do wizard e de preço:** por idioma, no config; a moeda é decisão do dono.
