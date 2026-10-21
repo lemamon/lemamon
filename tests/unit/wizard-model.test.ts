@@ -9,13 +9,20 @@ import {
   allowedScreen,
   answerOf,
   answersToRecord,
+  blocksEntryClick,
   budgetSetFor,
   casesForAnswers,
+  CONTACT_ENTRY_LOCK_MS,
+  ENTRY_CLICK_LOCK_MS,
   firstIncompleteStep,
+  hasDeadlineWindow,
   hasPrefill,
   isAnswered,
+  isDeadlineUrgent,
   optionIds,
   previousScreen,
+  PROGRESS_STEPS,
+  progressValue,
   questionForStep,
   recordToAnswers,
   SERVICE_PREFILL,
@@ -127,6 +134,52 @@ describe("navegação e acesso direto (?etapa=)", () => {
     expect(previousScreen("resumo")).toBe(6);
     expect(previousScreen(3)).toBe(2);
     expect(previousScreen(1)).toBeNull();
+  });
+});
+
+describe("prazo no resumo × prazo do lead (F09)", () => {
+  it("hasDeadlineWindow: urgência, data marcada ou 3 meses; isDeadlineUrgent continua sem os 3 meses", () => {
+    expect(hasDeadlineWindow({ deadline: "within_3_months" })).toBe(true);
+    expect(isDeadlineUrgent({ deadline: "within_3_months" })).toBe(false);
+    expect(hasDeadlineWindow({ deadline: "asap" })).toBe(true);
+    expect(hasDeadlineWindow({ deadline: "over_6_months", deadline_reason: "Feira de maio" })).toBe(true);
+    expect(hasDeadlineWindow({ deadline: "between_3_and_6_months" })).toBe(false);
+    expect(hasDeadlineWindow({ deadline: "not_defined", deadline_reason: "   " })).toBe(false);
+    expect(hasDeadlineWindow({})).toBe(false);
+  });
+});
+
+describe("barra de progresso sobre 8 passos (F21)", () => {
+  it("P6 = 75%, resumo ≈ 87%, contato ≈ 95%; 100% só depois do envio", () => {
+    expect(PROGRESS_STEPS).toBe(8);
+    const pct = (screen: Parameters<typeof progressValue>[0]) => Math.round((progressValue(screen) / PROGRESS_STEPS) * 100);
+    expect(STEP_NUMBERS.map((step) => progressValue(step))).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(pct(6)).toBe(75);
+    expect(pct("resumo")).toBe(88);
+    expect(pct("contato")).toBe(95);
+    expect(progressValue("contato")).toBeLessThan(PROGRESS_STEPS);
+  });
+});
+
+describe("trava de entrada de tela (F06, F21)", () => {
+  it("2º clique de ponteiro logo depois da troca de tela é travado; o teclado (detail 0) nunca", () => {
+    expect(blocksEntryClick(1, 130, 2)).toBe(true);
+    expect(blocksEntryClick(2, 150, 3)).toBe(true);
+    expect(blocksEntryClick(0, 50, 2)).toBe(false);
+    expect(blocksEntryClick(1, ENTRY_CLICK_LOCK_MS, 2)).toBe(false);
+    expect(blocksEntryClick(1, ENTRY_CLICK_LOCK_MS + 200, "resumo")).toBe(false);
+  });
+
+  it("no contato a janela é maior (toque duplo lento no CTA do resumo, que fica no mesmo lugar do envio)", () => {
+    expect(CONTACT_ENTRY_LOCK_MS).toBeGreaterThan(ENTRY_CLICK_LOCK_MS);
+    expect(blocksEntryClick(1, 300, "contato")).toBe(true);
+    expect(blocksEntryClick(1, CONTACT_ENTRY_LOCK_MS - 1, "contato")).toBe(true);
+    expect(blocksEntryClick(1, CONTACT_ENTRY_LOCK_MS, "contato")).toBe(false);
+  });
+
+  it("sem troca de tela por ação da pessoa (carga com ?etapa=), nada é travado", () => {
+    expect(blocksEntryClick(1, Number.POSITIVE_INFINITY, 1)).toBe(false);
+    expect(blocksEntryClick(1, -5, 1)).toBe(false);
   });
 });
 

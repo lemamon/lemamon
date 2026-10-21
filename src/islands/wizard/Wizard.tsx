@@ -20,24 +20,36 @@
  *  - Rascunho em localStorage (lib/draft.ts) a cada mudança; apagado só depois
  *    do sucesso confirmado. Banner de retomada acima do H1 (portal).
  *  - Progresso "Pergunta N de 6" desenhado no alvo [data-wizard-progress] do
- *    WizardHeader (portal); o modo foco esconde a casca estática via
- *    html[data-wizard-mode="focus"].
+ *    WizardHeader (portal), com a barra sobre 8 passos (perguntas, resumo e
+ *    contato; 100% só depois do envio, auditoria F21); o modo foco esconde a
+ *    casca estática via html[data-wizard-mode="focus"].
  *  - aria-live anuncia passo, envio e erro; o foco vai para o título de cada tela.
- *  - Mobile: a barra fixa é do primário (~70–100%). "Pular" (P3) e "Corrigir
+ *  - Mobile: a barra fixa é do primário (~70–100%). "Pular" (P3) e "Revisar
  *    respostas" (resumo) ficam no fluxo; no contato, "Voltar" sai da barra.
+ *    Desktop (≥ 768px, tela com altura útil): a barra gruda no rodapé
+ *    (sticky), e o Continuar das P2–P5 não fica abaixo da dobra (F04).
  *    A altura medida da barra vira --wizard-bar-height e o html ganha
  *    scroll-padding-block-end: foco por Tab e o campo inválido nunca ficam
- *    atrás dela (backlog B165, B193, B270).
+ *    atrás dela (backlog B165, B193, B270). Erro e aviso da pergunta também
+ *    aparecem na nota da barra (F05).
+ *  - Trava de entrada de tela (F06, F21): o clique de ponteiro que chega logo
+ *    depois de trocar de tela é o 2º de um duplo clique e é ignorado (teclado
+ *    nunca). No contato, envio sem nenhum campo tocado só leva ao "Nome".
  *  - Falha de render: WizardBoundary (backlog B234).
- *  - Resumo (§7.4): com cases publicados (when_data), até 2 do mesmo tipo que
- *    o pedido, entre "O que influencia" e "E o preço?" (backlog B379); sem case
+ *  - Resumo (§7.4, auditoria F02): primeiro o que é do visitante (linha "Para:",
+ *    fatores de prazo e preço, pauta, preço e o CTA), depois o eco compacto
+ *    das respostas e o método compacto (etapa 1 e a realçada; as 4 num
+ *    <details>). Com cases publicados (when_data), até 2 do mesmo tipo que o
+ *    pedido, entre a pauta e "E o preço?" (backlog B379); sem case
  *    compatível, nada.
  *  - Medição (§7.11 + backlog): wizard_view, wizard_start (uma vez por página),
- *    wizard_restart, wizard_blocked, wizard_abandon/wizard_return, eventos de campo, e
+ *    wizard_restart, wizard_blocked, wizard_abandon/wizard_return,
+ *    wizard_summary_factors_view (F02), eventos de campo, e
  *    lead_attempt/lead_submitted/lead_failed com o mesmo event_id (= código do
  *    pedido). Nenhum evento antes do lead_submitted leva valor de resposta.
  */
 import {
+  Fragment,
   useCallback,
   useEffect,
   useId,
@@ -102,19 +114,21 @@ import {
   allowedScreen,
   answerOf,
   answersToRecord,
+  blocksEntryClick,
   budgetSetFor,
   casesForAnswers,
   EXCLUSIVE_OPTION,
   firstIncompleteStep,
   hasPrefill,
   isAnswered,
-  isDeadlineUrgent,
   isLive,
   isOptional,
   MULTI_QUESTIONS,
   optionIds,
   prefillStep,
   previousScreen,
+  progressValue,
+  PROGRESS_STEPS,
   questionForStep,
   recordToAnswers,
   SERVICE_PREFILL,
@@ -129,7 +143,9 @@ import {
 } from "./model";
 import {
   answerChips,
+  deadlineNote,
   emphasisKey,
+  forLineParts,
   highlightedStage,
   joinAnnouncement,
   optionLabel,
@@ -235,6 +251,12 @@ const CONTACT_ORDER: ContactField[] = ["name", "email", "channel", "phone"];
 
 /** Campos do contato medidos por form_field_complete (B337): só o nome do campo. */
 type TrackedField = ContactField | "company" | "details";
+
+/** Até quantos caracteres um valor da linha "Para:" do resumo fica numa linha só (F02). */
+const FOR_LINE_NO_WRAP_MAX = 24;
+
+/** Campos de texto do contato (o canal já vem marcado): nenhum preenchido = envio "intocado" (F21). */
+const TRACKED_FIELDS: readonly Exclude<TrackedField, "channel">[] = ["name", "email", "phone", "company", "details"];
 
 function CheckIcon() {
   return (
@@ -346,6 +368,10 @@ function WizardFlow(props: WizardProps) {
   /** Eventos de campo uma vez por campo (e por tipo de erro). */
   const fieldOnceRef = useRef(createOnce());
   const barObserverRef = useRef<ResizeObserver | null>(null);
+  /** Tela atual e quando ela abriu por ação da pessoa (trava de duplo clique, F06/F21). */
+  const entryRef = useRef<{ view: View; at: number }>({ view: "intro", at: -Infinity });
+  /** Bloco "O que influencia prazo e preço" do resumo (wizard_summary_factors_view, F02). */
+  const factorsRef = useRef<HTMLDivElement>(null);
 
   const waEnabled = flags.hasWhatsapp && hasWhatsapp();
   const waBase = waEnabled ? whatsappHref() : null;
@@ -356,10 +382,13 @@ function WizardFlow(props: WizardProps) {
   }, []);
 
   /**
-   * Mede a barra de ação (fixa só abaixo de 768px) e publica a altura em
-   * --wizard-bar-height no <html>: o scroll-padding-block-end e o espaço
-   * reservado no fim da página usam o valor real (com nota, safe-area e quebra
-   * de linha), não um número fixo (B165, B193, B270).
+   * Mede a barra de ação (fixa abaixo de 768px; sticky no rodapé acima disso,
+   * F04) e publica a altura em --wizard-bar-height no <html>: o
+   * scroll-padding-block-end e o espaço reservado no fim da página usam o
+   * valor real (com nota, safe-area e quebra de linha), não um número fixo
+   * (B165, B193, B270). Com o teclado aberto a barra some, mas volta quando
+   * ele fecha: a última medida fica, para o campo trazido à tela enquanto a
+   * pessoa digita (o telefone e o erro dele, F16) não acabar atrás da barra.
    */
   const actionsRef = useCallback((node: HTMLDivElement | null) => {
     barObserverRef.current?.disconnect();
@@ -367,8 +396,10 @@ function WizardFlow(props: WizardProps) {
     if (!node) return;
     const root = document.documentElement;
     const update = () => {
-      const fixed = window.getComputedStyle(node).position === "fixed";
-      const height = fixed ? Math.ceil(node.getBoundingClientRect().height) : 0;
+      const style = window.getComputedStyle(node);
+      if (style.display === "none" && node.dataset.keyboard === "open") return;
+      const pinned = style.position === "fixed" || style.position === "sticky";
+      const height = pinned ? Math.ceil(node.getBoundingClientRect().height) : 0;
       root.style.setProperty("--wizard-bar-height", `${height}px`);
     };
     update();
@@ -407,12 +438,27 @@ function WizardFlow(props: WizardProps) {
         history.stack[history.depth] = allowed;
         window.history.replaceState({ wizardDepth: history.depth }, "", urlForView(allowed));
       }
+      // Toda troca de tela por ação da pessoa abre a janela da trava de duplo clique.
+      entryRef.current = { view: allowed, at: performance.now() };
       setStepError(null);
       setLimitNotice(null);
       setView(allowed);
     },
     [modelFlags],
   );
+
+  /**
+   * Trava de entrada de tela (F06; no contato, também F21): na captura, antes
+   * de qualquer handler, o clique de ponteiro que chega logo depois da troca
+   * de tela é cancelado (preventDefault também impede o envio do form e a
+   * marcação da opção pelo <label>). Enter e Espaço (detail 0) passam sempre.
+   */
+  const onEntryClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    const entry = entryRef.current;
+    if (!blocksEntryClick(event.detail, performance.now() - entry.at, entry.view)) return;
+    event.preventDefault();
+    event.stopPropagation();
+  };
 
   const currentEntrySource = () =>
     entrySource({
@@ -584,6 +630,8 @@ function WizardFlow(props: WizardProps) {
       const allowed = allowedScreen(requested, answersRef.current, modelFlags);
       if (allowed !== requested) window.history.replaceState({ wizardDepth: depth }, "", urlForView(allowed));
       historyRef.current.stack[depth] = allowed;
+      // "Voltar" da ilha usa history.back(): o 2º clique do duplo clique cai aqui.
+      entryRef.current = { view: allowed, at: performance.now() };
       if (allowed === "resumo" || allowed === "contato") setEditing(false);
       setView(allowed);
     };
@@ -601,6 +649,24 @@ function WizardFlow(props: WizardProps) {
   useEffect(() => {
     if (view === "resumo" && !protocol) setProtocol(generateProtocol());
   }, [view, protocol]);
+
+  // Resumo (F02): o bloco de fatores apareceu na tela (metade dele), uma vez
+  // por abertura do resumo. Mede a ordem nova sem nenhum valor de resposta.
+  useEffect(() => {
+    if (!ready || view !== "resumo") return;
+    const node = factorsRef.current;
+    if (!node || typeof IntersectionObserver !== "function") return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        track("wizard_summary_factors_view", {});
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [ready, view]);
 
   // Teclado virtual aberto: a barra fixa do mobile some (§7.2).
   useEffect(() => {
@@ -816,7 +882,10 @@ function WizardFlow(props: WizardProps) {
     const question = questionForStep(view, answersRef.current);
     const answered = isAnswered(question, answersRef.current, modelFlags);
     if (!answered && !isOptional(question)) {
-      setStepError(validationText(question));
+      const message = validationText(question);
+      setStepError(message);
+      // A região role=status lê o erro mesmo quando o texto visível está na barra (F05).
+      setAnnouncement(message);
       track("wizard_blocked", { step: view, question_id: question });
       firstOptionRef.current?.focus();
       return;
@@ -897,6 +966,15 @@ function WizardFlow(props: WizardProps) {
   const onSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (sendingRef.current) return;
+    // Envio sem nenhum campo tocado (F21): quase sempre o toque que sobrou do
+    // botão do resumo, que tem o mesmo rótulo e quase a mesma posição. Só leva
+    // ao "Nome", sem pintar os erros nem medir form_validation_error.
+    const pristine =
+      !Object.values(touched).some(Boolean) && TRACKED_FIELDS.every((field) => !isFilled(contact[field]));
+    if (pristine) {
+      setFocusRequest((current) => ({ field: "name", n: (current?.n ?? 0) + 1 }));
+      return;
+    }
     setShowAllErrors(true);
     const errors = validateContact(contact, locale);
     for (const field of CONTACT_ORDER) {
@@ -997,7 +1075,10 @@ function WizardFlow(props: WizardProps) {
    * primário de 70% a 100% da largura numa linha só (§7.2); `back: "desktop"`
    * tira o "Voltar" da barra no mobile (o contato mostra um "Voltar" no fluxo).
    * A nota (below_primary / below_submit) fica colada no primário, no mesmo
-   * alinhamento dele, e não solta no conteúdo (§7.4f, §7.5).
+   * alinhamento dele, e não solta no conteúdo (§7.4f, §7.5). Nas perguntas, a
+   * nota é o erro ou o aviso da tela (F05): a barra fixa (e a sticky do
+   * desktop) cobria o texto do fluxo. O leitor de tela já ouve esse texto pela
+   * região role=status e pelo aria-describedby das opções; aqui ele é só visual.
    */
   const actions = (options: {
     backLabel?: string;
@@ -1008,6 +1089,8 @@ function WizardFlow(props: WizardProps) {
     onPrimary?: () => void;
     busy?: boolean;
     note?: string;
+    /** "error" (vermelho e negrito) ou "notice" (aviso): nota repetida do fluxo, só visual. */
+    noteTone?: "error" | "notice";
     /** "error": painel de erro aberto; a única ação de reenvio é a do painel. */
     state?: "error";
   }) => (
@@ -1038,7 +1121,16 @@ function WizardFlow(props: WizardProps) {
           >
             {options.primaryLabel}
           </button>
-          {options.note && <p className={styles.barNote}>{options.note}</p>}
+          {options.note && (
+            <p
+              className={styles.barNote}
+              data-tone={options.noteTone}
+              data-wizard-bar-note=""
+              aria-hidden={options.noteTone ? "true" : undefined}
+            >
+              {options.note}
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -1066,6 +1158,9 @@ function WizardFlow(props: WizardProps) {
           : fillTemplate(copy.nav.selected_count_of_max, { n: selected.length });
     }
     const continueLabel = step === TOTAL_QUESTIONS || editing ? copy.nav.continue_to_summary : copy.nav.continue;
+    // P3 (até 3): o contador fica logo abaixo do helper, no topo, à vista de quem
+    // toca a 4ª opção lá embaixo (F05). Na P2 ele continua depois das opções.
+    const counterOnTop = question !== "build_type";
 
     return (
       <form key={`step-${step}-${question}`} className={styles.screen} onSubmit={onContinue} noValidate>
@@ -1089,6 +1184,7 @@ function WizardFlow(props: WizardProps) {
               {live ? copy.nav.exclusive_hint_live_variant : copy.nav.exclusive_hint}
             </p>
           )}
+          {counter && counterOnTop && <p className={styles.counter}>{counter}</p>}
           <div className={styles.options}>
             {ids.map((id, index) => {
               const checked = selected.includes(id);
@@ -1115,10 +1211,11 @@ function WizardFlow(props: WizardProps) {
               );
             })}
           </div>
-          {counter && <p className={styles.counter}>{counter}</p>}
-          {limitNotice && <p className={styles.notice}>{limitNotice}</p>}
+          {counter && !counterOnTop && <p className={styles.counter}>{counter}</p>}
+          {/* O erro visível fica na nota da barra (F05); este é o texto ligado às
+              opções por aria-describedby, só para leitor de tela. */}
           {stepError && (
-            <p id={errorId} className={styles.error}>
+            <p id={errorId} className="sr-only">
               {stepError}
             </p>
           )}
@@ -1151,6 +1248,8 @@ function WizardFlow(props: WizardProps) {
           onBackClick: onBack,
           primaryLabel: continueLabel,
           primaryType: "submit",
+          note: stepError ?? limitNotice ?? undefined,
+          noteTone: stepError ? "error" : limitNotice ? "notice" : undefined,
         })}
       </form>
     );
@@ -1236,12 +1335,74 @@ function WizardFlow(props: WizardProps) {
     );
   }
 
+  /**
+   * Linha do método compacta (F02): a etapa 1 (o próximo passo, gratuito) e a
+   * etapa realçada pela P1, com a tag de cada uma ("Paga · valor combinado
+   * antes do início" só aparece aqui). As 4 etapas, com o "Você recebe" e os
+   * termos explicados, ficam num <details> fechado.
+   */
+  function renderMethod(stage: "discovery" | "support", live: boolean) {
+    const s = copy.summary;
+    const stages = copy.method.stages;
+    const highlighted: { id: "discovery" | "support"; index: string } =
+      stage === "support" ? { id: "support", index: "04" } : { id: "discovery", index: "02" };
+    return (
+      <div className={styles.block}>
+        <h3 className={styles.blockTitle}>{live ? s.path_title_live_variant : s.path_title}</h3>
+        <ol className={styles.stages}>
+          <li className={styles.stage}>
+            <span className={styles.stageIndex} aria-hidden="true">
+              01
+            </span>
+            <span className={styles.stageName}>{stages.diagnosis.name}</span>
+            <span className={styles.stageBadge}>{copy.method.nextStep}</span>
+            <span className={styles.stageTag}>{stages.diagnosis.tag}</span>
+          </li>
+          <li className={styles.stage} data-highlight="true" aria-current="step">
+            <span className={styles.stageIndex} aria-hidden="true">
+              {highlighted.index}
+            </span>
+            <span className={styles.stageName}>{stages[highlighted.id].name}</span>
+            <span className={styles.stageTag}>{stages[highlighted.id].tag}</span>
+          </li>
+        </ol>
+        <p className={styles.emphasis}>{s.emphasis[emphasisKey(answers, summaryCtx)]}</p>
+        <details className={styles.allStages}>
+          <summary className={styles.allStagesSummary}>
+            <svg className={styles.toggleIcon} viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+              <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            {s.path_all_stages}
+          </summary>
+          <div className={styles.allStagesBody}>
+            <div className={styles.timeline}>{stage === "support" ? props.timelineSupport : props.timelineDiscovery}</div>
+            {stage === "discovery" && (
+              <ul className={styles.terms}>
+                <li>{copy.terms.prioritized_scope}</li>
+                <li>{copy.terms.prototype}</li>
+              </ul>
+            )}
+          </div>
+        </details>
+      </div>
+    );
+  }
+
+  /**
+   * Resumo (§7.4) na ordem da auditoria F02: primeiro o que é do visitante (o
+   * que pesa no prazo e no preço dele, a pauta, o preço e o CTA), depois o eco
+   * das respostas e o método, compactos. Antes, a 1ª tela devolvia as 6
+   * respostas e a linha do método que a pessoa já viu na Home, e os fatores
+   * ficavam 2 a 3,5 telas abaixo. Os chips continuam abertos (nunca num
+   * <details> fechado, §7.4a).
+   */
   function renderSummary() {
     const s = copy.summary;
     const live = isLive(answers);
     const stage = highlightedStage(answers);
     const topics = summaryTopics(answers, summaryCtx);
     const factors = summaryFactors(answers, summaryCtx);
+    const note = deadlineNote(answers);
     const titleId = `${uid}-summary`;
     const waMessage = summaryWhatsappMessage(chips, copy.whatsapp, protocol);
     return (
@@ -1250,6 +1411,93 @@ function WizardFlow(props: WizardProps) {
           {s.title}
         </h2>
         <p className={styles.lead}>{live ? s.intro_live_variant : s.intro}</p>
+        {/* "Para: tipo · prazo · faixa": o eco curto; "Revisar respostas" (§7.4f) é
+            link no fluxo, não par do CTA na barra fixa (B165). */}
+        <p className={styles.forLine} data-wizard-for-line="">
+          {splitToken(
+            s.for_line,
+            "respostas",
+            // Valor curto (o rótulo de uma faixa, "Nos próximos 3 meses") não quebra no
+            // meio; os longos quebram, para nunca vazar a 320px.
+            forLineParts(chips).map((part, index) => (
+              <Fragment key={index}>
+                {index > 0 && " · "}
+                <span className={part.length <= FOR_LINE_NO_WRAP_MAX ? styles.noWrap : undefined}>{part}</span>
+              </Fragment>
+            )),
+          )}
+          {/* Espaço sem quebra antes do "·": a quebra, se houver, vem depois dele. */}
+          {"\u00a0· "}
+          <button type="button" className={styles.inlineLink} onClick={onFixAnswers}>
+            {s.fix_answers}
+          </button>
+        </p>
+
+        <div ref={factorsRef} className={styles.block} data-wizard-summary-factors="">
+          <h3 className={styles.blockTitle}>{s.weighs_title}</h3>
+          <ul className={styles.list}>
+            {factors.map((factor) => (
+              <li key={factor}>{s.factors[factor]}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className={styles.block}>
+          <h3 className={styles.blockTitle}>{s.deep_dive_title}</h3>
+          <ul className={`${styles.list} ${styles.topics}`}>
+            {topics.map((topic) => (
+              <li key={topic}>{s.topics[topic]}</li>
+            ))}
+          </ul>
+        </div>
+
+        {renderSummaryCases()}
+
+        <div className={styles.block}>
+          <h3 className={styles.blockTitle}>{s.price_title}</h3>
+          {renderPrice()}
+        </div>
+
+        {/* Próximo passo, logo depois do preço: a nota do prazo (F09) em todas as
+            telas e, no desktop (≥ 768px), o CTA, para quem já quer seguir não
+            rolar até o fim (painel comercial). No mobile o CTA some: lá a barra
+            fixa já mostra o primário. É um link para ?etapa=contato (a URL do
+            próximo passo, interceptada pela ilha), e não um 2º botão com o
+            mesmo nome do primário da barra. */}
+        <div className={styles.nextStep}>
+          {note && <p className={styles.note}>{s[note]}</p>}
+          <div className={styles.earlyActions} data-wizard-early-actions="">
+            <div className={styles.earlyRow}>
+              <a
+                href={typeof window === "undefined" ? "?etapa=contato" : urlForView("contato")}
+                className={styles.primary}
+                aria-describedby={`${uid}-early-note`}
+                onClick={(event) => {
+                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+                  event.preventDefault();
+                  go("contato");
+                }}
+              >
+                {s.primary}
+              </a>
+              {waBase && (
+                <a
+                  href={waBase}
+                  target="_blank"
+                  rel="noopener"
+                  className={styles.secondary}
+                  onClick={openWa(waMessage, "wizard_summary_top")}
+                >
+                  {s.secondary_whatsapp}
+                  <span className="sr-only"> {copy.opensNewTab}</span>
+                </a>
+              )}
+            </div>
+            <p id={`${uid}-early-note`} className={styles.earlyNote}>
+              {s.below_primary}
+            </p>
+          </div>
+        </div>
 
         <div className={styles.block}>
           <h3 className={styles.blockTitle}>{s.told_us_title}</h3>
@@ -1269,91 +1517,11 @@ function WizardFlow(props: WizardProps) {
               </li>
             ))}
           </ul>
-          {/* "Corrigir respostas" (§7.4f) é link no fluxo, não par do CTA na barra fixa (B165). */}
-          <p>
-            <button type="button" className={styles.linkButton} onClick={onFixAnswers}>
-              {s.fix_answers}
-            </button>
-          </p>
         </div>
 
-        {/* Desktop (≥ 768px): a mesma ação logo abaixo de "Suas respostas", para
-            quem já quer seguir não precisar rolar ~3 telas até o fim (painel
-            comercial). O bloco do fim continua. No mobile some: lá a barra fixa
-            já mostra o primário. É um link para ?etapa=contato (a URL do
-            próximo passo, interceptada pela ilha), e não um 2º botão com o
-            mesmo nome do primário da barra. */}
-        <div className={styles.earlyActions} data-wizard-early-actions="">
-          <div className={styles.earlyRow}>
-            <a
-              href={typeof window === "undefined" ? "?etapa=contato" : urlForView("contato")}
-              className={styles.primary}
-              aria-describedby={`${uid}-early-note`}
-              onClick={(event) => {
-                if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
-                event.preventDefault();
-                go("contato");
-              }}
-            >
-              {s.primary}
-            </a>
-            {waBase && (
-              <a
-                href={waBase}
-                target="_blank"
-                rel="noopener"
-                className={styles.secondary}
-                onClick={openWa(waMessage, "wizard_summary_top")}
-              >
-                {s.secondary_whatsapp}
-                <span className="sr-only"> {copy.opensNewTab}</span>
-              </a>
-            )}
-          </div>
-          <p id={`${uid}-early-note`} className={styles.earlyNote}>
-            {s.below_primary}
-          </p>
-        </div>
-
-        <div className={styles.block}>
-          <h3 className={styles.blockTitle}>{live ? s.path_title_live_variant : s.path_title}</h3>
-          <div className={styles.timeline}>{stage === "support" ? props.timelineSupport : props.timelineDiscovery}</div>
-          <p className={styles.emphasis}>{s.emphasis[emphasisKey(answers, summaryCtx)]}</p>
-          {stage === "discovery" && (
-            <ul className={styles.terms}>
-              <li>{copy.terms.prioritized_scope}</li>
-              <li>{copy.terms.prototype}</li>
-            </ul>
-          )}
-        </div>
-
-        <div className={styles.block}>
-          <h3 className={styles.blockTitle}>{s.deep_dive_title}</h3>
-          <ul className={styles.list}>
-            {topics.map((topic) => (
-              <li key={topic}>{s.topics[topic]}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className={styles.block}>
-          <h3 className={styles.blockTitle}>{s.weighs_title}</h3>
-          <ul className={styles.list}>
-            {factors.map((factor) => (
-              <li key={factor}>{s.factors[factor]}</li>
-            ))}
-          </ul>
-        </div>
-
-        {renderSummaryCases()}
-
-        <div className={styles.block}>
-          <h3 className={styles.blockTitle}>{s.price_title}</h3>
-          {renderPrice()}
-        </div>
+        {renderMethod(stage, live)}
 
         <div className={styles.closing}>
-          {isDeadlineUrgent(answers) && <p className={styles.note}>{s.deadline_note}</p>}
           {actions({
             primaryLabel: s.primary,
             primaryType: "button",
@@ -1735,7 +1903,8 @@ function WizardFlow(props: WizardProps) {
 
   function renderProgress() {
     if (view === "intro") return null;
-    const n = typeof view === "number" ? view : TOTAL_QUESTIONS;
+    // Sobre 8 passos (F21): o contato fica em ~95%, e 100% só depois do envio.
+    const n = progressValue(view);
     const label =
       typeof view === "number"
         ? fillTemplate(copy.progress.label, { n: view, total: TOTAL_QUESTIONS })
@@ -1752,11 +1921,11 @@ function WizardFlow(props: WizardProps) {
           role="progressbar"
           aria-label={copy.a11y.progress_name}
           aria-valuemin={0}
-          aria-valuemax={TOTAL_QUESTIONS}
+          aria-valuemax={PROGRESS_STEPS}
           aria-valuenow={n}
           aria-valuetext={label}
         >
-          <span className={styles.progressFill} style={{ inlineSize: `${(n / TOTAL_QUESTIONS) * 100}%` }} />
+          <span className={styles.progressFill} style={{ inlineSize: `${(n / PROGRESS_STEPS) * 100}%` }} />
         </div>
       </div>
     );
@@ -1814,6 +1983,7 @@ function WizardFlow(props: WizardProps) {
       data-wizard-root=""
       data-locale={locale}
       data-view={view === "intro" ? "intro" : "focus"}
+      onClickCapture={onEntryClickCapture}
     >
       <div role="status" className="sr-only">
         {announcement}

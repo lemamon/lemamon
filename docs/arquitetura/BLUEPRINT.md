@@ -469,18 +469,20 @@ H1 "Esta página não existe"; 1 frase ("O endereço pode ter mudado. Estes cami
   - `?ref={slug-do-case}` pré-marca a P2 pela tag do case.
   - `?entrada=descoberta` não pré-marca nada; vai para a atribuição.
   - `?origem={pagina-secao}` é a atribuição do CTA clicado.
+  - Com `?servico=` ou `?ref=`, a linha de contexto ("Já deixamos marcado o que mais combina com {serviço}. Dá para mudar.") aparece na entrada **depois** do botão "Começar as 6 perguntas" e do link de WhatsApp, e no topo da pergunta pré-marcada. Antes do botão, ela o empurrava para baixo da dobra a 360×640 e 390×664 justamente no tráfego dos anúncios (auditoria de conversão F03).
 - Na entrada, a ilha captura `utm_source/medium/campaign/term/content`, `gclid`, `referrer`, a página de entrada, `origem`, `servico`, `ref`, `entrada` e o idioma, e grava tudo no rascunho.
 - **Persistência:** `localStorage` com a chave `lemamon:orcamento:v2` (respostas, passo atual, atribuição, idioma, timestamp), gravado a cada mudança, com TTL de 30 dias e tudo em try/catch: sem storage, o fluxo funciona e só não retoma. O rascunho é apagado **só depois do sucesso confirmado**. O resumo do envio vai para `sessionStorage`, para a página de pós-envio ler.
 - **Retomada global:** com rascunho válido, o CTA do header e o da barra fixa mobile viram **"Continuar meu pedido"** e levam ao último passo. A troca é feita por um script inline síncrono logo após o header, que troca só o texto do botão (largura fixa, sem flash e sem layout shift).
 
 ### 7.2 Mecânica das telas
 
-- Uma pergunta por tela. Header em modo foco: logo (→ `/`, com o progresso salvo), "Pergunta N de 6" com barra (`role=progressbar`, `aria-valuetext`) e o link "Dúvidas? WhatsApp". O WhatsApp flutuante e a barra fixa mobile ficam ocultos.
+- Uma pergunta por tela. Header em modo foco: logo (→ `/`, com o progresso salvo), "Pergunta N de 6" com barra (`role=progressbar`, `aria-valuetext`) e o link "Dúvidas? WhatsApp". O WhatsApp flutuante e a barra fixa mobile ficam ocultos. A barra conta **8 passos** (as 6 perguntas, o resumo e o contato até o envio; `aria-valuemax` 8): P6 = 75%, resumo ≈ 87%, contato ≈ 95%, e 100% só depois do envio. Antes, P6, resumo e contato marcavam 100% e o contato parecia um passo a mais (auditoria F21). O texto continua "Pergunta N de 6".
 - Cada pergunta é um `<fieldset>` cuja `<legend>` é o título visível; o texto de apoio fica ligado por `aria-describedby`. As opções são `<input type=radio|checkbox>` **nativos**, estilizados como cartões de largura total, com área de toque ≥ 56px e seleção indicada por ícone de check, borda e peso do texto, nunca só por cor.
-- **Sem avanço automático** (WCAG 3.2.2): sempre há "Continuar", que fica sempre habilitado. Sem seleção, aparece um erro inline (`aria-invalid` e foco na primeira opção). "Voltar" preserva as respostas.
-- Multisseleção: contador "N selecionadas"; "Ainda não sei" é exclusiva (marcá-la desmarca as outras e vice-versa). A P3 tem o limite "até 3" e o botão "Pular"; "Continuar" na P3 sem nada marcado conta como "Pular" (`wizard_skip`).
+- **Sem avanço automático** (WCAG 3.2.2): sempre há "Continuar", que fica sempre habilitado. Sem seleção, aparece um erro (`aria-invalid` nas opções, foco na primeira opção e o texto na região `aria-live`). O texto visível fica na nota da barra de ação, logo abaixo do "Continuar", em vermelho e negrito; o aviso "Você já marcou 3" da P3 também. No fluxo, atrás da barra fixa, ninguém via o erro (auditoria F05). "Voltar" preserva as respostas.
+- **Trava de duplo clique:** um clique de ponteiro nos primeiros 400 ms de uma tela nova (700 ms no contato) é o 2º clique de um duplo clique da tela anterior e é ignorado; Enter e Espaço nunca são travados. Sem a trava, o 2º clique marcava uma opção não escolhida (desktop), pulava a P3 (celular) ou caía no envio do contato, que fica quase no mesmo lugar do botão do resumo (auditoria F06 e F21).
+- Multisseleção: contador "N selecionadas"; "Ainda não sei" é exclusiva (marcá-la desmarca as outras e vice-versa). A P3 tem o limite "até 3" e o botão "Pular"; "Continuar" na P3 sem nada marcado conta como "Pular" (`wizard_skip`). Na P3, o contador "Selecionadas: N de 3" fica logo abaixo do texto de apoio, no topo da pergunta.
 - A cada passo: `document.title` = "Pergunta N de 6 · Orçamento | Lemamon"; o foco vai para a legend; uma região `aria-live=polite` anuncia o passo.
-- No mobile: barra de ação fixa no rodapé com "Voltar" (texto, à esquerda) e "Continuar" (primário, ~70%). Respeita a safe-area e some com o teclado aberto. Transições respeitam `prefers-reduced-motion`.
+- No mobile: barra de ação fixa no rodapé com "Voltar" (texto, à esquerda) e "Continuar" (primário, ~70%). Respeita a safe-area e some com o teclado aberto (a altura dela continua valendo no `scroll-padding`, para o campo trazido à tela não ficar atrás da barra quando o teclado fecha). No desktop (≥ 768px, com altura útil a partir de 34em), a barra gruda no rodapé (`position: sticky`) e o "Continuar" das P2–P5 não fica abaixo da dobra no notebook (auditoria F04). O contato continua numa coluna só. Transições respeitam `prefers-reduced-motion`.
 - Ramificação mínima: **N é sempre 6**. As variações são só de texto ou de conjunto de opções (P2, P3, P5), nunca pulam uma pergunta.
 
 ### 7.3 Perguntas (ids estáveis em inglês, snake_case)
@@ -585,6 +587,8 @@ Propósito: autoridade (o A do BANT). `recommend_to_decider` identifica o influe
 
 Aparece **antes** de qualquer dado de contato. Nunca mostra prazo estimado nem valor calculado.
 
+**Ordem na tela (auditoria de conversão F02):** primeiro o que é do visitante, depois o eco das respostas e o método. Título e intro ("o que pesa no prazo e no preço do seu caso, o que a gente vai aprofundar nos 45 minutos e o caminho até o software rodando") → linha "Para: {tipo} · {prazo} · {faixa} · Revisar respostas" → (d) fatores → (c) pauta (em 2 colunas a partir de 1024px) → cases do mesmo tipo, quando houver → (e) preço → próximo passo: a nota do prazo e, no desktop, o CTA com o WhatsApp → (a) chips compactos (abertos, nunca num `<details>` fechado) → (b) método compacto: a etapa 1 e a etapa realçada com a tag de cada uma ("Paga · valor combinado antes do início"), a ênfase, e as 4 etapas num `<details>` "Ver as 4 etapas" → (f) CTA do fim + WhatsApp. Antes, a 1ª tela devolvia as 6 respostas e a linha do método que a pessoa já tinha visto na Home, e os fatores ficavam a 2.237 px (desktop) e 2.406 px (iPhone). O evento `wizard_summary_factors_view` mede se o bloco de fatores aparece na tela.
+
 - **(a) "O que você nos contou"**: chips com cada resposta. "Alterar" abre o passo e volta direto ao resumo (`wizard_answer_edit`).
 - **(b) "O caminho até o software rodando"**: linha do método em modo destaque (§5.1), com a etapa 1 marcada "Próximo passo · gratuito · 45 minutos" e uma etapa realçada conforme a P1:
   - `problem_unclear`, `product_idea`, `scope_defined` → Sprint de Descoberta: "É aqui que o seu projeto ganha escopo priorizado, protótipo e prazo e preço fechados." Variação para `scope_defined`: "o que você já sabe vira escopo priorizado, protótipo e plano com prazo e preço fechados."
@@ -600,7 +604,7 @@ Aparece **antes** de qualquer dado de contato. Nunca mostra prazo estimado nem v
 | P2 ∋ `mvp` | `topic_mvp`: o que a primeira versão precisa provar |
 | P2 ∋ `automation` | `topic_automation`: quais tarefas se repetem e quanto tempo consomem |
 | P2 = `not_sure` | `topic_not_sure`: que tipo de software resolve o seu problema |
-| P4 = `asap` ou `deadline_reason` preenchido | `topic_deadline`: o que é essencial para a primeira entrega |
+| P4 = `asap` ou `within_3_months`, ou `deadline_reason` preenchido | `topic_deadline`: o que é essencial para a primeira entrega |
 | P5 ∈ {`not_sure`, `not_considered`} | `topic_budget`: como o preço se forma e o que faz ele variar |
 | P6 ∈ {`recommend_to_decider`, `researching`, `not_defined`} | `topic_decider`: quem precisa participar da próxima conversa |
 
@@ -614,12 +618,13 @@ Ordem efetiva (Onda 2, i18n `quote._notes`): `topic_pain` (quanto os pontos marc
 | P2 ∋ `integration` | `factor_integration`: o quanto os sistemas que você já usa permitem conexão |
 | P2 com 2 ou mais tipos | `factor_multi`: mais de uma frente, e a Descoberta define a ordem |
 | P4 = `asap` ou data informada | `factor_deadline`: com data marcada, o escopo é priorizado para caber até lá |
+| P4 = `within_3_months` (sem data) | `factor_deadline_window`: uma janela de 3 meses, e o que entra na primeira entrega é combinado antes de começar |
 | P2 ∋ `ops_system`, `client_platform` ou `mvp` | `factor_scope`: quantos processos e tipos de usuário entram na primeira versão |
 
 - **(e) Bloco "E o preço?"**:
   - `hasPricing` falso: "Preço fechado só com escopo fechado. Ele sai da Sprint de Descoberta, junto com o prazo, antes do desenvolvimento, e você decide se segue."
   - `hasPricing` verdadeiro: faixas de referência da Descoberta e de cada tipo marcado na P2, **lado a lado e nunca somadas** (com `not_sure` ou várias frentes, só a da Descoberta), com a nota "Referência, não proposta. O preço do desenvolvimento é fechado no fim da Descoberta."
-- **(f) Ações:** primário **"Pedir meu diagnóstico gratuito"** (→ contato); secundário **"Prefiro falar no WhatsApp"** (abre o `wa.me` com o resumo escrito, `whatsapp_click {source: wizard_summary}`); link "Corrigir respostas". Evento `wizard_summary_view`.
+- **(f) Ações:** primário **"Pedir meu diagnóstico gratuito"** (→ contato); secundário **"Prefiro falar no WhatsApp"** (abre o `wa.me` com o resumo escrito, `whatsapp_click {source: wizard_summary}`); link "Revisar respostas" (na linha "Para:"). Logo acima do CTA, a nota do prazo: com urgência ou data marcada, "quanto antes a gente conversar, mais opções você tem para a primeira entrega"; com "nos próximos 3 meses", a variante da janela de 3 meses (auditoria F09). O "Nos próximos 3 meses" (o caminho mais comum) muda a pauta, o fator e a nota, mas não o bloco de preço nem a classificação do lead (`deadline_urgent` continua só com `asap` ou data). Evento `wizard_summary_view`.
 
 ### 7.5 Contato (`?etapa=contato`)
 
@@ -636,7 +641,7 @@ Título (texto-guia: "Como a gente fala com você?"), com uma linha dizendo que 
 | Aviso LGPD | texto, **sem checkbox**: "Usamos estes dados só para responder ao seu pedido. Veja a Política de Privacidade." (link `/privacidade`) |
 | Honeypot | `bot-field`, invisível, `aria-hidden`, `tabindex=-1`; se vier preenchido, o envio é descartado em silêncio |
 
-Botão **"Pedir meu diagnóstico gratuito"**, sempre habilitado; Enter envia. Abaixo dele: "Gratuito e sem compromisso de contratar." Validação no blur e no envio, com mensagem inline (`aria-invalid` + `aria-describedby`). Evento `wizard_reach_form`.
+Botão **"Pedir meu diagnóstico gratuito"**, sempre habilitado; Enter envia. Abaixo dele: "Gratuito e sem compromisso de contratar." Validação no blur e no envio, com mensagem inline (`aria-invalid` + `aria-describedby`). Envio sem nenhum campo tocado (quase sempre o toque que sobrou do botão do resumo) só leva o foco ao "Nome", sem pintar os erros nem medir `form_validation_error` (auditoria F21). Telefone em `/en` e `/es`: só com "+" e o código do país, e o placeholder, a ajuda e o erro dão exemplos de fora do Brasil (en "+1 415 555 0134"; es "+52 55 1234 5678" e "+57 300 123 4567"); o canal padrão continua WhatsApp e o código do país nunca vem pré-preenchido (auditoria F16). Evento `wizard_reach_form`.
 
 ### 7.6 Envio, erro e fallback
 
@@ -691,7 +696,7 @@ Os dois formulários são declarados em HTML estático (um `<form hidden>` no la
 
 ### 7.11 Eventos GA4
 
-`cta_click {cta_id, origem}` · `whatsapp_click {source}` · `email_copy {source}` · `profile_click {profile}` · `wizard_start` · `wizard_resume` · `wizard_step {step, question_id}` · `wizard_back` · `wizard_skip` · `wizard_answer_edit` · `wizard_summary_view` · `wizard_reach_form` · `lead_submitted {score, stage, build_type, deadline, budget, role}` · `lead_failed {reason, attempts}` · `schedule_click` · `summary_copy` · `contact_submitted {subject}` · `page_not_found {path}` · `language_change {from_lang, to_lang}` (seletor de idioma; só códigos pt/en/es). `lead_failed` também vai ao New Relic (PageAction + `noticeError`) para o alerta existir sem GA4.
+`cta_click {cta_id, origem}` · `whatsapp_click {source}` · `email_copy {source}` · `profile_click {profile}` · `wizard_start` · `wizard_resume` · `wizard_step {step, question_id}` · `wizard_back` · `wizard_skip` · `wizard_answer_edit` · `wizard_summary_view` · `wizard_summary_factors_view` (metade do bloco de fatores na tela, uma vez por abertura do resumo; sem valor de resposta) · `wizard_reach_form` · `lead_submitted {score, stage, build_type, deadline, budget, role}` · `lead_failed {reason, attempts}` · `schedule_click` · `summary_copy` · `contact_submitted {subject}` · `page_not_found {path}` · `language_change {from_lang, to_lang}` (seletor de idioma; só códigos pt/en/es). `lead_failed` também vai ao New Relic (PageAction + `noticeError`) para o alerta existir sem GA4.
 
 ---
 
@@ -775,6 +780,7 @@ Em `/servicos/*`, `/sprint-de-descoberta`, `/cases/[slug]` e `/blog/[slug]`, com
 - Sitemap só com páginas always + páginas when_data publicadas; a 404 e `/orcamento/enviado` ficam fora.
 - JSON-LD por página: Organization/ProfessionalService (Home, Sobre), Service (serviços, Sprint), FAQPage (só itens visíveis), BreadcrumbList, Article (blog).
 - Title e description únicos por página (chaves `meta.*`). OG image 1200×630 por página ou padrão.
+- `/orcamento`, `/en/quote` e `/es/cotizacion`: o `rel=canonical` aponta sempre para a URL limpa, sem `?servico=`, `?origem=` ou `?ref=`. A linha de contexto do `?servico=`/`?ref=` (§7.1) é desenhada pela ilha **depois** do botão "Começar", com o texto vindo do dado (nunca do valor cru da URL); slug desconhecido, nada. O `document.title` só muda depois do "Começar" ou ao retomar um rascunho. A landing do anúncio mantém o CTA na 1ª tela a 360×640 (auditoria F03).
 - `PUBLIC_WHATSAPP_NUMBER` e `PUBLIC_GA4_ID` no ambiente do Netlify (as variáveis `VITE_*` não existem no Astro).
 - Links de WhatsApp com texto livre do visitante (resumo, falha de envio) abrem por JS no clique, e o `href` renderizado não leva o `?text=`: o GA4 mede o `link_url` de cliques externos e o texto não pode chegar lá.
 - Toque da sessão: um script global grava a primeira página vista, o referrer externo e utm/gclid no `sessionStorage` em TODA página; o wizard envia isso em `attribution`/`gclid` mesmo quando a pessoa entrou pela Home.

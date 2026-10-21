@@ -10,13 +10,18 @@
  *    com um elemento de outro escopo injetado no lugar da prova. Com prova
  *    real, conta exatamente 1 no contato (a do slot contactProof).
  *  - 375×812: a legend da P1 fica acima de 200px.
- *  - Resumo no desktop: a ação (primário + nota + WhatsApp) aparece logo
- *    abaixo de "Suas respostas", acima da dobra de quem rola pouco; o bloco do
- *    fim continua. No mobile ela não existe (a barra fixa já leva o primário).
- *  - /es e /en: telefone sem "+" é inválido e não ganha a máscara brasileira.
+ *  - Entrada com ?servico= (auditoria F03): "Começar as 6 perguntas" acima da
+ *    dobra a 360×640 e 390×664; a linha de contexto vem depois do botão.
+ *  - Resumo na ordem da auditoria F02: linha "Para:", fatores (na 1ª tela),
+ *    pauta, preço, o próximo passo (nota do prazo e, no desktop, o CTA), os
+ *    chips e o método compacto (as 4 etapas num <details> fechado). Com
+ *    "nos próximos 3 meses" (F09), fator, pauta e nota próprios.
+ *  - /es e /en: telefone sem "+" é inválido e não ganha a máscara brasileira;
+ *    os exemplos são de fora do Brasil e o número internacional passa (F16).
  *  - Progresso anunciado no resumo e no contato (B012): a região role=status
  *    da ilha leva o rótulo do progresso ("Resumo", "Último passo: seu
- *    contato") junto com o título, e não só o título.
+ *    contato") junto com o título, e não só o título. A barra conta 8 passos
+ *    (F21): o resumo é o 7º e o contato fica abaixo de 8.
  *  - Cases do mesmo tipo no resumo (B379): com a camada fictícia (2 cases:
  *    fretes = web_systems + mobile_apps; vistorias = mobile_apps +
  *    integrations), o caminho ops_system mostra 1 card (o de fretes) entre "O
@@ -76,7 +81,8 @@ async function injectForeignProof(page: Page): Promise<void> {
     proof.setAttribute("data-astro-cid-e2eproof", "");
     proof.textContent = "Prova de outro componente";
     proof.style.minHeight = "200px";
-    inner.querySelector("[data-wizard-context]")?.before(proof);
+    // No lugar da prova do QuoteProof: logo antes da promessa ("você vê o resumo…").
+    inner.querySelector(".entry__promise")?.before(proof);
   });
 }
 
@@ -133,32 +139,114 @@ test.describe("modo foco esconde a entrada inteira (B140)", () => {
   });
 });
 
-test.describe("resumo: ação logo abaixo de 'Suas respostas' no desktop (painel comercial)", () => {
+test.describe("entrada com ?servico=: 'Começar' acima da dobra no celular (F03)", () => {
+  const sizes = [
+    { width: 360, height: 640 },
+    { width: 390, height: 664 },
+  ];
   for (const locale of ["pt", "en", "es"] as const) {
-    test(`${locale}: primário + nota no topo do resumo, sem perder o bloco do fim`, async ({ page }, testInfo) => {
+    test(`${locale}: botão na 1ª tela e a linha de contexto depois dele`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== "mobile", "dobra do celular: só no projeto mobile");
       const q = COPY[locale].quote;
+      for (const size of sizes) {
+        await page.setViewportSize(size);
+        for (const servico of ["aplicativos", "integracoes"]) {
+          await page.goto(`${PATH[locale]}?servico=${servico}&origem=${servico}-hero`);
+          const context = page.locator("[data-wizard-context]");
+          await expect(context).toContainText(q.entry.context_service.split("{")[0]!.trim());
+          const start = page.locator("[data-wizard-start]").first();
+          const box = await start.boundingBox();
+          expect(box, `${size.width}×${size.height} ${servico}`).not.toBeNull();
+          expect(box!.y + box!.height, `${size.width}×${size.height} ${servico}: botão inteiro na 1ª tela`).toBeLessThanOrEqual(size.height);
+          // A linha de contexto vem depois do botão (e do WhatsApp), nunca antes.
+          expect(((await context.boundingBox())?.y ?? 0) > box!.y).toBe(true);
+        }
+      }
+    });
+  }
+});
+
+test.describe("resumo: o que é do visitante primeiro (F02, F09)", () => {
+  for (const locale of ["pt", "en", "es"] as const) {
+    test(`${locale}: Para → fatores → pauta → preço → próximo passo → respostas → método`, async ({ page }, testInfo) => {
+      const q = COPY[locale].quote;
+      const s = q.summary;
       await openWithDraft(page, locale, "resumo");
+      const root = wizardRoot(page);
+      const top = async (name: string) =>
+        (await root.getByRole("heading", { level: 3, name, exact: true }).boundingBox())?.y ?? Number.NaN;
+      const factors = await top(s.weighs_title);
+      const topics = await top(s.deep_dive_title);
+      const price = await top(s.price_title);
+      const answers = await top(s.told_us_title);
+      const path = await top(s.path_title);
+      // Medido antes de abrir o <details> (a página rola com ele).
       const early = page.locator("[data-wizard-early-actions]");
+      const earlyTop = (await early.boundingBox())?.y ?? Number.NaN;
+      expect(factors).toBeLessThan(topics);
+      expect(topics).toBeLessThan(price);
+      expect(price).toBeLessThan(answers);
+      expect(answers).toBeLessThan(path);
+      // Os fatores começam na 1ª tela (antes: 2.237 px no desktop, 2.353 no Pixel 7).
+      const viewport = page.viewportSize()!;
+      expect(factors).toBeLessThan(viewport.height * 0.75);
+
+      // "Para: tipo · prazo · faixa · Revisar respostas" logo abaixo da intro.
+      const forLine = page.locator("[data-wizard-for-line]");
+      await expect(forLine).toContainText(s.for_line.split("{")[0]!.trim());
+      await expect(forLine).toContainText(q.steps.deadline.options.within_3_months);
+      await expect(forLine.getByRole("button", { name: s.fix_answers, exact: true })).toBeVisible();
+
+      // Prazo de 3 meses (F09): fator, pauta e nota próprios.
+      await expect(root).toContainText(s.factors.factor_deadline_window);
+      await expect(root).toContainText(s.topics.topic_deadline);
+      await expect(root).toContainText(s.deadline_note_window);
+
+      // Chips abertos (nunca num <details> fechado); o método completo, sim, recolhido.
+      await expect(root.getByRole("button", { name: s.edit_aria_label.replace("{rotulo}", q.steps.deadline.short_label) })).toBeVisible();
+      const details = root.locator("details");
+      await expect(details).toHaveCount(1);
+      await expect(details).not.toHaveAttribute("open", /.*/);
+      await expect(details.locator("summary")).toContainText(s.path_all_stages);
+      // A etapa realçada, com a tag "Paga · …", fica à vista fora do <details>.
+      const highlighted = root.locator('[aria-current="step"]').first();
+      await expect(highlighted).toBeVisible();
+      await expect(highlighted).toContainText(COPY[locale].shared.method_timeline.stages.discovery.tag);
+      await details.locator("summary").click();
+      await expect(details.locator("ol")).toBeVisible();
+
       if (testInfo.project.name !== "desktop") {
-        // Mobile: a barra fixa já mostra o primário; o bloco não existe para ninguém.
+        // Mobile: a barra fixa já mostra o primário; o CTA do meio não existe para ninguém.
         await expect(early).toBeHidden();
         return;
       }
+      // Desktop: o CTA logo depois do preço, antes das respostas; o do fim continua.
       await expect(early).toBeVisible();
-      await expect(early.getByRole("link", { name: q.summary.primary, exact: true })).toBeVisible();
-      await expect(early).toContainText(q.summary.below_primary);
-      // Logo abaixo das respostas: antes do bloco "O caminho…" e perto da dobra.
-      const earlyTop = (await early.boundingBox())?.y ?? Infinity;
-      const pathTitle = wizardRoot(page).getByRole("heading", { level: 3 }).nth(1);
-      expect(earlyTop).toBeLessThan((await pathTitle.boundingBox())?.y ?? 0);
-      expect(earlyTop).toBeLessThan(1000);
-      // O bloco do fim continua (o primário da barra).
-      await expect(page.locator("[data-wizard-actions]").getByRole("button", { name: q.summary.primary, exact: true })).toHaveCount(1);
-      await early.getByRole("link", { name: q.summary.primary, exact: true }).click();
+      await expect(early.getByRole("link", { name: s.primary, exact: true })).toBeVisible();
+      await expect(early).toContainText(s.below_primary);
+      expect(earlyTop).toBeGreaterThan(price);
+      expect(earlyTop).toBeLessThan(answers);
+      await expect(page.locator("[data-wizard-actions]").getByRole("button", { name: s.primary, exact: true })).toHaveCount(1);
+      await early.getByRole("link", { name: s.primary, exact: true }).click();
       await expect(page).toHaveURL(/etapa=contato/);
       await expect(wizardRoot(page).getByRole("heading", { level: 2, name: q.contact_form.title })).toBeVisible();
     });
   }
+
+  test("sistema no ar: a etapa realçada é a sustentação; prazo de 3 a 6 meses não ganha nota", async ({ page }) => {
+    const q = COPY.pt.quote;
+    await openWithDraft(page, "pt", "resumo", {
+      ...FULL,
+      stage: "maintain_live_system",
+      deadline: "between_3_and_6_months",
+    });
+    const root = wizardRoot(page);
+    await expect(root.getByRole("heading", { level: 3, name: q.summary.path_title_live_variant, exact: true })).toBeVisible();
+    await expect(root.locator('[aria-current="step"]').first()).toContainText(COPY.pt.shared.method_timeline.stages.support.name);
+    await expect(root).not.toContainText(q.summary.deadline_note_window);
+    await expect(root).not.toContainText(q.summary.deadline_note);
+    await expect(root).not.toContainText(q.summary.factors.factor_deadline_window);
+  });
 });
 
 test.describe("telefone em /es e /en: sem + e código do país é inválido (native_es)", () => {
@@ -182,6 +270,33 @@ test.describe("telefone em /es e /en: sem + e código do país é inválido (nat
     await expect(phone).toHaveValue("+52 55 1234 5678");
     await expect(phone).not.toHaveAttribute("aria-invalid", "true");
   });
+
+  for (const [locale, local, international] of [
+    ["en", "415 555 0134", "+1 415 555 0134"],
+    ["es", "300 123 4567", "+57 300 123 4567"],
+  ] as const) {
+    test(`${locale}: exemplo de fora do Brasil, erro que ensina e número internacional aceito (F16)`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== "desktop", "regra de validação: um projeto basta");
+      const netlify = await stubNetlify(page, 200);
+      await openWithDraft(page, locale, "contato");
+      const root = wizardRoot(page);
+      const q = COPY[locale].quote.contact_form;
+      const phone = root.locator('input[name="phone"]');
+      await expect(phone).toHaveAttribute("placeholder", q.fields.phone.placeholder);
+      expect(q.fields.phone.placeholder).not.toContain("+55");
+      expect(q.fields.phone.error_invalid).not.toContain("+55");
+      await root.getByRole("textbox", { name: q.fields.name.label, exact: true }).fill("Carla Prueba");
+      await root.getByRole("textbox", { name: q.fields.email.label, exact: true }).fill("carla.prueba@example.com");
+      await phone.fill(local);
+      await root.getByRole("button", { name: q.submit, exact: true }).click();
+      await expect(phone).toHaveAttribute("aria-invalid", "true");
+      await expect(root).toContainText(q.fields.phone.error_invalid);
+      expect(netlify.bodies).toHaveLength(0);
+      await phone.fill(international);
+      await expect(phone).toHaveValue(international);
+      await expect(phone).not.toHaveAttribute("aria-invalid", "true");
+    });
+  }
 });
 
 test.describe("progresso anunciado no resumo e no contato (B012)", () => {
@@ -193,12 +308,19 @@ test.describe("progresso anunciado no resumo e no contato (B012)", () => {
       await openWithDraft(page, locale, "resumo");
       await expect(status).toContainText(q.progress.summary_label);
       await expect(status).toContainText(q.summary.title);
-      // A barra de progresso continua cheia e com o mesmo texto.
-      await expect(page.locator("[data-wizard-progress] [role='progressbar']")).toHaveAttribute("aria-valuetext", q.progress.summary_label);
+      // A barra conta 8 passos (F21): o resumo é o 7º, com o mesmo texto.
+      const bar = page.locator("[data-wizard-progress] [role='progressbar']");
+      await expect(bar).toHaveAttribute("aria-valuetext", q.progress.summary_label);
+      await expect(bar).toHaveAttribute("aria-valuemax", "8");
+      await expect(bar).toHaveAttribute("aria-valuenow", "7");
       await wizardRoot(page).getByRole("button", { name: q.summary.primary, exact: true }).click();
       await expect(page).toHaveURL(/etapa=contato/);
       await expect(status).toContainText(q.progress.contact_label);
       await expect(status).toContainText(q.contact_form.title);
+      // Contato perto do fim, sem chegar a 100%: o envio é que completa.
+      const now = Number(await bar.getAttribute("aria-valuenow"));
+      expect(now).toBeGreaterThan(7);
+      expect(now).toBeLessThan(8);
     });
   }
 });

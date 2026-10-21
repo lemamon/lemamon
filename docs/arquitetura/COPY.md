@@ -1380,7 +1380,7 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
 - **`summary_promise`**: Você vê o resumo antes de deixar qualquer contato.
 - **`start`**: Começar as 6 perguntas
 - **`whatsapp_link`**: Prefere conversar direto? Falar no WhatsApp
-- **`context_service`**: Você veio pela página de {servico_frase}, então já deixamos marcado o que mais se aproxima. Dá para mudar se quiser.
+- **`context_service`**: Já deixamos marcado o que mais combina com {servico_frase}. Dá para mudar. _(Aparece depois do botão "Começar", auditoria F03.)_
 - **`context_case`**: Você veio pelo case {case}, então já deixamos marcado o mesmo tipo de projeto. Dá para mudar se quiser.
 - **`quick_faq`**
   - **Título**: Antes de começar
@@ -1594,14 +1594,16 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
 #### Resumo: 'Este é o seu ponto de partida' · `quote.summary`
 
 - **Título**: Este é o seu ponto de partida
-- **Introdução**: Com base nas suas respostas, este é o caminho até o software rodando e o que a gente vai aprofundar no diagnóstico.
-- **`intro_live_variant`** _(variante)_: Com base nas suas respostas, este é o caminho a partir do sistema que você tem e o que a gente vai aprofundar no diagnóstico.
+- **Introdução**: Com base nas suas respostas: o que pesa no prazo e no preço do seu caso, o que a gente vai aprofundar nos 45 minutos e o caminho até o software rodando.
+- **`intro_live_variant`** _(variante)_: Com base nas suas respostas: o que pesa no prazo e no preço do seu caso, o que a gente vai aprofundar nos 45 minutos e o caminho a partir do sistema que você tem.
+- **`for_line`**: Para: {respostas} _(tipo, prazo e faixa, separados por " · ", seguidos do link `fix_answers`; auditoria F02)_
 - **`told_us_title`**: Suas respostas
 - **`edit`**: Alterar
 - **`edit_aria_label`**: Alterar resposta: {rotulo}
 - **`skipped_answer`**: Não respondida (opcional)
 - **`path_title`**: O caminho até o software rodando
 - **`path_title_live_variant`** _(variante)_: O caminho a partir do sistema que você tem
+- **`path_all_stages`**: Ver as 4 etapas
 - **`emphasis`**
   - **`discovery_default`**: É na Sprint de Descoberta que você fica sabendo quanto o desenvolvimento custa e quando fica pronto, antes de começar a construir.
   - **`discovery_scope_defined`**: Na Sprint de Descoberta, o que você já sabe vira um plano com prazo e preço fechados, antes de começar a construir.
@@ -1631,6 +1633,7 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
   - **`factor_multi`**: Mais de um tipo de software no mesmo projeto: a Descoberta define o que vem primeiro
   - **`factor_multi_skip_variant`** _(variante)_: Mais de um tipo de software no mesmo projeto: a ordem entre eles é combinada antes de começar
   - **`factor_deadline`**: Urgência ou data marcada: o que entra primeiro é combinado antes de começar
+  - **`factor_deadline_window`** _(P4 = nos próximos 3 meses)_: Uma janela de 3 meses: o que entra na primeira entrega é combinado antes de começar
   - **`factor_scope`**: Quantos processos e tipos de usuário entram na primeira versão
   - **`factor_scope_live`**: O tamanho do sistema atual e o que precisa mudar primeiro
   - **`factor_default`**: O que entra primeiro e o que pode esperar
@@ -1644,9 +1647,10 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
 - **`price_ranges_intro`**: Faixas de referência para você ter uma ordem de grandeza. Cada uma vale para uma etapa ou um tipo de projeto.
 - **`price_note`**: Referência, não proposta. O preço do desenvolvimento é fechado no fim da Descoberta.
 - **`price_note_skip_variant`** _(variante)_: Referência, não proposta. O preço do desenvolvimento é fechado antes de começar.
-- **`deadline_note`**: Com prazo apertado ou data marcada, conversar cedo deixa mais espaço para decidir o que entra primeiro.
+- **`deadline_note`**: Com prazo apertado ou data marcada, quanto antes a gente conversar, mais opções você tem para a primeira entrega.
+- **`deadline_note_window`** _(P4 = nos próximos 3 meses)_: Com 3 meses pela frente, quanto antes a gente conversar, mais opções você tem para a primeira entrega.
 - **CTA primário**: Pedir meu diagnóstico gratuito
-- **`below_primary`**: Falta só o seu contato. Gratuito e sem compromisso de contratar.
+- **`below_primary`**: Falta só o contato. Gratuito e sem compromisso. _(1 linha na barra fixa a 390px, auditoria F21.)_
 - **`secondary_whatsapp`**: Prefiro falar no WhatsApp
 - **`fix_answers`**: Alterar respostas
 

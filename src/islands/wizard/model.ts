@@ -216,6 +216,41 @@ export function previousScreen(screen: Screen): Screen | null {
   return screen === 1 ? null : ((screen - 1) as StepNumber);
 }
 
+/**
+ * Barra de progresso sobre 8 passos (auditoria F21): as 6 perguntas, o resumo
+ * e o contato até o envio. P6 = 75%, resumo ≈ 87%, contato ≈ 95%; 100% só
+ * depois do envio. Antes, P6, resumo e contato marcavam 100% e o contato
+ * parecia um passo a mais. O texto ("Pergunta N de 6", "Resumo", "Último
+ * passo") não muda.
+ */
+export const PROGRESS_STEPS = TOTAL_QUESTIONS + 2;
+
+export function progressValue(screen: Screen): number {
+  if (screen === "resumo") return TOTAL_QUESTIONS + 1;
+  // O contato fica perto do fim, sem chegar a 100%: o envio é que completa.
+  if (screen === "contato") return PROGRESS_STEPS - 0.4;
+  return screen;
+}
+
+/**
+ * Trava de entrada de tela (auditoria F06 e F21): um clique de ponteiro nos
+ * primeiros milissegundos de uma tela nova é o 2º clique de um duplo clique
+ * (ou toque duplo) da tela anterior. Sem a trava, ele marcava uma opção que a
+ * pessoa não escolheu (desktop, P1 → P2), pulava a P3 (celular, a barra fixa
+ * fica no mesmo lugar) ou caía no envio do contato, que tem o mesmo rótulo e
+ * quase a mesma posição do botão do resumo, e pintava 3 erros. No contato a
+ * janela é maior (toque duplo lento, até ~300 ms medidos). detail 0 = Enter,
+ * Espaço ou clique programático: o teclado nunca é travado.
+ */
+export const ENTRY_CLICK_LOCK_MS = 400;
+export const CONTACT_ENTRY_LOCK_MS = 700;
+
+export function blocksEntryClick(detail: number, sinceEntryMs: number, screen: Screen | "intro"): boolean {
+  if (detail === 0) return false;
+  const lock = screen === "contato" ? CONTACT_ENTRY_LOCK_MS : ENTRY_CLICK_LOCK_MS;
+  return sinceEntryMs >= 0 && sinceEntryMs < lock;
+}
+
 export interface ToggleResult {
   next: string[];
   /** "max" = tentou passar do limite (mostra validation.max_three). */
@@ -281,6 +316,16 @@ export function activePains(answers: Answers): string[] {
 /** P4 = asap ou data travante preenchida. */
 export function isDeadlineUrgent(answers: Answers): boolean {
   return answers.deadline === "asap" || Boolean(answers.deadline_reason && answers.deadline_reason.trim() !== "");
+}
+
+/**
+ * Prazo que o resumo reconhece (auditoria F09): urgência ou data marcada
+ * (isDeadlineUrgent), ou a janela de "nos próximos 3 meses", o caminho mais
+ * comum. Só o resumo usa (pauta e fator); isDeadlineUrgent continua sendo o
+ * critério do lead (deadline_urgent em lead.ts) e não muda.
+ */
+export function hasDeadlineWindow(answers: Answers): boolean {
+  return isDeadlineUrgent(answers) || answers.deadline === "within_3_months";
 }
 
 /** P6 que pede "traga quem decide" (§7.3, §7.8). */

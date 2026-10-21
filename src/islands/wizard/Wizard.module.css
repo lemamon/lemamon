@@ -2,7 +2,7 @@
    Nada de CSS-in-JS nem literal de cor, raio ou sombra.
    Mobile primeiro: opções de largura total com alvo ≥ var(--target-option);
    barra de ação fixa abaixo de 768px (some com o teclado aberto, respeita a
-   safe-area). Seleção nunca só por cor: ícone de check + borda + peso do texto. */
+   safe-area) e sticky no rodapé acima disso (F04). Seleção nunca só por cor: ícone de check + borda + peso do texto. */
 
 .root {
   --wizard-measure: 44rem;
@@ -224,19 +224,11 @@
   color: var(--color-text-secondary);
 }
 
-.error,
-.notice {
+.error {
   font-size: var(--text-sm);
   line-height: var(--leading-sm);
   font-weight: var(--font-weight-bold);
-}
-
-.error {
   color: var(--color-danger);
-}
-
-.notice {
-  color: var(--color-text-primary);
 }
 
 /* ------------------------------------------------------------------ *
@@ -481,7 +473,8 @@ textarea.control {
   text-decoration: none;
 }
 
-/* Barra de ação: inline no desktop; fixa no rodapé no mobile. */
+/* Barra de ação: no fluxo e grudada no rodapé (sticky) no desktop; fixa no
+   rodapé no mobile. */
 .actions {
   display: flex;
   align-items: center;
@@ -518,15 +511,51 @@ textarea.control {
   text-align: start;
 }
 
+/* Erro e aviso da pergunta na nota da barra (F05): a barra fixa (celular) e a
+   sticky (desktop, F04) cobriam o texto no fluxo. Erro em vermelho e negrito;
+   aviso ("Você já marcou 3") em negrito. Nunca só cor: o texto diz o que houve. */
+.barNote[data-tone="error"],
+.barNote[data-tone="notice"] {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.barNote[data-tone="error"] {
+  color: var(--color-danger);
+}
+
+/* Foco por Tab, campo inválido e scrollIntoView param ACIMA da barra de ação,
+   fixa no celular e sticky no desktop (WCAG 2.4.11; F04). A altura vem medida
+   pela ilha (--wizard-bar-height). */
+:global(html[data-wizard-mode="focus"]) {
+  scroll-padding-block-end: calc(var(--wizard-bar-height, 6rem) + var(--space-4));
+}
+
+/* Desktop com altura útil (F04): a barra gruda no rodapé enquanto a pergunta
+   rola, e o Continuar das P2–P5 não fica abaixo da dobra (1366×657: P3 com o
+   botão em y 869). No resumo e no contato ela fica dentro do bloco do fim, que
+   a limita: só gruda quando esse bloco chega à tela. Tela baixa (< 34em):
+   barra no fluxo, para não tomar a tela. */
+@media (min-width: 768px) and (min-height: 34em) {
+  .actions {
+    position: sticky;
+    inset-block-end: 0;
+    z-index: var(--z-floating);
+    padding-block: var(--space-3);
+    background-color: var(--color-bg-canvas);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+
+  /* No bloco do fim (resumo, contato) a divisória já é a do bloco. */
+  .closing > .actions {
+    padding-block-start: 0;
+    border-block-start: 0;
+  }
+}
+
 @media (max-width: 767.98px) {
   .root[data-view="focus"] {
     padding-block-end: var(--space-8);
-  }
-
-  /* Foco por Tab, campo inválido e scrollIntoView param ACIMA da barra fixa
-     (WCAG 2.4.11). A altura vem medida pela ilha (--wizard-bar-height). */
-  :global(html[data-wizard-mode="focus"]) {
-    scroll-padding-block-end: calc(var(--wizard-bar-height, 6rem) + var(--space-4));
   }
 
   .backInline {
@@ -642,6 +671,147 @@ textarea.control {
 .chip .linkButton {
   grid-column: 2;
   grid-row: 1 / span 2;
+}
+
+/* Chips compactos (F02): eco das respostas depois do que é do visitante, em 2
+   colunas quando cabe. Abertos, nunca num <details> fechado (§7.4a). */
+@media (min-width: 640px) {
+  .chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* "Para: tipo · prazo · faixa · Revisar respostas" (F02), logo abaixo da
+   intro. "Revisar respostas" é link dentro da frase (alvo em linha, WCAG 2.5.8),
+   para a linha não ganhar uma altura de botão. */
+.forLine {
+  margin-block-start: calc(-1 * var(--space-3));
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.noWrap {
+  white-space: nowrap;
+}
+
+.inlineLink {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-link);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .inlineLink:hover {
+    color: var(--color-text-link-hover);
+  }
+}
+
+/* Pauta em 2 colunas a partir de 1024px (F02): 2 a 4 itens curtos. */
+@media (min-width: 1024px) {
+  .list.topics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-8);
+  }
+}
+
+/* Método compacto (F02): a etapa 1 e a realçada; as 4 etapas no <details>. */
+.stages {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+/* Etapa realçada: borda e fundo da marca, não só cor (o texto diz o nome e a tag). */
+.stage[data-highlight="true"] {
+  border-color: var(--color-brand);
+  box-shadow: var(--ring-inset) var(--color-brand);
+  background-color: var(--color-brand-subtle);
+}
+
+.stageIndex {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-tertiary);
+}
+
+.stageName {
+  font-weight: var(--font-weight-bold);
+}
+
+.stageBadge {
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent-subtle);
+  color: var(--color-text-primary);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.stageTag {
+  flex-basis: 100%;
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+.allStagesSummary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--target-min);
+  color: var(--color-text-link);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+/* O ícone "+" vira "×" com o <details> aberto (o mesmo do "Mais detalhes" do contato). */
+.allStages[open] .toggleIcon {
+  transform: rotate(45deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .allStagesSummary:hover {
+    color: var(--color-text-link-hover);
+  }
+}
+
+.allStagesBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-block-start: var(--space-3);
 }
 
 .timeline {
@@ -805,21 +975,33 @@ textarea.control {
   margin-block-start: var(--space-4);
 }
 
-/* Ação repetida logo abaixo de "Suas respostas" (desktop). No mobile, a barra
-   fixa já leva o primário: o bloco não existe para ninguém (display: none).
-   A linha de cima é a divisória; a de baixo é a do bloco seguinte. */
+/* Próximo passo logo depois do preço (F02): a nota do prazo (F09) e, no
+   desktop, a ação repetida do fim. No mobile, a barra fixa já leva o primário:
+   o CTA não existe para ninguém (display: none) e o invólucro some do layout
+   (display: contents), para a nota (quando há) ser só mais um item do fluxo.
+   No desktop, a linha de cima é a divisória; a de baixo é a do bloco seguinte. */
+.nextStep {
+  display: contents;
+}
+
 .earlyActions {
   display: none;
 }
 
 @media (min-width: 768px) {
+  .nextStep {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-block-start: var(--space-6);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+
   .earlyActions {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-2);
-    padding-block-start: var(--space-6);
-    border-block-start: 1px solid var(--color-border-subtle);
   }
 }
 

@@ -11,8 +11,10 @@ import type { Answers } from "@/islands/wizard/model";
 import {
   answerChips,
   answeredChips,
+  deadlineNote,
   developmentLine,
   emphasisKey,
+  forLineParts,
   highlightedStage,
   joinAnnouncement,
   priceBlock,
@@ -74,6 +76,14 @@ describe("tópicos (2 a 4, por prioridade)", () => {
     expect(summaryTopics({ stage: "problem_unclear", build_type: ["not_sure"] }, noPricing)).toEqual(["topic_not_sure", "topic_success"]);
   });
 
+  it("prazo de 3 meses entra na pauta, como urgência e data marcada (F09); 3 a 6 meses, não", () => {
+    const base: Answers = { stage: "problem_unclear", build_type: ["ops_system"], pain: ["manual_process"] };
+    expect(summaryTopics({ ...base, deadline: "within_3_months" }, noPricing).slice(0, 2)).toEqual(["topic_pain", "topic_deadline"]);
+    expect(summaryTopics({ ...base, deadline: "asap" }, noPricing)).toContain("topic_deadline");
+    expect(summaryTopics({ ...base, deadline: "between_3_and_6_months" }, noPricing)).not.toContain("topic_deadline");
+    expect(summaryTopics({ ...base, deadline: "not_defined" }, noPricing)).not.toContain("topic_deadline");
+  });
+
   it("topic_budget só quando o bloco de preço mostra faixas", () => {
     const answers: Answers = { stage: "problem_unclear", build_type: ["mvp"], budget: "not_considered" };
     expect(summaryTopics(answers, noPricing)).not.toContain("topic_budget");
@@ -95,9 +105,10 @@ describe("fatores (até 3; com menos de 2, factor_default completa)", () => {
   });
 
   it("caminhos comuns nunca entregam um fator só (a promessa da entrada é 'o que influencia')", () => {
+    // "Nos próximos 3 meses" (o caminho mais comum) tem fator próprio (F09).
     expect(summaryFactors({ stage: "problem_unclear", build_type: ["ops_system"], deadline: "within_3_months" }, noPricing)).toEqual([
+      "factor_deadline_window",
       "factor_scope",
-      "factor_default",
     ]);
     expect(
       summaryFactors({ stage: "scope_defined", build_type: ["client_platform"], deadline: "between_3_and_6_months" }, noPricing),
@@ -107,6 +118,33 @@ describe("fatores (até 3; com menos de 2, factor_default completa)", () => {
       "factor_deadline",
       "factor_scope",
     ]);
+  });
+
+  it("janela de 3 meses: fator próprio; urgência ou data marcada vencem (F09)", () => {
+    expect(summaryFactors({ stage: "scope_defined", build_type: ["client_platform"], deadline: "within_3_months" }, noPricing)).toEqual([
+      "factor_deadline_window",
+      "factor_scope",
+    ]);
+    const withDate: Answers = { stage: "scope_defined", build_type: ["client_platform"], deadline: "within_3_months", deadline_reason: "Feira" };
+    expect(summaryFactors(withDate, noPricing)).toEqual(["factor_deadline", "factor_scope"]);
+    expect(summaryFactors({ stage: "problem_unclear", build_type: ["ops_system"], deadline: "over_6_months" }, noPricing)).not.toContain(
+      "factor_deadline_window",
+    );
+  });
+
+  it("nota acima do CTA: urgência, janela de 3 meses ou nada; o preço não muda (F09)", () => {
+    expect(deadlineNote({ deadline: "asap" })).toBe("deadline_note");
+    expect(deadlineNote({ deadline: "within_3_months", deadline_reason: "Edital" })).toBe("deadline_note");
+    expect(deadlineNote({ deadline: "within_3_months" })).toBe("deadline_note_window");
+    expect(deadlineNote({ deadline: "between_3_and_6_months" })).toBeNull();
+    expect(deadlineNote({})).toBeNull();
+    const base: Answers = { stage: "problem_unclear", build_type: ["ops_system"], budget: "not_sure" };
+    expect(priceBlock({ ...base, deadline: "within_3_months" }, noPricing)).toEqual(priceBlock({ ...base, deadline: "over_6_months" }, noPricing));
+    for (const locale of ["pt", "en", "es"] as const) {
+      const s = getSection(locale, "quote").summary;
+      expect(s.deadline_note_window.trim()).not.toBe("");
+      expect(s.factors.factor_deadline_window.trim()).not.toBe("");
+    }
   });
 
   it("variante skip e fator de sistema no ar; sem nada, factor_default", () => {
@@ -185,6 +223,28 @@ describe("chips 'Suas respostas'", () => {
     expect(chips[2]).toMatchObject({ skipped: true, value: quote.summary.skipped_answer });
     expect(chips[4]?.value).toBe("Feira de maio");
     expect(answeredChips(chips)).toHaveLength(6);
+  });
+
+  it("linha 'Para:' do topo do resumo: tipo (com vírgula), prazo e faixa, nessa ordem (F02)", () => {
+    const ctx: ChipContext = { hasBudgetTiers: true, hasMonthlyTiers: false, tierLabel: (_set, id) => `faixa ${id}` };
+    const answers: Answers = {
+      stage: "problem_unclear",
+      build_type: ["integration", "ops_system"],
+      pain: ["manual_process"],
+      deadline: "within_3_months",
+      deadline_reason: "Edital",
+      budget: "tier_2",
+      budget_set: "tiers",
+      role: "i_decide",
+    };
+    const parts = forLineParts(answerChips(answers, copy, ctx));
+    expect(parts).toEqual([
+      `${quote.steps.build_type.options_short.ops_system}, ${quote.steps.build_type.options_short.integration}`,
+      quote.steps.deadline.options.within_3_months,
+      "faixa tier_2",
+    ]);
+    // Nem a P1, nem a dor, nem a data travante, nem o papel: só o que mexe em prazo e preço.
+    expect(parts.join(" ")).not.toContain("Edital");
   });
 
   it("variante 'no ar' troca só os rótulos de mvp e not_sure", () => {

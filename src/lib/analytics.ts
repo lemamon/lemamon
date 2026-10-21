@@ -82,6 +82,11 @@ export interface EventParams {
   wizard_skip: { question_id: string };
   wizard_answer_edit: { question_id: string };
   wizard_summary_view: Record<string, never>;
+  /**
+   * Metade do bloco "O que influencia prazo e preço" do resumo apareceu na tela
+   * (auditoria F02), uma vez por abertura do resumo. Sem valor de resposta.
+   */
+  wizard_summary_factors_view: Record<string, never>;
   wizard_reach_form: Record<string, never>;
   /** Campo preenchido e deixado (B337): só o NOME do campo, nunca o valor. */
   form_field_complete: { form: "briefing" | "contato"; field_name: string };

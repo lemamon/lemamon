@@ -36,6 +36,13 @@ export interface WizardCopy {
    * a indicação visual dentro do link do card.
    */
   summaryCases: { title: string; titleOne: string; readCase: string };
+  /**
+   * Linha do método compacta do resumo (auditoria F02): nome e tag de cada
+   * etapa (shared.method_timeline.stages) e o selo da etapa 1
+   * (shared.method_timeline.next_step_badge). As 4 etapas completas continuam
+   * vindo pelo slot do MethodTimeline, dentro de um <details>.
+   */
+  method: { stages: Shared["method_timeline"]["stages"]; nextStep: string };
   /** shared.terms: só os dois termos explicados no resumo (i18n quote._notes.terms). */
   terms: Pick<Shared["terms"], "prototype" | "prioritized_scope">;
   investment: Pick<Shared["investment"], "row_labels" | "unit_project" | "unit_month">;

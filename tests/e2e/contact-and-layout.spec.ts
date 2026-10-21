@@ -97,6 +97,33 @@ test.describe("/contato", () => {
     expect(netlify.bodies).toHaveLength(1);
     expect(netlify.bodies[0]?.get("phone")).toBe("+54 9 11 2345 6789");
   });
+
+  test("en: o erro do telefone dá um exemplo de fora do Brasil e o número dos EUA com + passa (F16)", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "regra de validação: um projeto basta");
+    const netlify = await stubNetlify(page, 200);
+    const c = COPY.en.contact.form;
+    expect(c.fields.phone.error_invalid).not.toContain("+55");
+    expect(c.fields.phone.error_invalid).toBe(COPY.en.shared.errors.invalid_phone);
+    await page.goto("/en/contact");
+    const startedAt = Date.now();
+    const form = page.locator("form[data-contact-form]");
+    await form.getByRole("textbox", { name: c.fields.name.label, exact: true }).fill("Jane Test");
+    await form.getByRole("textbox", { name: c.fields.email.label, exact: true }).fill("jane.test@example.com");
+    await form.locator('input[name="subject"][value="other"]').check();
+    await form.getByRole("textbox", { name: c.fields.message.label, exact: true }).fill("Test message.");
+    const phone = form.locator('input[name="phone"]');
+    await phone.fill("415 555 0134");
+    await waitMinFill(page, startedAt);
+    await form.getByRole("button", { name: c.submit, exact: true }).click();
+    await expect(phone).toHaveAttribute("aria-invalid", "true");
+    await expect(form).toContainText(c.fields.phone.error_invalid);
+    expect(netlify.bodies).toHaveLength(0);
+
+    await phone.fill("+1 415 555 0134");
+    await form.getByRole("button", { name: c.submit, exact: true }).click();
+    await expect(page.locator("[data-contact-success]")).toHaveAttribute("data-visible", "true");
+    expect(netlify.bodies[0]?.get("phone")).toBe("+1 415 555 0134");
+  });
 });
 
 test.describe("tela pequena", () => {

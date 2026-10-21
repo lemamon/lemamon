@@ -5,8 +5,11 @@
  * ÚNICO H1 (honesto: dali sai um diagnóstico, não um preço). Ordem: [banner de
  * retomada] · eyebrow · H1 · subtítulo · 3 marcadores · [prova compacta,
  * when_data: 1 depoimento ou logos, backlog B140] · promessa "você vê o resumo
- * antes de deixar qualquer contato" · [linha de contexto do ?servico=] ·
- * "Começar" + "Prefere conversar direto? Falar no WhatsApp".
+ * antes de deixar qualquer contato" · "Começar" + "Prefere conversar direto?
+ * Falar no WhatsApp" · [linha de contexto do ?servico=]. A linha de contexto
+ * vem DEPOIS do botão (auditoria F03): antes dele, ela empurrava o "Começar"
+ * para baixo da dobra no celular (y 681–729 numa tela de 664) justamente no
+ * tráfego dos anúncios (página de serviço → ?servico=).
  *
  * Dois alvos são preenchidos pela ilha (portal), porque dependem do
  * navegador: [data-wizard-resume] (rascunho no localStorage) e
@@ -112,7 +115,6 @@ const ghostDate = new Intl.DateTimeFormat(LOCALE_META[locale].htmlLang, {
     </ul>
     <QuoteProof locale={locale} placement="entry" />
     <p class="entry__promise">{t(locale, "quote.entry.summary_promise")}</p>
-    <div data-wizard-context></div>
     <div class="entry__actions">
       <Button type="button" size="lg" full="mobile" data-wizard-start="">
         {t(locale, "quote.entry.start")}
@@ -127,6 +129,7 @@ const ghostDate = new Intl.DateTimeFormat(LOCALE_META[locale].htmlLang, {
         )
       }
     </div>
+    <div data-wizard-context></div>
   </div>
 </Section>
 

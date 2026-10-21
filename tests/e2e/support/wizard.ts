@@ -9,6 +9,7 @@ import en from "../../../src/i18n/en.json" with { type: "json" };
 import es from "../../../src/i18n/es.json" with { type: "json" };
 import pt from "../../../src/i18n/pt.json" with { type: "json" };
 import type { Locale } from "../../../src/i18n/locales";
+import { CONTACT_ENTRY_LOCK_MS, ENTRY_CLICK_LOCK_MS } from "../../../src/islands/wizard/model";
 import { MIN_FILL_MS, phoneNeedsCountryCode } from "../../../src/lib/forms";
 
 export const COPY = { pt, en, es } as const satisfies Record<Locale, typeof pt>;
@@ -51,8 +52,19 @@ export const DEFAULT_PATH: Path = {
 
 export const wizardRoot = (page: Page) => page.locator("[data-wizard-root]");
 
+/**
+ * Trava de entrada de tela (F06/F21): um clique de ponteiro logo depois de
+ * trocar de tela é tratado como o 2º de um duplo clique e ignorado. O E2E
+ * clica rápido como um robô: depois de cada troca de tela, espera a janela.
+ */
+export async function waitEntryLock(page: Page, screen: "question" | "contato" = "question"): Promise<void> {
+  await page.waitForTimeout((screen === "contato" ? CONTACT_ENTRY_LOCK_MS : ENTRY_CLICK_LOCK_MS) + 50);
+}
+
+/** A pergunta N está na tela (e a trava de entrada já passou: o próximo clique conta). */
 export async function expectStep(page: Page, n: number): Promise<void> {
   await expect(page.locator("[data-wizard-progress] [role='progressbar']")).toHaveAttribute("aria-valuenow", String(n));
+  await waitEntryLock(page);
 }
 
 export async function start(page: Page): Promise<number> {
@@ -89,6 +101,7 @@ export async function answerAll(page: Page, locale: Locale, path: Path = DEFAULT
   await root.locator(`input[name="role"][value="${path.role}"]`).check();
   await continueStep(page, locale, true);
   await expect(root.getByRole("heading", { level: 2, name: COPY[locale].quote.summary.title })).toBeVisible();
+  await waitEntryLock(page);
 }
 
 export interface Contact {
@@ -115,6 +128,7 @@ export async function fillContact(page: Page, locale: Locale, contact: Contact =
   const q = COPY[locale].quote;
   await root.getByRole("button", { name: q.summary.primary, exact: true }).click();
   await expect(root.getByRole("heading", { level: 2, name: q.contact_form.title })).toBeVisible();
+  await waitEntryLock(page, "contato");
   await root.getByRole("textbox", { name: q.contact_form.fields.name.label, exact: true }).fill(contact.name);
   await root.getByRole("textbox", { name: q.contact_form.fields.email.label, exact: true }).fill(contact.email);
   await root.locator('input[name="phone"]').fill(phoneFor(locale, contact));

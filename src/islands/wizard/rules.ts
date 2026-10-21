@@ -14,6 +14,7 @@ import type { RulesCopy } from "./copy";
 import {
   activePains,
   answerOf,
+  hasDeadlineWindow,
   isDeadlineUrgent,
   isLive,
   needsDecider,
@@ -113,7 +114,8 @@ export function summaryTopics(answers: Answers, ctx: SummaryContext): TopicId[] 
   if (!live && pains.length > 0) {
     topics.push(productIdea || pains.includes("new_product") ? "topic_pain_product_variant" : "topic_pain");
   }
-  if (isDeadlineUrgent(answers)) topics.push("topic_deadline");
+  // Também com "nos próximos 3 meses" (F09): o caminho mais comum entra na pauta.
+  if (hasDeadlineWindow(answers)) topics.push("topic_deadline");
   if (has("integration")) topics.push("topic_integration");
   if (has("mobile_app")) topics.push("topic_app");
   if (has("ops_system") || has("client_platform")) {
@@ -158,12 +160,23 @@ export function summaryFactors(answers: Answers, ctx: Pick<SummaryContext, "semD
     factors.push(answers.stage === "scope_defined" && ctx.semDescoberta ? "factor_multi_skip_variant" : "factor_multi");
   }
   if (isDeadlineUrgent(answers)) factors.push("factor_deadline");
+  else if (hasDeadlineWindow(answers)) factors.push("factor_deadline_window");
   if (!live && (has("ops_system") || has("client_platform") || has("mvp"))) factors.push("factor_scope");
   if (live) factors.push("factor_scope_live");
 
   const picked = factors.slice(0, 3);
   if (picked.length < 2) picked.push("factor_default");
   return picked;
+}
+
+/**
+ * Nota logo acima do CTA do fim do resumo: deadline_note com urgência ou data
+ * marcada; deadline_note_window com "nos próximos 3 meses" (F09); nada nos
+ * outros prazos. O bloco de preço não muda com o prazo.
+ */
+export function deadlineNote(answers: Answers): "deadline_note" | "deadline_note_window" | null {
+  if (isDeadlineUrgent(answers)) return "deadline_note";
+  return hasDeadlineWindow(answers) ? "deadline_note_window" : null;
 }
 
 /* ------------------------------------------------------------------ *
@@ -176,6 +189,8 @@ export interface AnswerChip {
   label: string;
   /** Texto do chip; "" = pergunta opcional pulada (skipped). */
   value: string;
+  /** Cada opção marcada, sem o separador (a linha "Para:" do resumo junta o tipo com vírgula, F02). */
+  parts?: readonly string[];
   skipped: boolean;
 }
 
@@ -244,13 +259,8 @@ export function answerChips(answers: Answers, copy: RulesCopy, ctx: ChipContext)
       }
       continue;
     }
-    chips.push({
-      step,
-      question,
-      label,
-      value: sorted.map((id) => optionLabel(question, id, answers, copy, ctx)).join(separator),
-      skipped: false,
-    });
+    const parts = sorted.map((id) => optionLabel(question, id, answers, copy, ctx));
+    chips.push({ step, question, label, value: parts.join(separator), parts, skipped: false });
     if (question === "deadline" && answers.deadline_reason && answers.deadline_reason.trim() !== "") {
       chips.push({
         step,
@@ -262,6 +272,24 @@ export function answerChips(answers: Answers, copy: RulesCopy, ctx: ChipContext)
     }
   }
   return chips;
+}
+
+/** Perguntas da linha "Para: …" do topo do resumo (F02), nesta ordem: tipo, prazo e faixa. */
+const FOR_LINE_QUESTIONS: readonly AnswerChip["question"][] = ["build_type", "deadline", "budget"];
+
+/**
+ * Valores da linha "Para: {tipo} · {prazo} · {faixa}" no topo do resumo
+ * (auditoria F02): o eco compacto das respostas que mais mexem em prazo e
+ * preço, com os mesmos textos dos chips. Vários tipos na P2 vão com vírgula,
+ * para não se confundirem com o " · " entre os grupos. Os chips completos
+ * (com "Alterar") ficam mais abaixo.
+ */
+export function forLineParts(chips: readonly AnswerChip[]): string[] {
+  return FOR_LINE_QUESTIONS.flatMap((question) =>
+    chips
+      .filter((chip) => chip.question === question && !chip.skipped)
+      .map((chip) => (chip.parts ?? [chip.value]).join(", ")),
+  );
 }
 
 /** Linhas de resposta sem as perguntas puladas (mensagens e texto copiado, i18n quote._notes.whatsapp). */
