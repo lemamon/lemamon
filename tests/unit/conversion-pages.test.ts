@@ -53,6 +53,7 @@ describe("/orcamento/enviado", () => {
     lang: "pt",
     firstName: "Ana",
     channel: "email",
+    channelContact: "",
     role: "researching",
     deadlineUrgent: true,
     services: ["mobile_apps"],
@@ -101,6 +102,39 @@ describe("/orcamento/enviado", () => {
     expect(cards.map((card) => card.hidden)).toEqual([true, false]);
     expect(document.querySelector("[data-sent-cases-title]")?.textContent).toBe("Um projeto");
     expect(document.querySelector<HTMLElement>("[data-sent-cases]")?.hidden).toBe(false);
+  });
+
+  it("F10: confirma o contato pelo canal, 'Algum dado errado?' com o código e o topo com o código", () => {
+    document.body.innerHTML = `
+      <header><a data-wizard-help href="https://wa.me/5548900000000?text=gen%C3%A9rico">Dúvidas?</a></header>
+      <span data-sent-contact data-whatsapp="A gente fala com você pelo WhatsApp {contato} para marcar." data-email="A gente escreve para {contato}.">genérico</span>
+      <p data-sent-fix hidden>Algum dado errado? <a data-sent-fix-whatsapp href="https://wa.me/5548900000000" data-template="Olá! O contato do meu pedido {protocolo} saiu errado. O certo é:">Mande o certo</a></p>
+      <a data-sent-whatsapp href="https://wa.me/5548900000000?text=gen" data-template="Olá! Pedido {protocolo}.">Mandar oi</a>
+      <p data-sent-whatsapp-support hidden>A mensagem já leva o código.</p>`;
+    personalize(document, { ...summary, channel: "whatsapp", channelContact: "(48) 99999-8888" });
+    const step = document.querySelector("[data-sent-contact]");
+    expect(step?.textContent).toBe("A gente fala com você pelo WhatsApp (48) 99999-8888 para marcar.");
+    expect(step?.querySelector("strong")?.textContent).toBe("(48) 99999-8888");
+    const fix = document.querySelector<HTMLElement>("[data-sent-fix]");
+    expect(fix?.hidden).toBe(false);
+    const fixText = new URL(document.querySelector<HTMLAnchorElement>("[data-sent-fix-whatsapp]")?.href ?? "").searchParams.get("text");
+    expect(fixText).toBe("Olá! O contato do meu pedido LEM-20261019-ABCD saiu errado. O certo é: ");
+    const sayHi = document.querySelector<HTMLAnchorElement>("[data-sent-whatsapp]")?.href ?? "";
+    expect(new URL(sayHi).searchParams.get("text")).toBe("Olá! Pedido LEM-20261019-ABCD.");
+    expect(document.querySelector<HTMLElement>("[data-sent-whatsapp-support]")?.hidden).toBe(false);
+    // O "Dúvidas? WhatsApp" do topo também leva o código.
+    expect(document.querySelector<HTMLAnchorElement>("[data-wizard-help]")?.href).toBe(sayHi);
+    // O número da Lemamon nunca vira texto da página.
+    expect(document.body.textContent).not.toContain("5548900000000");
+  });
+
+  it("F10: resumo antigo, sem o contato, fica com o texto genérico e sem 'Algum dado errado?'", () => {
+    document.body.innerHTML = `
+      <span data-sent-contact data-email="A gente escreve para {contato}.">A gente fala com você para marcar.</span>
+      <p data-sent-fix hidden>Algum dado errado?</p>`;
+    personalize(document, { ...summary, channel: "email", channelContact: "" });
+    expect(document.querySelector("[data-sent-contact]")?.textContent).toBe("A gente fala com você para marcar.");
+    expect(document.querySelector<HTMLElement>("[data-sent-fix]")?.hidden).toBe(true);
   });
 
   it("'Resumo do seu pedido' abre sozinho para quem decide com outros (o 'Copiar resumo' fica lá dentro)", () => {
@@ -166,6 +200,7 @@ describe("/orcamento/enviado — lead_success_view (B341)", () => {
     lang: "pt",
     firstName: "Ana",
     channel: "email",
+    channelContact: "ana@x.com",
     role: "i_decide",
     deadlineUrgent: false,
     services: ["web_systems"],

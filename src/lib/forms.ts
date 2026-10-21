@@ -13,6 +13,8 @@
  * - Validação de campo (e-mail, telefone BR com DDD ou internacional com +,
  *   máscara) e o protocolo
  *   LEM-AAAAMMDD-XXXX gerado no cliente (não há sequência sem backend, §15.3).
+ * - suggestEmail (achado F07): "Você quis dizer joao@gmail.com?" para erro de
+ *   digitação no domínio, sem bloquear o envio.
  */
 
 export const FORM_NAMES = { briefing: "briefing", contato: "contato" } as const;
@@ -46,7 +48,8 @@ export const FORM_FIELDS = {
     "gclid",
     HONEYPOT_FIELD,
   ],
-  contato: ["name", "email", "phone", "subject", "message", "lang", "origin", HONEYPOT_FIELD],
+  // attribution e gclid: as mesmas regras do briefing (lib/attribution), achado F11.
+  contato: ["name", "email", "phone", "subject", "message", "lang", "origin", "attribution", "gclid", HONEYPOT_FIELD],
 } as const satisfies Record<FormName, readonly string[]>;
 
 export type FormFieldName<F extends FormName> = (typeof FORM_FIELDS)[F][number];
@@ -219,9 +222,91 @@ export function isFilled(value: string | null | undefined): boolean {
   return typeof value === "string" && value.trim() !== "";
 }
 
-/** nome@exemplo.com (o mesmo critério da Onda 1, sem espaços). */
+/**
+ * nome@exemplo.com (o critério da Onda 1, sem espaços) e, desde o F07, sem
+ * ".." em lugar nenhum, sem ponto no começo ou no fim do nome e do domínio e
+ * sem final de 1 letra ("joao@empresa.c").
+ */
 export function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  const email = value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.includes("..")) return false;
+  const [local = "", domain = ""] = email.split("@");
+  if ([local, domain].some((part) => part.startsWith(".") || part.endsWith("."))) return false;
+  return (domain.split(".").pop() ?? "").length >= 2;
+}
+
+/* ------------------------------------------------------------------ *
+ * Sugestão de e-mail (achado F07)
+ * ------------------------------------------------------------------ */
+
+/**
+ * Domínios de e-mail pessoal mais comuns no Brasil. Um domínio desta lista
+ * NUNCA recebe sugestão: "uol.com.br" e "bol.com.br" estão a 1 letra de
+ * distância e os dois existem.
+ */
+export const COMMON_EMAIL_DOMAINS: readonly string[] =
+  "gmail.com hotmail.com hotmail.com.br outlook.com outlook.com.br live.com yahoo.com yahoo.com.br icloud.com uol.com.br bol.com.br terra.com.br ig.com.br".split(
+    " ",
+  );
+
+/**
+ * Só estes nomes da lista recebem correção por semelhança (1 letra trocada,
+ * faltando, sobrando ou 2 vizinhas invertidas, sempre com a 1ª letra igual):
+ * são os mais digitados e longos o bastante para a correção não pegar o
+ * domínio de outra empresa. A 1ª letra igual deixa de fora domínios reais a 1
+ * letra de distância ("mail.com", "email.com", "ymail.com" × gmail; "cloud.com"
+ * × icloud; "wahoo.com" × yahoo). Os curtos (uol, bol, ig, live, terra) só
+ * ganham a correção do final.
+ */
+const FUZZY_EMAIL_NAMES = ["gmail", "hotmail", "outlook", "yahoo", "icloud"];
+
+/** a e b diferem por 1 letra trocada, faltando, sobrando, ou por 2 vizinhas invertidas? */
+function oneEditApart(a: string, b: string): boolean {
+  if (a === b || Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  while (a[i] === b[i]) i += 1;
+  if (a.length > b.length) return a.slice(i + 1) === b.slice(i);
+  if (a.length < b.length) return a.slice(i) === b.slice(i + 1);
+  return a.slice(i + 1) === b.slice(i + 1) || (a[i] === b[i + 1] && a[i + 1] === b[i] && a.slice(i + 2) === b.slice(i + 2));
+}
+
+/**
+ * Sugestão para um e-mail com erro de digitação, ou null (achado F07). Não
+ * bloqueia nada: quem chama mostra "Você quis dizer …? [Corrigir]".
+ *
+ * - Domínio da lista (COMMON_EMAIL_DOMAINS): nunca sugere outro domínio.
+ * - Pontos: ".." vira "." e sai o ponto no começo ou no fim do nome e do domínio.
+ * - Final: ".con/.cpm/.vom/.comm/.om" → ".com"; ".com.bt/.com.vr/.combr" → ".com.br"
+ *   (em qualquer domínio, inclusive de empresa: só o final muda).
+ * - "gmail.com.br" (não existe) → "gmail.com".
+ * - Nome da lista com 1 letra errada, faltando, sobrando ou invertida
+ *   ("gmial", "hotmal", "outlok"), com a 1ª letra certa, só para gmail,
+ *   hotmail, outlook, yahoo e icloud, com ".com" ou ".com.br" que exista na lista.
+ * O nome antes do "@" fica como a pessoa digitou (só os pontos mudam); o
+ * domínio volta em minúsculas.
+ */
+export function suggestEmail(value: string): string | null {
+  const email = value.trim();
+  const parts = email.split("@");
+  if (/\s/.test(email) || parts.length !== 2) return null;
+  const clean = (part: string) => part.replace(/\.{2,}/g, ".").replace(/^\.+|\.+$/g, "");
+  const local = clean(parts[0] as string);
+  let domain = clean((parts[1] as string).toLowerCase());
+  if (!local || !domain.includes(".")) return null;
+  if (!COMMON_EMAIL_DOMAINS.includes(domain)) {
+    domain = domain
+      .replace(/\.(?:con|cpm|vom|comm|om)(\.br)?$/, (_end, br: string | undefined) => `.com${br ?? ""}`)
+      .replace(/\.(?:com\.bt|com\.vr|combr)$/, ".com.br");
+    if (domain === "gmail.com.br") domain = "gmail.com";
+    const [, name = "", suffix = ""] = /^([^.]+)(\.com(?:\.br)?)$/.exec(domain) ?? [];
+    const close = FUZZY_EMAIL_NAMES.find(
+      (candidate) => candidate[0] === name[0] && oneEditApart(name, candidate) && COMMON_EMAIL_DOMAINS.includes(candidate + suffix),
+    );
+    if (close) domain = close + suffix;
+  }
+  const suggestion = `${local}@${domain}`;
+  // Só maiúsculas no domínio ("Joao@Gmail.com") não é erro: sem sugestão.
+  return suggestion.toLowerCase() !== email.toLowerCase() && isValidEmail(suggestion) ? suggestion : null;
 }
 
 /** Só os dígitos do telefone, sem o 55 do país quando vier junto (12 ou 13 dígitos). */

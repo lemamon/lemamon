@@ -1,11 +1,14 @@
 ---
 /**
- * Pedido enviado §7.8 #3 `whatsapp_now` — "Prefere adiantar pelo WhatsApp?".
- * Dono: conversion. Primário quando `schedule` está oculto (sem agenda).
+ * Pedido enviado §7.8 #3 `whatsapp_now` — "Quer agilizar? Mande um “oi”
+ * agora" (achado F10: o primeiro "oi" parte do lead, a conversa fica aberta e
+ * o número salvo). Dono: conversion. Primário quando `schedule` está oculto
+ * (sem agenda).
  *
  * O href estático usa a mensagem genérica (post_submit_generic); o script da
  * página troca pela mensagem com o código do pedido (post_submit) quando há
- * resumo no sessionStorage. A mensagem não leva dado pessoal, só o código.
+ * resumo no sessionStorage e só então mostra o apoio "A mensagem já leva o
+ * código do seu pedido…". A mensagem não leva dado pessoal, só o código.
  *
  * Sem WhatsApp e sem agenda, aparece o e-mail (email_fallback, com ou sem
  * código) com o botão "Copiar" (i18n quote._notes.sent_contact).
@@ -38,9 +41,14 @@ const generic = t(locale, "quote.sent.email_fallback_generic", { email: marker }
   href && (
     <Section id="whatsapp-agora" spacing="compact" trim="start" labelledby="sent-whatsapp-title" class="sent-whatsapp">
       <div class="sent-whatsapp__inner">
-        <h2 id="sent-whatsapp-title" class="sent-whatsapp__title">
-          {t(locale, "quote.sent.whatsapp_now.text")}
-        </h2>
+        <div class="sent-whatsapp__text">
+          <h2 id="sent-whatsapp-title" class="sent-whatsapp__title">
+            {t(locale, "quote.sent.whatsapp_now.text")}
+          </h2>
+          <p class="sent-whatsapp__support" data-sent-whatsapp-support hidden>
+            {t(locale, "quote.sent.whatsapp_now.support")}
+          </p>
+        </div>
         <Button
           href={href}
           variant={features.hasAgenda ? "outline" : "whatsapp"}
@@ -88,9 +96,34 @@ const generic = t(locale, "quote.sent.email_fallback_generic", { email: marker }
     gap: var(--space-4);
   }
 
+  .sent-whatsapp__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
   .sent-whatsapp__title {
     font-size: var(--text-h3);
     line-height: var(--leading-h3);
+  }
+
+  .sent-whatsapp__support {
+    color: var(--color-text-secondary);
+  }
+
+  .sent-whatsapp__support[hidden] {
+    display: none;
+  }
+
+  /* F10: menos respiro no celular, para o botão entrar na 1ª tela. */
+  @media (max-width: 767.98px) {
+    .sent-whatsapp__inner {
+      gap: var(--space-3);
+    }
+
+    .sent-whatsapp__text {
+      gap: var(--space-1);
+    }
   }
 
   .sent-whatsapp__email {

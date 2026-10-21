@@ -127,6 +127,7 @@ describe("resumo do envio (sessionStorage)", () => {
     lang: "pt",
     firstName: "Ana",
     channel: "whatsapp",
+    channelContact: "(48) 99999-8888",
     role: "i_decide",
     deadlineUrgent: false,
     services: ["mvp"],
@@ -148,6 +149,13 @@ describe("resumo do envio (sessionStorage)", () => {
     expect(parseSentSummary(JSON.stringify({ ...summary, measured: "true" }))?.measured).toBe(false);
     expect(parseSentSummary(JSON.stringify({ ...summary, measured: false }))?.measured).toBe(false);
     expect(parseSentSummary(JSON.stringify(summary))?.measured).toBe(true);
+  });
+
+  it("channelContact (F10): resumo antigo, sem o campo, vira \"\" (o pós-envio fica com o texto genérico)", () => {
+    const { channelContact: _contact, ...legacy } = summary;
+    expect(parseSentSummary(JSON.stringify(legacy))?.channelContact).toBe("");
+    expect(parseSentSummary(JSON.stringify({ ...summary, channelContact: 42 }))?.channelContact).toBe("");
+    expect(parseSentSummary(JSON.stringify(summary))?.channelContact).toBe("(48) 99999-8888");
   });
 
   it("formato inválido vira null (a página cai na versão genérica)", () => {

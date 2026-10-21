@@ -8,6 +8,11 @@
  * envio real (backlog B341), uma vez por pedido. O page_view desta URL segue
  * sendo a conversão por URL (§10.2); o evento acrescenta o event_id que liga a
  * visualização ao lead_attempt/lead_submitted do mesmo pedido.
+ *
+ * Achado F10 da auditoria de conversão: o 2º passo confirma o contato do canal
+ * escolhido (SentSummary.channelContact, em negrito), "Algum dado errado?"
+ * abre o WhatsApp com o código do pedido, o apoio do "Mandar oi" aparece e o
+ * "Dúvidas? WhatsApp" do topo também passa a levar o código.
  */
 
 import { flushPendingEvents, track } from "@/lib/analytics";
@@ -31,6 +36,26 @@ export function summaryCopyText(summary: Pick<SentSummary, "protocol" | "lines">
   return [fillTemplate(header, { protocolo: summary.protocol }), lines.join("\n"), footer].filter(Boolean).join("\n\n");
 }
 
+/**
+ * "A gente fala com você pelo WhatsApp {contato}…": troca o texto do passo pelo
+ * do canal, com o contato em negrito. Sem o contato (resumo antigo) e com
+ * {contato} no texto, fica o texto genérico. Devolve true quando o contato
+ * apareceu.
+ */
+function showChannelContact(root: Document, element: HTMLElement, template: string, value: string): boolean {
+  const marker = "{contato}";
+  if (!template.includes(marker)) {
+    setText(element, template);
+    return false;
+  }
+  if (!value) return false;
+  const [before = "", after = ""] = template.split(marker);
+  const strong = root.createElement("strong");
+  strong.textContent = value;
+  element.replaceChildren(before, strong, after);
+  return true;
+}
+
 export function personalize(root: Document, summary: SentSummary): void {
   // H1 "Pedido recebido, {nome}." (só o primeiro nome).
   const title = root.querySelector<HTMLElement>("[data-sent-title]");
@@ -45,16 +70,34 @@ export function personalize(root: Document, summary: SentSummary): void {
     protocol.hidden = false;
   }
 
-  // 2º passo pelo canal escolhido.
+  // 2º passo pelo canal escolhido, com o contato deixado (F10).
   const contact = root.querySelector<HTMLElement>("[data-sent-contact]");
   const byChannel = contact?.dataset[summary.channel];
-  if (contact && byChannel) setText(contact, byChannel);
+  const confirmed = contact && byChannel ? showChannelContact(root, contact, byChannel, summary.channelContact) : false;
 
-  // WhatsApp com o código do pedido.
+  // "Algum dado errado?" (F10): só quando o contato aparece no passo.
+  const fix = root.querySelector<HTMLElement>("[data-sent-fix]");
+  if (fix && confirmed) {
+    const fixLink = fix.querySelector<HTMLAnchorElement>("[data-sent-fix-whatsapp]");
+    if (fixLink?.dataset.template) {
+      // O espaço final deixa o cursor pronto para a pessoa escrever o contato certo.
+      const href = whatsappHref(`${fillTemplate(fixLink.dataset.template, { protocolo: summary.protocol })} `);
+      if (href) fixLink.href = href;
+    }
+    fix.hidden = false;
+  }
+
+  // WhatsApp com o código do pedido (botão "Mandar oi" e o "Dúvidas? WhatsApp" do topo).
   const whatsapp = root.querySelector<HTMLAnchorElement>("[data-sent-whatsapp]");
   if (whatsapp?.dataset.template) {
     const href = whatsappHref(fillTemplate(whatsapp.dataset.template, { protocolo: summary.protocol }));
-    if (href) whatsapp.href = href;
+    if (href) {
+      whatsapp.href = href;
+      const support = root.querySelector<HTMLElement>("[data-sent-whatsapp-support]");
+      if (support) support.hidden = false;
+      const help = root.querySelector<HTMLAnchorElement>("a[data-wizard-help]");
+      if (help) help.href = href;
+    }
   }
 
   // E-mail com o código (sem WhatsApp e sem agenda).

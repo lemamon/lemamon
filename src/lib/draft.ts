@@ -194,6 +194,13 @@ export interface SentSummary {
   /** Só o primeiro nome (i18n quote._notes.h1). */
   firstName: string;
   channel: ContactChannel;
+  /**
+   * O contato do canal escolhido, já formatado (achado F10): o e-mail no canal
+   * E-mail, o número no WhatsApp e na Ligação. O pós-envio confirma "a gente
+   * fala com você pelo WhatsApp {contato}". "" num resumo antigo, sem o campo:
+   * o pós-envio fica com o texto do canal sem o contato.
+   */
+  channelContact: string;
   /** P6 (destaque de "quem decide" no "Para aproveitar"). */
   role: string;
   /** P4 = asap ou data travante preenchida. */
@@ -228,6 +235,7 @@ export function parseSentSummary(raw: string | null | undefined): SentSummary | 
       lang: data.lang === "en" || data.lang === "es" ? data.lang : "pt",
       firstName: data.firstName,
       channel: data.channel,
+      channelContact: typeof data.channelContact === "string" ? data.channelContact.trim() : "",
       role: typeof data.role === "string" ? data.role : "",
       deadlineUrgent: data.deadlineUrgent === true,
       services: Array.isArray(data.services) ? data.services.filter((item) => typeof item === "string") : [],

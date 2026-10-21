@@ -270,6 +270,17 @@ describe("resumo para /orcamento/enviado", () => {
     expect(summary.lines).toHaveLength(6);
   });
 
+  it("channelContact (F10): o número no WhatsApp e na Ligação, o e-mail no canal E-mail", () => {
+    expect(buildSentSummary({ answers, chips, contact, protocol: "LEM-1", lang: "pt" }, copy).channelContact).toBe("(48) 99999-8888");
+    expect(
+      buildSentSummary({ answers, chips, contact: { ...contact, channel: "phone_call" }, protocol: "LEM-1", lang: "pt" }, copy).channelContact,
+    ).toBe("(48) 99999-8888");
+    expect(
+      buildSentSummary({ answers, chips, contact: { ...contact, channel: "email", email: " ana@empresa.com " }, protocol: "LEM-1", lang: "pt" }, copy)
+        .channelContact,
+    ).toBe("ana@empresa.com");
+  });
+
   it("measured: só o envio real marca o resumo como medido (lead_success_view, B341)", () => {
     expect(buildSentSummary({ answers, chips, contact, protocol: "LEM-1", lang: "pt" }, copy).measured).toBe(false);
     expect(buildSentSummary({ answers, chips, contact, protocol: "LEM-1", lang: "pt", measured: false }, copy).measured).toBe(false);
@@ -339,5 +350,36 @@ describe("gclid e o modo consentimento (B342)", () => {
       landing: "/servicos",
       referrer: "https://www.google.com/",
     });
+  });
+});
+
+describe("toque de campanha adotado de outra aba depois da montagem (F26)", () => {
+  const mounted = { origem: "home-hero", landing: "/orcamento?origem=home-hero", entry_page: "/orcamento" };
+  const touch = {
+    landing: "/servicos/mvp?utm_source=google&utm_medium=cpc&gclid=TESTE-GCLID",
+    referrer: "https://www.google.com/",
+    utm: { utm_source: "google", utm_medium: "cpc" },
+    gclid: "TESTE-GCLID",
+    at: 1,
+  };
+  const fields = (extra: Partial<Parameters<typeof buildBriefingFields>[0]>) =>
+    buildBriefingFields({ answers, flags, chips, contact, score: "A", protocol: "LEM-1", lang: "pt", attribution: mounted, ...extra });
+
+  it("atribuição sem campanha ganha a campanha do toque da sessão no envio", () => {
+    const result = fields({ sessionTouch: touch });
+    expect(result.gclid).toBe("TESTE-GCLID");
+    expect(JSON.parse(result.attribution ?? "{}")).toMatchObject({ origem: "home-hero", utm_source: "google", utm_medium: "cpc", landing: touch.landing });
+  });
+
+  it("sem permissão (modo consentimento), a campanha vem sem o gclid", () => {
+    const result = fields({ sessionTouch: touch, gclidAllowed: false });
+    expect(result.gclid).toBe("");
+    expect(result.attribution).not.toContain("TESTE-GCLID");
+  });
+
+  it("a campanha que o pedido já tinha nunca é trocada", () => {
+    const result = fields({ attribution: { ...mounted, utm_source: "linkedin" }, sessionTouch: touch });
+    expect(result.gclid).toBe("");
+    expect(JSON.parse(result.attribution ?? "{}")).toMatchObject({ utm_source: "linkedin" });
   });
 });

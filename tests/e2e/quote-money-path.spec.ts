@@ -4,6 +4,9 @@
  *  (a) Home → CTA do hero → wizard (6 perguntas) → resumo → contato → envio
  *      com o POST do Netlify interceptado (200) → /orcamento/enviado com o
  *      código do pedido, o nome e o payload do form `briefing` conferido.
+ *      O pós-envio confirma o contato pelo canal e leva o código ao WhatsApp
+ *      ("Algum dado errado?", "Mandar oi", topo), achado F10; no contato, a
+ *      sugestão de e-mail corrige "gmail.con" (F07).
  *  (b) Envio falhando (500 nas 3 tentativas) → tela de erro com as respostas
  *      salvas, "Enviar pelo WhatsApp" abrindo o wa.me com o resumo (o href
  *      não leva o texto) e "Tentar de novo" concluindo o envio.
@@ -99,6 +102,63 @@ test.describe("(a) caminho do dinheiro", () => {
     // WhatsApp do pós-envio com o código do pedido na mensagem.
     const waNow = page.locator('a[href^="https://wa.me/"]').filter({ hasText: q.sent.whatsapp_now.button });
     await expect(waNow).toHaveAttribute("href", new RegExp(encodeURIComponent(protocol)));
+    await expect(page.locator("[data-sent-whatsapp-support]")).toHaveText(q.sent.whatsapp_now.support);
+
+    // F10: o 2º passo confirma o WhatsApp deixado; "Algum dado errado?" leva o código.
+    const step = page.locator("[data-sent-contact]");
+    await expect(step.locator("strong")).toHaveText("(48) 99999-8888");
+    await expect(step).toHaveText(q.sent.steps.contact_by_channel.whatsapp.replace("{contato}", "(48) 99999-8888"));
+    const fix = page.locator("[data-sent-fix]");
+    await expect(fix).toBeVisible();
+    await expect(fix).toContainText(q.sent.wrong_contact.text);
+    const fixText = new URL((await fix.getByRole("link").getAttribute("href")) ?? "").searchParams.get("text");
+    expect(fixText).toBe(`${q.whatsapp_messages.wrong_contact.replace("{protocolo}", protocol)} `);
+    // O "Dúvidas? WhatsApp" do topo também leva o código.
+    await expect(page.locator("a[data-wizard-help]")).toHaveAttribute("href", new RegExp(encodeURIComponent(protocol)));
+    // O número da Lemamon nunca vira texto da página (BLUEPRINT §1.5).
+    expect(await page.locator("main").textContent()).not.toContain(E2E_WHATSAPP_NUMBER);
+  });
+
+  test("F10 no celular: o 'Mandar oi no WhatsApp' cabe na 1ª tela do iPhone 13 (390×664)", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "medida do celular");
+    await stubNetlify(page, 200);
+    const q = COPY.pt.quote;
+    await page.setViewportSize({ width: 390, height: 664 });
+    await page.goto("/orcamento?origem=e2e-dobra");
+    const startedAt = await start(page);
+    await answerAll(page, "pt");
+    await fillContact(page, "pt");
+    await waitMinFill(page, startedAt);
+    await submit(page, "pt");
+    await expect(page).toHaveURL(/\/orcamento\/enviado$/);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    const button = page.locator('a[href^="https://wa.me/"]').filter({ hasText: q.sent.whatsapp_now.button });
+    const box = await button.boundingBox();
+    expect(box && box.y + box.height).toBeLessThanOrEqual(664);
+  });
+
+  test("F07: no contato do wizard, e-mail com erro de digitação ganha sugestão; 'Corrigir' corrige", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "regra de interface: um projeto basta");
+    const netlify = await stubNetlify(page, 200);
+    const q = COPY.pt.quote;
+    const s = COPY.pt.shared.forms.email_suggestion;
+    await page.goto("/orcamento?origem=e2e-email");
+    const startedAt = await start(page);
+    await answerAll(page, "pt");
+    await fillContact(page, "pt", { ...CONTACT, email: "ana.teste@gmail.con" });
+    const root = wizardRoot(page);
+    const email = root.getByRole("textbox", { name: q.contact_form.fields.email.label, exact: true });
+    await email.blur();
+    const suggestion = root.getByText(s.text.replace("{email}", "ana.teste@gmail.com"), { exact: true });
+    await expect(suggestion).toBeVisible();
+    await expect(email).not.toHaveAttribute("aria-invalid", "true");
+    await root.getByRole("button", { name: s.fix, exact: true }).click();
+    await expect(email).toHaveValue("ana.teste@gmail.com");
+    await expect(suggestion).toHaveCount(0);
+    await waitMinFill(page, startedAt);
+    await submit(page, "pt");
+    await expect(page).toHaveURL(/\/orcamento\/enviado$/);
+    expect(netlify.bodies[0]?.get("email")).toBe("ana.teste@gmail.com");
   });
 });
 

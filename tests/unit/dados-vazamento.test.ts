@@ -409,7 +409,10 @@ describe("CTA primário: com agenda online, 'Agendar diagnóstico gratuito'", ()
     expect(ctaDe(servico, "mvp-sinais")).toContain("Agendar diagnóstico gratuito");
     expect(ctaDe(servico, "mvp-investimento")).toContain("Agendar diagnóstico gratuito");
     const contato = readFileSync(join(comFicticio.outDir, "contato.html"), "utf8");
-    expect(contato).toContain("Agendar diagnóstico gratuito: 6 perguntas e o resumo do seu projeto na hora");
+    // A dica do Assunto não leva mais o rótulo do CTA (F40: "Se preferir, responda 6 perguntas…");
+    // o link da confirmação ("Pedir diagnóstico gratuito") troca.
+    expect(contato).toContain("Se preferir, responda 6 perguntas e veja o resumo do seu projeto na hora");
+    expect(contato).toContain("Agendar diagnóstico gratuito");
     expect(contato).not.toContain("Pedir diagnóstico gratuito");
   });
 });

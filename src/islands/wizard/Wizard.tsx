@@ -93,6 +93,7 @@ import {
   previewSubmitActive,
   SLOW_SUBMIT_MS,
   submitNetlifyForm,
+  suggestEmail,
 } from "../../lib/forms";
 import { fillTemplate, hasWhatsapp, openWhatsapp, whatsappHref } from "../../lib/whatsapp";
 import { watchAbandon, type AbandonState, type AbandonWatcher } from "./abandon";
@@ -1631,6 +1632,8 @@ function WizardFlow(props: WizardProps) {
     const describe = (...ids: (string | false | undefined)[]) => ids.filter(Boolean).join(" ") || undefined;
     const nameError = fieldError("name");
     const emailError = fieldError("email");
+    // F07: "Você quis dizer …? [Corrigir]" depois que a pessoa sai do campo; nunca bloqueia o envio.
+    const emailSuggestion = touched.email || showAllErrors ? suggestEmail(contact.email) : null;
     const channelError = fieldError("channel");
     const phoneError = fieldError("phone");
     const sending = submitState === "sending" || submitState === "slow";
@@ -1715,6 +1718,25 @@ function WizardFlow(props: WizardProps) {
                 {emailError}
               </p>
             )}
+            <p className={styles.suggestion} aria-live="polite">
+              {emailSuggestion && (
+                <>
+                  <span>{fillTemplate(copy.emailSuggestion.text, { email: emailSuggestion })}</span>{" "}
+                  <button
+                    type="button"
+                    className={styles.suggestionFix}
+                    // O foco fica no e-mail: o blur dele não mexe na tela entre o toque e o clique.
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => {
+                      setField("email", emailSuggestion);
+                      fieldRefs.current.email?.focus();
+                    }}
+                  >
+                    {copy.emailSuggestion.fix}
+                  </button>
+                </>
+              )}
+            </p>
           </div>
 
           <fieldset

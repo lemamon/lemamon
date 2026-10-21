@@ -13,9 +13,23 @@
  * Deploy preview (data-preview-submit, B277): sem POST e sem contact_submitted.
  * Falha sem rede (B340): lead_failed espera a conexão voltar (trackWhenOnline)
  * em vez de se perder junto com o hit do GA4.
+ *
+ * Da auditoria de conversão:
+ *  - F07: e-mail com erro de digitação ganha "Você quis dizer …? [Corrigir]"
+ *    (lib/forms suggestEmail) numa região aria-live, sem bloquear o envio.
+ *  - F11: o envio leva `attribution` e `gclid` com as mesmas regras do wizard
+ *    (lib/attribution): utm_*, ids de clique, referrer, página de entrada e o
+ *    ?origem=; no modo consentimento (data-ads-consent-required), sem o aceite
+ *    do aviso de cookies, nenhum id de clique.
+ *  - F40: o Assunto é o 1º campo (a dica do wizard aparece antes de digitar);
+ *    a ordem de validação segue a da tela.
+ * Este módulo sai do JS inicial da página (orçamento de peso do verify-build):
+ * o ContactForm.astro o importa no ocioso ou no 1º toque/foco no formulário, e
+ * um envio feito antes disso espera o módulo (initContactForm + requestSubmit).
  */
 
-import { createOnce, flushPendingEvents, track, trackWhenOnline } from "@/lib/analytics";
+import { createOnce, flushPendingEvents, readSessionTouch, track, trackWhenOnline } from "@/lib/analytics";
+import { attributionFields, buildAttribution, gclidAllowed } from "@/lib/attribution";
 import {
   formatPhone,
   HONEYPOT_FIELD,
@@ -24,12 +38,14 @@ import {
   isValidPhone,
   previewSubmitActive,
   submitNetlifyForm,
+  suggestEmail,
   type FormFields,
   type PhoneLocale,
 } from "@/lib/forms";
 
 type FieldName = "name" | "email" | "phone" | "subject" | "message";
-const ORDER: FieldName[] = ["name", "email", "phone", "subject", "message"];
+/** Ordem da tela (F40: Assunto primeiro): o foco vai para o 1º campo inválido nesta ordem. */
+const ORDER: FieldName[] = ["subject", "name", "email", "phone", "message"];
 
 /** Idioma do formulário (campo oculto `lang`); qualquer outro valor vale como pt. */
 export function phoneLocaleOf(lang: string | null | undefined): PhoneLocale {
@@ -69,8 +85,64 @@ export function contactOrigin(search: string, referrer: string, host: string): s
   }
 }
 
-export function initContactForm(form: HTMLFormElement): void {
-  const startedAt = Date.now();
+/**
+ * Atribuição do envio de /contato (F11): a mesma montagem do wizard, com o
+ * toque da sessão e a URL desta página; sem permissão (gclidAllowed), nenhum
+ * id de clique vai em `attribution` nem em `gclid`.
+ */
+export function contactAttribution(
+  location: Pick<Location, "pathname" | "search" | "host">,
+  referrer: string,
+  allowed: boolean,
+  sessionTouch = readSessionTouch(),
+): { attribution: string; gclid: string } {
+  return attributionFields(
+    buildAttribution({ pathname: location.pathname, search: location.search, host: location.host, referrer, sessionTouch }),
+    allowed,
+  );
+}
+
+function localStore(): Storage | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Sugestão de e-mail (F07) na região viva [data-email-suggestion]: texto
+ * "Você quis dizer {email}?" (data-template) e o botão "Corrigir" (data-fix).
+ * Só reescreve quando a sugestão muda, para o leitor de tela não repetir.
+ */
+function renderEmailSuggestion(slot: HTMLElement, suggestion: string | null, onFix: (value: string) => void): void {
+  if ((slot.dataset.value ?? "") === (suggestion ?? "")) return;
+  slot.dataset.value = suggestion ?? "";
+  if (!suggestion) {
+    slot.replaceChildren();
+    return;
+  }
+  const text = document.createElement("span");
+  // Sem o fillTemplate de lib/whatsapp: aqui ele traria o módulo inteiro para o JS da página.
+  text.textContent = (slot.dataset.template ?? "").replace("{email}", suggestion);
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = slot.dataset.fix ?? "";
+  // O foco fica no e-mail: o blur dele não mexe na tela entre o toque e o clique.
+  button.addEventListener("mousedown", (event) => event.preventDefault());
+  button.addEventListener("click", () => onFix(suggestion));
+  slot.replaceChildren(text, " ", button);
+}
+
+/**
+ * Liga o aprimoramento no formulário. `startedAt`: quando o formulário
+ * apareceu (o tempo mínimo de preenchimento, MIN_FILL_MS, conta dali); o
+ * ContactForm.astro carrega este módulo depois da 1ª pintura e passa a hora em
+ * que a página abriu. data-enhanced marca o formulário já ligado.
+ */
+export function initContactForm(form: HTMLFormElement, startedAt: number = Date.now()): void {
+  if (form.dataset.enhanced !== undefined) return;
+  form.dataset.enhanced = "";
   // Falha guardada offline numa página anterior desta aba (B340).
   void flushPendingEvents();
   form.noValidate = true;
@@ -85,6 +157,8 @@ export function initContactForm(form: HTMLFormElement): void {
   const touched = new Set<FieldName>();
   const once = createOnce();
   const preview = previewSubmitActive(form.hasAttribute("data-preview-submit"));
+  // Modo consentimento do Google Ads (B342): o gclid só vai com o aceite do aviso de cookies.
+  const adsConsentRequired = form.hasAttribute("data-ads-consent-required");
   let sending = false;
 
   const control = (name: FieldName) =>
@@ -159,6 +233,21 @@ export function initContactForm(form: HTMLFormElement): void {
     phone.value = formatPhone(phone.value, locale);
   });
 
+  // F07: sugestão depois do 1º blur do e-mail, atualizada enquanto a pessoa corrige.
+  const email = form.querySelector<HTMLInputElement>('[name="email"]');
+  const suggestionSlot = form.querySelector<HTMLElement>("[data-email-suggestion]");
+  const updateSuggestion = () => {
+    if (!email || !suggestionSlot) return;
+    renderEmailSuggestion(suggestionSlot, touched.has("email") ? suggestEmail(email.value) : null, (value) => {
+      email.value = value;
+      updateSuggestion();
+      check("email", true);
+      email.focus();
+    });
+  };
+  email?.addEventListener("blur", updateSuggestion);
+  email?.addEventListener("input", updateSuggestion);
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (sending) return;
@@ -184,6 +273,7 @@ export function initContactForm(form: HTMLFormElement): void {
       message: String(data.get("message") ?? "").trim(),
       lang: String(data.get("lang") ?? ""),
       origin: String(data.get("origin") ?? ""),
+      ...contactAttribution(window.location, document.referrer, gclidAllowed(adsConsentRequired, localStore())),
       [HONEYPOT_FIELD]: String(data.get(HONEYPOT_FIELD) ?? ""),
     };
     const result = await submitNetlifyForm("contato", fields, { startedAt, preview });

@@ -47,6 +47,8 @@ export interface WizardCopy {
   terms: Pick<Shared["terms"], "prototype" | "prioritized_scope">;
   investment: Pick<Shared["investment"], "row_labels" | "unit_project" | "unit_month">;
   clipboard: Shared["clipboard"];
+  /** shared.forms.email_suggestion: "Você quis dizer {email}?" + "Corrigir" (achado F07). */
+  emailSuggestion: Shared["forms"]["email_suggestion"];
   /** shared.lgpd.privacy_link_label (texto do link {politica}). */
   privacyLinkLabel: string;
   /** Rótulos de acessibilidade próprios do wizard (quote.a11y). */

@@ -6,6 +6,15 @@
  *
  * - track() vira no-op sem PUBLIC_GA4_ID ou sem window.gtag (preview, local,
  *   adblock). Em dev, todo evento sai no console com o prefixo [analytics].
+ * - Da auditoria de conversão, no mesmo módulo porque toda página já o baixa
+ *   (cada arquivo a mais pesa no orçamento de JS do verify-build): o toque de
+ *   campanha entre abas (F26, shareCampaignTouch) e a referência da campanha
+ *   nas mensagens de WhatsApp (F34, campaignRef).
+ * - Modo de conferência (achado F82): com ?debug_analytics=1 em qualquer
+ *   página, a aba passa a escrever no console, com o prefixo
+ *   [analytics:debug], todo evento, a conversão do Ads e o aviso ao New Relic,
+ *   SEM enviar nada; vale até a aba fechar ou até ?debug_analytics=0. Serve
+ *   para conferir o funil num deploy preview antes de ligar o Ads.
  * - track() manda o evento SÓ para o GA4 (send_to = GA4_ID, backlog B052): a
  *   mesma tag gtag também tem o Google Ads configurado, e sem send_to o evento
  *   (com faixa de orçamento, prazo e papel no lead_submitted) iria para os dois
@@ -143,7 +152,48 @@ export interface TrackOptions {
   beacon?: boolean;
 }
 
+/* ------------------------------------------------------------------ *
+ * Modo de conferência: ?debug_analytics=1 (achado F82)
+ * ------------------------------------------------------------------ */
+
+/** Parâmetro da URL que liga (1) ou desliga (0) o modo de conferência. */
+export const ANALYTICS_DEBUG_PARAM = "debug_analytics";
+
+/** sessionStorage: "1" = modo de conferência ligado nesta aba. */
+export const ANALYTICS_DEBUG_KEY = "lemamon:debug-analytics";
+
+/** Prefixo das linhas do console no modo de conferência. */
+export const ANALYTICS_DEBUG_PREFIX = "[analytics:debug]";
+
+/**
+ * O modo de conferência está ligado nesta aba? ?debug_analytics=1 liga e
+ * ?debug_analytics=0 desliga (a escolha, "1" ou "0", fica no sessionStorage, para valer nas
+ * próximas páginas da mesma aba, inclusive /orcamento/enviado). Sem storage,
+ * vale só a URL.
+ */
+export function analyticsDebugEnabled(
+  search: string = typeof window !== "undefined" ? window.location.search : "",
+  storage: Storage | null = sessionStore(),
+): boolean {
+  const param = new URLSearchParams(search).get(ANALYTICS_DEBUG_PARAM);
+  try {
+    if (param === "1" || param === "0") storage?.setItem(ANALYTICS_DEBUG_KEY, param);
+    return (param ?? storage?.getItem(ANALYTICS_DEBUG_KEY)) === "1";
+  } catch {
+    return param === "1";
+  }
+}
+
+/** Linha do modo de conferência. console.warn: o que vai ao ar só pode usar warn e error (lint no-console). */
+function debugLog(label: string, details: Record<string, unknown>): void {
+  console.warn(`${ANALYTICS_DEBUG_PREFIX} ${label}`, details);
+}
+
 export function track<K extends EventName>(name: K, params: EventParams[K], options: TrackOptions = {}): void {
+  if (analyticsDebugEnabled()) {
+    debugLog(name, options.beacon ? { ...params, transport_type: "beacon" } : { ...params });
+    return;
+  }
   if (import.meta.env.DEV) console.debug(`[analytics] ${name}`, params);
   if (!isAnalyticsEnabled()) return;
   const extra: Record<string, string> = { send_to: GA4_ID };
@@ -182,6 +232,10 @@ export const ADS_CONVERSION_WAIT_MS = 1_200;
  */
 export function reportAdsConversion(waitMs: number = ADS_CONVERSION_WAIT_MS, transactionId?: string): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
+  if (analyticsDebugEnabled()) {
+    debugLog("conversion", { transaction_id: transactionId });
+    return Promise.resolve();
+  }
   if (typeof window.gtag !== "function") {
     if (typeof window.gtag_report_conversion === "function") {
       try {
@@ -221,6 +275,10 @@ export function reportAdsConversion(waitMs: number = ADS_CONVERSION_WAIT_MS, tra
  * Os atributos nunca levam dado pessoal (motivo, tentativas, status, form).
  */
 export function reportError(name: string, attributes: Record<string, string | number | boolean> = {}): void {
+  if (analyticsDebugEnabled()) {
+    debugLog(`monitor ${name}`, attributes);
+    return;
+  }
   if (import.meta.env.DEV) console.debug(`[monitor] ${name}`, attributes);
   if (typeof window === "undefined") return;
   try {
@@ -458,6 +516,13 @@ export const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term",
 /** Parâmetros do CTA que levou ao wizard (não variam por idioma, CONTRACT §2). */
 export const QUOTE_PARAM_KEYS = ["origem", "servico", "ref", "entrada"] as const;
 
+/**
+ * Ids de clique de anúncio do Google que vêm na URL de entrada: gclid e, nos
+ * cliques de iPhone, gbraid/wbraid (achado F81). Os três seguem as mesmas
+ * regras de consentimento (lib/attribution gclidAllowed, withoutAdClickIds).
+ */
+export const AD_CLICK_KEYS = ["gclid", "gbraid", "wbraid"] as const;
+
 /** Toque da sessão: como a pessoa chegou ao site. Sem dado pessoal. */
 export interface Touch {
   /** Caminho + query da primeira página vista na sessão (ou do toque com campanha). */
@@ -466,6 +531,10 @@ export interface Touch {
   referrer: string;
   utm: Partial<Record<(typeof UTM_KEYS)[number], string>>;
   gclid: string;
+  /** Clique de anúncio vindo de app no iOS (F81); ausente quando não veio. */
+  gbraid?: string;
+  /** Clique de anúncio na web vindo de iOS (F81); ausente quando não veio. */
+  wbraid?: string;
   /** Date.now() do registro. */
   at: number;
 }
@@ -490,19 +559,26 @@ export function externalReferrer(referrer: string, currentHost: string): string 
   }
 }
 
-/** Lê utm_* e gclid de uma query string. */
-export function readCampaign(search: string): Pick<Touch, "utm" | "gclid"> {
+export type Campaign = Pick<Touch, "utm" | "gclid" | "gbraid" | "wbraid">;
+
+/** Lê utm_*, gclid e (só quando vierem) gbraid/wbraid de uma query string. */
+export function readCampaign(search: string): Campaign {
   const params = new URLSearchParams(search);
   const utm: Touch["utm"] = {};
   for (const key of UTM_KEYS) {
     const value = clip(params.get(key));
     if (value) utm[key] = value;
   }
-  return { utm, gclid: clip(params.get("gclid")) };
+  const campaign: Campaign = { utm, gclid: clip(params.get("gclid")) };
+  const gbraid = clip(params.get("gbraid"));
+  const wbraid = clip(params.get("wbraid"));
+  if (gbraid) campaign.gbraid = gbraid;
+  if (wbraid) campaign.wbraid = wbraid;
+  return campaign;
 }
 
-export function hasCampaign(touch: Pick<Touch, "utm" | "gclid">): boolean {
-  return touch.gclid !== "" || Object.keys(touch.utm).length > 0;
+export function hasCampaign(touch: Campaign): boolean {
+  return AD_CLICK_KEYS.some((key) => Boolean(touch[key])) || Object.keys(touch.utm).length > 0;
 }
 
 function sessionStore(): Storage | null {
@@ -513,19 +589,32 @@ function sessionStore(): Storage | null {
   }
 }
 
+/**
+ * Valor qualquer → toque válido, ou null. Lê o sessionStorage e as mensagens
+ * do BroadcastChannel de outra aba (shareCampaignTouch, F26): só as chaves
+ * conhecidas, só texto, cortado em 200 caracteres.
+ */
+export function parseTouch(value: unknown): Touch | null {
+  const data = value as Partial<Record<keyof Touch, unknown>> | null;
+  if (typeof data?.landing !== "string" || typeof data.at !== "number") return null;
+  const text = (item: unknown) => (typeof item === "string" ? clip(item) : "");
+  const touch: Touch = { landing: clip(data.landing), referrer: text(data.referrer), utm: {}, gclid: text(data.gclid), at: data.at };
+  for (const key of UTM_KEYS) {
+    const item = text((data.utm as Record<string, unknown> | null | undefined)?.[key]);
+    if (item) touch.utm[key] = item;
+  }
+  for (const key of ["gbraid", "wbraid"] as const) {
+    const item = text(data[key]);
+    if (item) touch[key] = item;
+  }
+  return touch;
+}
+
 export function readSessionTouch(storage: Storage | null = sessionStore()): Touch | null {
   try {
     const raw = storage?.getItem(ATTRIBUTION_SESSION_KEY);
     if (!raw) return null;
-    const data = JSON.parse(raw) as Partial<Touch>;
-    if (typeof data.landing !== "string" || typeof data.at !== "number") return null;
-    return {
-      landing: data.landing,
-      referrer: typeof data.referrer === "string" ? data.referrer : "",
-      utm: data.utm && typeof data.utm === "object" ? data.utm : {},
-      gclid: typeof data.gclid === "string" ? data.gclid : "",
-      at: data.at,
-    };
+    return parseTouch(JSON.parse(raw));
   } catch {
     return null;
   }
@@ -588,4 +677,128 @@ export function entrySource(input: {
     }
   }
   return "direct";
+}
+
+/* ------------------------------------------------------------------ *
+ * Toque de campanha entre abas (F26, auditoria de conversão)
+ * ------------------------------------------------------------------ */
+
+/** Nome do BroadcastChannel (só abas do próprio site; o navegador não cruza origens). */
+export const ATTRIBUTION_CHANNEL = "lemamon:atribuicao";
+
+/** Mensagens do canal: a aba sem campanha pede; a aba com campanha responde com o toque dela. */
+export type AttributionMessage = { type: "pedido" } | { type: "toque"; touch: Touch };
+
+/** O pedaço do BroadcastChannel que o código usa (para os testes). */
+export interface ChannelLike {
+  postMessage(message: AttributionMessage): void;
+  addEventListener(type: "message", listener: (event: { data: unknown }) => void): void;
+  close(): void;
+}
+
+export interface ShareTouchOptions {
+  /** Para testes. Padrão: new BroadcastChannel(ATTRIBUTION_CHANNEL). */
+  open?: () => ChannelLike | null;
+  /** Para testes. Padrão: sessionStorage. */
+  storage?: Storage | null;
+  /** Chamado quando esta aba adota o toque de outra. */
+  onAdopt?: (touch: Touch) => void;
+}
+
+function openChannel(): ChannelLike | null {
+  try {
+    return typeof BroadcastChannel === "function" ? (new BroadcastChannel(ATTRIBUTION_CHANNEL) as unknown as ChannelLike) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Liga o compartilhamento do toque de campanha entre as abas abertas do site.
+ * Responde aos pedidos das outras abas quando o toque DESTA tem campanha; se
+ * não tem, pede uma vez e adota a primeira resposta com campanha (grava no
+ * sessionStorage desta aba, como se a pessoa tivesse chegado por ela). Nunca
+ * troca uma campanha que a aba já tem. Sem BroadcastChannel ou sem storage:
+ * nada. Devolve a função que fecha o canal (o shell fecha no pagehide, para a
+ * página continuar elegível ao bfcache).
+ */
+export function shareCampaignTouch(options: ShareTouchOptions = {}): (() => void) | null {
+  const storage = options.storage === undefined ? sessionStore() : options.storage;
+  const channel = storage ? (options.open ?? openChannel)() : null;
+  if (!storage || !channel) return null;
+  const ownCampaign = () => {
+    const touch = readSessionTouch(storage);
+    return touch && hasCampaign(touch) ? touch : null;
+  };
+  channel.addEventListener("message", ({ data }) => {
+    const message = data as Partial<{ type: string; touch: unknown }> | null;
+    const own = ownCampaign();
+    if (message?.type === "pedido") {
+      if (own) channel.postMessage({ type: "toque", touch: own });
+      return;
+    }
+    if (message?.type !== "toque" || own) return;
+    const touch = parseTouch(message.touch);
+    if (!touch || !hasCampaign(touch)) return;
+    try {
+      storage.setItem(ATTRIBUTION_SESSION_KEY, JSON.stringify(touch));
+    } catch {
+      return;
+    }
+    options.onAdopt?.(touch);
+  });
+  if (!ownCampaign()) channel.postMessage({ type: "pedido" });
+  return () => channel.close();
+}
+
+/* ------------------------------------------------------------------ *
+ * Referência da campanha nas mensagens de WhatsApp (F34, auditoria de conversão)
+ * ------------------------------------------------------------------ */
+
+/** Começo da linha de referência; serve também para não repeti-la. */
+export const CAMPAIGN_REF_PREFIX = "Ref.: G-";
+
+/** Tamanho máximo do nome curto da campanha na linha de referência. */
+const CAMPAIGN_REF_MAX = 30;
+
+/**
+ * "Ref.: G-{campanha curta}" (utm_campaign em minúsculas, sem acento, só
+ * letras, números e hífen, até 30 caracteres) ou "Ref.: G-ads" sem
+ * utm_campaign, quando o toque veio de anúncio pago do Google (utm_medium=cpc
+ * ou um id de clique); "" fora disso. Nunca leva o gclid.
+ */
+export function campaignRef(touch: Touch | null): string {
+  const paid = touch && ((touch.utm.utm_medium ?? "").toLowerCase() === "cpc" || AD_CLICK_KEYS.some((key) => touch[key]));
+  if (!paid) return "";
+  const short = (touch.utm.utm_campaign ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+/, "")
+    .slice(0, CAMPAIGN_REF_MAX)
+    .replace(/-+$/, "");
+  return `${CAMPAIGN_REF_PREFIX}${short || "ads"}`;
+}
+
+/** Referência da campanha do toque desta aba (sessionStorage), ou "". */
+export function currentCampaignRef(storage: Storage | null = sessionStore()): string {
+  return campaignRef(readSessionTouch(storage));
+}
+
+/** Mensagem + linha em branco + referência. Sem referência, ou já com uma, devolve igual. */
+export function withCampaignRef(message: string, ref: string): string {
+  if (!ref || !message || message.includes(CAMPAIGN_REF_PREFIX)) return message;
+  return `${message}\n\n${ref}`;
+}
+
+/**
+ * href do wa.me com a referência no ?text=. Link sem texto (os da ilha, que
+ * abrem a mensagem por JS) e link que não é do wa.me continuam iguais.
+ */
+export function whatsappHrefWithRef(href: string, ref: string): string {
+  // O whatsappHref() põe o ?text= por último: a linha entra no fim do href, já codificada.
+  return ref && href.startsWith("https://wa.me/") && href.includes("?text=") && !href.includes(encodeURIComponent(CAMPAIGN_REF_PREFIX))
+    ? `${href}${encodeURIComponent(`\n\n${ref}`)}`
+    : href;
 }

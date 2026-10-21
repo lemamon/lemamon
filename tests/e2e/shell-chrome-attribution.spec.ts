@@ -11,6 +11,10 @@
  *
  * Roda contra o build (playwright.config.ts) ou um deploy/dev server
  * (E2E_NETLIFY_URL).
+ *
+ * Também a atribuição da auditoria de conversão: "Ref.: G-…" nos links de
+ * WhatsApp depois de clique pago (F34), aba nova que adota o toque de campanha
+ * de outra aba aberta (F26) e o modo ?debug_analytics=1 (F82).
  */
 import { expect, test, type Page } from "@playwright/test";
 
@@ -118,5 +122,70 @@ test.describe("toque na barra fixa abre o wizard pré-marcado (375px)", () => {
     await continueStep(page, "en");
     await expectStep(page, 2);
     await expect(root.locator('input[name="build_type"][value="mobile_app"]')).toBeChecked();
+  });
+});
+
+test.describe("atribuição da campanha (auditoria de conversão)", () => {
+  test.beforeEach(({}, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "regra de script: um projeto basta");
+  });
+
+  const TOUCH_KEY = "lemamon:atribuicao:v1";
+
+  /** Texto (?text=) de cada link de WhatsApp com mensagem, fora o "Algum dado errado?" (data-campaign-ref="off"). */
+  async function whatsappTexts(page: Page): Promise<string[]> {
+    const hrefs = await page
+      .locator('a[href^="https://wa.me/"][href*="text="]:not([data-campaign-ref="off"])')
+      .evaluateAll((links) => links.map((link) => (link as HTMLAnchorElement).href));
+    return hrefs.map((href) => new URL(href).searchParams.get("text") ?? "");
+  }
+
+  test("F34: depois de clique pago, todo WhatsApp com texto termina em 'Ref.: G-…', nunca com o gclid", async ({ page }) => {
+    await page.goto("/servicos/mvp?utm_source=google&utm_medium=cpc&utm_campaign=mvp-sp&gclid=TESTE-E2E-GCLID");
+    let texts = await whatsappTexts(page);
+    expect(texts.length).toBeGreaterThan(0);
+    for (const text of texts) {
+      expect(text).toMatch(/\n\nRef\.: G-mvp-sp$/);
+      expect(text).not.toContain("TESTE-E2E-GCLID");
+    }
+    // O toque segue na aba: outra página, sem parâmetro, também leva.
+    await page.goto("/quanto-custa");
+    texts = await whatsappTexts(page);
+    expect(texts.length).toBeGreaterThan(0);
+    for (const text of texts) expect(text).toMatch(/\n\nRef\.: G-mvp-sp$/);
+  });
+
+  test("F34: visita orgânica ou de outra rede não ganha referência", async ({ page }) => {
+    await page.goto("/quanto-custa?utm_source=linkedin&utm_medium=social&utm_campaign=post");
+    const texts = await whatsappTexts(page);
+    expect(texts.length).toBeGreaterThan(0);
+    for (const text of texts) expect(text).not.toContain("Ref.:");
+  });
+
+  test("F26: aba nova adota o toque de campanha de outra aba aberta do site", async ({ context }) => {
+    const paid = await context.newPage();
+    await paid.goto("/servicos/sistemas-web?utm_source=google&utm_medium=cpc&utm_campaign=sistemas&gclid=TESTE-E2E-ABA");
+    // Cmd+clique: aba nova, sem o sessionStorage da outra.
+    const fresh = await context.newPage();
+    await fresh.goto("/orcamento?origem=sistemas-web-hero");
+    await expect.poll(() => fresh.evaluate((key) => sessionStorage.getItem(key) ?? "", TOUCH_KEY)).toContain("TESTE-E2E-ABA");
+    await expect(fresh.locator("a[data-wizard-help]")).toHaveAttribute("href", /Ref\.%3A%20G-sistemas/);
+    // Fechadas as abas com campanha, a aba nova não tem de onde adotar: a origem vive só enquanto alguma aba vive.
+    await paid.close();
+    await fresh.close();
+    const lonely = await context.newPage();
+    await lonely.goto("/contato");
+    await lonely.waitForTimeout(300);
+    expect(await lonely.evaluate((key) => sessionStorage.getItem(key) ?? "", TOUCH_KEY)).not.toContain("TESTE-E2E-ABA");
+  });
+
+  test("F82: ?debug_analytics=1 escreve os eventos no console, sem enviar, e vale na aba", async ({ page }) => {
+    const lines: string[] = [];
+    page.on("console", (message) => lines.push(message.text()));
+    await page.goto("/?debug_analytics=1");
+    await page.locator('main a[data-origem="home-hero"]').first().click();
+    await expect(page).toHaveURL(/\/orcamento\?origem=home-hero$/);
+    await expect.poll(() => lines.some((line) => line.includes("[analytics:debug] cta_click"))).toBe(true);
+    await expect.poll(() => lines.some((line) => line.includes("[analytics:debug] wizard_view"))).toBe(true);
   });
 });

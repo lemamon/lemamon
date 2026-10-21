@@ -21,6 +21,7 @@ import {
   PROTOCOL_ALPHABET,
   submitNetlifyForm,
   SUBMIT_MAX_ATTEMPTS,
+  suggestEmail,
 } from "@/lib/forms";
 
 const okResponse = (status = 200) => ({ ok: status >= 200 && status < 300, status }) as Response;
@@ -115,6 +116,18 @@ describe("validação", () => {
     expect(isValidEmail(" ana@empresa.com.br ")).toBe(true);
     expect(isValidEmail("ana@")).toBe(false);
     expect(isValidEmail("ana empresa.com")).toBe(false);
+  });
+
+  it("e-mail (F07): recusa '..', ponto no começo ou no fim e final de 1 letra", () => {
+    expect(isValidEmail("joao@gmail..com")).toBe(false);
+    expect(isValidEmail("joao..silva@empresa.com")).toBe(false);
+    expect(isValidEmail(".joao@empresa.com")).toBe(false);
+    expect(isValidEmail("joao.@empresa.com")).toBe(false);
+    expect(isValidEmail("joao@empresa.com.")).toBe(false);
+    expect(isValidEmail("joao@.empresa.com")).toBe(false);
+    expect(isValidEmail("joao@empresa.c")).toBe(false);
+    expect(isValidEmail("joao.silva@empresa.co")).toBe(true);
+    expect(isValidEmail("joao+orcamento@sub.empresa.com.br")).toBe(true);
   });
 
   it("telefone BR com DDD (10 ou 11 dígitos), aceita +55", () => {
@@ -254,5 +267,71 @@ describe("protocolo LEM-AAAAMMDD-XXXX", () => {
     const codes = new Set(Array.from({ length: 50 }, () => generateProtocol(new Date(2026, 0, 1))));
     expect(codes.size).toBeGreaterThan(45);
     for (const code of codes) expect(isValidProtocol(code)).toBe(true);
+  });
+});
+
+describe("sugestão de e-mail (F07)", () => {
+  it("erros de digitação no domínio de e-mail pessoal viram sugestão", () => {
+    expect(suggestEmail("joao@gmail.con")).toBe("joao@gmail.com");
+    expect(suggestEmail("joao@gmial.com")).toBe("joao@gmail.com");
+    expect(suggestEmail("joao@hotmal.com")).toBe("joao@hotmail.com");
+    expect(suggestEmail("joao@outlok.com")).toBe("joao@outlook.com");
+    expect(suggestEmail("joao@gmail..com")).toBe("joao@gmail.com");
+    expect(suggestEmail("joao@hotmial.com.br")).toBe("joao@hotmail.com.br");
+    expect(suggestEmail("joao@yaho.com.br")).toBe("joao@yahoo.com.br");
+    expect(suggestEmail(" joao@Gmail.Con ")).toBe("joao@gmail.com");
+  });
+
+  it("gmail.com.br (não existe) vira gmail.com", () => {
+    expect(suggestEmail("joao@gmail.com.br")).toBe("joao@gmail.com");
+  });
+
+  it("nunca troca um domínio da lista por outro (uol × bol)", () => {
+    expect(suggestEmail("joao@uol.com.br")).toBeNull();
+    expect(suggestEmail("joao@bol.com.br")).toBeNull();
+    expect(suggestEmail("joao@live.com")).toBeNull();
+    expect(suggestEmail("joao@ig.com.br")).toBeNull();
+    expect(suggestEmail("joao@gmail.com")).toBeNull();
+    expect(suggestEmail("Joao@Gmail.com")).toBeNull();
+    // Domínio curto parecido com dois da lista: nada de chute.
+    expect(suggestEmail("joao@ual.com.br")).toBeNull();
+  });
+
+  it("domínio de empresa: só o final é corrigido", () => {
+    expect(suggestEmail("joao@empresa.con")).toBe("joao@empresa.com");
+    expect(suggestEmail("joao@empresa.cpm")).toBe("joao@empresa.com");
+    expect(suggestEmail("joao@empresa.vom")).toBe("joao@empresa.com");
+    expect(suggestEmail("joao@empresa.comm")).toBe("joao@empresa.com");
+    expect(suggestEmail("joao@empresa.om")).toBe("joao@empresa.com");
+    expect(suggestEmail("joao@empresa.com.bt")).toBe("joao@empresa.com.br");
+    expect(suggestEmail("joao@empresa.com.vr")).toBe("joao@empresa.com.br");
+    expect(suggestEmail("joao@empresa.combr")).toBe("joao@empresa.com.br");
+    expect(suggestEmail("joao@empresa.com.")).toBe("joao@empresa.com");
+    expect(suggestEmail(".joao@empresa.com")).toBe("joao@empresa.com");
+    expect(suggestEmail("joao@lemamon.dev")).toBeNull();
+    expect(suggestEmail("joao@empresa.com.br")).toBeNull();
+  });
+
+  it("domínio real parecido com um da lista não vira sugestão", () => {
+    expect(suggestEmail("joao@mail.com")).toBeNull();
+    expect(suggestEmail("joao@ymail.com")).toBeNull();
+    expect(suggestEmail("joao@email.com")).toBeNull();
+    expect(suggestEmail("joao@hotmart.com")).toBeNull();
+  });
+
+  it("sem sugestão para o que não dá para corrigir", () => {
+    expect(suggestEmail("")).toBeNull();
+    expect(suggestEmail("joao")).toBeNull();
+    expect(suggestEmail("joao@")).toBeNull();
+    expect(suggestEmail("joao@empresa")).toBeNull();
+    expect(suggestEmail("joao@empresa.c")).toBeNull();
+    expect(suggestEmail("jo ao@gmail.con")).toBeNull();
+    expect(suggestEmail("joao@@gmail.com")).toBeNull();
+  });
+
+  it("toda sugestão é um e-mail válido", () => {
+    for (const typo of ["joao@gmail.con", "joao@gmial.com", "joao@gmail..com", "joao@empresa.com.bt", ".joao@empresa.com"]) {
+      expect(isValidEmail(suggestEmail(typo) ?? "")).toBe(true);
+    }
   });
 });

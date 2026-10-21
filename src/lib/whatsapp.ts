@@ -10,9 +10,14 @@
  *   por JS no clique (openWhatsapp) e o href renderizado NÃO leva o ?text=
  *   (critério de aceite de i18n quote._notes.whatsapp: o GA4 mede o link_url
  *   de cliques externos, e o texto não pode chegar lá).
+ * - Depois de um clique em anúncio do Google, a mensagem aberta no clique
+ *   ganha a linha "Ref.: G-{campanha}" (achado F34, lib/analytics campaignRef); os links
+ *   com ?text= renderizados no HTML ganham a mesma linha pelo script global do
+ *   shell (analytics-delegate). Nunca o gclid.
  */
 
 import { hasWhatsappNumber, WHATSAPP_NUMBER } from "../config/site";
+import { currentCampaignRef, withCampaignRef } from "./analytics";
 
 export function hasWhatsapp(): boolean {
   return hasWhatsappNumber(WHATSAPP_NUMBER);
@@ -27,10 +32,11 @@ export function whatsappHref(message?: string): string | null {
 
 /**
  * Abre o WhatsApp com a mensagem numa aba nova, no clique. Devolve false se não
- * houver número (quem chama não deveria nem ter mostrado o botão).
+ * houver número (quem chama não deveria nem ter mostrado o botão). Com toque
+ * de campanha paga do Google na sessão, a mensagem leva "Ref.: G-…" (F34).
  */
 export function openWhatsapp(message: string, target: Pick<Window, "open"> = window): boolean {
-  const href = whatsappHref(message);
+  const href = whatsappHref(withCampaignRef(message, currentCampaignRef()));
   if (!href) return false;
   target.open(href, "_blank", "noopener");
   return true;

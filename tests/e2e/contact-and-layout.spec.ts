@@ -1,9 +1,11 @@
 /**
  * /contato (BLUEPRINT §6.9) e layout em tela pequena (§2.8, §11) — integrador.
  *
- *  - /contato: validação no envio com foco no 1º campo inválido; envio com o
- *    POST do Netlify interceptado (200) → "Mensagem recebida." na mesma página,
- *    payload do form `contato`; falha → painel de erro com os dados mantidos.
+ *  - /contato: validação no envio com foco no 1º campo inválido (o Assunto,
+ *    1º campo desde o F40); envio com o POST do Netlify interceptado (200) →
+ *    "Mensagem recebida." na mesma página, payload do form `contato` com a
+ *    atribuição e o gclid (F11); falha → painel de erro com os dados mantidos;
+ *    sugestão de e-mail sem bloquear (F07).
  *  - 320px: nenhuma página "always" com rolagem horizontal (WhatsApp ligado).
  *  - 360×640: H1, CTA primário e WhatsApp do hero da Home acima da dobra com o
  *    navegador no idioma da página; com o aviso de idioma, H1 e CTA primário.
@@ -19,12 +21,14 @@ test.describe("/contato", () => {
   test("valida, envia (200) e confirma na página com o payload do form contato", async ({ page }) => {
     const netlify = await stubNetlify(page, 200);
     const c = COPY.pt.contact.form;
-    await page.goto("/contato?origem=e2e-contato");
+    await page.goto("/contato?origem=e2e-contato&utm_source=google&utm_medium=cpc&utm_campaign=e2e-contato&gclid=TESTE-E2E-GCLID");
     const startedAt = Date.now();
     const form = page.locator("form[data-contact-form]");
 
+    // Envio antes de o aprimoramento carregar: o script espera o módulo e valida (nunca o POST nativo).
     await form.getByRole("button", { name: c.submit, exact: true }).click();
-    await expect(form.getByRole("textbox", { name: c.fields.name.label, exact: true })).toBeFocused();
+    await expect(form.locator('input[name="subject"]').first()).toBeFocused();
+    await expect(form).toContainText(c.fields.subject.error_required);
     await expect(form).toContainText(c.fields.name.error_required);
     expect(netlify.bodies).toHaveLength(0);
 
@@ -47,6 +51,51 @@ test.describe("/contato", () => {
     expect(body.get("subject")).toBe("partnership");
     expect(body.get("lang")).toBe("pt");
     expect(body.get("origin")).toBe("e2e-contato");
+    // F11: a mesma atribuição do wizard (utm_*, gclid, origem, página de entrada).
+    expect(body.get("gclid")).toBe("TESTE-E2E-GCLID");
+    expect(JSON.parse(body.get("attribution") ?? "{}")).toMatchObject({
+      utm_source: "google",
+      utm_medium: "cpc",
+      utm_campaign: "e2e-contato",
+      origem: "e2e-contato",
+      entry_page: "/contato",
+    });
+  });
+
+  test("F40: o Assunto vem antes do nome, e a dica do wizard aparece antes de digitar", async ({ page }) => {
+    const c = COPY.pt.contact.form;
+    await page.goto("/contato");
+    const form = page.locator("form[data-contact-form]");
+    const subject = await form.locator('fieldset[data-group="subject"]').boundingBox();
+    const name = await form.getByRole("textbox", { name: c.fields.name.label, exact: true }).boundingBox();
+    expect(subject && name && subject.y < name.y).toBe(true);
+    await form.locator('input[name="subject"][value="new_project"]').check();
+    const tip = form.locator('[data-tip="new_project"]');
+    await expect(tip).toBeVisible();
+    await expect(tip).toContainText(c.new_project_tip_lead);
+    await expect(tip.getByRole("link")).toContainText(c.new_project_tip);
+    await form.locator('input[name="subject"][value="existing_system"]').check();
+    await expect(form.locator('[data-tip="existing_system"]')).toContainText(c.existing_system_tip_lead);
+  });
+
+  test("F07 (en): e-mail com erro de digitação ganha sugestão; 'Fix it' corrige sem erro", async ({ page }) => {
+    const c = COPY.en.contact.form;
+    const s = COPY.en.shared.forms.email_suggestion;
+    await page.goto("/en/contact");
+    const form = page.locator("form[data-contact-form]");
+    await expect(form).toHaveAttribute("data-enhanced", "");
+    const email = form.getByRole("textbox", { name: c.fields.email.label, exact: true });
+    const suggestion = form.locator("[data-email-suggestion]");
+    await expect(suggestion).toBeEmpty();
+    await email.fill("bruno@gmial.com");
+    await email.blur();
+    await expect(suggestion).toHaveText(`${s.text.replace("{email}", "bruno@gmail.com")} ${s.fix}`);
+    // Sugestão não é erro: o campo continua válido (o envio não é bloqueado).
+    await expect(email).not.toHaveAttribute("aria-invalid", "true");
+    await suggestion.getByRole("button", { name: s.fix, exact: true }).click();
+    await expect(email).toHaveValue("bruno@gmail.com");
+    await expect(email).toBeFocused();
+    await expect(suggestion).toBeEmpty();
   });
 
   test("falha de envio: painel de erro e os dados continuam no formulário (es)", async ({ page }) => {
