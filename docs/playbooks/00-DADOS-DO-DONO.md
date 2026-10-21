@@ -48,6 +48,8 @@
 | 3 — preço | `precos` | tudo `null`: nenhum valor publicado; as seções de investimento só aparecem quando você preencher |
 | Razão social e CNPJ (20/10/2026, D39) | `empresa.razaoSocial`, `empresa.cnpj` | `Lemamon.dev LTDA` e `69.700.690/0001-98` (dígitos verificadores válidos), os dois informados pelo dono. `hasCompanyData` ligado e `empresa` fora da trava de lançamento; falta só a sua conferência contra o cartão CNPJ (§A2) |
 | Praça (20/10/2026, D38) | não é campo do `dono.json` | São Paulo, SP (antes Florianópolis, SC). Está no i18n e em `ADDRESS` de `src/config/site.ts` (JSON-LD); o que muda fora do código está no [08](08-search-console-e-seo-local.md) §3 |
+| Atende fora do Brasil (21/10/2026, D31) | `confirmacoes.outrasCidades`, `confirmacoes.atendeExterior` | `true` e `true` ("atendemos o mundo todo"). O FAQ "Vocês atendem empresas de outras cidades ou de fora do Brasil?" e a linha "Atendemos o mundo todo" no eyebrow da Home vão ao ar nos 3 idiomas. O site afirma só atendimento a distância, em português, inglês ou espanhol, com o mesmo processo; moeda, contrato e forma de pagamento "combinados por escrito antes de começar". `atendeExterior` exige `outrasCidades` (o build confere) |
+| Duração da Descoberta (21/10/2026, D42) | `descoberta.duracao`, `confirmacoes.duracaoDescoberta` | `{ "pt": "em geral 1 semana", "en": "usually 1 week", "es": "en general 1 semana" }` e `true` ("depende do cliente, mas no geral 1 semana"). `formato`, `participantes`, `ritmo` e `naoInclui` continuam `null`. A duração vai ao FAQ "Quanto dura?", à tag da etapa 2 na linha do método e ao hero de `/sprint-de-descoberta`, sempre com "depende do tamanho do problema" e "combinada antes de começar" |
 
 Todo o resto (os outros campos de `empresa`, Política, pessoas, depoimentos, logos, agenda, formatos) está vazio, esperando você.
 
@@ -269,11 +271,12 @@ Ligue cada item **só depois de conferir que a frase publicada é verdade** no c
 | `formatoDiagnostico` *(prioridade)* | Os 45 minutos são por vídeo, telefone ou presencial? Com quem o cliente fala (o papel)? | FAQ rápido do `/orcamento`, passos do CTA final, FAQ `diagnosis_format` |
 | `codigoProprietario` | O código é do cliente desde o início (`"answer_draft"`) ou passa conforme os pagamentos (`"answer_draft_alt"`)? `false` = não publicar | FAQ `code_ownership` |
 | `notaFiscal` | Emite NF de serviço para todas as etapas pagas? | FAQ `invoice` |
-| `outrasCidades` | Atende outras cidades do Brasil, a distância? | FAQ `other_cities` (afeta en/es e Google Ads) |
+| `outrasCidades` | Atende outras cidades do Brasil, a distância? **Decidido: sim (D31, 21/10/2026)** | FAQ `other_cities` (afeta en/es e Google Ads) |
+| `atendeExterior` | Atende empresas de outros países, a distância? **Decidido: sim (D31, 21/10/2026).** Exige `outrasCidades = true` | variante "…ou de fora do Brasil?" do FAQ `other_cities` (uma pergunta só) e a linha "Atendemos o mundo todo" no eyebrow da Home. Antes do 1º cliente de fora: moeda, nota fiscal de exportação e foro (o site não afirma nenhum dos três) |
 | `nda` | O NDA mútuo revisado por advogado **e** o documento de respostas de segurança ([02](02-proposta-e-politica-comercial.md) §11) existem e podem ser enviados em até 1 dia útil? Só então ligue. O site passa a dizer que a Lemamon assina o acordo e responde ao questionário de segurança | FAQ `nda` ("…assina o acordo antes de você compartilhar os detalhes e também responde ao questionário de segurança da sua empresa"); card de e-mail em `/contato` ("Para enviar NDA, questionário de segurança…") |
 | `sistemaTerceiros` | Assume sistema feito por outra empresa, depois de avaliação? | FAQ `third_party_system` |
 | `semDescoberta` | Em que casos começa direto pelo desenvolvimento? | FAQ `skip_discovery` (exige revisar textos que dizem que o preço só sai da Descoberta) |
-| `duracaoDescoberta` | A duração é combinada antes, junto com o valor? | FAQ `discovery_duration` (com `descoberta` completa, usa a duração real) |
+| `duracaoDescoberta` | A duração é combinada antes, junto com o valor? **Decidido: sim (D42, 21/10/2026)** | FAQ `discovery_duration`. Com `descoberta.duracao` preenchida (mesmo sem os outros 3 campos), a resposta usa a duração típica ("Depende do tamanho do problema: em geral 1 semana…") e a tag da etapa 2 também (`hasDiscoveryDuration`) |
 | `planoDoCliente` | O plano da Descoberta fica com o cliente mesmo sem seguir? | FAQ `discovery_plan_ownership` |
 | `descobertaAbatida` | O valor da Descoberta é descontado **integralmente** do desenvolvimento? | FAQ `discovery_credit` |
 | `descobertaUnicoCusto` | "É o único valor que você assume" é verdade? | páginas do método |
@@ -328,7 +331,7 @@ Todos os campos: `{ pt, en, es }`, até 300 caracteres por idioma, ou `null`. Ex
 
 | Seção | Campos | Libera |
 |---|---|---|
-| `descoberta` | `formato`, `participantes`, `ritmo`, `duracao` — **os 4**; e `naoInclui`: lista `{ pt: [...], en: [...], es: [...] }` de **1 a 5 itens**, até **120 caracteres** cada, sem valor em dinheiro, ou `null` | os 4 campos: "Como a Descoberta acontece" em `/sprint-de-descoberta` e a resposta com duração do FAQ `discovery_duration` (`hasDiscoveryFormat`). `naoInclui` com ≥ 1 item nos 3 idiomas: "O que a Descoberta não inclui" (`#o-que-nao-inclui`, flag `hasDiscoveryExclusions`), logo depois de "O que você recebe" e com o mesmo destaque. Faltou um idioma, o bloco some inteiro |
+| `descoberta` | `formato`, `participantes`, `ritmo`, `duracao` — **os 4**; e `naoInclui`: lista `{ pt: [...], en: [...], es: [...] }` de **1 a 5 itens**, até **120 caracteres** cada, sem valor em dinheiro, ou `null` | os 4 campos: "Como a Descoberta acontece" em `/sprint-de-descoberta` (`hasDiscoveryFormat`). Só `duracao` (com `confirmacoes.duracaoDescoberta`, D42): a duração típica no FAQ `discovery_duration`, na tag da etapa 2 da linha do método e no hero de `/sprint-de-descoberta` (`hasDiscoveryDuration`); hoje está assim, com "em geral 1 semana". `naoInclui` com ≥ 1 item nos 3 idiomas: "O que a Descoberta não inclui" (`#o-que-nao-inclui`, flag `hasDiscoveryExclusions`), logo depois de "O que você recebe" e com o mesmo destaque. Faltou um idioma, o bloco some inteiro |
 | `sustentacao` | `inclui`, `contratacao`, `canais` obrigatórios; `urgencias` opcional | "Formato e contratação" em `/servicos/sustentacao`. Sem SLA, horas ou monitoramento que você não cumpre hoje |
 | `engenharia` | `tests`, `ci_cd`, `code_review`, `repository`, `documentation`, `handover`, `people`, `security` | cada campo completo vira uma linha de "Como a gente constrói" em `/como-trabalhamos` (`hasEngineering` = ≥ 1) |
 
@@ -506,6 +509,7 @@ Preencha a seção no `dono.json`: ela passa a valer na hora, inclusive com a ca
 | `precos` | `hasPricing`, `pricingLines` | ≥ 1 linha completa | blocos de investimento, FAQ com faixas, preço no resumo |
 | `agenda` | `hasAgenda` | URL https | agenda no pós-envio, rótulo "Agendar" |
 | `descoberta` | `hasDiscoveryFormat` | 4 campos | "Como a Descoberta acontece" |
+| `descoberta.duracao` + `confirmacoes.duracaoDescoberta` | `hasDiscoveryDuration` | duração nos 3 idiomas + a confirmação (ou os 4 campos) | duração típica no FAQ "Quanto dura?", na tag da etapa 2 e no hero de `/sprint-de-descoberta` (D42) |
 | `descoberta.naoInclui` | `hasDiscoveryExclusions` | ≥ 1 item nos 3 idiomas | "O que a Descoberta não inclui" em `/sprint-de-descoberta` |
 | `sustentacao` | `hasSupportFormat` | 3 campos | "Formato e contratação" |
 | `engenharia` | `hasEngineering` | ≥ 1 campo | "Como a gente constrói" |
