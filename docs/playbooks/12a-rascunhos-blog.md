@@ -9,7 +9,7 @@
 
 ## Como usar
 
-1. O autor (B298) lê o rascunho, corrige o que não reconhece como verdade na prática da Lemamon e passa pela revisão técnica (12 §7, processo, passo 2).
+1. O autor (B298) lê o rascunho, corrige o que não reconhece como verdade na prática da Lemamon.dev e passa pela revisão técnica (12 §7, processo, passo 2).
 2. Preencha os `[PREENCHER]` do frontmatter, inclusive a capa (o `alt` proposto descreve um cartão com o título; ajuste ao que a imagem mostrar). Com eles, o build recusa o arquivo (`hasDraftMark`), de propósito.
 3. Copie o bloco de frontmatter e o corpo para `src/content/posts/<slug>.mdx` (só pt-BR). O `<CtaMeio />` fica exatamente onde está marcado. Mantenha `rascunho: true` até o fim da revisão.
 4. Deploy preview → checklist B302 de novo (abaixo) → `rascunho: false` → publicar. O blog só aparece com 3 posts publicados (`hasPosts`).
@@ -41,7 +41,7 @@ titulo: "O que você deveria receber de uma Sprint de Descoberta"
 resumo: "Entendimento do problema, escopo priorizado, protótipo e um plano com prazo e preço fechados: o que conferir antes de aprovar o desenvolvimento."
 capa:
   src: "[PREENCHER] ../imagens/<cartão 1200×630 do post>"
-  alt: "Cartão do post com o título O que você deveria receber de uma Sprint de Descoberta, sobre fundo azul-escuro da Lemamon"
+  alt: "Cartão do post com o título O que você deveria receber de uma Sprint de Descoberta, sobre fundo azul-escuro da Lemamon.dev"
 autor:
   nome: "[PREENCHER] nome completo do autor (B298)"
   foto: "[PREENCHER] ../imagens/<arquivo da foto real>"
@@ -98,7 +98,7 @@ Se algum desses sinais aparecer, pergunte antes de aprovar o próximo passo. Uma
 
 ## Onde você decide
 
-Na Lemamon, você decide depois da devolutiva por escrito do diagnóstico gratuito e, de novo, depois do plano da Descoberta. Seguir para o desenvolvimento é escolha sua, com escopo, prazo e preço combinados antes de começar.
+Na Lemamon.dev, você decide depois da devolutiva por escrito do diagnóstico gratuito e, de novo, depois do plano da Descoberta. Seguir para o desenvolvimento é escolha sua, com escopo, prazo e preço combinados antes de começar.
 
 No desenvolvimento, você recebe software funcionando a cada 2 semanas, não apresentação de slide. Os detalhes da etapa estão na página da [Sprint de Descoberta](/sprint-de-descoberta), e o caminho inteiro está em [Como trabalhamos](/como-trabalhamos).
 
@@ -123,7 +123,7 @@ titulo: "Preço fechado ou por hora: o que muda para quem contrata"
 resumo: "Num modelo, você paga o tempo; no outro, um escopo escrito. Veja quem carrega o risco quando a estimativa erra e o que perguntar antes de assinar."
 capa:
   src: "[PREENCHER] ../imagens/<cartão 1200×630 do post>"
-  alt: "Cartão do post com o título Preço fechado ou por hora: o que muda para quem contrata, sobre fundo azul-escuro da Lemamon"
+  alt: "Cartão do post com o título Preço fechado ou por hora: o que muda para quem contrata, sobre fundo azul-escuro da Lemamon.dev"
 autor:
   nome: "[PREENCHER] nome completo do autor (B298)"
   foto: "[PREENCHER] ../imagens/<arquivo da foto real>"
@@ -162,13 +162,13 @@ Para isso funcionar, o escopo precisa estar claro antes do preço. Preço fechad
 - Quando eu vejo software funcionando?
 - O que eu recebo antes de pagar pelo desenvolvimento?
 
-As respostas dizem mais do que o valor no fim da proposta. A lista completa, com as respostas da Lemamon, está em [Como comparar propostas de desenvolvimento de software](/quanto-custa#como-comparar).
+As respostas dizem mais do que o valor no fim da proposta. A lista completa, com as respostas da Lemamon.dev, está em [Como comparar propostas de desenvolvimento de software](/quanto-custa#como-comparar).
 
 <CtaMeio />
 
-## Como a Lemamon trabalha
+## Como a Lemamon.dev trabalha
 
-Na Lemamon, escopo, prazo e preço são combinados antes de começar. O preço fechado do desenvolvimento sai da Sprint de Descoberta, uma etapa paga, com valor combinado antes, que transforma o problema em escopo priorizado, protótipo e um plano com prazo e preço fechados.
+Na Lemamon.dev, escopo, prazo e preço são combinados antes de começar. O preço fechado do desenvolvimento sai da Sprint de Descoberta, uma etapa paga, com valor combinado antes, que transforma o problema em escopo priorizado, protótipo e um plano com prazo e preço fechados.
 
 No desenvolvimento, você recebe software funcionando, não apresentação de slide. As entregas a cada 2 semanas existem para você perceber cedo o que precisa mudar. Se a mudança mexer no escopo, escopo, prazo e preço são combinados de novo antes de seguir.
 
@@ -195,7 +195,7 @@ titulo: "Sistema pronto ou sob medida: como decidir"
 resumo: "Quando um sistema pronto resolve, quando vale construir sob medida e o caminho do meio que pouca gente considera: integrar o que já funciona."
 capa:
   src: "[PREENCHER] ../imagens/<cartão 1200×630 do post>"
-  alt: "Cartão do post com o título Sistema pronto ou sob medida: como decidir, sobre fundo azul-escuro da Lemamon"
+  alt: "Cartão do post com o título Sistema pronto ou sob medida: como decidir, sobre fundo azul-escuro da Lemamon.dev"
 autor:
   nome: "[PREENCHER] nome completo do autor (B298)"
   foto: "[PREENCHER] ../imagens/<arquivo da foto real>"
@@ -244,7 +244,7 @@ Nesses casos, um sistema pronto costuma ser o caminho mais curto. Construir algo
 
 Há uma terceira opção que pouca gente considera: manter o sistema pronto que já funciona para o básico e construir só a parte que é sua, conectada a ele. O dado entra uma vez e aparece onde precisa, sem ninguém digitar de novo.
 
-## Como a Lemamon ajuda a decidir
+## Como a Lemamon.dev ajuda a decidir
 
 Antes de qualquer proposta, vem o diagnóstico gratuito: 45 minutos para entender o problema. Se fizer sentido construir, a Sprint de Descoberta transforma o problema em escopo priorizado, protótipo e um plano com prazo e preço fechados. Se você decidir seguir, recebe software funcionando a cada 2 semanas.
 
@@ -290,7 +290,7 @@ midCtaText: "Quer ver como o seu projeto andaria com entregas a cada 2 semanas? 
 rascunho: true
 ```
 
-**O que o autor não pode escrever:** duração de MVP ou de Descoberta; número de entregas de um projeto; SLA; "você fala com quem escreve o código"; nomes de clientes; prints de projeto sem autorização (09 §6). Exemplos técnicos de ferramentas (ambiente de homologação, quadro de tarefas) só os que a Lemamon usa de fato (`dados/dono.json › engenharia`).
+**O que o autor não pode escrever:** duração de MVP ou de Descoberta; número de entregas de um projeto; SLA; "você fala com quem escreve o código"; nomes de clientes; prints de projeto sem autorização (09 §6). Exemplos técnicos de ferramentas (ambiente de homologação, quadro de tarefas) só os que a Lemamon.dev usa de fato (`dados/dono.json › engenharia`).
 
 ---
 

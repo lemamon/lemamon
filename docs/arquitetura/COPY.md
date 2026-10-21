@@ -1,4 +1,4 @@
-# Copy do site Lemamon
+# Copy do site Lemamon.dev
 
 Texto final do site, para você revisar antes da implementação em Astro. Este documento junta os 5 documentos de copy (Home, Método e preço, Serviços, Conversão e Estrutura), validados por 7 revisores especialistas (as três personas, comercial, UX writer, SEO e compliance) em 3 rodadas, mais um portão final.
 
@@ -24,7 +24,7 @@ Texto final do site, para você revisar antes da implementação em Astro. Este 
 
 ### Posicionamento
 
-**Escopo, prazo e preço fechados** (Hipótese C de `05-conteudo.md` §2). A Lemamon leva a empresa da descoberta ao software rodando, com escopo, prazo e preço combinados antes de começar. O herói do site é o método, não a tecnologia: o comprador está comprando previsibilidade.
+**Escopo, prazo e preço fechados** (Hipótese C de `05-conteudo.md` §2). A Lemamon.dev leva a empresa da descoberta ao software rodando, com escopo, prazo e preço combinados antes de começar. O herói do site é o método, não a tecnologia: o comprador está comprando previsibilidade.
 
 ### Mensagem central
 
@@ -79,6 +79,8 @@ Concreto, franco e sem pompa. "A gente" e "você". A frase começa pelo problema
 
 ### Termos fixos por idioma
 
+- **Marca (D43):** sempre "Lemamon.dev" no texto, nos 3 idiomas ("a Lemamon.dev", "da Lemamon.dev"), nunca só "Lemamon". O wordmark gráfico usa `lemamon.dev` em minúsculas (D34).
+
 | pt-BR | en | es |
 |---|---|---|
 | diagnóstico gratuito | free assessment | diagnóstico gratuito |
@@ -91,7 +93,7 @@ Concreto, franco e sem pompa. "A gente" e "você". A frase começa pelo problema
 | Falar no WhatsApp | Chat on WhatsApp | Escríbenos por WhatsApp |
 | orçamento (`/orcamento`) | quote (`/en/quote`) | cotización (`/es/cotizacion`) |
 
-O espanhol é neutro latino-americano, com "tú" em todo o site. Em selos e linhas curtas, "São Paulo, SP" vira "São Paulo, Brazil/Brasil". Nenhuma versão diz que a Lemamon atende fora do Brasil enquanto `confirmacoes.outrasCidades` estiver pendente.
+O espanhol é neutro latino-americano, com "tú" em todo o site. Em selos e linhas curtas, "São Paulo, SP" vira "São Paulo, Brazil/Brasil". Nenhuma versão diz que a Lemamon.dev atende fora do Brasil enquanto `confirmacoes.outrasCidades` estiver pendente.
 
 ---
 
@@ -122,7 +124,7 @@ Ordem das seções conforme o BLUEPRINT §6.1. Hoje vão ao ar 8 seções; as co
 #### 2. Faixa de compromissos · `shared.commitments`
 > Componente compartilhado, mostrado aqui porque fica logo abaixo do hero.
 
-- **Rótulo de acessibilidade**: O que a Lemamon combina com você
+- **Rótulo de acessibilidade**: O que a Lemamon.dev combina com você
 - **Itens**
   - **`scope_price_closed`**: Escopo, prazo e preço fechados antes do desenvolvimento
   - **`every_two_weeks`**: Software funcionando a cada 2 semanas
@@ -196,7 +198,7 @@ Ordem das seções conforme o BLUEPRINT §6.1. Hoje vão ao ar 8 seções; as co
 #### 6a. Linha do método (nome, tag e 'Você recebe' de cada etapa) · `shared.method_timeline`
 > Componente compartilhado, usado também em Como trabalhamos, Sprint de Descoberta, serviços e resumo do orçamento.
 
-- **Rótulo de acessibilidade**: Como a Lemamon trabalha, em 4 etapas
+- **Rótulo de acessibilidade**: Como a Lemamon.dev trabalha, em 4 etapas
 - **`start_here_badge`**: Comece aqui
 - **`next_step_badge`**: Próximo passo
 - **`you_get_label`**: Você recebe:
@@ -264,15 +266,15 @@ Ordem das seções conforme o BLUEPRINT §6.1. Hoje vão ao ar 8 seções; as co
 #### 11. Time · `home.team`
 > **Condicional:** `hasTeam` (pelo menos 1 pessoa com foto, nome e papel).
 
-- **Título**: Quem trabalha nos projetos da Lemamon
-- **Introdução**: Conheça quem está por trás da Lemamon antes da primeira conversa.
-- **Link**: Conhecer a Lemamon
+- **Título**: Quem trabalha nos projetos da Lemamon.dev
+- **Introdução**: Conheça quem está por trás da Lemamon.dev antes da primeira conversa.
+- **Link**: Conhecer a Lemamon.dev
 
 #### 12. Confira antes de conversar · `home.trust_profiles`
 > **Condicional:** `hasProfiles` (pelo menos 1 perfil marcado como publicar em perfis.ts). Os cartões usam `shared.profiles`.
 
 - **Título**: Confira antes de conversar
-- **Texto**: A Lemamon é uma empresa de desenvolvimento de software sob medida em São Paulo, SP. Aqui você encontra a empresa fora deste site.
+- **Texto**: A Lemamon.dev é uma empresa de desenvolvimento de software sob medida em São Paulo, SP. Aqui você encontra a empresa fora deste site.
 
 #### 13. Perguntas antes de começar · `home.faq`
 
@@ -323,7 +325,7 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
 
 #### 2. O que está combinado desde o início · `how_we_work.agreement`
 
-- **Título**: O que a Lemamon combina com você
+- **Título**: O que a Lemamon.dev combina com você
 - **Itens**
   - **`scope_price`**
     - **Título**: Escopo, prazo e preço fechados antes do desenvolvimento
@@ -402,10 +404,10 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
 #### 10. Sem combinado × com o método · `how_we_work.comparison`
 
 - **Título**: O que muda para quem contrata
-- **Legenda**: Comparação entre como a contratação de software costuma acontecer e como funciona com o método da Lemamon
+- **Legenda**: Comparação entre como a contratação de software costuma acontecer e como funciona com o método da Lemamon.dev
 - **Coluna 1**: Aspecto
 - **Coluna 'sem'**: Como costuma ser
-- **Coluna 'com'** _(variante: só quando o dado indicado existir)_: Com o método da Lemamon
+- **Coluna 'com'** _(variante: só quando o dado indicado existir)_: Com o método da Lemamon.dev
 - **Linhas**
   - **`price`**
     - **Dimensão**: Preço
@@ -438,7 +440,7 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
 > **Condicional:** `hasEngineering` (engenharia.ts). Só rótulos e introdução; o conteúdo vem do dono.
 
 - **Título**: Como a gente constrói
-- **Introdução**: Para quem avalia a parte técnica: as práticas de engenharia que a Lemamon usa nos projetos.
+- **Introdução**: Para quem avalia a parte técnica: as práticas de engenharia que a Lemamon.dev usa nos projetos.
 - **Campos**
   - **`tests`**: Testes
   - **`ci_cd`**: Integração e entrega contínuas
@@ -448,7 +450,7 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
   - **`handover`**: Passagem de conhecimento
   - **`people`**: Quem trabalha no projeto
   - **`security`**: Segurança e acesso aos dados
-- **`profiles_fallback`**: Para quem avalia a parte técnica: a Lemamon no GitHub.
+- **`profiles_fallback`**: Para quem avalia a parte técnica: a Lemamon.dev no GitHub.
 
 > 13. Investimento: **condicional** (`hasPricing`), texto em `shared.investment`.
 
@@ -470,7 +472,7 @@ Condicionais (entram quando o dono ligar a flag):
 - Como é o diagnóstico e com quem eu falo? · `faq.conditional.diagnosis_format`
 - E se eu precisar mudar o escopo no meio do projeto? · `faq.conditional.scope_change`
 - O código fica com a minha empresa? · `faq.conditional.code_ownership`
-- O plano da Descoberta é meu se eu não seguir com a Lemamon? · `faq.conditional.discovery_plan_ownership`
+- O plano da Descoberta é meu se eu não seguir com a Lemamon.dev? · `faq.conditional.discovery_plan_ownership`
 - Quanto tempo dura a Sprint de Descoberta? · `faq.conditional.discovery_duration`
 - Posso começar direto pelo desenvolvimento? · `faq.conditional.skip_discovery`
 - Vocês assinam acordo de confidencialidade (NDA)? · `faq.conditional.nda`
@@ -599,14 +601,14 @@ Perguntas, nesta ordem (as respostas completas estão em [Perguntas frequentes �
 
 1. Quanto custa a Sprint de Descoberta? · `faq.items.discovery_cost`
 2. Por que a Sprint de Descoberta é paga? · `faq.items.why_discovery_paid`
-3. Preciso seguir com a Lemamon depois da Descoberta? · `faq.items.obliged_to_continue`
+3. Preciso seguir com a Lemamon.dev depois da Descoberta? · `faq.items.obliged_to_continue`
 4. Preciso já saber o que quero? · `faq.items.need_scope_ready`
 
 Condicionais (entram quando o dono ligar a flag):
 
 - O valor da Descoberta é abatido do desenvolvimento? · `faq.conditional.discovery_credit`
 - Quanto tempo dura a Sprint de Descoberta? · `faq.conditional.discovery_duration`
-- O plano da Descoberta é meu se eu não seguir com a Lemamon? · `faq.conditional.discovery_plan_ownership`
+- O plano da Descoberta é meu se eu não seguir com a Lemamon.dev? · `faq.conditional.discovery_plan_ownership`
 
 #### 9. CTA final · `discovery_sprint.cta_final`
 
@@ -690,38 +692,38 @@ Página da busca nº 1 do comprador. Funciona sem números. Ordem conforme o BLU
     - **Texto**: Software funcionando, com entregas a cada 2 semanas.
   - **Sustentação e evolução**
     - **Custo**: Valor combinado antes de começar
-    - **Texto**: Depois que o software entra no ar, a Lemamon pode cuidar dele e evoluí-lo conforme a sua operação muda.
+    - **Texto**: Depois que o software entra no ar, a Lemamon.dev pode cuidar dele e evoluí-lo conforme a sua operação muda.
 
 #### 6. Como comparar propostas de software · `pricing.how_to_compare`
 > A pergunta 'O que acontece se o escopo mudar?' (`questions.scope_change`) só aparece com `confirmacoes.escopoMudanca`. Sem a flag, a régua fica com 5 perguntas.
 
 - **Título**: Como comparar propostas de desenvolvimento de software
-- **Introdução**: Se você está avaliando mais de um fornecedor, faça estas perguntas a todos eles. As respostas dizem mais do que o valor no fim da proposta, e as da Lemamon estão logo abaixo de cada pergunta.
+- **Introdução**: Se você está avaliando mais de um fornecedor, faça estas perguntas a todos eles. As respostas dizem mais do que o valor no fim da proposta, e as da Lemamon.dev estão logo abaixo de cada pergunta.
 - **`questions`**
   - **`out_of_scope`**
     - **Pergunta**: O que está fora do escopo?
     - **Por quê**: Uma proposta que não diz o que ficou de fora não dá para comparar com outra.
-    - **`lemamon`**: Na Lemamon: o escopo sai por escrito da Descoberta, com o que entra, o que fica de fora e o que pode esperar.
+    - **`lemamon`**: Na Lemamon.dev: o escopo sai por escrito da Descoberta, com o que entra, o que fica de fora e o que pode esperar.
   - **`fixed_or_hourly`**
     - **Pergunta**: O preço é fechado ou cobrado por hora?
     - **Por quê**: A resposta mostra se o valor pode mudar no meio do projeto.
-    - **`lemamon`**: Na Lemamon: fechado no plano da Descoberta, antes do desenvolvimento.
+    - **`lemamon`**: Na Lemamon.dev: fechado no plano da Descoberta, antes do desenvolvimento.
   - **`when_working`**
     - **Pergunta**: Quando eu vejo software funcionando?
     - **Por quê**: Progresso é software que você consegue usar, não relatório de andamento.
-    - **`lemamon`**: Na Lemamon: a cada 2 semanas, durante o desenvolvimento. Antes disso, na Descoberta, você já vê e valida um protótipo de como ele vai funcionar.
+    - **`lemamon`**: Na Lemamon.dev: a cada 2 semanas, durante o desenvolvimento. Antes disso, na Descoberta, você já vê e valida um protótipo de como ele vai funcionar.
   - **`scope_change`**
     - **Pergunta**: O que acontece se o escopo mudar?
     - **Por quê**: Mudança acontece. Pergunte antes de assinar como ela é tratada e como afeta prazo e preço.
-    - **`lemamon_with_scope_change`** _(variante: só quando o dado indicado existir)_: Na Lemamon: a mudança aparece cedo, nas entregas a cada 2 semanas, e escopo, prazo e preço são combinados de novo com você antes de seguir.
+    - **`lemamon_with_scope_change`** _(variante: só quando o dado indicado existir)_: Na Lemamon.dev: a mudança aparece cedo, nas entregas a cada 2 semanas, e escopo, prazo e preço são combinados de novo com você antes de seguir.
   - **`after_launch`**
     - **Pergunta**: Quem cuida depois do lançamento?
     - **Por quê**: Software no ar continua precisando de cuidado. Saiba quem cuida antes de assinar.
-    - **`lemamon`**: Na Lemamon: se você quiser, a gente segue cuidando do sistema no ar, na sustentação e evolução contínua, com valor combinado com você antes de começar.
+    - **`lemamon`**: Na Lemamon.dev: se você quiser, a gente segue cuidando do sistema no ar, na sustentação e evolução contínua, com valor combinado com você antes de começar.
   - **`before_paying`**
     - **Pergunta**: O que eu recebo antes de pagar pelo desenvolvimento?
     - **Por quê**: Ver escopo e plano por escrito, e um protótipo do software, antes do desenvolvimento evita contratar no escuro.
-    - **`lemamon`**: Na Lemamon: sem custo, a devolutiva por escrito do diagnóstico. Na Descoberta, que é paga: entendimento do problema, escopo priorizado, protótipo e plano com prazo e preço fechados.
+    - **`lemamon`**: Na Lemamon.dev: sem custo, a devolutiva por escrito do diagnóstico. Na Descoberta, que é paga: entendimento do problema, escopo priorizado, protótipo e plano com prazo e preço fechados.
 - **Fechamento**: Quer ver essas respostas aplicadas ao seu projeto? O primeiro passo leva 45 minutos.
 
 #### 7. Perguntas frequentes (título) · `pricing.faq`
@@ -736,12 +738,12 @@ Perguntas, nesta ordem (as respostas completas estão em [Perguntas frequentes �
 2. Por que a Sprint de Descoberta é paga? · `faq.items.why_discovery_paid`
 3. Por que não existe tabela de preços? · `faq.items.no_price_table`
 4. Consigo ter uma ideia de valor antes de conversar? · `faq.items.reference_before_talking`
-5. Preciso seguir com a Lemamon depois da Descoberta? · `faq.items.obliged_to_continue`
+5. Preciso seguir com a Lemamon.dev depois da Descoberta? · `faq.items.obliged_to_continue`
 
 Condicionais (entram quando o dono ligar a flag):
 
 - E se eu precisar mudar o escopo no meio do projeto? · `faq.conditional.scope_change`
-- O plano da Descoberta é meu se eu não seguir com a Lemamon? · `faq.conditional.discovery_plan_ownership`
+- O plano da Descoberta é meu se eu não seguir com a Lemamon.dev? · `faq.conditional.discovery_plan_ownership`
 - Como é feito o pagamento? · `faq.conditional.payment_terms`
 - Vocês emitem nota fiscal? · `faq.conditional.invoice`
 
@@ -781,7 +783,7 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
   - **Resposta**: Usando o próprio software. A cada 2 semanas você recebe uma parte funcionando para usar e dar o seu retorno. Se algo sair do previsto, você percebe cedo, nas entregas, e não só no fim do projeto.
 - **`after_launch`**
   - **Pergunta**: E depois que o sistema entra no ar?
-  - **Resposta**: A Lemamon pode seguir cuidando do que está rodando e evoluindo o sistema conforme a sua operação muda. É a sustentação e evolução contínua, com formato e valor combinados com você antes de começar.
+  - **Resposta**: A Lemamon.dev pode seguir cuidando do que está rodando e evoluindo o sistema conforme a sua operação muda. É a sustentação e evolução contínua, com formato e valor combinados com você antes de começar.
 - **`what_happens_in_diagnosis`**
   - **Pergunta**: O que acontece no diagnóstico gratuito?
   - **Resposta**: Uma conversa de 45 minutos para entender o seu caso: o problema, quem sofre com ele e o que já foi tentado. Não precisa de preparação técnica. Depois, você recebe uma devolutiva por escrito.
@@ -789,7 +791,7 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
   - **Pergunta**: Preciso já saber o que quero?
   - **Resposta**: Não. No diagnóstico gratuito, você conta o problema do seu jeito. Organizar o que você precisa e decidir o que entra primeiro e o que pode esperar é o trabalho da Sprint de Descoberta.
 - **`obliged_to_continue`**
-  - **Pergunta**: Preciso seguir com a Lemamon depois da Descoberta?
+  - **Pergunta**: Preciso seguir com a Lemamon.dev depois da Descoberta?
   - **Resposta**: Não. Com o plano em mãos, já com prazo e preço fechados, você decide se segue para o desenvolvimento.
 - **`free_estimate`**
   - **Pergunta**: O orçamento é gratuito?
@@ -819,15 +821,15 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
   - **`answer_draft_alt`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. A propriedade do código desenvolvido para o seu projeto passa para a sua empresa conforme os pagamentos combinados em contrato são feitos. Se um dia quiser seguir com outro fornecedor, o código pago está com você.
 - **`invoice`**
   - **Pergunta**: Vocês emitem nota fiscal?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. A Lemamon emite nota fiscal de serviço para todas as etapas pagas.
+  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. A Lemamon.dev emite nota fiscal de serviço para todas as etapas pagas.
   - **`question_with_company_data`** _(variante: só quando o dado indicado existir)_: Vocês têm CNPJ e emitem nota fiscal?
-  - **`answer_with_company_data`** _(variante: só quando o dado indicado existir)_: Sim. A Lemamon emite nota fiscal de serviço para todas as etapas pagas, e o CNPJ está no rodapé do site.
+  - **`answer_with_company_data`** _(variante: só quando o dado indicado existir)_: Sim. A Lemamon.dev emite nota fiscal de serviço para todas as etapas pagas, e o CNPJ está no rodapé do site.
 - **`payment_terms`**
   - **Pergunta**: Como é feito o pagamento?
   - **`answer_with_terms`** _(variante: só quando o dado indicado existir)_: {condicoes_pagamento}
 - **`other_cities`**
   - **Pergunta**: Vocês atendem empresas de outras cidades?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. A Lemamon fica em São Paulo, SP, e atende empresas de outras cidades do Brasil a distância, com o mesmo processo: diagnóstico, Sprint de Descoberta e entregas a cada 2 semanas.
+  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. A Lemamon.dev fica em São Paulo, SP, e atende empresas de outras cidades do Brasil a distância, com o mesmo processo: diagnóstico, Sprint de Descoberta e entregas a cada 2 semanas.
 - **`nda`**
   - **Pergunta**: Vocês assinam acordo de confidencialidade (NDA)?
   - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Se o seu projeto pede sigilo, a gente assina o acordo antes de você compartilhar os detalhes. É só pedir pelo WhatsApp ou pelo e-mail lemamon.dev@gmail.com.
@@ -842,12 +844,12 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
   - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Depende do tamanho do problema. A duração é combinada com você antes de começar, junto com o valor.
   - **`answer_with_format`** _(variante: só quando o dado indicado existir)_: A Sprint de Descoberta dura {duracao_descoberta}. O valor é combinado com você antes de começar.
 - **`discovery_plan_ownership`**
-  - **Pergunta**: O plano da Descoberta é meu se eu não seguir com a Lemamon?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Tudo o que a Descoberta entrega fica com você: entendimento do problema, escopo priorizado, protótipo e plano. O escopo e o protótipo servem de base para seguir com a Lemamon ou para pedir proposta a outro fornecedor.
+  - **Pergunta**: O plano da Descoberta é meu se eu não seguir com a Lemamon.dev?
+  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Tudo o que a Descoberta entrega fica com você: entendimento do problema, escopo priorizado, protótipo e plano. O escopo e o protótipo servem de base para seguir com a Lemamon.dev ou para pedir proposta a outro fornecedor.
 - **`discovery_credit`**
   - **Pergunta**: O valor da Descoberta é abatido do desenvolvimento?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Se você seguir para o desenvolvimento com a Lemamon, o valor pago pela Sprint de Descoberta é descontado do preço do desenvolvimento.
-  - **`cost_suffix`**: Se você seguir com a Lemamon, o valor da Descoberta é descontado do desenvolvimento.
+  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Se você seguir para o desenvolvimento com a Lemamon.dev, o valor pago pela Sprint de Descoberta é descontado do preço do desenvolvimento.
+  - **`cost_suffix`**: Se você seguir com a Lemamon.dev, o valor da Descoberta é descontado do desenvolvimento.
 - **`data_migration`**
   - **Pergunta**: Vocês migram os dados da planilha ou do sistema atual?
   - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Na Sprint de Descoberta, a gente define com você quais dados precisam vir das planilhas ou do sistema antigo e como isso vai acontecer. A migração entra no escopo, prazo e preço fechados.
@@ -1274,7 +1276,7 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
     - **Resposta**: MVP (produto mínimo viável) é a menor versão do produto que já resolve o problema principal para usuários reais. Não é protótipo nem demonstração: é software funcionando, com o resto deixado para depois de propósito.
   - **`after_mvp`**
     - **Pergunta**: E depois do MVP?
-    - **Resposta**: O produto pode seguir com a Lemamon em sustentação e evolução contínua. As próximas versões são priorizadas a partir do uso real, não da lista de desejos do início.
+    - **Resposta**: O produto pode seguir com a Lemamon.dev em sustentação e evolução contínua. As próximas versões são priorizadas a partir do uso real, não da lista de desejos do início.
 - **Linha em 'outros serviços'**: A primeira versão do seu produto nas mãos de usuários reais.
 - **Texto da imagem de compartilhamento**: MVP com prazo e preço fechados
 - **CTA final**
@@ -1438,9 +1440,9 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
 - **`summary_label`**: Resumo
 - **`contact_label`**: Último passo: seu contato
 - **`live_announcement`**: Pergunta {n} de {total}: {pergunta}
-- **`document_title`**: Pergunta {n} de {total} · Orçamento | Lemamon
-- **`summary_document_title`**: Seu ponto de partida · Orçamento | Lemamon
-- **`contact_document_title`**: Seu contato · Orçamento | Lemamon
+- **`document_title`**: Pergunta {n} de {total} · Orçamento | Lemamon.dev
+- **`summary_document_title`**: Seu ponto de partida · Orçamento | Lemamon.dev
+- **`contact_document_title`**: Seu contato · Orçamento | Lemamon.dev
 
 #### Navegação · `quote.nav`
 
@@ -1714,9 +1716,9 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
 
 #### Mensagens de WhatsApp pré-preenchidas · `quote.whatsapp_messages`
 
-- **`summary_intro`**: Olá! Vi o resumo do meu projeto no site da Lemamon e quero pedir o diagnóstico gratuito. Estas são as minhas respostas:
+- **`summary_intro`**: Olá! Vi o resumo do meu projeto no site da Lemamon.dev e quero pedir o diagnóstico gratuito. Estas são as minhas respostas:
 - **`summary_closing`**: Podemos marcar a conversa?
-- **`failure_intro`**: Olá! Tentei enviar meu pedido de diagnóstico pelo site da Lemamon e não consegui. Estas são as minhas respostas:
+- **`failure_intro`**: Olá! Tentei enviar meu pedido de diagnóstico pelo site da Lemamon.dev e não consegui. Estas são as minhas respostas:
 - **`failure_closing`**: Podemos marcar o diagnóstico por aqui?
 - **`name_line`**: *Nome:* {nome}
 - **`company_line`**: *Empresa:* {empresa}
@@ -1724,10 +1726,10 @@ Recebe o 301 de `/projects` (conversão do Google Ads). Entrada estática, 6 per
 - **`answer_separator`**:  · 
 - **`ref_line`**: Código do pedido: {protocolo}
 - **`ref_line_summary`**: Código do pedido: {protocolo}
-- **`post_submit`**: Olá! Acabei de pedir o diagnóstico gratuito pelo site da Lemamon (código do pedido: {protocolo}) e queria adiantar a conversa por aqui.
-- **`post_submit_generic`**: Olá! Acabei de pedir o diagnóstico gratuito pelo site da Lemamon e queria adiantar a conversa por aqui.
-- **`entry_direct`**: Olá! Vim pela página de orçamento da Lemamon e prefiro conversar por aqui sobre o meu projeto.
-- **`wizard_question`**: Olá! Estou preenchendo o pedido de diagnóstico no site da Lemamon e tenho uma dúvida.
+- **`post_submit`**: Olá! Acabei de pedir o diagnóstico gratuito pelo site da Lemamon.dev (código do pedido: {protocolo}) e queria adiantar a conversa por aqui.
+- **`post_submit_generic`**: Olá! Acabei de pedir o diagnóstico gratuito pelo site da Lemamon.dev e queria adiantar a conversa por aqui.
+- **`entry_direct`**: Olá! Vim pela página de orçamento da Lemamon.dev e prefiro conversar por aqui sobre o meu projeto.
+- **`wizard_question`**: Olá! Estou preenchendo o pedido de diagnóstico no site da Lemamon.dev e tenho uma dúvida.
 - **`wrong_contact`** _(pós-envio, "Algum dado errado?")_: Olá! O contato do meu pedido {protocolo} saiu errado. O certo é:
 
 ### Pedido enviado (`/orcamento/enviado`)
@@ -1778,8 +1780,8 @@ Página de confirmação (noindex).
   - **`copy`**: Copiar resumo
   - **`copy_help`**: Para repassar a quem participa da decisão.
   - **`copied`**: Resumo copiado.
-  - **`copy_header`**: Pedido de diagnóstico gratuito na Lemamon (45 minutos de conversa, com devolutiva por escrito) · código {protocolo}
-  - **`copy_footer`**: Lemamon · software sob medida com escopo, prazo e preço combinados antes de começar e entregas a cada 2 semanas. Como funciona: {url_metodo}
+  - **`copy_header`**: Pedido de diagnóstico gratuito na Lemamon.dev (45 minutos de conversa, com devolutiva por escrito) · código {protocolo}
+  - **`copy_footer`**: Lemamon.dev · software sob medida com escopo, prazo e preço combinados antes de começar e entregas a cada 2 semanas. Como funciona: {url_metodo}
 - **`meanwhile`**
   - **Título**: Enquanto isso
   - **`discovery_link`**: Entenda a Sprint de Descoberta
@@ -1793,7 +1795,7 @@ Página de confirmação (noindex).
 #### Contato · `contact`
 
 - **Hero**
-  - **Título**: Fale com a Lemamon
+  - **Título**: Fale com a Lemamon.dev
   - **Subtítulo**: Projeto novo ou sistema no ar? Comece pelo diagnóstico gratuito: 6 perguntas, o resumo na hora e 45 minutos de conversa. Para outros assuntos, escolha o canal.
   - **`subtitle_new_only_variant`** _(variante)_: Para projeto novo, comece pelo diagnóstico gratuito: 6 perguntas, o resumo na hora e 45 minutos de conversa. Para outros assuntos, escolha o canal.
 - **`channels`**
@@ -1809,7 +1811,7 @@ Página de confirmação (noindex).
     - **Título**: E-mail
     - **Texto**: Para enviar documentos ou um assunto com mais detalhes.
     - **`text_with_nda`** _(variante: só quando o dado indicado existir)_: Para enviar NDA, documentos ou um assunto com mais detalhes.
-  - **Localização**: Lemamon · software sob medida · São Paulo, SP, Brasil
+  - **Localização**: Lemamon.dev · software sob medida · São Paulo, SP, Brasil
 - **`form`**
   - **Título**: Prefere escrever?
   - **Campos**
@@ -1904,7 +1906,7 @@ Página de confirmação (noindex).
 
 - **Hero**
   - **Sobretítulo**: Desenvolvimento de software sob medida
-  - **Título**: Quem é a Lemamon
+  - **Título**: Quem é a Lemamon.dev
 - **`beliefs`**
   - **Título**: No que a gente acredita
   - **Itens**
@@ -1923,7 +1925,7 @@ Página de confirmação (noindex).
 - **`story`**
   - **Título**: Por que a gente trabalha assim
 - **`team`**
-  - **Título**: Quem trabalha nos projetos da Lemamon
+  - **Título**: Quem trabalha nos projetos da Lemamon.dev
 - **`company`**
   - **Título**: Dados da empresa
   - **`legal_name`**: Razão social
@@ -1981,8 +1983,8 @@ Página de confirmação (noindex).
 #### Quem trata os seus dados · `privacy.sections.controller`
 
 - **Título**: Quem trata os seus dados
-- **Corpo**: O controlador dos dados pessoais tratados neste site é {razao_social}, CNPJ {cnpj}, responsável pela Lemamon (lemamon.dev), de São Paulo, SP. Para qualquer assunto sobre os seus dados, inclusive para exercer os seus direitos, escreva para {email}.
-- **`body_individual`**: O controlador dos dados pessoais tratados neste site é {nome_do_responsavel}, responsável pela Lemamon (lemamon.dev), de São Paulo, SP. Para qualquer assunto sobre os seus dados, inclusive para exercer os seus direitos, escreva para {email}.
+- **Corpo**: O controlador dos dados pessoais tratados neste site é {razao_social}, CNPJ {cnpj}, responsável pela Lemamon.dev (lemamon.dev), de São Paulo, SP. Para qualquer assunto sobre os seus dados, inclusive para exercer os seus direitos, escreva para {email}.
+- **`body_individual`**: O controlador dos dados pessoais tratados neste site é {nome_do_responsavel}, responsável pela Lemamon.dev (lemamon.dev), de São Paulo, SP. Para qualquer assunto sobre os seus dados, inclusive para exercer os seus direitos, escreva para {email}.
 - **`dpo`**: O encarregado pelo tratamento de dados pessoais é {nome_do_encarregado}, que atende pelo e-mail {email_do_encarregado}.
 
 #### Dados que você informa · `privacy.sections.data_collected`
@@ -2007,7 +2009,7 @@ Página de confirmação (noindex).
 - **Itens**
   - **`ga4`**: Google Analytics 4: mostra como o site é usado, por exemplo: páginas visitadas, botões clicados, etapas do formulário, tipo de aparelho e região aproximada. Quando um pedido de orçamento é enviado, o Google Analytics também recebe as respostas de múltipla escolha e a classificação automática do pedido, sem nome nem contato.
   - **`google_ads`**: Google Ads: usa cookies para ligar a sua visita ao anúncio em que você clicou e para registrar quando um pedido é enviado. Se o pedido veio de um anúncio, o identificador desse clique segue junto com ele e pode ser usado para informar ao Google Ads como o pedido evoluiu, para medir o resultado da campanha.
-  - **`google_ads_with_remarketing`** _(variante: só quando o dado indicado existir)_: Google Ads: usa cookies para ligar a sua visita ao anúncio em que você clicou, para registrar quando um pedido é enviado e para mostrar anúncios da Lemamon a quem já visitou o site. Se o pedido veio de um anúncio, o identificador desse clique segue junto com ele e pode ser usado para informar ao Google Ads como o pedido evoluiu, para medir o resultado da campanha.
+  - **`google_ads_with_remarketing`** _(variante: só quando o dado indicado existir)_: Google Ads: usa cookies para ligar a sua visita ao anúncio em que você clicou, para registrar quando um pedido é enviado e para mostrar anúncios da Lemamon.dev a quem já visitou o site. Se o pedido veio de um anúncio, o identificador desse clique segue junto com ele e pode ser usado para informar ao Google Ads como o pedido evoluiu, para medir o resultado da campanha.
   - **`new_relic`**: New Relic Browser: mede a velocidade e os erros das páginas e pode gravar uma reprodução de parte das visitas para encontrar falhas. Os formulários do site ficam fora dessas gravações, e nelas todo o texto da página e tudo o que você digita ficam mascarados.
 - **`hosting_logs`**: Além da medição, a Netlify, que hospeda o site, registra dados técnicos de cada acesso, como o endereço IP, o navegador e a página aberta, para operar e proteger o site.
 - **`controls`**: Você pode bloquear cookies nas configurações do seu navegador, e o site continua funcionando.
@@ -2030,7 +2032,7 @@ Página de confirmação (noindex).
   - **`service_order_with_routing`** _(variante: só quando o dado indicado existir)_: Organizar a ordem e a forma de atendimento dos pedidos. As respostas de múltipla escolha geram uma classificação automática de cada pedido, usada para isso.
   - **`follow_up`**: Retomar o contato se a conversa não chegar a ser marcada e responder a mensagens sobre outros assuntos.
   - **`attribution`**: Saber como você chegou ao site, por exemplo por um anúncio ou uma campanha. Isso inclui informar ao Google Ads que um pedido foi enviado depois de um clique em anúncio e como esse pedido evoluiu.
-  - **`remarketing`**: Mostrar anúncios da Lemamon a quem já visitou o site.
+  - **`remarketing`**: Mostrar anúncios da Lemamon.dev a quem já visitou o site.
   - **`site`**: Entender como o site é usado, corrigir erros e medir o resultado dos anúncios, com os dados de navegação.
 - **Fechamento**: Não vendemos dados pessoais.
 
@@ -2040,11 +2042,11 @@ Página de confirmação (noindex).
 - **Corpo**: Cada uso dos dados tem uma base legal na LGPD:
 - **Itens**
   - **Diagnóstico**: Atender ao seu pedido de diagnóstico e enviar a devolutiva e a proposta: procedimentos preliminares a um eventual contrato, feitos a seu pedido (art. 7º, V).
-  - **`service_order`**: Organizar a ordem de atendimento, retomar o contato, responder a mensagens sobre outros assuntos e saber como o pedido chegou até a gente: legítimo interesse da Lemamon (art. 7º, IX).
+  - **`service_order`**: Organizar a ordem de atendimento, retomar o contato, responder a mensagens sobre outros assuntos e saber como o pedido chegou até a gente: legítimo interesse da Lemamon.dev (art. 7º, IX).
   - **`site_measurement`**: Medir o uso do site e corrigir erros: legítimo interesse (art. 7º, IX).
-  - **`ads_measurement`**: Medir o resultado dos anúncios com cookies do Google Ads e informar ao Google Ads como evoluiu um pedido que veio de anúncio: legítimo interesse da Lemamon (art. 7º, IX).
+  - **`ads_measurement`**: Medir o resultado dos anúncios com cookies do Google Ads e informar ao Google Ads como evoluiu um pedido que veio de anúncio: legítimo interesse da Lemamon.dev (art. 7º, IX).
   - **`ads_measurement_with_consent`** _(variante: só quando o dado indicado existir)_: Medir o resultado dos anúncios com cookies do Google Ads e informar ao Google Ads como evoluiu um pedido que veio de anúncio: o seu consentimento, dado no aviso de cookies (art. 7º, I). Você pode retirá-lo quando quiser em {preferencias_de_cookies}.
-  - **`remarketing`**: Mostrar anúncios da Lemamon a quem já visitou o site: o seu consentimento, dado no aviso de cookies (art. 7º, I).
+  - **`remarketing`**: Mostrar anúncios da Lemamon.dev a quem já visitou o site: o seu consentimento, dado no aviso de cookies (art. 7º, I).
   - **`contract`**: Se um contrato for assinado: execução do contrato e cumprimento de obrigações legais (art. 7º, V e II).
 - **Fechamento**: Quando a base é o legítimo interesse, você pode se opor ao tratamento escrevendo para {email}.
 
@@ -2056,10 +2058,10 @@ Página de confirmação (noindex).
   - **`netlify`**: Netlify: hospedagem do site e recebimento dos formulários.
   - **`google_analytics`**: Google Analytics: medição do uso do site.
   - **`google_ads`**: Google Ads: medição do resultado dos anúncios. O Google também trata parte desses dados sob a política de privacidade dele.
-  - **E-mail**: Gmail: o e-mail da Lemamon. É um serviço do Google, que trata os dados também sob a política de privacidade dele.
-  - **`email_with_workspace`** _(variante: só quando o dado indicado existir)_: Google Workspace: o e-mail da Lemamon.
+  - **E-mail**: Gmail: o e-mail da Lemamon.dev. É um serviço do Google, que trata os dados também sob a política de privacidade dele.
+  - **`email_with_workspace`** _(variante: só quando o dado indicado existir)_: Google Workspace: o e-mail da Lemamon.dev.
   - **`new_relic`**: New Relic: desempenho e erros do site.
-- **WhatsApp**: Se você falar com a gente pelo WhatsApp, a conversa passa pelo WhatsApp, serviço da Meta: a Lemamon recebe o que você envia, e a Meta trata os dados da conversa sob a política de privacidade dela.
+- **WhatsApp**: Se você falar com a gente pelo WhatsApp, a conversa passa pelo WhatsApp, serviço da Meta: a Lemamon.dev recebe o que você envia, e a Meta trata os dados da conversa sob a política de privacidade dela.
 - **Fechamento**: Esses fornecedores e o WhatsApp armazenam dados fora do Brasil, principalmente nos Estados Unidos. Também compartilhamos dados quando a lei ou uma autoridade competente exigir.
 - **`closing_with_mechanism`** _(variante: só quando o dado indicado existir)_: Esses fornecedores e o WhatsApp armazenam dados fora do Brasil, principalmente nos Estados Unidos, com base em {mecanismo_transferencia} (LGPD, art. 33). Também compartilhamos dados quando a lei ou uma autoridade competente exigir.
 
@@ -2126,7 +2128,7 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 
 #### Cabeçalho · `shared.header`
 
-- **`logo_label`**: Lemamon, página inicial
+- **`logo_label`**: Lemamon.dev, página inicial
 - **`nav`**
   - **`services`**: Serviços
   - **`how_we_work`**: Como trabalhamos
@@ -2149,7 +2151,7 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 
 - **`progress`**: Pergunta {n} de {total}
 - **`help_whatsapp`**: Dúvidas? WhatsApp
-- **`logo_label_saved`**: Lemamon, voltar à página inicial
+- **`logo_label_saved`**: Lemamon.dev, voltar à página inicial
 - **`logo_saved_hint`**: Suas respostas ficam salvas neste navegador.
 
 #### Rodapé · `shared.footer`
@@ -2157,7 +2159,7 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 - **`tagline`**: Software sob medida com escopo, prazo e preço combinados antes de começar.
 - **Localização**: São Paulo, SP, Brasil
 - **`col_services`**: Serviços
-- **`col_company`**: Lemamon
+- **`col_company`**: Lemamon.dev
 - **`col_contact`**: Fale com a gente
 - **`links`**
   - **`discovery_sprint`**: Sprint de Descoberta
@@ -2173,7 +2175,7 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
   - **`linkedin`**: LinkedIn
   - **`github`**: GitHub
   - **`medium`**: Medium
-- **`copyright`**: © {ano} Lemamon
+- **`copyright`**: © {ano} Lemamon.dev
 - **`company_id`**: {razao_social} · CNPJ {cnpj}
 
 > Com `hasCompanyData` (ligado desde 20/10/2026, D39) sai "Lemamon.dev LTDA · CNPJ 69.700.690/0001-98": na barra inferior do rodapé e, no rodapé mínimo do /orcamento, numa linha própria.
@@ -2204,11 +2206,11 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 #### Mensagens de WhatsApp por página · `shared.whatsapp`
 
 - **`floating_label`**: Falar no WhatsApp
-- **`message_page`**: Olá! Vim pelo site da Lemamon, na página “{pagina}”, e quero conversar sobre um projeto.
-- **`message_home`**: Olá! Vim pelo site da Lemamon e quero conversar sobre um projeto.
-- **`message_service`**: Olá! Vim pela página de {servico_frase} da Lemamon e quero conversar sobre o meu caso.
+- **`message_page`**: Olá! Vim pelo site da Lemamon.dev, na página “{pagina}”, e quero conversar sobre um projeto.
+- **`message_home`**: Olá! Vim pelo site da Lemamon.dev e quero conversar sobre um projeto.
+- **`message_service`**: Olá! Vim pela página de {servico_frase} da Lemamon.dev e quero conversar sobre o meu caso.
 - **`message_case`**: Olá! Vim pelo case {case} e quero algo parecido.
-- **`message_contact`**: Olá! Vim pela página de contato da Lemamon. O assunto é:
+- **`message_contact`**: Olá! Vim pela página de contato da Lemamon.dev. O assunto é:
 
 #### Barra fixa (mobile) · `shared.sticky_bar`
 
@@ -2276,7 +2278,7 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 #### Prova (cases, depoimentos, logos, time) · `shared.proof`
 > **Condicional:** rótulos de cases, depoimentos, logos e time; cada um só com o dado correspondente.
 
-- **`logos_label`**: Empresas que já trabalharam com a Lemamon
+- **`logos_label`**: Empresas que já trabalharam com a Lemamon.dev
 - **`logo_alt`** _(alternativa ao rascunho, para o dono escolher)_: {empresa}
 - **`testimonial_hidden_title`**: Depoimentos de clientes
 - **`case_card`**
@@ -2286,7 +2288,7 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
   - **`delivered_label`**: O que foi entregue
   - **`result_label`**: O resultado
 - **`team_card`**
-  - **`photo_alt`** _(alternativa ao rascunho, para o dono escolher)_: {nome}, {papel} na Lemamon
+  - **`photo_alt`** _(alternativa ao rascunho, para o dono escolher)_: {nome}, {papel} na Lemamon.dev
   - **`linkedin`**: LinkedIn de {nome}
   - **`github`**: GitHub de {nome}
 
@@ -2298,7 +2300,7 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
   - **Texto**: O código que a gente publica, para quem vai avaliar a parte técnica.
 - **`linkedin`**
   - **Nome**: LinkedIn
-  - **Texto**: A Lemamon no LinkedIn: o que a gente faz e publica.
+  - **Texto**: A Lemamon.dev no LinkedIn: o que a gente faz e publica.
 - **`medium`**
   - **Nome**: Medium
   - **Texto**: Os artigos que a gente escreve.
@@ -2354,8 +2356,8 @@ O que aparece no Google e na prévia de links (WhatsApp, LinkedIn). Title até 6
 
 #### Metadados · `meta`
 
-- **Nome do site**: Lemamon
-- **Descrição da organização**: Lemamon, de São Paulo, SP, desenvolve software sob medida para empresas e startups: sistemas web, aplicativos, integrações, MVPs e sustentação, com escopo, prazo e preço combinados antes de começar.
+- **Nome do site**: Lemamon.dev
+- **Descrição da organização**: Lemamon.dev, de São Paulo, SP, desenvolve software sob medida para empresas e startups: sistemas web, aplicativos, integrações, MVPs e sustentação, com escopo, prazo e preço combinados antes de começar.
 - **`default_og_image_alt`** _(alternativa ao rascunho, para o dono escolher)_: lemamon.dev: software sob medida com escopo, prazo e preço fechados. Diagnóstico gratuito de 45 minutos. Para PMEs e startups. São Paulo, SP.
 - **`default_og_image_text`**
   - **`brand`**: lemamon.dev
@@ -2363,66 +2365,66 @@ O que aparece no Google e na prévia de links (WhatsApp, LinkedIn). Title até 6
   - **`support_line`**: Diagnóstico gratuito de 45 minutos
   - **`audience_line`**: Para PMEs e startups · São Paulo, SP
 - **`home`**
-  - **Título**: Desenvolvimento de software sob medida em São Paulo | Lemamon
+  - **Título**: Desenvolvimento de software sob medida em São Paulo | Lemamon.dev
   - **Descrição**: Software sob medida: sistemas, apps, integrações e MVPs com escopo, prazo e preço fechados antes de construir. Peça o diagnóstico gratuito de 45 minutos.
 - **`how_we_work`**
-  - **Título**: Desenvolvimento de software com preço fechado | Lemamon
+  - **Título**: Desenvolvimento de software com preço fechado | Lemamon.dev
   - **Descrição**: Escopo, prazo e preço fechados antes de construir: diagnóstico gratuito de 45 min e Sprint de Descoberta. Depois, entregas a cada 2 semanas e sustentação.
 - **`discovery_sprint`**
-  - **Título**: Sprint de Descoberta: do problema ao preço fechado | Lemamon
+  - **Título**: Sprint de Descoberta: do problema ao preço fechado | Lemamon.dev
   - **Descrição**: A etapa em que o seu problema vira escopo priorizado, protótipo e plano com prazo e preço fechados. Discovery de produto paga, após o diagnóstico gratuito.
 - **`services_hub`**
-  - **Título**: Serviços de desenvolvimento de software | Lemamon
+  - **Título**: Serviços de desenvolvimento de software | Lemamon.dev
   - **Descrição**: Sistemas web, aplicativos, integrações e MVPs com escopo, prazo e preço combinados antes de começar, e sustentação e evolução depois que entram no ar.
 - **`services_web_systems`**
-  - **Título**: Desenvolvimento de sistemas para empresas | Lemamon
+  - **Título**: Desenvolvimento de sistemas para empresas | Lemamon.dev
   - **Descrição**: Sistema de gestão, ERP, CRM, painéis e portal do cliente feitos para o processo da sua empresa, com escopo, prazo e preço fechados antes de construir.
 - **`services_mobile_apps`**
-  - **Título**: Desenvolvimento de aplicativo sob medida | Lemamon
+  - **Título**: Desenvolvimento de aplicativo sob medida | Lemamon.dev
   - **Descrição**: Criar aplicativo para a sua empresa: iOS e Android para clientes ou equipe, com protótipo e preço fechado antes de construir e entregas a cada 2 semanas.
 - **`services_integrations`**
-  - **Título**: Integração de sistemas e automação de processos | Lemamon
+  - **Título**: Integração de sistemas e automação de processos | Lemamon.dev
   - **Descrição**: Integração de sistemas e automação: ERP, e-commerce, pagamento e CRM trocando dados sozinhos. Escopo, prazo e preço combinados antes de começar.
 - **`services_mvp`**
-  - **Título**: Desenvolvimento de MVP com prazo e preço fechados | Lemamon
+  - **Título**: Desenvolvimento de MVP com prazo e preço fechados | Lemamon.dev
   - **Descrição**: Desenvolvimento de MVP para startups: a primeira versão do produto nas mãos de usuários reais, com prazo e preço fechados e entregas a cada 2 semanas.
 - **`services_support`**
-  - **Título**: Manutenção de software: sustentação e evolução | Lemamon
+  - **Título**: Manutenção de software: sustentação e evolução | Lemamon.dev
   - **Descrição**: Correções, atualizações e novas funcionalidades para o seu sistema no ar. No diagnóstico gratuito, a gente avalia com você se a sustentação faz sentido.
 - **`pricing`**
-  - **Título**: Quanto custa desenvolver um sistema ou aplicativo? | Lemamon
+  - **Título**: Quanto custa desenvolver um sistema ou aplicativo? | Lemamon.dev
   - **Descrição**: O que pesa no preço de um sistema ou aplicativo, como comparar propostas e como chegar a escopo, prazo e preço fechados antes do desenvolvimento.
 - **`quote`**
-  - **Título**: Orçamento de software: diagnóstico gratuito | Lemamon
+  - **Título**: Orçamento de software: diagnóstico gratuito | Lemamon.dev
   - **Descrição**: Orçamento de desenvolvimento de software: 6 perguntas, o resumo antes do contato e diagnóstico gratuito de 45 minutos. O preço sai da Sprint de Descoberta.
 - **`quote_sent`**
-  - **Título**: Pedido recebido | Lemamon
-  - **Descrição**: Seu pedido de diagnóstico gratuito chegou à Lemamon. Veja o que acontece agora e como aproveitar os 45 minutos de conversa.
+  - **Título**: Pedido recebido | Lemamon.dev
+  - **Descrição**: Seu pedido de diagnóstico gratuito chegou à Lemamon.dev. Veja o que acontece agora e como aproveitar os 45 minutos de conversa.
 - **`contact`**
-  - **Título**: Contato | Lemamon · software sob medida em São Paulo
-  - **Descrição**: Contato da Lemamon: WhatsApp, e-mail e um formulário curto. Para projeto novo, comece pelo diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
-  - **`description_no_whatsapp`** _(variante sem WhatsApp configurado)_: Contato da Lemamon: e-mail e um formulário curto. Para projeto novo, comece pelo diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
+  - **Título**: Contato | Lemamon.dev · software sob medida em São Paulo
+  - **Descrição**: Contato da Lemamon.dev: WhatsApp, e-mail e um formulário curto. Para projeto novo, comece pelo diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
+  - **`description_no_whatsapp`** _(variante sem WhatsApp configurado)_: Contato da Lemamon.dev: e-mail e um formulário curto. Para projeto novo, comece pelo diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
 - **`cases_hub`**
-  - **Título**: Cases de desenvolvimento de software | Lemamon
+  - **Título**: Cases de desenvolvimento de software | Lemamon.dev
   - **Descrição**: Projetos de software sob medida: o problema de cada cliente, o que foi combinado, o que foi entregue e, quando o cliente autoriza, o resultado.
 - **`case_template`**
-  - **Título**: {tipo_de_sistema} para {cliente_ou_setor} | Lemamon
+  - **Título**: {tipo_de_sistema} para {cliente_ou_setor} | Lemamon.dev
   - **Descrição**: {cliente_ou_setor}: {problema_resolvido}. O que foi combinado, o que foi entregue e como foi o projeto.
 - **`about`**
-  - **Título**: Lemamon: desenvolvimento de software em São Paulo
-  - **Descrição**: Quem faz a Lemamon, empresa de desenvolvimento de software em São Paulo, SP, e por que a gente combina escopo, prazo e preço antes de construir.
+  - **Título**: Lemamon.dev: desenvolvimento de software em São Paulo
+  - **Descrição**: Quem faz a Lemamon.dev, empresa de desenvolvimento de software em São Paulo, SP, e por que a gente combina escopo, prazo e preço antes de construir.
 - **`blog_hub`**
-  - **Título**: Blog: como contratar e avaliar software | Lemamon
+  - **Título**: Blog: como contratar e avaliar software | Lemamon.dev
   - **Descrição**: Artigos escritos por quem constrói software, para quem vai contratar um projeto e para quem precisa avaliá-lo tecnicamente.
 - **`blog_post_template`**
-  - **Título**: {titulo_do_post} | Lemamon
+  - **Título**: {titulo_do_post} | Lemamon.dev
   - **Descrição**: {resumo}
 - **`privacy`**
-  - **Título**: Política de Privacidade | Lemamon
-  - **Descrição**: Como a Lemamon trata os dados que você informa nos formulários e os dados de navegação do site, e como exercer os seus direitos pela LGPD.
+  - **Título**: Política de Privacidade | Lemamon.dev
+  - **Descrição**: Como a Lemamon.dev trata os dados que você informa nos formulários e os dados de navegação do site, e como exercer os seus direitos pela LGPD.
 - **`not_found`**
-  - **Título**: Página não encontrada | Lemamon
-  - **Descrição**: Esta página não existe ou mudou de endereço. Veja os caminhos para os serviços, o método e o diagnóstico gratuito da Lemamon.
+  - **Título**: Página não encontrada | Lemamon.dev
+  - **Descrição**: Esta página não existe ou mudou de endereço. Veja os caminhos para os serviços, o método e o diagnóstico gratuito da Lemamon.dev.
 
 ---
 
@@ -2473,7 +2475,7 @@ As listas abaixo vieram dos revisores. Algumas foram escritas na rodada 3 e marc
 
 | Página | No ar | Variações |
 |---|---|---|
-| Hub | Serviços de desenvolvimento de software para empresas | O que a Lemamon desenvolve, com escopo, prazo e preço fechados · Desenvolvimento de software sob medida: sistemas, apps e integrações |
+| Hub | Serviços de desenvolvimento de software para empresas | O que a Lemamon.dev desenvolve, com escopo, prazo e preço fechados · Desenvolvimento de software sob medida: sistemas, apps e integrações |
 | Sistemas web | Desenvolvimento de sistemas web sob medida para empresas | Sistema sob medida para o jeito que a sua empresa trabalha · Desenvolvimento de sistemas para empresas, com preço fechado antes de começar |
 | Aplicativos | Desenvolvimento de aplicativos sob medida para empresas | Aplicativo sob medida para a sua empresa, com preço fechado antes de programar · Criar aplicativo para empresa, com escopo, prazo e preço fechados antes |
 | Integrações | Integração de sistemas e automação de processos | Integração de sistemas: cada informação digitada uma vez só · Integração de sistemas e automação, com escopo, prazo e preço fechados antes |
@@ -2493,7 +2495,7 @@ As listas abaixo vieram dos revisores. Algumas foram escritas na rodada 3 e marc
 
 | Onde | No ar | Variações |
 |---|---|---|
-| Title da Home (resultado do Google) | Desenvolvimento de software sob medida \| Lemamon (48 caracteres, keyword exata) | Software sob medida com prazo e preço fechados \| Lemamon · Software sob medida: escopo, prazo e preço fechados (sem marca, 51) · Software sob medida com preço fechado antes de começar (sem marca, 54) · Desenvolvimento de software sob medida com preço fechado (sem marca, 56; disputa a keyword de Como trabalhamos) |
+| Title da Home (resultado do Google) | Desenvolvimento de software sob medida \| Lemamon.dev (48 caracteres, keyword exata) | Software sob medida com prazo e preço fechados \| Lemamon.dev · Software sob medida: escopo, prazo e preço fechados (sem marca, 51) · Software sob medida com preço fechado antes de começar (sem marca, 54) · Desenvolvimento de software sob medida com preço fechado (sem marca, 56; disputa a keyword de Como trabalhamos) |
 | Título do CTA final padrão | Comece por 45 minutos de conversa | O primeiro passo é gratuito: 45 minutos · Antes de qualquer preço, 45 minutos de conversa · Seu caso, 45 minutos, devolutiva por escrito |
 | Tag da Descoberta na linha do método | Paga · valor combinado antes | Paga (texto-guia do BLUEPRINT) |
 | Item do menu de serviços | Antes de construir: Sprint de Descoberta | Todo projeto passa por aqui: Sprint de Descoberta |
@@ -2511,7 +2513,7 @@ Lista consolidada dos 5 documentos, na ordem de alavancagem (BLUEPRINT §14 e no
 - **Home:** completar a resposta do par "preço que só cresce" com "se o escopo mudar, escopo, prazo e preço são combinados de novo antes de seguir" e mostrar a pergunta `scope_change` no FAQ.
 - **Faixa "Onde você decide"** (`shared.decision_points`): um terceiro ponto, "Se o escopo mudar, escopo, prazo e preço são combinados de novo antes de seguir".
 - **/como-trabalhamos:** publicar a pergunta no FAQ e acrescentar à tabela comparativa a linha "Mudança de escopo" (sem combinado: vira briga ou aditivo surpresa; com o método: tudo combinado de novo antes de seguir).
-- **/quanto-custa:** a pergunta "O que acontece se o escopo mudar?" volta à régua de comparação, com a resposta da Lemamon já escrita. Hoje ela fica fora para a régua não reprovar a própria Lemamon.
+- **/quanto-custa:** a pergunta "O que acontece se o escopo mudar?" volta à régua de comparação, com a resposta da Lemamon.dev já escrita. Hoje ela fica fora para a régua não reprovar a própria Lemamon.dev.
 - **Serviços MVP e Sistemas web:** "E se eu precisar mudar o escopo?" ao lado da pergunta sobre o que entra na primeira versão.
 
 ### 4.2 Propriedade do código (`confirmacoes.codigoProprietario`)
@@ -2546,7 +2548,7 @@ Marcar só os perfis com conteúdo público recente. Libera "Confira antes de co
 
 - **Duração (`duracaoDescoberta` ou `descoberta.ts` com `hasDiscoveryFormat`):** a duração entra no subtítulo de /sprint-de-descoberta, no texto da etapa 2, na description da página e no FAQ "Quanto dura?"; libera a seção "Como ela acontece". Na página de MVP, "Quanto tempo leva um MVP?" pode citar a duração, argumento forte para quem tem data de captação.
 - **Valor abatido do desenvolvimento (`descobertaAbatida`):** a tag passa a "Paga · abatida do desenvolvimento" e o custo da etapa 2 ganha "abatido do desenvolvimento se você seguir". Responde "por que pagar antes?".
-- **O plano é do cliente (`planoDoCliente`):** "e ficam com você, mesmo que não siga com a Lemamon" nos entregáveis e em "Antes e depois da Descoberta". É o argumento mais forte para justificar a Descoberta ao sócio.
+- **O plano é do cliente (`planoDoCliente`):** "e ficam com você, mesmo que não siga com a Lemamon.dev" nos entregáveis e em "Antes e depois da Descoberta". É o argumento mais forte para justificar a Descoberta ao sócio.
 - **Começar sem Descoberta (`semDescoberta`):** "nesta ordem" ganha a ressalva "em alguns casos, a Descoberta pode ser dispensada"; publica `skip_discovery` e uma linha para quem já chega com escopo ("Já tem escopo definido? Dá para começar pelo plano"). Atende o Marcos.
 
 ### 4.7 Preço e qualificação
@@ -2566,7 +2568,7 @@ Marcar só os perfis com conteúdo público recente. Libera "Confira antes de co
 
 - **Cases (`hasCases`, pelo menos 2):** seção Cases da Home, /cases e cada case, "O método na prática" em /como-trabalhamos, casos relacionados por serviço e no pós-envio. Os perfis de "Para quem é" da Sprint podem citar um exemplo real. Com 3 ou mais cases num serviço, dá para testar um H1 com prova verificável (só números reais).
 - **Depoimentos (`hasTestimonials`, nominais):** um depoimento sobre previsibilidade logo depois do método na Home.
-- **Logos (`hasLogos`, pelo menos 4 autorizados):** faixa abaixo dos compromissos, com o rótulo "Empresas que já trabalharam com a Lemamon".
+- **Logos (`hasLogos`, pelo menos 4 autorizados):** faixa abaixo dos compromissos, com o rótulo "Empresas que já trabalharam com a Lemamon.dev".
 
 ### 4.10 Abrangência e outras confirmações
 
@@ -2574,10 +2576,10 @@ Marcar só os perfis com conteúdo público recente. Libera "Confira antes de co
 - **Sistema feito por outra empresa (`sistemaTerceiros`):** publica `third_party_system` na Sustentação; a sustentação e a opção do wizard "Preciso de quem cuide de um sistema que já está no ar" podem dizer explicitamente que o sistema pode ter sido feito por outra empresa. Muda o texto dos anúncios de "manutenção de sistema".
 - **NDA (`nda`):** FAQ em /como-trabalhamos e /contato; assunto "NDA ou questionário de segurança" no formulário de contato.
 - **Migração de dados (`migracaoDados`):** FAQ em Sistemas web, e o fator "Dados de planilhas ou sistemas antigos" passa a dizer quem migra.
-- **Publicação nas lojas:** se a Lemamon sempre publica, "pode incluir" vira afirmação.
+- **Publicação nas lojas:** se a Lemamon.dev sempre publica, "pode incluir" vira afirmação.
 - **Chatbot no WhatsApp oficial:** confirmar antes de manter "no WhatsApp" no exemplo de Integrações e antes de anunciar para "chatbot whatsapp para empresas".
 - **Prazos típicos de desenvolvimento:** se você confirmar, permitem uma variante de H1 ou subtítulo com faixa de prazo para MVP e apps.
-- **Time do cliente (`timeDoCliente`, sugerida):** responder se a Lemamon trabalha junto com o time de tecnologia do cliente, pergunta do Marcos sem resposta hoje.
+- **Time do cliente (`timeDoCliente`, sugerida):** responder se a Lemamon.dev trabalha junto com o time de tecnologia do cliente, pergunta do Marcos sem resposta hoje.
 - **E-mail em domínio próprio:** troca `lemamon.dev@gmail.com` em todo o copy e simplifica a seção de fornecedores da Política.
 - **GA4 instalado de fato:** confirmar ou remover o parágrafo do Google Analytics na Política.
 
@@ -2611,9 +2613,9 @@ As respostas abaixo são da rodada 3 (v3). Os bloqueios que elas citam foram cor
 | Cláudia | 8 | Sim | Conversa gratuita, devolutiva para mostrar ao sócio e sem compromisso. O que mais deu confiança: preço combinado antes e sistema funcionando a cada 2 semanas. Perguntaria preço aproximado, custo e duração da Descoberta, CNPJ e nota, quem são as pessoas e se já fizeram algo no setor dela. |
 | Marcos | 6,5 | Ainda não | Nada na página deixa conferir quem está do outro lado (cases, time, perfis e CNPJ fora do ar). Abriria o GitHub e "Ver cada etapa em detalhe"; chamaria se houvesse trabalho público recente e respostas sobre código e mudança de escopo. |
 | Comercial | 7,5 | Sim (Cláudia e Rafael) | A Cláudia se reconhece nos cards e em "antes de qualquer gasto"; o Rafael, no card do fundador e no MVP. O Marcos chega por Como trabalhamos e pelo GitHub, como previsto. Segura: nenhuma prova antes dos dados. |
-| UX writer | 8 | Sim | A Cláudia entende o método sem jargão e vê que o primeiro passo é gratuito; o Rafael encontra "startups", MVP e o preço fechado. Sugeriu deixar explícito que a Lemamon continua depois do lançamento. |
+| UX writer | 8 | Sim | A Cláudia entende o método sem jargão e vê que o primeiro passo é gratuito; o Rafael encontra "startups", MVP e o preço fechado. Sugeriu deixar explícito que a Lemamon.dev continua depois do lançamento. |
 | SEO | 8,5 | Sim | A página leva do problema ao método e ao diagnóstico sem prometer o que não pode cumprir. Pesam o texto do link "quanto custa" e a prévia no WhatsApp. |
-| Compliance | 7,5 | Sim (Cláudia), provavelmente (Rafael), talvez (Marcos) | A promessa de combinar antes tira o medo de "pagar, atrasar e não funcionar". Bloqueava a leitura de que a Lemamon assume sistema de terceiros e o plural no time (corrigidos). |
+| Compliance | 7,5 | Sim (Cláudia), provavelmente (Rafael), talvez (Marcos) | A promessa de combinar antes tira o medo de "pagar, atrasar e não funcionar". Bloqueava a leitura de que a Lemamon.dev assume sistema de terceiros e o plural no time (corrigidos). |
 
 **Método e preço** (/como-trabalhamos, /sprint-de-descoberta, /quanto-custa e FAQ)
 
@@ -2622,7 +2624,7 @@ As respostas abaixo são da rodada 3 (v3). Os bloqueios que elas citam foram cor
 | Rafael | 7,5 | Sim, pelo WhatsApp | Risco quase zero, e o método responde "como não ser enganado no preço". Perguntaria quem constrói, ordem de grandeza e duração da Descoberta, se o código é dele e o que acontece se o escopo mudar. Quase fechou a aba quando a régua de /quanto-custa respondia "leve para o diagnóstico" (corrigido). |
 | Cláudia | 7,5 | Sim, pelo WhatsApp | Gratuito, 45 minutos e algo por escrito para o sócio. Perguntaria custo da Descoberta, CNPJ e nota, código, pagamento e mudança de escopo. O que mais a moveria: a faixa da Descoberta em `precos.ts`. |
 | Marcos | 7,5 | Ainda não | Confere GitHub e LinkedIn antes de falar, e engenharia, NDA e propriedade do código estão escondidos no lançamento. Chamaria com a resposta sobre mudança de escopo, NDA e código visíveis e a seção de engenharia preenchida. |
-| Comercial | 7,2 | Sim (Cláudia), provavelmente (Rafael), talvez (Marcos) | A régua de comparação e os fatores de preço fazem a Lemamon parecer o fornecedor mais honesto dos três sites que a Cláudia abriu. Faltam mudança de escopo e propriedade do código. |
+| Comercial | 7,2 | Sim (Cláudia), provavelmente (Rafael), talvez (Marcos) | A régua de comparação e os fatores de preço fazem a Lemamon.dev parecer o fornecedor mais honesto dos três sites que a Cláudia abriu. Faltam mudança de escopo e propriedade do código. |
 | UX writer | 7,5 | Sim (Cláudia e Rafael) | A tabela comparativa, os fatores e "Você não precisa chegar com escopo pronto" dão argumento para o sócio. Hesitações: "Custo: Contínua" e a evasiva sobre escopo (os dois corrigidos). |
 | Compliance | 7 | Sim (Cláudia), provavelmente (Rafael), talvez (Marcos) | Material para convencer o sócio e barreira baixa. O que trava: mudança de escopo, duração da Descoberta, prova e propriedade do código. |
 
@@ -2645,7 +2647,7 @@ As respostas abaixo são da rodada 3 (v3). Os bloqueios que elas citam foram cor
 | Rafael | 8 | Sim | WhatsApp primeiro (mensagem pronta), depois as 6 perguntas, que não pedem contato antes do resumo. Perguntaria quem participa, se é por vídeo e se o código fica com ele. |
 | Cláudia | 8 | Sim | Grátis, sem compromisso, e vê o resumo antes de dar o WhatsApp. Pediria orçamento em mais dois lugares; quem der ideia de valor antes ganha vantagem. |
 | Marcos | 8 | Sim | Faria o wizard até o fim para perguntar quem participa, se trabalham com o time dele e se dá para pular a Descoberta. Quase desconfiou do resumo falando em "software rodando" para quem já tem sistema (corrigido com a variante própria). |
-| Comercial | 8 | Sim, na maioria | Resumo antes do contato, WhatsApp sempre à mão, NDA e e-mail para questionário de segurança. A Cláudia hesita no "E o preço?" e por não ver quem é a Lemamon. |
+| Comercial | 8 | Sim, na maioria | Resumo antes do contato, WhatsApp sempre à mão, NDA e e-mail para questionário de segurança. A Cláudia hesita no "E o preço?" e por não ver quem é a Lemamon.dev. |
 | UX writer | 8 | Sim | O H1 honesto e o "Ainda não" sobre preço desarmam a sensação de isca; "Copiar resumo" ajuda a levar ao sócio. |
 | SEO | 8 | Sim | O H1 e o FAQ dizem antes do clique que dali não sai preço, o que evita frustração. |
 | Compliance | 8,5 | Sim nas três personas | O texto não cria expectativa falsa. O risco está nas promessas que dependem de você (marcar os 45 minutos com todo pedido e falar de preço em toda conversa), cobertas pela trava de score D. |
@@ -2675,8 +2677,8 @@ Todos foram resolvidos no texto da v5 do pt-BR. Os que tinham voltado nas tradu�
 | Home | `home.services.items.support.text` | "O seu sistema" lia como "assumimos o seu sistema" | Resolvido: "O sistema cuidado e evoluindo depois que entra no ar…". en/es tinham voltado ao possessivo e foram alinhados. |
 | Home | `home.risks.pairs.*.answer` | Respostas trocadas; "preço que só cresce" sem resposta | Resolvido: o par 1 fala de entendimento e o par 3 termina em "preço fechado sobre esse escopo". |
 | Home | `home.method.stages.diagnosis.benefit_title` | Prometia o caso "entendido" em 45 minutos | Resolvido: "Seu caso ouvido antes de qualquer gasto". |
-| Home | `home.team.intro` | Plural "as pessoas" insinuava tamanho do time | Resolvido: "Conheça quem está por trás da Lemamon…". O es usava plural e foi alinhado. |
-| Método e preço | `pricing.how_to_compare.questions.scope_change` | A régua mandava perguntar e a Lemamon não respondia | Resolvido: a pergunta inteira só aparece com `escopoMudanca`; sem a flag, a régua tem 5 perguntas, todas respondidas. |
+| Home | `home.team.intro` | Plural "as pessoas" insinuava tamanho do time | Resolvido: "Conheça quem está por trás da Lemamon.dev…". O es usava plural e foi alinhado. |
+| Método e preço | `pricing.how_to_compare.questions.scope_change` | A régua mandava perguntar e a Lemamon.dev não respondia | Resolvido: a pergunta inteira só aparece com `escopoMudanca`; sem a flag, a régua tem 5 perguntas, todas respondidas. |
 | Método e preço | `pricing.how_price_closes.stages.support.cost` | "Custo: Contínua" | Resolvido: "Valor combinado antes de começar". |
 | Método e preço | `how_we_work.stage_*.you_get` | Diferente da linha do método | Resolvido no pt; no en, o diagnóstico foi alinhado na mesclagem. O verificador confere a igualdade. |
 | Método e preço | `pricing.hero.lead` | Abria com "depende" e "paga", sem o passo gratuito | Resolvido: o lead traz o diagnóstico gratuito antes da etapa paga. |
@@ -2693,7 +2695,7 @@ Todos foram resolvidos no texto da v5 do pt-BR. Os que tinham voltado nas tradu�
 | Conversão | `quote.error.text` | "Tudo preenchido" no WhatsApp não era verdade | Resolvido: "já abre com as suas respostas e o código do pedido". |
 | Estrutura | `shared.terms.written_feedback` | Dependia de dado inexistente | Resolvido: versão base para o lançamento e `written_feedback_with_content` para depois. |
 | Estrutura | `privacy.sections.legal_basis.items.ads_measurement` | Duas bases legais com "ou" | Resolvido no texto: duas variantes fechadas, escolhidas por `privacidade.ts`; o build falha sem a escolha. A decisão jurídica continua pendente (6.2). |
-| Estrutura | `meta.home.title` | Sem a keyword primária | Resolvido: "Desenvolvimento de software sob medida \| Lemamon". |
+| Estrutura | `meta.home.title` | Sem a keyword primária | Resolvido: "Desenvolvimento de software sob medida \| Lemamon.dev". |
 | Estrutura | `meta.default_og_image_text` | Texto denso para a prévia do WhatsApp | Resolvido no texto (marca, headline e "Diagnóstico gratuito de 45 minutos"). A imagem precisa ser regenerada (6.2). |
 | Estrutura | `privacy.sections.data_collected.draft` | Dizia que a origem da visita só chegava no envio | Resolvido: o rascunho fica no navegador e a medição da origem é declarada. |
 | Estrutura | `privacy.sections.navigation_data.items.google_ads` | Não informava remarketing | Resolvido no texto: variante `google_ads_with_remarketing`; a configuração da tag é bloqueador de lançamento (6.2). |
@@ -2741,9 +2743,9 @@ O documento Home foi fechado antes da Estrutura e da Conversão, que pediram est
 | `home.cases.intro` | pt | O problema, o que foi entregue e, quando dá para medir, o que mudou. | O problema, o que foi entregue e, quando o cliente autoriza divulgar, o resultado. |
 | `home.cases.intro` | en | …where it can be measured, what changed. | …when the client allows us to share it, the result. |
 | `home.cases.intro` | es | …cuando se puede medir, lo que cambió. | …cuando el cliente autoriza difundirlo, el resultado. |
-| `home.team.title` | pt | Quem faz a Lemamon | Quem trabalha nos projetos da Lemamon |
-| `home.team.title` | en | Who's behind Lemamon | Who works on Lemamon projects |
-| `home.team.title` | es | Quiénes están detrás de Lemamon | Quién trabaja en los proyectos de Lemamon |
+| `home.team.title` | pt | Quem faz a Lemamon.dev | Quem trabalha nos projetos da Lemamon.dev |
+| `home.team.title` | en | Who's behind Lemamon.dev | Who works on Lemamon.dev projects |
+| `home.team.title` | es | Quiénes están detrás de Lemamon.dev | Quién trabaja en los proyectos de Lemamon.dev |
 | `quote.entry.eyebrow` | pt | Para empresas e startups · Florianópolis, SC | Para PMEs e startups · Florianópolis, SC |
 | `quote.entry.eyebrow` | en | For companies and startups · Florianópolis, Brazil | For SMBs and startups · Florianópolis, Brazil |
 | `quote.entry.eyebrow` | es | Para empresas y startups · Florianópolis, Brasil | Para pymes y startups · Florianópolis, Brasil |
@@ -2777,8 +2779,8 @@ Ficaram com o possessivo as frases que não falam de assumir a sustentação (o 
 
 | Chave | Depois |
 |---|---|
-| `home.team.intro` | Antes de la primera conversación, conoce quién está detrás de Lemamon. |
-| `about.team.title` | Quién trabaja en los proyectos de Lemamon |
+| `home.team.intro` | Antes de la primera conversación, conoce quién está detrás de Lemamon.dev. |
+| `about.team.title` | Quién trabaja en los proyectos de Lemamon.dev |
 
 ### 7.3 Chaves que precisam ser idênticas
 

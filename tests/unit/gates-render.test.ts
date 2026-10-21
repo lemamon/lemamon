@@ -4,7 +4,7 @@
  *    depoimentos, logos nem formatos), cada seção gated não gera NADA (nem
  *    <section>, nem título, nem âncora), nos 3 idiomas. Exceção decidida pelo
  *    dono: com o GitHub publicado, "Como a gente constrói" vira só a linha
- *    "a Lemamon no GitHub" (sem título);
+ *    "a Lemamon.dev no GitHub" (sem título);
  *  - com as fixtures injetadas (prop `data`, só para teste), cada seção aparece
  *    com a estrutura do BLUEPRINT; com dado parcial, some;
  *  - o que é interno (registro da autorização, fonte da métrica) nunca é publicado.
@@ -307,7 +307,7 @@ describe("com dado completo (fixtures injetadas), cada seção aparece; parcial 
     expect(fallback).not.toContain("<h2");
     expect(fallback).toContain('href="https://github.com/lemamon-dev"');
     expect(fallback).toContain('data-track="profile_click"');
-    expect(fallback).toContain("Lemamon on GitHub");
+    expect(fallback).toContain("Lemamon.dev on GitHub");
     const none = await html(EngineeringSection, {
       locale: "pt",
       data: { features: { hasEngineering: false, engineeringFields: [], profiles: { github: false, linkedin: false, medium: false } }, engenharia: completeEngenharia() },

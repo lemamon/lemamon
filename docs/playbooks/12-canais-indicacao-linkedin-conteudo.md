@@ -33,7 +33,7 @@ codigo,nome,relacao,canal,contatado_em,resposta,indicacoes_recebidas,observacoes
 
 2. Mande mensagem **individual** (nada de lista de transmissão). Modelo:
 
-> Oi, {nome}! Tudo bem? Estou à frente da Lemamon: a gente desenvolve software sob medida aqui em São Paulo, com escopo, prazo e preço combinados antes de começar. Tudo começa por um diagnóstico gratuito de 45 minutos. Se você souber de alguém com a operação presa em planilha, com sistemas que não conversam ou com uma ideia de produto para tirar do papel, eu agradeço a indicação. O link para a pessoa começar é este: https://lemamon.dev/diagnostico?utm_source=indicacao&utm_medium=whatsapp&utm_campaign=indicacao-{aaaa-mm}&utm_content={codigo}
+> Oi, {nome}! Tudo bem? Estou à frente da Lemamon.dev: a gente desenvolve software sob medida aqui em São Paulo, com escopo, prazo e preço combinados antes de começar. Tudo começa por um diagnóstico gratuito de 45 minutos. Se você souber de alguém com a operação presa em planilha, com sistemas que não conversam ou com uma ideia de produto para tirar do papel, eu agradeço a indicação. O link para a pessoa começar é este: https://lemamon.dev/diagnostico?utm_source=indicacao&utm_medium=whatsapp&utm_campaign=indicacao-{aaaa-mm}&utm_content={codigo}
 
    Se for verdade, acrescente a capacidade: "Temos espaço para um projeto novo em {período}."
 3. Um único lembrete depois de 2 semanas, se não houver resposta. Agradeça toda indicação, vire ela projeto ou não.
@@ -61,9 +61,9 @@ Critério de aceite: lista com status por contato; indicações recebidas por co
 - [ ] Sem exclusividade; vigência e rescisão.
 - [ ] Confidencialidade.
 - [ ] **LGPD:** o parceiro só passa contato de alguém com a autorização da pessoa; o melhor caminho é o indicado entrar pelo link.
-- [ ] Uso da marca Lemamon só com aprovação.
+- [ ] Uso da marca Lemamon.dev só com aprovação.
 
-**Kit do parceiro:** o link `https://lemamon.dev/diagnostico?utm_source=parceiro&utm_medium=indicacao&utm_campaign={codigo-do-parceiro}`, o one-pager (playbook 02 §12), três frases para descrever a Lemamon (as do BLUEPRINT §1.1 e §1.2) e o que **não** é perfil (site e landing page estão fora da lista confirmada).
+**Kit do parceiro:** o link `https://lemamon.dev/diagnostico?utm_source=parceiro&utm_medium=indicacao&utm_campaign={codigo-do-parceiro}`, o one-pager (playbook 02 §12), três frases para descrever a Lemamon.dev (as do BLUEPRINT §1.1 e §1.2) e o que **não** é perfil (site e landing page estão fora da lista confirmada).
 
 Registre cada parceiro no CRM, na aba `Parceiros` (cabeçalho e fórmula no [05](05-crm-e-funil.md) §5). `codigo` é curto, sem dado pessoal, sempre do mesmo tamanho: `p001`, `p002`… (é ele que vai no `utm_campaign` do link).
 
@@ -159,7 +159,7 @@ Regras da cadência:
 **Como saber quantos posts saíram no mês** (para o ritual mensal): a lista de https://lemamon.dev/blog (cada post mostra a data), ou no repositório `grep -lE 'publicadoEm: "?2026-12' src/content/posts/*.mdx` (troque pelo ano e mês), descontando os que ainda têm `rascunho: true`. Meta: 2 por mês com a cadência de 15 dias.
 
 **Checklist de revisão de copy (B302)** — vale para post, LinkedIn, anúncio e qualquer texto novo do i18n:
-- [ ] A frase começa pelo problema do cliente, não pela Lemamon.
+- [ ] A frase começa pelo problema do cliente, não pela Lemamon.dev.
 - [ ] "A gente" e "você"; frases curtas; parágrafo de até 3 linhas.
 - [ ] Nenhuma palavra proibida: soluções, transformação digital, inovação, excelência, de ponta, melhor, líder, referência, incrível, extraordinário, poderoso.
 - [ ] Nenhum advérbio de reforço (realmente, verdadeiramente, completamente).

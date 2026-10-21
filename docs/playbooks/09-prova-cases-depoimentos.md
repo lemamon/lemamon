@@ -60,11 +60,11 @@ Meta: 1 depoimento autorizado por projeto entregue (100% dos projetos com `go_li
 
 ## 5. Pedido de autorização (mensagem)
 
-> Oi, {nome}. Que bom ver o {sistema} no ar. Quero te pedir uma coisa: a gente gostaria de contar este projeto no site da Lemamon, do jeito que vocês aprovarem. Pode ser com o nome da {empresa} ou sem nome (só setor e porte). Se topar, são 30 minutos de conversa para eu entender o antes e o depois, e eu te mando o texto para aprovar antes de qualquer publicação. Nada vai ao ar sem o seu ok por escrito.
+> Oi, {nome}. Que bom ver o {sistema} no ar. Quero te pedir uma coisa: a gente gostaria de contar este projeto no site da Lemamon.dev, do jeito que vocês aprovarem. Pode ser com o nome da {empresa} ou sem nome (só setor e porte). Se topar, são 30 minutos de conversa para eu entender o antes e o depois, e eu te mando o texto para aprovar antes de qualquer publicação. Nada vai ao ar sem o seu ok por escrito.
 
 ## 5.1 Pedido curto por escrito (quando o cliente não tem 30 minutos)
 
-> Oi, {nome}. Que bom ver o {sistema} no ar. Se você topar, eu gostaria de contar este projeto no site da Lemamon. Para não tomar o seu tempo com uma conversa, são 3 perguntas, e pode responder por aqui mesmo, do jeito que sair:
+> Oi, {nome}. Que bom ver o {sistema} no ar. Se você topar, eu gostaria de contar este projeto no site da Lemamon.dev. Para não tomar o seu tempo com uma conversa, são 3 perguntas, e pode responder por aqui mesmo, do jeito que sair:
 > 1. Como era antes do sistema?
 > 2. O que mudou depois que ele entrou no ar? Dá para medir?
 > 3. O que você diria a um colega que está pensando em contratar a gente?
@@ -95,14 +95,14 @@ AUTORIZADA: {Lemamon.dev LTDA, na grafia do cartão CNPJ}, CNPJ 69.700.690/0001-
 
 2. Onde pode ser usado:
    [ ] Site lemamon.dev, em português, inglês e espanhol (com tradução fiel do texto aprovado)
-   [ ] Propostas e apresentações comerciais da Lemamon
-   [ ] Perfis da Lemamon e de seus sócios em redes profissionais
+   [ ] Propostas e apresentações comerciais da Lemamon.dev
+   [ ] Perfis da Lemamon.dev e de seus sócios em redes profissionais
    [ ] Diretórios de avaliação de fornecedores (ex.: Clutch)
 
 3. Condições:
    a) Uso gratuito, sem contrapartida.
    b) Vale por prazo indeterminado e pode ser revogado a qualquer tempo, por escrito, pelo
-      e-mail {e-mail da Lemamon}. Após a revogação, a Lemamon retira o material do site e dos
+      e-mail {e-mail da Lemamon.dev}. Após a revogação, a Lemamon.dev retira o material do site e dos
       perfis em até {N} dias úteis. Materiais já enviados a terceiros antes da revogação não
       são recolhidos.
    c) Nenhuma alteração de sentido no texto aprovado. Mudanças de redação exigem nova aprovação.
@@ -141,7 +141,7 @@ Grave só com permissão explícita no início ("Posso gravar para não perder n
 | O combinado (7 min) | "O que entrou primeiro e o que ficou para depois?" · "O prazo e o preço foram os combinados?" (só publique prazo e preço do plano com autorização, sem valor em dinheiro) | `combinado.escopo`, `combinado.foraDoEscopo`, `combinado.prazoEPreco` |
 | A entrega (7 min) | "O que o sistema faz hoje, na prática?" · "Como foi receber software funcionando a cada 2 semanas?" | `entregue`, corpo do MDX e `comoFoi` (quando cada etapa aconteceu) |
 | Depois (8 min) | "O que mudou?" · "Dá para medir? De quanto para quanto? Onde está esse número?" | `resultado` (antes → depois e a fonte de cada número, até 3) |
-| Depoimento (5 min) | "Se um colega perguntasse se vale contratar a Lemamon, o que você diria?" · "Como foi o processo, comparado ao que você esperava?" | `citacao` (prefira falas sobre previsibilidade: `sobreProcesso: true`) |
+| Depoimento (5 min) | "Se um colega perguntasse se vale contratar a Lemamon.dev, o que você diria?" · "Como foi o processo, comparado ao que você esperava?" | `citacao` (prefira falas sobre previsibilidade: `sobreProcesso: true`) |
 
 ## 8. Redação
 

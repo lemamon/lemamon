@@ -84,7 +84,7 @@ A praça das palavras-chave locais é **São Paulo** desde 20/10/2026 (D38). O 0
 
 | Termo (06 §6.3.1) | Intenção | Uso / página-alvo | Decisão prévia |
 |---|---|---|---|
-| fábrica de software | transacional | comparação com a primária da Home | medir só para comparar; FAQ "A Lemamon é uma fábrica de software?" removida (BLUEPRINT §15.3) |
+| fábrica de software | transacional | comparação com a primária da Home | medir só para comparar; FAQ "A Lemamon.dev é uma fábrica de software?" removida (BLUEPRINT §15.3) |
 | empresa de desenvolvimento de aplicativos | transacional | comparação com a primária de `/servicos/aplicativos` | candidata a secundária de `/servicos/aplicativos` e a grupo do Ads `aplicativos` (07 §5) |
 | consultoria em desenvolvimento de software | comercial | comparação com a primária da Home | medir; candidata a secundária da Home |
 | terceirização de desenvolvimento / outsourcing de TI | comercial | comparação com a primária da Home | medir; no Ads, negativa se a busca for por alocação de pessoas (Squad não é oferta pública, 02 §2, D02) |
@@ -110,10 +110,10 @@ Critério de aceite: planilha com volume e lance reais de cada termo das duas li
 
 ## 3. Perfil da Empresa no Google (B029)
 
-1. https://business.google.com › **Adicionar empresa** › nome **"Lemamon"**, exatamente (sem palavra-chave no nome: isso viola as diretrizes do Google).
+1. https://business.google.com › **Adicionar empresa** › nome **"Lemamon.dev"**, exatamente (sem palavra-chave no nome: isso viola as diretrizes do Google).
 2. **Categoria principal:** a mais próxima de "empresa de software" ou "desenvolvedor de software" na lista em português. Secundárias: no máximo [PREENCHER], só se coerentes com os 5 serviços.
 3. **Local:**
-   - Se não há atendimento presencial no endereço, configure como **empresa de área de serviço** e oculte o endereço. O Google pede o endereço para verificar, mesmo oculto: use um endereço real da Lemamon em São Paulo, SP (caixa postal e escritório virtual sem equipe no local não são aceitos pelas diretrizes do Google).
+   - Se não há atendimento presencial no endereço, configure como **empresa de área de serviço** e oculte o endereço. O Google pede o endereço para verificar, mesmo oculto: use um endereço real da Lemamon.dev em São Paulo, SP (caixa postal e escritório virtual sem equipe no local não são aceitos pelas diretrizes do Google).
    - Área de serviço: São Paulo, SP (desde 20/10/2026, D38; antes, Florianópolis). Outras cidades só com `confirmacoes.outrasCidades`.
    - **Perfil já criado com Florianópolis:** edite o endereço (continua oculto) e troque a área de serviço para São Paulo. O Google pode pedir nova verificação; até ela sair, as edições ficam pendentes. Não crie um segundo perfil para a cidade nova: as diretrizes do Google proíbem perfil duplicado da mesma empresa.
 4. **Contato:**
@@ -123,7 +123,7 @@ Critério de aceite: planilha com volume e lance reais de cada termo das duas li
 6. **Dados estruturados no Rich Results Test:** https://search.google.com/test/rich-results › **URL** › `https://lemamon.dev/` › Testar URL. Esperado: **Organização** detectada (com o logo) e nenhum **erro** (vermelho). O nó da Home é `Organization` + `ProfessionalService`, com nome, site, logo, e-mail, "São Paulo, SP, BR" (`ADDRESS` em `src/config/site.ts`) e os perfis em `sameAs`. Avisos (amarelos, "campo opcional ausente") são **esperados** e não são erro: `streetAddress`, `postalCode` e `telephone`, porque o site não publica rua nem telefone (BLUEPRINT §1.5), e `priceRange`, porque nenhum preço é publicado (decisão 3 do dono). Antes do lançamento, dá para testar o deploy preview: abra a Home do preview, copie o código-fonte (Ver código-fonte da página) e cole na aba **Código** da ferramenta. Repita quando a empresa (`empresa.razaoSocial`/`cnpj`, que acrescentam `legalName` e `taxID`) ou um telefone forem publicados em `dados/dono.json`. Registre em [15](15-registro-de-decisoes.md) §2.
 7. **Descrição** (até 750 caracteres; só fatos confirmados):
 
-   > A Lemamon desenvolve software sob medida em São Paulo, SP: sistemas web, aplicativos, integrações e automação, MVPs e sustentação e evolução. Escopo, prazo e preço são combinados antes de começar. Tudo começa por um diagnóstico gratuito de 45 minutos, com devolutiva por escrito. Depois vem a Sprint de Descoberta, paga, que transforma o problema em escopo priorizado, protótipo e um plano com prazo e preço fechados para o desenvolvimento. No desenvolvimento, você recebe software funcionando a cada 2 semanas.
+   > A Lemamon.dev desenvolve software sob medida em São Paulo, SP: sistemas web, aplicativos, integrações e automação, MVPs e sustentação e evolução. Escopo, prazo e preço são combinados antes de começar. Tudo começa por um diagnóstico gratuito de 45 minutos, com devolutiva por escrito. Depois vem a Sprint de Descoberta, paga, que transforma o problema em escopo priorizado, protótipo e um plano com prazo e preço fechados para o desenvolvimento. No desenvolvimento, você recebe software funcionando a cada 2 semanas.
 
 8. **Serviços:** Diagnóstico gratuito · Sprint de Descoberta · Sistemas web · Aplicativos · Integrações e automação · MVP e produtos digitais · Sustentação e evolução. Sem preço.
 9. **Horário:** [PREENCHER] (o mesmo do WhatsApp Business, playbook 04 §7).
@@ -137,10 +137,10 @@ Critério de aceite: planilha com volume e lance reais de cada termo das duas li
 **Mudança de praça para São Paulo, SP (D38, 20/10/2026): o que atualizar fora do código.** O site (i18n, JSON-LD e imagens de prévia) já diz São Paulo. Uma cidade diferente em qualquer outro lugar quebra a consistência de NAP. Faça uma vez e marque na D38:
 
 - [ ] **Perfil da Empresa no Google:** endereço oculto e área de serviço em São Paulo (passo 3 acima); descrição do passo 7.
-- [ ] **Google Ads:** local de cada campanha, título "Lemamon · São Paulo, SP" e frase de destaque "São Paulo, SP" ([07](07-google-ads.md) §2, item 4, e §5).
+- [ ] **Google Ads:** local de cada campanha, título "Lemamon.dev · São Paulo, SP" e frase de destaque "São Paulo, SP" ([07](07-google-ads.md) §2, item 4, e §5).
 - [ ] **WhatsApp Business:** descrição, endereço e mensagem de saudação ([04](04-sla-follow-up-e-nutricao.md) §7).
 - [ ] **LinkedIn, GitHub e Medium:** localização "São Paulo, SP, Brasil" no LinkedIn (perfil de quem posta e página da empresa, quando existir), no campo *Location* da organização `lemamon-dev` no GitHub e na bio do Medium, se ela citar cidade ([12](12-canais-indicacao-linkedin-conteudo.md) §6).
-- [ ] **Diretórios e listas:** cidade nos perfis do Clutch e do GoodFirms e nas listas em que a Lemamon já estiver (§4 e §5), se existirem.
+- [ ] **Diretórios e listas:** cidade nos perfis do Clutch e do GoodFirms e nas listas em que a Lemamon.dev já estiver (§4 e §5), se existirem.
 - [ ] **Modelos fora do repositório:** assinatura de e-mail, respostas rápidas do WhatsApp e cópias salvas da devolutiva, da proposta e do one-pager ([01](01-diagnostico-e-devolutiva.md) §6, [02](02-proposta-e-politica-comercial.md) §12, [04](04-sla-follow-up-e-nutricao.md) §2). Os modelos destes playbooks já estão com São Paulo.
 - [ ] **Depois do deploy:** Rich Results Test da Home (passo 6) mostrando "São Paulo". As imagens de prévia (`public/assets/img/og/`) foram regeneradas com São Paulo antes do primeiro deploy do site novo, então não precisam de nome novo; se alguma delas já tiver ido ao ar com Florianópolis, siga o §1.1, passo 5.
 - Search Console e Bing não mudam: a propriedade é do domínio, não da cidade.

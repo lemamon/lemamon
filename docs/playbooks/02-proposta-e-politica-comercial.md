@@ -156,7 +156,7 @@ O que a gente precisa de você: {acesso às pessoas, exemplos, sistemas}
 6. Investimento
 Valor: [PREENCHER]   Condição: [PREENCHER]
 {Só se confirmacoes.descobertaAbatida (integral): "Se você seguir para o desenvolvimento
- com a Lemamon, o valor pago pela Sprint de Descoberta é descontado do preço do desenvolvimento."}
+ com a Lemamon.dev, o valor pago pela Sprint de Descoberta é descontado do preço do desenvolvimento."}
 {Só se confirmacoes.planoDoCliente: "Tudo o que a Descoberta entrega fica com você."}
 
 7. Depois da Descoberta
@@ -225,7 +225,7 @@ PROPOSTA — SUSTENTAÇÃO E EVOLUÇÃO
 {Empresa} · Pedido {protocolo} · {data} · Válida até {data + validade (§4, item 5)}
 
 1. O que está no ar
-Onde roda: {hospedagem, serviços}   Quem desenvolveu: {equipe interna, outra empresa, a Lemamon}
+Onde roda: {hospedagem, serviços}   Quem desenvolveu: {equipe interna, outra empresa, a Lemamon.dev}
 Acessos necessários: {código, servidores, contas de terceiros}
 
 2. Avaliação inicial (quando o código é de terceiros)
@@ -292,7 +292,7 @@ Registre no CRM, na aba `Propostas` ([05](05-crm-e-funil.md) §5, uma linha por 
 - [ ] Garantia de correção depois do go-live: prazo e o que cobre
 - [ ] Confidencialidade (ou referência ao NDA)
 - [ ] **Uso de nome e marca em portfólio**, com opção de anonimização (B285; texto-base no playbook [09](09-prova-cases-depoimentos.md) §3)
-- [ ] **Proteção de dados:** quando o sistema tratar dados pessoais dos clientes do cliente, a Lemamon age como operadora; o contrato precisa de cláusula de tratamento de dados (instruções, segurança, suboperadores, incidentes, devolução e exclusão ao final)
+- [ ] **Proteção de dados:** quando o sistema tratar dados pessoais dos clientes do cliente, a Lemamon.dev age como operadora; o contrato precisa de cláusula de tratamento de dados (instruções, segurança, suboperadores, incidentes, devolução e exclusão ao final)
 - [ ] Rescisão e o que acontece com o trabalho feito
 - [ ] Reajuste anual (contratos recorrentes)
 
@@ -304,7 +304,7 @@ Registre no CRM, na aba `Propostas` ([05](05-crm-e-funil.md) §5, uma linha por 
 
 **Documento de respostas de segurança (1–2 páginas)**, usando os mesmos fatos de `engenharia.ts`:
 
-| Pergunta comum | Resposta da Lemamon |
+| Pergunta comum | Resposta da Lemamon.dev |
 |---|---|
 | Onde fica o código e quem tem acesso | [PREENCHER] |
 | Como credenciais e segredos são guardados | [PREENCHER] |
@@ -315,7 +315,7 @@ Registre no CRM, na aba `Propostas` ([05](05-crm-e-funil.md) §5, uma linha por 
 | Saída de pessoas (revogação de acessos) | [PREENCHER] |
 | Subcontratação | [PREENCHER] |
 
-**Prazo interno para enviar NDA ou respostas:** [PREENCHER] (B384 pede até 1 dia útil). **Só ligue `confirmacoes.nda` quando os dois documentos existirem** e puderem sair nesse prazo: com a flag ligada, o FAQ "Vocês assinam NDA?" e o card de e-mail do `/contato` passam a dizer que a Lemamon assina o acordo **e responde ao questionário de segurança** da empresa do cliente, e explicam como pedir (i18n `contact._notes.nda` e `faq.conditional.nda`). Registre a confirmação em [15](15-registro-de-decisoes.md) §3.
+**Prazo interno para enviar NDA ou respostas:** [PREENCHER] (B384 pede até 1 dia útil). **Só ligue `confirmacoes.nda` quando os dois documentos existirem** e puderem sair nesse prazo: com a flag ligada, o FAQ "Vocês assinam NDA?" e o card de e-mail do `/contato` passam a dizer que a Lemamon.dev assina o acordo **e responde ao questionário de segurança** da empresa do cliente, e explicam como pedir (i18n `contact._notes.nda` e `faq.conditional.nda`). Registre a confirmação em [15](15-registro-de-decisoes.md) §3.
 
 ## 12. Material para o comprador repassar (B114, parcial)
 
@@ -324,7 +324,7 @@ O comprador precisa justificar a contratação ao sócio. Hoje ele já tem: a de
 **One-pager institucional** (PDF interno, enviado junto com a proposta), só com fatos confirmados:
 
 ```
-Lemamon — software sob medida · São Paulo, SP
+Lemamon.dev — software sob medida · São Paulo, SP
 O que a gente faz: sistemas web, aplicativos, integrações e automação, MVPs, sustentação e evolução.
 Como trabalha: 1) Diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
                2) Sprint de Descoberta, paga: escopo priorizado, protótipo e plano com prazo e preço fechados.

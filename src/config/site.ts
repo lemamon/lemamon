@@ -13,7 +13,7 @@
 
 export { SITE_URL } from "./routes";
 
-export const SITE_NAME = "Lemamon";
+export const SITE_NAME = "Lemamon.dev";
 
 /**
  * Cor do navegador (<meta name="theme-color"> e manifest.json): é a ink-800 de

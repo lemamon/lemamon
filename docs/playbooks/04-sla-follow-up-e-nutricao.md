@@ -45,36 +45,36 @@ Responda no idioma do pedido (`lang`) e pelo canal escolhido (`channel`). Use o 
 
 **A — WhatsApp**
 
-> Oi, {primeiro nome}! Aqui é {seu nome}, da Lemamon. Recebi o seu pedido {protocolo} sobre {resumo em 1 linha}. Quero marcar os 45 minutos do diagnóstico gratuito: pode ser {opção 1} ou {opção 2}? Se mais alguém decide com você, vale trazer essa pessoa para a conversa.
+> Oi, {primeiro nome}! Aqui é {seu nome}, da Lemamon.dev. Recebi o seu pedido {protocolo} sobre {resumo em 1 linha}. Quero marcar os 45 minutos do diagnóstico gratuito: pode ser {opção 1} ou {opção 2}? Se mais alguém decide com você, vale trazer essa pessoa para a conversa.
 
 **B — WhatsApp**
 
-> Oi, {primeiro nome}! Aqui é {seu nome}, da Lemamon. Li o seu pedido {protocolo}: {resumo em 1 linha}. Vamos marcar o diagnóstico gratuito de 45 minutos? Tenho {opção 1} ou {opção 2}. Depois da conversa, você recebe uma devolutiva por escrito.
+> Oi, {primeiro nome}! Aqui é {seu nome}, da Lemamon.dev. Li o seu pedido {protocolo}: {resumo em 1 linha}. Vamos marcar o diagnóstico gratuito de 45 minutos? Tenho {opção 1} ou {opção 2}. Depois da conversa, você recebe uma devolutiva por escrito.
 
 **C — WhatsApp ou e-mail**
 
-> Oi, {primeiro nome}! Aqui é {seu nome}, da Lemamon. Obrigado pelo pedido {protocolo}. Pelo que você contou, o projeto ainda está tomando forma, e tudo bem: o diagnóstico serve para entender o problema e o caminho até o software rodando. Quer marcar os 45 minutos? Tenho {opção 1} ou {opção 2}. Se preferir deixar para mais tarde, me diz quando faz sentido.
+> Oi, {primeiro nome}! Aqui é {seu nome}, da Lemamon.dev. Obrigado pelo pedido {protocolo}. Pelo que você contou, o projeto ainda está tomando forma, e tudo bem: o diagnóstico serve para entender o problema e o caminho até o software rodando. Quer marcar os 45 minutos? Tenho {opção 1} ou {opção 2}. Se preferir deixar para mais tarde, me diz quando faz sentido.
 
 **D — fora de perfil** (só existe com `dados/dono.json › qualificacao.scoreD.ativo = true`, que exige `confirmacoes.scoreDRecebeDiagnostico`; ver 03 §5)
 
-> Oi, {primeiro nome}! Aqui é {seu nome}, da Lemamon. Obrigado por contar sobre {projeto}. Quero ser franco: pelo que você descreveu, {motivo, ex.: uma primeira versão com tudo isso costuma ficar acima do investimento que você indicou}. {Alternativa, se houver.} Mesmo assim, os 45 minutos do diagnóstico estão de pé se você quiser entender o que caberia: {opção 1} ou {opção 2}.
+> Oi, {primeiro nome}! Aqui é {seu nome}, da Lemamon.dev. Obrigado por contar sobre {projeto}. Quero ser franco: pelo que você descreveu, {motivo, ex.: uma primeira versão com tudo isso costuma ficar acima do investimento que você indicou}. {Alternativa, se houver.} Mesmo assim, os 45 minutos do diagnóstico estão de pé se você quiser entender o que caberia: {opção 1} ou {opção 2}.
 
-**E-mail (B ou C)** — assunto: `Seu pedido {protocolo} na Lemamon: vamos marcar o diagnóstico?`
+**E-mail (B ou C)** — assunto: `Seu pedido {protocolo} na Lemamon.dev: vamos marcar o diagnóstico?`
 
 > Oi, {primeiro nome}.
-> Aqui é {seu nome}, da Lemamon. Recebi o seu pedido {protocolo} sobre {resumo}.
+> Aqui é {seu nome}, da Lemamon.dev. Recebi o seu pedido {protocolo} sobre {resumo}.
 > O próximo passo é o diagnóstico gratuito: 45 minutos de conversa e, depois, uma devolutiva por escrito. Tenho {opção 1} ou {opção 2}. Se nenhum servir, me diga um horário bom para você.
-> {seu nome} · Lemamon · São Paulo, SP
+> {seu nome} · Lemamon.dev · São Paulo, SP
 
 **Ligação** (só com `confirmacoes.ligacao`): apresente-se, cite o protocolo, confirme que é um bom momento, ofereça 2 horários, confirme o canal para o convite. Se não atender, mande mensagem curta no mesmo dia.
 
 **EN** (generic first contact):
 
-> Hi {first name}, this is {your name} from Lemamon. I got your request {protocol} about {summary}. Shall we schedule the 45-minute free assessment? I have {option 1} or {option 2}. Afterward, you'll get written feedback.
+> Hi {first name}, this is {your name} from Lemamon.dev. I got your request {protocol} about {summary}. Shall we schedule the 45-minute free assessment? I have {option 1} or {option 2}. Afterward, you'll get written feedback.
 
 **ES** (con "tú"):
 
-> Hola, {nombre}. Soy {tu nombre}, de Lemamon. Recibí tu solicitud {protocolo} sobre {resumen}. ¿Agendamos el diagnóstico gratuito de 45 minutos? Tengo {opción 1} o {opción 2}. Después, te enviamos nuestras conclusiones por escrito.
+> Hola, {nombre}. Soy {tu nombre}, de Lemamon.dev. Recibí tu solicitud {protocolo} sobre {resumen}. ¿Agendamos el diagnóstico gratuito de 45 minutos? Tengo {opción 1} o {opción 2}. Después, te enviamos nuestras conclusiones por escrito.
 
 ## 3. Cadência quando o lead não responde ao primeiro contato
 
@@ -125,34 +125,34 @@ O lead C já mandou um pedido. Ele pode simplesmente responder a mensagem com um
 
 ### 5.1 Mensagens prontas
 
-**D+3 — onde você decide** · assunto: `Onde você decide num projeto com a Lemamon` · EN `Where you decide in a project with Lemamon` · ES `Dónde decides en un proyecto con Lemamon`
+**D+3 — onde você decide** · assunto: `Onde você decide num projeto com a Lemamon.dev` · EN `Where you decide in a project with Lemamon.dev` · ES `Dónde decides en un proyecto con Lemamon.dev`
 
-> Oi, {primeiro nome}. Aqui é {seu nome}, da Lemamon, sobre o seu pedido {protocolo}. Uma dúvida comum nesta fase é "em que momento eu me comprometo?". Com a gente, você decide depois da devolutiva por escrito do diagnóstico e, de novo, depois do plano da Sprint de Descoberta. Escopo, prazo e preço são combinados antes de começar o desenvolvimento. O caminho inteiro está aqui: https://lemamon.dev/como-trabalhamos?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d3
+> Oi, {primeiro nome}. Aqui é {seu nome}, da Lemamon.dev, sobre o seu pedido {protocolo}. Uma dúvida comum nesta fase é "em que momento eu me comprometo?". Com a gente, você decide depois da devolutiva por escrito do diagnóstico e, de novo, depois do plano da Sprint de Descoberta. Escopo, prazo e preço são combinados antes de começar o desenvolvimento. O caminho inteiro está aqui: https://lemamon.dev/como-trabalhamos?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d3
 > Quando fizer sentido, o diagnóstico gratuito de 45 minutos começa por aqui: https://lemamon.dev/diagnostico?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d3
 
 EN:
 
-> Hi {first name}, this is {your name} from Lemamon, following up on your request {protocol}. A common question at this stage is "when do I commit?". With us, you decide after the written feedback from the free assessment, and again after the Discovery Sprint plan. Scope, timeline and price are agreed before development starts. Here's the whole path: https://lemamon.dev/en/how-we-work?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d3
+> Hi {first name}, this is {your name} from Lemamon.dev, following up on your request {protocol}. A common question at this stage is "when do I commit?". With us, you decide after the written feedback from the free assessment, and again after the Discovery Sprint plan. Scope, timeline and price are agreed before development starts. Here's the whole path: https://lemamon.dev/en/how-we-work?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d3
 > When it makes sense for you, the 45-minute free assessment starts here: https://lemamon.dev/en/quote?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d3
 
 ES (con "tú"):
 
-> Hola, {nombre}. Soy {tu nombre}, de Lemamon, sobre tu solicitud {protocolo}. Una duda común en esta etapa es "¿en qué momento me comprometo?". Con nosotros, decides después de nuestras conclusiones por escrito del diagnóstico y, otra vez, después del plan del Sprint de Descubrimiento. El alcance, el plazo y el precio se acuerdan antes de empezar el desarrollo. Aquí está todo el camino: https://lemamon.dev/es/como-trabajamos?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d3
+> Hola, {nombre}. Soy {tu nombre}, de Lemamon.dev, sobre tu solicitud {protocolo}. Una duda común en esta etapa es "¿en qué momento me comprometo?". Con nosotros, decides después de nuestras conclusiones por escrito del diagnóstico y, otra vez, después del plan del Sprint de Descubrimiento. El alcance, el plazo y el precio se acuerdan antes de empezar el desarrollo. Aquí está todo el camino: https://lemamon.dev/es/como-trabajamos?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d3
 > Cuando tenga sentido para ti, el diagnóstico gratuito de 45 minutos empieza aquí: https://lemamon.dev/es/cotizacion?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d3
 
 **D+7 — como comparar propostas** · assunto: `Perguntas para comparar propostas de software` · EN `Questions to compare software quotes` · ES `Preguntas para comparar cotizaciones de software`
 
-> Oi, {primeiro nome}. Se você está conversando com outros fornecedores, comparar faz parte. Separamos as perguntas que vale fazer a qualquer empresa de software antes de assinar, inclusive a nós: "O que está fora do escopo?", "O preço é fechado ou cobrado por hora?", "Quando eu vejo software funcionando?". As respostas da Lemamon estão logo abaixo de cada pergunta: https://lemamon.dev/quanto-custa?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d7#como-comparar
+> Oi, {primeiro nome}. Se você está conversando com outros fornecedores, comparar faz parte. Separamos as perguntas que vale fazer a qualquer empresa de software antes de assinar, inclusive a nós: "O que está fora do escopo?", "O preço é fechado ou cobrado por hora?", "Quando eu vejo software funcionando?". As respostas da Lemamon.dev estão logo abaixo de cada pergunta: https://lemamon.dev/quanto-custa?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d7#como-comparar
 > Se quiser passar o seu caso por essas perguntas com a gente, o diagnóstico gratuito leva 45 minutos: https://lemamon.dev/diagnostico?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d7
 
 EN:
 
-> Hi {first name}. If you're talking to other vendors, comparing is part of the process. We put together the questions worth asking any software company before you sign, including us: "What's out of scope?", "Is the price fixed or billed by the hour?", "When will I see working software?". Lemamon's answers are right below each question: https://lemamon.dev/en/pricing?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d7#como-comparar
+> Hi {first name}. If you're talking to other vendors, comparing is part of the process. We put together the questions worth asking any software company before you sign, including us: "What's out of scope?", "Is the price fixed or billed by the hour?", "When will I see working software?". Lemamon.dev's answers are right below each question: https://lemamon.dev/en/pricing?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d7#como-comparar
 > If you'd like to run your case through these questions with us, the free assessment takes 45 minutes: https://lemamon.dev/en/quote?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d7
 
 ES:
 
-> Hola, {nombre}. Si estás hablando con otros proveedores, comparar es parte del proceso. Reunimos las preguntas que vale la pena hacerle a cualquier empresa de software antes de firmar, incluidos nosotros: "¿Qué queda fuera del alcance?", "¿El precio es fijo o se cobra por hora?", "¿Cuándo veo software funcionando?". Las respuestas de Lemamon están justo debajo de cada pregunta: https://lemamon.dev/es/cuanto-cuesta?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d7#como-comparar
+> Hola, {nombre}. Si estás hablando con otros proveedores, comparar es parte del proceso. Reunimos las preguntas que vale la pena hacerle a cualquier empresa de software antes de firmar, incluidos nosotros: "¿Qué queda fuera del alcance?", "¿El precio es fijo o se cobra por hora?", "¿Cuándo veo software funcionando?". Las respuestas de Lemamon.dev están justo debajo de cada pregunta: https://lemamon.dev/es/cuanto-cuesta?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d7#como-comparar
 > Si quieres pasar tu caso por estas preguntas con nosotros, el diagnóstico gratuito dura 45 minutos: https://lemamon.dev/es/cotizacion?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d7
 
 **D+14 — o que pesa no preço do serviço** (um modelo para os 5 serviços) · assunto: `O que pesa no preço de {serviço}` · EN `What drives the price of {service}` · ES `Qué pesa en el precio de {servicio}`
@@ -202,7 +202,7 @@ ES:
 
 > Oi, {primeiro nome}. Queria saber uma coisa só: o projeto do pedido {protocolo} ainda faz sentido para vocês? Se fizer, o diagnóstico gratuito de 45 minutos continua de pé: https://lemamon.dev/diagnostico?utm_source=retomada&utm_medium={canal}&utm_campaign=retomada-c&utm_content=d30
 > Se não for o momento, tudo bem: esta é a última mensagem da sequência.
-> Antes de eu parar: posso te mandar um e-mail por mês com um conteúdo da Lemamon? Você sai quando quiser. Se quiser, é só responder "sim".
+> Antes de eu parar: posso te mandar um e-mail por mês com um conteúdo da Lemamon.dev? Você sai quando quiser. Se quiser, é só responder "sim".
 
 O último parágrafo é o convite de opt-in da newsletter (texto-modelo da §6). **Só mande esse parágrafo quando a newsletter estiver pronta para começar** (§6, "Antes do 1º envio"); até lá, o D+30 termina na frase anterior. Em en e es, o D+30 não leva o convite: a newsletter é só em português, como o blog (BLUEPRINT §6.12).
 
@@ -263,7 +263,7 @@ Hoje a sequência é **manual e 1:1**. Automatize só quando o volume de leads C
 
 **Opt-in explícito, sempre.** O convite vai no D+30 da retomada (§5.1) ou em qualquer conversa, com este texto-modelo:
 
-> Posso te mandar um e-mail por mês com um conteúdo da Lemamon? Você sai quando quiser.
+> Posso te mandar um e-mail por mês com um conteúdo da Lemamon.dev? Você sai quando quiser.
 
 Registre no CRM `newsletter_optin = sim`, `newsletter_optin_em`, `newsletter_optin_canal` e `newsletter_optin_texto` (05 §5). Sem esse registro, a pessoa não entra na lista. Só em português (o blog é só pt-BR).
 
@@ -315,7 +315,7 @@ Use o app WhatsApp Business **no mesmo número de `PUBLIC_WHATSAPP_NUMBER`**.
 
 | Campo | Valor |
 |---|---|
-| Nome | Lemamon |
+| Nome | Lemamon.dev |
 | Categoria | a mais próxima de "desenvolvimento de software" na lista do app |
 | Descrição | "Software sob medida em São Paulo, SP: sistemas web, aplicativos, integrações, MVPs e sustentação. Escopo, prazo e preço combinados antes de começar. Comece pelo diagnóstico gratuito de 45 minutos." |
 | Endereço | São Paulo, SP (sem rua, se não há atendimento presencial; até 20/10/2026 era Florianópolis, SC: troque no app, D38) |
@@ -327,9 +327,9 @@ O site manda visitantes de `/en/` e `/es/` para este mesmo número, com a mensag
 
 **Mensagem de saudação** (primeiro contato do cliente):
 
-> Oi! Aqui é a Lemamon, de São Paulo. Conta em uma frase o que você precisa ou comece o pedido de diagnóstico gratuito: https://lemamon.dev/diagnostico?utm_source=whatsapp&utm_medium=saudacao
-> Hi! This is Lemamon, from São Paulo, Brazil. Tell us in one sentence what you need, or start the free assessment request: https://lemamon.dev/en/quote?utm_source=whatsapp&utm_medium=saudacao
-> ¡Hola! Somos Lemamon, de São Paulo, Brasil. Cuéntanos en una frase qué necesitas o empieza tu solicitud de diagnóstico gratuito: https://lemamon.dev/es/cotizacion?utm_source=whatsapp&utm_medium=saudacao
+> Oi! Aqui é a Lemamon.dev, de São Paulo. Conta em uma frase o que você precisa ou comece o pedido de diagnóstico gratuito: https://lemamon.dev/diagnostico?utm_source=whatsapp&utm_medium=saudacao
+> Hi! This is Lemamon.dev, from São Paulo, Brazil. Tell us in one sentence what you need, or start the free assessment request: https://lemamon.dev/en/quote?utm_source=whatsapp&utm_medium=saudacao
+> ¡Hola! Somos Lemamon.dev, de São Paulo, Brasil. Cuéntanos en una frase qué necesitas o empieza tu solicitud de diagnóstico gratuito: https://lemamon.dev/es/cotizacion?utm_source=whatsapp&utm_medium=saudacao
 
 **Mensagem de ausência** (fora do horário; sem prazo numérico de resposta, BLUEPRINT §12):
 

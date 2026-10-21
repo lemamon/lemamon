@@ -1,6 +1,6 @@
 # 00 — Dados do dono: o que preencher, em que formato e o que cada dado libera
 
-**Para quem:** o dono da Lemamon (ou quem edita os arquivos por ele).
+**Para quem:** o dono da Lemamon.dev (ou quem edita os arquivos por ele).
 **Onde fica TUDO que vem de você:** um arquivo só, [`dados/dono.json`](../../dados/dono.json). Fotos e logos ficam em `dados/imagens/`. Cases e posts são texto longo e continuam em MDX (`src/content/cases/` e `src/content/posts/`).
 **Fontes:** BLUEPRINT §4 (gatilhos `when_data`) e §14 (pendências por alavancagem), conferido contra o código em 19/10/2026: `dados/dono.schema.json`, `src/config/validate.ts`, `src/config/json-do-dono.ts`, `src/content/schemas.ts`, `src/config/features.ts`, `src/integrations/dados-ficticios.ts`; e, em 20/10/2026, `src/config/camada-ficticia.ts` (par razão social + CNPJ). Se o código mudar depois disso, **a validação no código manda** e este guia precisa ser atualizado.
 
@@ -108,7 +108,7 @@ Onde: Netlify › o site › **Site configuration › Environment variables**. V
 | `apresentacao` | `{ pt, en, es }`, até 160 cada | `hasAboutIntro`: subtítulo de `/sobre` (1 frase com "a gente", "São Paulo, SP", sem número nem superlativo) |
 | `historia` | `{ "pt": ["parágrafo", …], "en": […], "es": […] }`, 1 a 4 parágrafos de até 600 | `hasAboutStory`: "Por que a gente trabalha assim" em `/sobre` |
 
-- **Mínimo para lançar:** razão social + CNPJ válido. A Lemamon tem CNPJ (D39), então deixe `responsavel` vazio; ele existe só para controlador sem PJ.
+- **Mínimo para lançar:** razão social + CNPJ válido. A Lemamon.dev tem CNPJ (D39), então deixe `responsavel` vazio; ele existe só para controlador sem PJ.
 - **Estado em 20/10/2026:** razão social `Lemamon.dev LTDA` e CNPJ `69.700.690/0001-98` informados pelo dono e preenchidos (D39). Com os dois, `hasCompanyData` está ligado: "Lemamon.dev LTDA · CNPJ 69.700.690/0001-98" no footer (e em linha própria no rodapé mínimo do `/orcamento`), Lemamon.dev LTDA como controlador na Política, bloco "Dados da empresa" em `/sobre` e `legalName`/`taxID` no JSON-LD. A trava de lançamento não lista mais `empresa`; os campos de `privacidade` (§A3) continuam travando produção. Confira o footer, o rodapé do `/orcamento` e o controlador em `/privacidade` nos 3 idiomas com `PUBLIC_DADOS_FICTICIOS=false yarn dev`.
 - **Conferência do dono contra o cartão CNPJ (antes do deploy de produção):** (1) a grafia da razão social, letra por letra (inclusive "LTDA"): a Receita costuma registrar o nome em maiúsculas (por exemplo, "LEMAMON.DEV LTDA"), e o site mostra exatamente o que está em `razaoSocial`; (2) o município da sede no cartão é São Paulo/SP, porque o site afirma "São Paulo, SP" ao lado do CNPJ (D38). Anote a conferência na D39 do [15](15-registro-de-decisoes.md).
 - **Nunca** use o CNPJ de exemplo `00.000.000/0000-00`: o build recusa no `dono.json`.
@@ -206,10 +206,10 @@ Os três estão com `"publicar": true` (decisão 6). URL tem que ser https no do
 
 | Onde o perfil aparece | Depende de `publicar`? |
 |---|---|
-| "Confira antes de conversar" na Home (pt, en, es), bloco de perfis em `/sobre` e nas páginas de serviço, a linha "a Lemamon no GitHub" em `/como-trabalhamos` enquanto `engenharia` estiver vazia (`hasProfiles` e `features.profiles.<id>`) | **sim**: com `publicar: false`, o perfil sai daqui |
+| "Confira antes de conversar" na Home (pt, en, es), bloco de perfis em `/sobre` e nas páginas de serviço, a linha "a Lemamon.dev no GitHub" em `/como-trabalhamos` enquanto `engenharia` estiver vazia (`hasProfiles` e `features.profiles.<id>`) | **sim**: com `publicar: false`, o perfil sai daqui |
 | Footer de todas as páginas, cards de perfil em `/contato` e `sameAs` do JSON-LD da Home | **não**: o BLUEPRINT (§8.5 e a página de contato) trata os três como canais confirmados e lista sempre. Para tirar daqui, a D01 do [15](15-registro-de-decisoes.md) precisa ser "só com `publicar`" (BLUEPRINT pelo integrador; `Footer.astro` e `sameAs()` de `seo.ts` pelo `shell`; `ContactChannels.astro` pelo `conversion`) |
 
-> **Alerta (conferido em 20/10/2026):** o Medium `@lemamon.dev` não tem nenhuma story (o feed volta com 0 itens) e a organização `lemamon-dev` no GitHub não tem nenhum repositório público. Com a decisão 6 como está, o site manda quem avalia a Lemamon para dois perfis vazios, inclusive o avaliador técnico de `/como-trabalhamos`. O BLUEPRINT conta perfis como confiança só "quando tiverem conteúdo recente" (§2, item 5) e a seção existe para provar o contrário de um perfil vazio (§6.1, item 12). A revisão da decisão 6 está aberta na **D35** do [15](15-registro-de-decisoes.md).
+> **Alerta (conferido em 20/10/2026):** o Medium `@lemamon.dev` não tem nenhuma story (o feed volta com 0 itens) e a organização `lemamon-dev` no GitHub não tem nenhum repositório público. Com a decisão 6 como está, o site manda quem avalia a Lemamon.dev para dois perfis vazios, inclusive o avaliador técnico de `/como-trabalhamos`. O BLUEPRINT conta perfis como confiança só "quando tiverem conteúdo recente" (§2, item 5) e a seção existe para provar o contrário de um perfil vazio (§6.1, item 12). A revisão da decisão 6 está aberta na **D35** do [15](15-registro-de-decisoes.md).
 
 **Regra única (vale para este playbook, para o [12](12-canais-indicacao-linkedin-conteudo.md) §6 e §7 e para o [14](14-calendario-90-dias.md)):** nenhum perfil aparece no site sem pelo menos 1 conteúdo público publicado. Antes de **todo** deploy de produção, rode a conferência abaixo. Se um perfil der 0, você escolhe uma das duas opções e registra na D35:
 
@@ -219,7 +219,7 @@ Os três estão com `"publicar": true` (decisão 6). URL tem que ser https no do
 **README de perfil do GitHub, pronto para colar** (opção (a) do GitHub; só fatos do BLUEPRINT §1.2 e §1.5). Em https://github.com/organizations/lemamon-dev/repositories/new: nome `.github`, **Public**, marque "Add a README file" › Create. Depois, **Add file › Create new file** com o caminho `profile/README.md` e este texto:
 
 ```markdown
-# Lemamon
+# Lemamon.dev
 
 Software sob medida com escopo, prazo e preço combinados antes de começar. São Paulo, SP, Brasil.
 
@@ -237,7 +237,7 @@ Sistemas web · Aplicativos · Integrações e automação · MVP e produtos dig
 [Pedir diagnóstico gratuito](https://lemamon.dev/orcamento?utm_source=github&utm_medium=perfil&utm_campaign=org-readme) · [lemamon.dev](https://lemamon.dev/?utm_source=github&utm_medium=perfil&utm_campaign=org-readme)
 ```
 
-Isso tira o GitHub do zero (`public_repos` passa a 1) e dá ao avaliador técnico de `/como-trabalhamos` o método por escrito. Um repositório público com código real (uma biblioteca ou ferramenta que a Lemamon usa de verdade, sem código de cliente) prova mais; só publique se existir.
+Isso tira o GitHub do zero (`public_repos` passa a 1) e dá ao avaliador técnico de `/como-trabalhamos` o método por escrito. Um repositório público com código real (uma biblioteca ou ferramenta que a Lemamon.dev usa de verdade, sem código de cliente) prova mais; só publique se existir.
 
 **Conferência obrigatória antes de cada deploy de produção** (qualquer terminal; leitura pública, sem login):
 
@@ -273,7 +273,7 @@ Ligue cada item **só depois de conferir que a frase publicada é verdade** no c
 | `notaFiscal` | Emite NF de serviço para todas as etapas pagas? | FAQ `invoice` |
 | `outrasCidades` | Atende outras cidades do Brasil, a distância? **Decidido: sim (D31, 21/10/2026)** | FAQ `other_cities` (afeta en/es e Google Ads) |
 | `atendeExterior` | Atende empresas de outros países, a distância? **Decidido: sim (D31, 21/10/2026).** Exige `outrasCidades = true` | variante "…ou de fora do Brasil?" do FAQ `other_cities` (uma pergunta só) e a linha "Atendemos o mundo todo" no eyebrow da Home. Antes do 1º cliente de fora: moeda, nota fiscal de exportação e foro (o site não afirma nenhum dos três) |
-| `nda` | O NDA mútuo revisado por advogado **e** o documento de respostas de segurança ([02](02-proposta-e-politica-comercial.md) §11) existem e podem ser enviados em até 1 dia útil? Só então ligue. O site passa a dizer que a Lemamon assina o acordo e responde ao questionário de segurança | FAQ `nda` ("…assina o acordo antes de você compartilhar os detalhes e também responde ao questionário de segurança da sua empresa"); card de e-mail em `/contato` ("Para enviar NDA, questionário de segurança…") |
+| `nda` | O NDA mútuo revisado por advogado **e** o documento de respostas de segurança ([02](02-proposta-e-politica-comercial.md) §11) existem e podem ser enviados em até 1 dia útil? Só então ligue. O site passa a dizer que a Lemamon.dev assina o acordo e responde ao questionário de segurança | FAQ `nda` ("…assina o acordo antes de você compartilhar os detalhes e também responde ao questionário de segurança da sua empresa"); card de e-mail em `/contato` ("Para enviar NDA, questionário de segurança…") |
 | `sistemaTerceiros` | Assume sistema feito por outra empresa, depois de avaliação? | FAQ `third_party_system` |
 | `semDescoberta` | Em que casos começa direto pelo desenvolvimento? | FAQ `skip_discovery` (exige revisar textos que dizem que o preço só sai da Descoberta) |
 | `duracaoDescoberta` | A duração é combinada antes, junto com o valor? **Decidido: sim (D42, 21/10/2026)** | FAQ `discovery_duration`. Com `descoberta.duracao` preenchida (mesmo sem os outros 3 campos), a resposta usa a duração típica ("Depende do tamanho do problema: em geral 1 semana…") e a tag da etapa 2 também (`hasDiscoveryDuration`) |

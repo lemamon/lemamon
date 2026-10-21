@@ -28,7 +28,7 @@
    d. Sustentação e evolução contínua.
 3. **Preço:** nenhum número publicado no copy. As faixas de investimento ficam escondidas até o dono preencher `precos.ts`.
 4. **Stack:** Astro estático, com HTML de conteúdo real indexável. A única ilha React é o wizard.
-5. **Fatos confirmados** (os únicos que podem ser afirmados): nome Lemamon; domínio lemamon.dev; São Paulo, SP, Brasil; razão social Lemamon.dev LTDA e CNPJ 69.700.690/0001-98 (D39, só com `hasCompanyData`); software sob medida (sistemas web, aplicativos, integrações, produtos digitais/MVPs, sustentação); e-mail lemamon.dev@gmail.com; WhatsApp (o número vem de variável de ambiente e o copy diz só "WhatsApp"); GitHub github.com/lemamon-dev; LinkedIn linkedin.com/in/lemamon-dev; Medium medium.com/@lemamon.dev; o processo do item 2; **atende empresas de outras cidades do Brasil e de qualquer país, a distância, em português, inglês ou espanhol, com o mesmo processo** (D31, 21/10/2026, `confirmacoes.outrasCidades` e `.atendeExterior`; moeda, contrato e forma de pagamento "combinados por escrito antes de começar", sem afirmar moeda, nota de exportação, foro nem fuso); **a Sprint de Descoberta dura, em geral, 1 semana** (D42, 21/10/2026, `descoberta.duracao` + `confirmacoes.duracaoDescoberta`; sempre com "depende do tamanho do problema" e "duração combinada antes de começar", junto com o valor).
+5. **Fatos confirmados** (os únicos que podem ser afirmados): nome Lemamon.dev; domínio lemamon.dev; São Paulo, SP, Brasil; razão social Lemamon.dev LTDA e CNPJ 69.700.690/0001-98 (D39, só com `hasCompanyData`); software sob medida (sistemas web, aplicativos, integrações, produtos digitais/MVPs, sustentação); e-mail lemamon.dev@gmail.com; WhatsApp (o número vem de variável de ambiente e o copy diz só "WhatsApp"); GitHub github.com/lemamon-dev; LinkedIn linkedin.com/in/lemamon-dev; Medium medium.com/@lemamon.dev; o processo do item 2; **atende empresas de outras cidades do Brasil e de qualquer país, a distância, em português, inglês ou espanhol, com o mesmo processo** (D31, 21/10/2026, `confirmacoes.outrasCidades` e `.atendeExterior`; moeda, contrato e forma de pagamento "combinados por escrito antes de começar", sem afirmar moeda, nota de exportação, foro nem fuso); **a Sprint de Descoberta dura, em geral, 1 semana** (D42, 21/10/2026, `descoberta.duracao` + `confirmacoes.duracaoDescoberta`; sempre com "depende do tamanho do problema" e "duração combinada antes de começar", junto com o valor).
 6. **Restrição do Google Ads:** a conversão "Solicitar cotação" é registrada no wizard, hoje em `/projects`. A rota muda, então o **301 é obrigatório** (§10).
 7. **Idiomas:** pt-BR na raiz `/`, inglês em `/en/`, espanhol neutro latino-americano em `/es/`, com "tú" em todo o site.
 
@@ -65,7 +65,7 @@
 | 10 | Quanto custa | `/quanto-custa` | `/en/pricing` | `/es/cuanto-cuesta` | always | quanto custa desenvolver um sistema | `pricing` |
 | 11 | Orçamento (wizard) | `/orcamento` | `/en/quote` | `/es/cotizacion` | always | orçamento de desenvolvimento de software | `quote` |
 | 12 | Pedido enviado | `/orcamento/enviado` | `/en/quote/sent` | `/es/cotizacion/enviada` | always, **noindex** | — | `quote.sent` |
-| 13 | Contato | `/contato` | `/en/contact` | `/es/contacto` | always | Lemamon contato | `contact` |
+| 13 | Contato | `/contato` | `/en/contact` | `/es/contacto` | always | Lemamon.dev contato | `contact` |
 | 14 | Política de Privacidade | `/privacidade` | `/en/privacy` | `/es/privacidad` | always (noindex opcional) | — | `privacy` |
 | 15 | 404 | `404.html` | `/en/404.html` | `/es/404.html` | always, noindex | — | `shared.not_found` |
 | 16 | Cases (hub) | `/cases` | `/en/cases` | `/es/casos` | when_data: `hasCases` (≥ 2 cases publicados) | cases de desenvolvimento de software | `cases.hub` |
@@ -168,7 +168,7 @@ Explicações curtas e inline para o comprador não técnico: **protótipo**, **
 
 ### 6.1 Home (`/`) · copy `home`
 
-**Propósito:** em 5 segundos dizer o que a Lemamon faz, para quem e qual é o diferencial (escopo, prazo e preço combinados antes de começar), e levar ao diagnóstico gratuito ou ao WhatsApp. É otimizada para a Cláudia e o Rafael. O Marcos chega por Como trabalhamos e Sustentação.
+**Propósito:** em 5 segundos dizer o que a Lemamon.dev faz, para quem e qual é o diferencial (escopo, prazo e preço combinados antes de começar), e levar ao diagnóstico gratuito ou ao WhatsApp. É otimizada para a Cláudia e o Rafael. O Marcos chega por Como trabalhamos e Sustentação.
 **Title/description:** keyword "desenvolvimento de software sob medida" + promessa + diagnóstico de 45 min.
 **JSON-LD:** Organization + ProfessionalService (nome, url, e-mail, São Paulo/SP/BR via `ADDRESS` em `src/config/site.ts`, sameAs com os 3 perfis; com `hasCompanyData`, `legalName` e `taxID`; sem areaServed, sem rating).
 
@@ -200,7 +200,7 @@ Ordem (as seções when_data somem sem deixar rastro; hoje vão ao ar 8 seções
 **2. `commitments`** · always — componente §5.3. Faixa logo abaixo do hero, sem título e sem CTA. 4 colunas no desktop, 2×2 no tablet, lista no mobile.
 
 **3. `logos`** · when_data `hasLogos` (≥ 4 com autorização escrita)
-- Rótulo sem H2 ("Empresas que já trabalharam com a Lemamon"). Logos monocromáticos, alt = nome da empresa, link opcional para o case. Sem marquee. Fica abaixo da faixa de compromissos.
+- Rótulo sem H2 ("Empresas que já trabalharam com a Lemamon.dev"). Logos monocromáticos, alt = nome da empresa, link opcional para o case. Sem marquee. Fica abaixo da faixa de compromissos.
 
 **4. `problem`** · always · identificação
 - Propósito: o visitante se reconhece na **dor operacional** antes de ouvir sobre a solução, mesmo sem nunca ter contratado software.
@@ -210,8 +210,8 @@ Ordem (as seções when_data somem sem deixar rastro; hoje vão ao ar 8 seções
 
 **5. `risks`** · always · objeção de risco
 - Propósito: nomear o medo de contratar software (a objeção central "vou pagar, vai atrasar e não vai funcionar") e responder cada medo com uma etapa confirmada do método.
-- Conteúdo: título que trata o medo como algo comum e não como experiência do leitor (texto-guia: "O que costuma dar errado quando se contrata software"); 4 pares **medo → como a Lemamon evita**: (1) orçamentos impossíveis de comparar, porque cada fornecedor entendeu uma coisa → escopo priorizado e preço fechado na Sprint de Descoberta; (2) meses sem ver nada funcionando → software funcionando a cada 2 semanas; (3) um escopo que ninguém escreveu e um preço que só cresce → escopo priorizado e protótipo antes do desenvolvimento; (4) o fornecedor que some depois do lançamento → sustentação e evolução contínua. **Frase-ponte** colada no método: "Em todos esses casos, faltou combinar antes de começar. É assim que a gente evita isso:".
-- Notas: nunca nomeia concorrente. O lado "medo" fica em tom neutro e o lado "Lemamon" em cor de destaque. 2×2 no desktop, pares empilhados no mobile.
+- Conteúdo: título que trata o medo como algo comum e não como experiência do leitor (texto-guia: "O que costuma dar errado quando se contrata software"); 4 pares **medo → como a Lemamon.dev evita**: (1) orçamentos impossíveis de comparar, porque cada fornecedor entendeu uma coisa → escopo priorizado e preço fechado na Sprint de Descoberta; (2) meses sem ver nada funcionando → software funcionando a cada 2 semanas; (3) um escopo que ninguém escreveu e um preço que só cresce → escopo priorizado e protótipo antes do desenvolvimento; (4) o fornecedor que some depois do lançamento → sustentação e evolução contínua. **Frase-ponte** colada no método: "Em todos esses casos, faltou combinar antes de começar. É assim que a gente evita isso:".
+- Notas: nunca nomeia concorrente. O lado "medo" fica em tom neutro e o lado "Lemamon.dev" em cor de destaque. 2×2 no desktop, pares empilhados no mobile.
 
 **6. `method`** · always · diferenciação (âncora `#como-trabalhamos`)
 - Propósito: seção pedida pelo dono e coração do posicionamento. Mostra as 4 etapas, o que o cliente recebe em cada uma e onde ele decide.
@@ -233,7 +233,7 @@ Ordem (as seções when_data somem sem deixar rastro; hoje vão ao ar 8 seções
 **10. `investment`** · when_data `hasPricing` — componente §5.4 com todas as linhas preenchidas. Quando visível, o FAQ "Quanto custa?" ganha o link "Ver faixas de referência".
 
 **11. `team`** · when_data `hasTeam`
-- H2 ("Quem vai trabalhar no seu projeto"); por pessoa: foto real, nome, papel, 1 linha escrita pela pessoa, LinkedIn/GitHub; link "Conhecer a Lemamon" → `/sobre`. Fica imediatamente antes de `trust_profiles`.
+- H2 ("Quem vai trabalhar no seu projeto"); por pessoa: foto real, nome, papel, 1 linha escrita pela pessoa, LinkedIn/GitHub; link "Conhecer a Lemamon.dev" → `/sobre`. Fica imediatamente antes de `trust_profiles`.
 
 **12. `trust_profiles`** · when_data `hasProfiles`
 - Propósito: dar ao comprador (e ao sócio dele) uma forma de checar que a empresa existe e trabalha em público. É o substituto honesto da prova social enquanto ela não existe, e o gatilho nº 1 do Marcos.
@@ -250,7 +250,7 @@ Ordem (as seções when_data somem sem deixar rastro; hoje vão ao ar 8 seções
 ### 6.2 Como trabalhamos (`/como-trabalhamos`) · copy `how_we_work`
 
 **Propósito:** página-pilar do posicionamento. Detalha o método para quem precisa entender ou justificar a contratação (a Cláudia para o sócio, o Marcos para o chefe) e para o lead que acabou de receber a devolutiva. É o destino de "Ver cada etapa em detalhe".
-**Title:** "Como trabalhamos: escopo, prazo e preço fechados | Lemamon".
+**Title:** "Como trabalhamos: escopo, prazo e preço fechados | Lemamon.dev".
 
 | # | id | Visib. | Propósito | Papel | CTA |
 |---|---|---|---|---|---|
@@ -263,7 +263,7 @@ Ordem (as seções when_data somem sem deixar rastro; hoje vão ao ar 8 seções
 | 7 | `stage_development` (#desenvolvimento) | always | Etapa 3, entregas a cada 2 semanas; mini-ciclo em 4 passos (a gente constrói → você recebe funcionando → você usa e comenta → próximo ciclo); "Você recebe: software funcionando, não apresentação de slide"; por que importa: você vê o progresso no próprio software e percebe cedo o que precisa de ajuste | redução de risco | — |
 | 8 | `stage_support` (#sustentacao) | always | Etapa 4, contínua: depois que entra no ar, o sistema segue cuidado e evoluindo | objeção pós-entrega | Link → `/servicos/sustentacao` |
 | 9 | `decide` | always | "Você decide com informação na mão": os 2 pontos de decisão, com destaque | redução de risco | Começar pelo diagnóstico gratuito → `/orcamento?origem=metodo-decide` |
-| 10 | `comparison` | always | Tabela "Sem combinado × Com o método da Lemamon", em 5 linhas: Preço ("a partir de", dado antes de entender o problema × fechado na Descoberta, antes do desenvolvimento) · Prazo (estimado no escuro × no plano, junto com o preço) · Escopo (lista de desejos × priorizado e prototipado) · Acompanhamento (reunião de status e slide × software funcionando a cada 2 semanas) · Depois do lançamento (cada um por si × sustentação e evolução contínua); com o rascunho `answer_draft` de `codigoProprietario`, uma 6ª linha, Código (nem sempre é seu × é da sua empresa, por contrato; F01). Nunca nomeia concorrente. | convicção (material para o sócio) | — |
+| 10 | `comparison` | always | Tabela "Sem combinado × Com o método da Lemamon.dev", em 5 linhas: Preço ("a partir de", dado antes de entender o problema × fechado na Descoberta, antes do desenvolvimento) · Prazo (estimado no escuro × no plano, junto com o preço) · Escopo (lista de desejos × priorizado e prototipado) · Acompanhamento (reunião de status e slide × software funcionando a cada 2 semanas) · Depois do lançamento (cada um por si × sustentação e evolução contínua); com o rascunho `answer_draft` de `codigoProprietario`, uma 6ª linha, Código (nem sempre é seu × é da sua empresa, por contrato; F01). Nunca nomeia concorrente. | convicção (material para o sócio) | — |
 | 11 | `proof` | when_data `hasCases` (≥ 1) ou `hasTestimonials` | "O método na prática": 1–2 cases com a linha do tempo real e/ou 1 depoimento sobre o processo | prova | — |
 | 12 | `engineering` | when_data `hasEngineering` | "Como a gente constrói": práticas preenchidas pelo dono (testes, CI/CD, code review, onde fica o repositório, documentação, passagem de conhecimento). Só rótulos e introdução no copy. | confiança técnica (Marcos) | — |
 | 13 | `investment` | when_data `hasPricing` | §5.4, linhas `descoberta` + todas de desenvolvimento + `sustentacao` | objeção de preço | Pedir diagnóstico gratuito |
@@ -298,7 +298,7 @@ Ordem (as seções when_data somem sem deixar rastro; hoje vão ao ar 8 seções
 
 | # | id | Visib. | Conteúdo | Papel | CTA |
 |---|---|---|---|---|---|
-| 1 | `hero` | always | H1 "O que a Lemamon desenvolve"; subtítulo: sistemas web, aplicativos, integrações, MVPs e sustentação, todos com escopo, prazo e preço combinados antes de começar. Curto, para a lista aparecer na primeira rolagem do mobile. | consideração | Pedir diagnóstico gratuito → `/orcamento?origem=servicos-hero` |
+| 1 | `hero` | always | H1 "O que a Lemamon.dev desenvolve"; subtítulo: sistemas web, aplicativos, integrações, MVPs e sustentação, todos com escopo, prazo e preço combinados antes de começar. Curto, para a lista aparecer na primeira rolagem do mobile. | consideração | Pedir diagnóstico gratuito → `/orcamento?origem=servicos-hero` |
 | 2 | `list` | always | 5 cards: nome, "Para quando…" (1 frase), 3 exemplos curtos e "Ver como funciona" | navegação + SEO interno | cada card → `/servicos/[slug]` |
 | 3 | `same_method` | always | H2 "Qualquer que seja o projeto, o mesmo método"; linha do método compacta; link | diferenciação | Ver como trabalhamos → `/como-trabalhamos` |
 | 4 | `investment` | when_data `hasPricing` | §5.4 com todas as linhas | objeção de preço | — |
@@ -314,7 +314,7 @@ Um único componente alimentado por dados por slug, com 5 páginas. Cada uma pre
 
 | # | id | Visib. | Propósito | Papel | CTA |
 |---|---|---|---|---|---|
-| 1 | `hero` | always | breadcrumb "Início › Serviços › {serviço}"; eyebrow "Serviço"; H1 com a keyword; subtítulo (até 140 caracteres) que une o serviço ao método; microcopy "Sem compromisso · 45 minutos · devolutiva por escrito" (F41). No MVP (F01, F12): com `confirmacoes.nda`, " · NDA se você pedir" no fim da microcopy, e abaixo dela o link terciário "Quanto custa e quanto tempo leva um MVP? ↓" para `#perguntas` (`cta_click`, origem `mvp-hero-preco`) | atenção + conversão | Pedir diagnóstico gratuito → `/orcamento?servico={slug}&origem={slug}-hero`; secundário WhatsApp ("Olá! Vim pela página de {serviço} da Lemamon.") |
+| 1 | `hero` | always | breadcrumb "Início › Serviços › {serviço}"; eyebrow "Serviço"; H1 com a keyword; subtítulo (até 140 caracteres) que une o serviço ao método; microcopy "Sem compromisso · 45 minutos · devolutiva por escrito" (F41). No MVP (F01, F12): com `confirmacoes.nda`, " · NDA se você pedir" no fim da microcopy, e abaixo dela o link terciário "Quanto custa e quanto tempo leva um MVP? ↓" para `#perguntas` (`cta_click`, origem `mvp-hero-preco`) | atenção + conversão | Pedir diagnóstico gratuito → `/orcamento?servico={slug}&origem={slug}-hero`; secundário WhatsApp ("Olá! Vim pela página de {serviço} da Lemamon.dev.") |
 | 1b | `commitments` | always | Faixa de compromissos (§5.3) logo depois do hero, com o selo "São Paulo, SP". Nas 4 páginas de projeto, os 4 itens (o 4º é o código do cliente, com `codigoProprietario`; §5.3); em sustentação, só "Sustentação e evolução depois que entra no ar" (os outros 3 descrevem o método de projeto). Regra antes de qualquer campanha de Ads nestas páginas. (Onda 2, §15.5) | confiança imediata | — |
 | 2 | `signals` | always | H2 "Faz sentido quando…"; 4–5 sinais na voz do cliente | identificação | — |
 | 3 | `examples` | always | H2 **"Exemplos do que dá para construir"** (nunca "o que já construímos" enquanto não houver case); 4–7 exemplos tirados do escopo atual do wizard | consideração | — |
@@ -372,7 +372,7 @@ Um único componente alimentado por dados por slug, com 5 páginas. Cada uma pre
 ### 6.6 Quanto custa (`/quanto-custa`) · copy `pricing`
 
 **Propósito:** atender a busca nº 1 do comprador e transformar a falta de preço publicado em argumento do método. Funciona sem números e dá à compradora uma régua para comparar propostas. As faixas entram no topo quando `precos.ts` for preenchido.
-**Title:** "Quanto custa um software sob medida? | Lemamon".
+**Title:** "Quanto custa um software sob medida? | Lemamon.dev".
 
 | # | id | Visib. | Conteúdo | Papel | CTA |
 |---|---|---|---|---|---|
@@ -390,7 +390,7 @@ Um único componente alimentado por dados por slug, com 5 páginas. Cada uma pre
 ### 6.7 Orçamento — página do wizard (`/orcamento`) · copy `quote`
 
 **Propósito:** página de conversão. Recebe o 301 de `/projects` e é onde o Ads registra a conversão. A casca é HTML estático e indexável, e a ilha React (`client:load`) cuida das perguntas.
-**Title:** "Orçamento de software sob medida: comece pelo diagnóstico gratuito | Lemamon". **Description:** cita "orçamento" com honestidade e promete o diagnóstico de 45 min.
+**Title:** "Orçamento de software sob medida: comece pelo diagnóstico gratuito | Lemamon.dev". **Description:** cita "orçamento" com honestidade e promete o diagnóstico de 45 min.
 **Header reduzido** em toda a rota (§8.4) e footer mínimo (Política de Privacidade + e-mail; com `hasCompanyData`, razão social · CNPJ numa linha própria).
 
 | # | id | Visib. | Conteúdo | Papel | CTA |
@@ -411,7 +411,7 @@ Página estática separada. Lê o resumo do `sessionStorage` e tem uma versão g
 
 | # | id | Visib. | Conteúdo | Papel | CTA |
 |---|---|---|---|---|---|
-| 1 | `hero` | always | H1 "Fale com a Lemamon"; subtítulo: para projeto novo, o caminho mais rápido é o diagnóstico gratuito; para o resto, escolha o canal | conversão | Pedir diagnóstico gratuito → `/orcamento?origem=contato`; WhatsApp |
+| 1 | `hero` | always | H1 "Fale com a Lemamon.dev"; subtítulo: para projeto novo, o caminho mais rápido é o diagnóstico gratuito; para o resto, escolha o canal | conversão | Pedir diagnóstico gratuito → `/orcamento?origem=contato`; WhatsApp |
 | 2 | `channels` | always | Cards: Diagnóstico gratuito (selo "recomendado para projetos"; 45 minutos, devolutiva por escrito) · WhatsApp (botão, sem número) · E-mail lemamon.dev@gmail.com (texto + "Copiar") · LinkedIn · GitHub · Medium numa linha de links depois dos cards (auditoria F14: perfil ainda vazio não ganha card antes do formulário) · "São Paulo, SP, Brasil" | confiança | — |
 | 3 | `form` | always | H2 "Prefere escrever?"; campos: Nome*, E-mail*, WhatsApp (opcional), Assunto* (Projeto novo · Sistema que já existe · Parceria · Outro), Mensagem*; honeypot; aviso LGPD; botão "Enviar mensagem". Se o assunto for "Projeto novo", aparece a dica inline "Para projeto novo, o diagnóstico gratuito é mais rápido →". Sucesso: "Mensagem recebida. A gente responde no e-mail informado." (sem prazo). Erro: dados preservados, com "Tentar de novo", WhatsApp e e-mail. | conversão secundária | Enviar mensagem |
 
@@ -435,7 +435,7 @@ Netlify Forms `contato`, separado do `briefing` (§7.10). Labels visíveis, `aut
 ### 6.11 Sobre (`/sobre`) · copy `about` · when_data `hasTeam`
 
 Só vai ao ar com pelo menos 1 pessoa completa (foto, nome, papel). Sem pessoas, a página confirmaria a suspeita "é freelancer?". Até lá, a cidade (São Paulo, SP) e os perfis ficam no footer, em `/contato` e na Home (`trust_profiles`).
-1. `hero`: H1 "Quem é a Lemamon"; subtítulo do dono; São Paulo, SP.
+1. `hero`: H1 "Quem é a Lemamon.dev"; subtítulo do dono; São Paulo, SP.
 2. `beliefs`: "No que a gente acredita", 4 pares crença → prática ligados ao método (preço sem entender o problema é chute → a Descoberta vem antes do preço; progresso se mede em software funcionando → entregas a cada 2 semanas; software no ar continua precisando de cuidado → sustentação e evolução; a primeira conversa tem que valer por si → diagnóstico gratuito com devolutiva por escrito).
 3. `story`: when_data (texto do dono), "Por que a gente trabalha assim".
 4. `team`: cards completos.
@@ -449,7 +449,7 @@ Para dois públicos: quem vai contratar software (fundo de funil) e o avaliador 
 
 ### 6.13 Política de Privacidade (`/privacidade`) · copy `privacy`
 
-H1, data de atualização, sumário de âncoras e seções: quem controla os dados (Lemamon e lemamon.dev@gmail.com; razão social e CNPJ via `empresa.ts`) · dados coletados pelos formulários (wizard e contato: nome, e-mail, telefone/WhatsApp, empresa, respostas, mensagem) · dados de navegação (Google Analytics 4, Google Ads, New Relic Browser com sessão mascarada) · finalidades (responder ao pedido e conduzir a conversa; medir o site) · base legal · operadores (Netlify para hospedagem e formulários, Google, New Relic; WhatsApp/Meta quando o visitante clica) · retenção (definida pelo dono) · direitos do titular (LGPD art. 18) e como exercer · contato. **Revisão jurídica antes de publicar.** Ferramentas opcionais que recebem dados dos pedidos (agenda online, CRM ou planilha na nuvem, e-mail de acompanhamento, automação/webhook do Netlify Forms, chat da equipe) já têm item de operador e de retenção escrito; cada um só aparece quando o dono declara a ferramenta em `privacidade.ts › ferramentas` com fornecedor e prazo, e ligar `agenda.ts` sem declarar a agenda trava o build de produção. A trava geral (`privacyLaunchBlockers()`) está ligada: o build de produção falha enquanto faltar controlador, base legal de anúncios, encarregado, prazos ou data.
+H1, data de atualização, sumário de âncoras e seções: quem controla os dados (Lemamon.dev e lemamon.dev@gmail.com; razão social e CNPJ via `empresa.ts`) · dados coletados pelos formulários (wizard e contato: nome, e-mail, telefone/WhatsApp, empresa, respostas, mensagem) · dados de navegação (Google Analytics 4, Google Ads, New Relic Browser com sessão mascarada) · finalidades (responder ao pedido e conduzir a conversa; medir o site) · base legal · operadores (Netlify para hospedagem e formulários, Google, New Relic; WhatsApp/Meta quando o visitante clica) · retenção (definida pelo dono) · direitos do titular (LGPD art. 18) e como exercer · contato. **Revisão jurídica antes de publicar.** Ferramentas opcionais que recebem dados dos pedidos (agenda online, CRM ou planilha na nuvem, e-mail de acompanhamento, automação/webhook do Netlify Forms, chat da equipe) já têm item de operador e de retenção escrito; cada um só aparece quando o dono declara a ferramenta em `privacidade.ts › ferramentas` com fornecedor e prazo, e ligar `agenda.ts` sem declarar a agenda trava o build de produção. A trava geral (`privacyLaunchBlockers()`) está ligada: o build de produção falha enquanto faltar controlador, base legal de anúncios, encarregado, prazos ou data.
 
 ### 6.14 404 · copy `shared.not_found`
 
@@ -481,7 +481,7 @@ H1 "Esta página não existe"; 1 frase ("O endereço pode ter mudado. Estes cami
 - **Sem avanço automático** (WCAG 3.2.2): sempre há "Continuar", que fica sempre habilitado. Sem seleção, aparece um erro (`aria-invalid` nas opções, foco na primeira opção e o texto na região `aria-live`). O texto visível fica na nota da barra de ação, logo abaixo do "Continuar", em vermelho e negrito; o aviso "Você já marcou 3" da P3 também. No fluxo, atrás da barra fixa, ninguém via o erro (auditoria F05). "Voltar" preserva as respostas.
 - **Trava de duplo clique:** um clique de ponteiro nos primeiros 400 ms de uma tela nova (700 ms no contato) é o 2º clique de um duplo clique da tela anterior e é ignorado; Enter e Espaço nunca são travados. Sem a trava, o 2º clique marcava uma opção não escolhida (desktop), pulava a P3 (celular) ou caía no envio do contato, que fica quase no mesmo lugar do botão do resumo (auditoria F06 e F21).
 - Multisseleção: contador "N selecionadas"; "Ainda não sei" é exclusiva (marcá-la desmarca as outras e vice-versa). A P3 tem o limite "até 3" e o botão "Pular"; "Continuar" na P3 sem nada marcado conta como "Pular" (`wizard_skip`). Na P3, o contador "Selecionadas: N de 3" fica logo abaixo do texto de apoio, no topo da pergunta.
-- A cada passo: `document.title` = "Pergunta N de 6 · Orçamento | Lemamon"; o foco vai para a legend; uma região `aria-live=polite` anuncia o passo.
+- A cada passo: `document.title` = "Pergunta N de 6 · Orçamento | Lemamon.dev"; o foco vai para a legend; uma região `aria-live=polite` anuncia o passo.
 - No mobile: barra de ação fixa no rodapé com "Voltar" (texto, à esquerda) e "Continuar" (primário, ~70%). Respeita a safe-area e some com o teclado aberto (a altura dela continua valendo no `scroll-padding`, para o campo trazido à tela não ficar atrás da barra quando o teclado fecha). No desktop (≥ 768px, com altura útil a partir de 34em), a barra gruda no rodapé (`position: sticky`) e o "Continuar" das P2–P5 não fica abaixo da dobra no notebook (auditoria F04). O contato continua numa coluna só. Transições respeitam `prefers-reduced-motion`.
 - Ramificação mínima: **N é sempre 6**. As variações são só de texto ou de conjunto de opções (P2, P3, P5), nunca pulam uma pergunta.
 
@@ -554,7 +554,7 @@ Pergunta: "Quando isso precisa estar funcionando?" · Apoio: "Prazo é uma das t
 | `not_defined` | Ainda não tenho prazo definido |
 
 Campo `deadline_reason` (texto, opcional): "Existe alguma data que trava isso? (opcional)", com placeholder "Ex.: um evento, um contrato, uma temporada."
-Propósito: timing (o T do BANT). São prazos **do cliente**, não promessa da Lemamon. A data travante é o melhor sinal de urgência real e vai para a notificação do comercial.
+Propósito: timing (o T do BANT). São prazos **do cliente**, não promessa da Lemamon.dev. A data travante é o melhor sinal de urgência real e vai para a notificação do comercial.
 
 **P5 — `budget`** · seleção única · obrigatória · **sem nenhum valor no copy**
 - **Modo com faixas** (`hasBudgetTiers`): Pergunta "Quanto você pretende investir neste projeto?" · Apoio: "É uma referência para a conversa começar do tamanho certo. Não é orçamento nem compromisso: o preço fechado sai da Sprint de Descoberta." Opções `tier_1`…`tier_4` com rótulos vindos de `qualificacao.ts`, por idioma (não são copy; o dono valida; os limites sugeridos nos documentos são o corte de MQL do README §7), mais as opções de copy `not_sure` ("Ainda não sei — quero entender o que é razoável") e `prefer_to_discuss` ("Prefiro conversar sobre isso no diagnóstico").
@@ -655,8 +655,8 @@ Botão **"Pedir meu diagnóstico gratuito"**, sempre habilitado; Enter envia. Ab
 
 | Contexto | Conteúdo |
 |---|---|
-| Página (botão flutuante, header, CTA final) | "Olá! Vim pela página {página} da Lemamon e quero conversar sobre um projeto." |
-| Serviço | "Olá! Vim pela página de {serviço} da Lemamon." |
+| Página (botão flutuante, header, CTA final) | "Olá! Vim pela página {página} da Lemamon.dev e quero conversar sobre um projeto." |
+| Serviço | "Olá! Vim pela página de {serviço} da Lemamon.dev." |
 | Case | "Olá! Vim pelo case {nome} e quero algo parecido." |
 | Resumo do wizard | saudação + respostas resumidas + "Quero pedir o diagnóstico gratuito." |
 | Falha de envio | saudação + protocolo + respostas + nome/empresa informados |
@@ -722,9 +722,9 @@ Antes de "Começar": logo + link "Dúvidas? WhatsApp", sem menu e sem CTA de hea
 ### 8.5 Footer (todas as páginas, exceto o footer mínimo do wizard)
 - **Coluna 1:** logo; "Software sob medida com escopo, prazo e preço combinados antes de começar."; "São Paulo, SP, Brasil".
 - **Coluna 2 — Serviços:** os 5 serviços + Sprint de Descoberta.
-- **Coluna 3 — Lemamon:** Como trabalhamos · Quanto custa · Cases* · Sobre* · Blog* · Contato.
+- **Coluna 3 — Lemamon.dev:** Como trabalhamos · Quanto custa · Cases* · Sobre* · Blog* · Contato.
 - **Coluna 4 — Fale com a gente:** Pedir diagnóstico gratuito · WhatsApp · lemamon.dev@gmail.com (texto + "Copiar") · LinkedIn · GitHub · Medium, visíveis também no mobile.
-- **Barra inferior:** © {ano} Lemamon · São Paulo, SP · razão social · CNPJ* (`empresa`; hoje "Lemamon.dev LTDA · CNPJ 69.700.690/0001-98") · Política de Privacidade · seletor "Português · English · Español" (`<a hreflang lang>`).
+- **Barra inferior:** © {ano} Lemamon.dev · São Paulo, SP · razão social · CNPJ* (`empresa`; hoje "Lemamon.dev LTDA · CNPJ 69.700.690/0001-98") · Política de Privacidade · seletor "Português · English · Español" (`<a hreflang lang>`).
 - Nenhum link aponta para `/` como placeholder, e nenhum item leva a página inexistente.
 
 ### 8.6 Escada de CTA (regra do site inteiro)
@@ -837,7 +837,7 @@ Ordem de escrita sugerida: `estrutura` (fixa os termos e componentes) → `home`
 4. **Faixas de qualificação** do wizard (`qualificacao.ts`) e o corte de MQL. Sem elas, a P5 usa a versão sem números.
 5. **Flags de FAQ:** propriedade do código (feito, decisão 9), NF, outras cidades/países (feito em 21/10/2026, D31), NDA (feito, decisão 10), sistema de terceiros (afeta `/servicos/sustentacao` e a opção `maintain_live_system`), começar sem Descoberta, duração da Descoberta (feito em 21/10/2026, D42: "em geral 1 semana"), o plano é do cliente se ele não seguir, Descoberta abatida do desenvolvimento, migração de dados.
 6. **Conteúdo da devolutiva** (`devolutivaConteudo`), para explicar o que o cliente recebe.
-7. **Canal "Ligação"**: confirmar que a Lemamon liga para quem escolher essa opção.
+7. **Canal "Ligação"**: confirmar que a Lemamon.dev liga para quem escolher essa opção.
 8. **Agenda online** (`agenda.ts`): muda o pós-envio e permite o rótulo "Agendar".
 9. **Faixas de preço** (`precos.ts`): libera "Investimento" em todo o site e o bloco de preço do resumo.
 10. **Formato da Descoberta e da sustentação** (`descoberta.ts`, `sustentacao.ts`) e **práticas de engenharia** (`engenharia.ts`).
@@ -919,7 +919,7 @@ Ordem de escrita sugerida: `estrutura` (fixa os termos e componentes) → `home`
 | "Quanto custa" no menu | Cláudia: no menu · Comercial: só quando houver faixas | **No menu sempre** | A página responde com honestidade na 1ª frase e entrega valor sem números (fatores, como chegar ao preço, como comparar propostas); o item no menu sinaliza transparência para a objeção nº 1 |
 | /sobre | C: sempre · A, B, todos os juízes: when_data | **when_data (≥ 1 pessoa completa)** | Página sem pessoas reforça a suspeita de freelancer |
 | Unicidade do FAQ por página | C: perguntas distintas por página · Tech lead: não precisa | **Banco central, repetição permitida** | Rich result de FAQ não aparece para sites comerciais; menos texto para escrever e traduzir |
-| FAQ "A Lemamon é uma fábrica de software?" | C | **Removido** | Rafael, Cláudia e Marcos: soa como truque de SEO e adota o enquadramento de commodity |
+| FAQ "A Lemamon.dev é uma fábrica de software?" | C | **Removido** | Rafael, Cláudia e Marcos: soa como truque de SEO e adota o enquadramento de commodity |
 | Ordem do wizard | A: dor em 2º · B, C: tipo em 2º | **estágio → tipo → dor → prazo → orçamento → papel** | `?servico=` pré-marca a P2; dinheiro e decisão no fim |
 | Dor obrigatória | B: obrigatória · A, C: opcional | **Opcional, com "Pular"** | Comercial: não travar quem tem pressa |
 | Ramificação | B: pula a P5 · C: troca a pergunta · Tech lead: N fixo | **N fixo em 6**; varia só texto ou conjunto de opções (P2, P3, P5) | Progresso estável e menos caminhos de código; o ramo `system_pain` de C (Marcos) cabe sem mudar N |

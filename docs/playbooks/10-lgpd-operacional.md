@@ -9,10 +9,10 @@
 
 ## 1. Papéis
 
-| Situação | Papel da Lemamon |
+| Situação | Papel da Lemamon.dev |
 |---|---|
 | Pedidos do site (wizard e `/contato`), conversas por WhatsApp e e-mail, medição do site | **controladora** |
-| Sistemas que a Lemamon desenvolve ou mantém e que tratam dados dos clientes do cliente | **operadora** do cliente (ver §12) |
+| Sistemas que a Lemamon.dev desenvolve ou mantém e que tratam dados dos clientes do cliente | **operadora** do cliente (ver §12) |
 
 Controlador identificado na Política: razão social + CNPJ em `dados/dono.json › empresa`, hoje Lemamon.dev LTDA, CNPJ 69.700.690/0001-98 (D39). O nome da pessoa responsável (`empresa.responsavel`) só serve para controlador sem PJ e fica vazio.
 
@@ -37,7 +37,7 @@ Valores e formato de `dados/dono.json › empresa` e `› privacidade`: playbook
 | Netlify | hospedagem e formulários | campos do `briefing` e do `contato`; o Netlify também registra IP e navegador de quem envia; logs de acesso | o filtro de spam dos formulários usa o Akismet (citar ou não como suboperador: advogado, item g) |
 | Google Analytics 4 | medição do site | navegação e eventos; respostas do wizard só no `lead_submitted` | retenção configurada no GA4 |
 | Google Ads | medir anúncios | cookies de clique, `gclid`, conversão no envio e importação offline da evolução do pedido | papel do Google: advogado, item i |
-| Gmail (Google) | e-mail da Lemamon e notificações de formulário | tudo o que chega por e-mail | com Google Workspace e aditivo assinado, a Política troca para `email_with_workspace` (playbook 11) |
+| Gmail (Google) | e-mail da Lemamon.dev e notificações de formulário | tudo o que chega por e-mail | com Google Workspace e aditivo assinado, a Política troca para `email_with_workspace` (playbook 11) |
 | New Relic | desempenho e erros | navegação, velocidade e erros (sem gravação de sessão); no `lead_failed`, só motivo, tentativas, status HTTP, formulário e o código do pedido, nada do que a pessoa digitou | ver §11 |
 | WhatsApp (Meta) | conversa quando o visitante clica | o que a pessoa envia | backups no Google Drive ou iCloud entram na rotina de exclusão |
 
@@ -56,14 +56,14 @@ Se uma ferramenta sair do site, o item dela sai da Política e a data muda: a li
 
 - [ ] **(a)** Base legal dos cookies do Google Ads e da importação offline pelo `gclid`: legítimo interesse (sem aviso de cookies, com teste de balanceamento documentado) ou consentimento (com aviso de cookies).
 - [ ] **(b)** Mecanismo de transferência internacional de cada fornecedor (art. 33; Res. CD/ANPD 19/2024) → `mecanismoTransferencia`.
-- [ ] **(c)** Encarregado (art. 41): a Lemamon se enquadra como agente de pequeno porte (Res. CD/ANPD 2/2022)? → `encarregado`.
+- [ ] **(c)** Encarregado (art. 41): a Lemamon.dev se enquadra como agente de pequeno porte (Res. CD/ANPD 2/2022)? → `encarregado`.
 - [ ] **(d)** Base legal no B2B (art. 7º): quem preenche costuma falar em nome de uma empresa.
 - [ ] **(e)** Classificação automática dos pedidos (arts. 9º e 20): se ela também definir a forma de atendimento (retomada para C, resposta própria para D), ligar `privacidade.classificacaoDefineAtendimento` (usa as variantes `*_with_routing`).
 - [ ] **(f)** Fornecedor do e-mail (`privacidade.provedorEmail`, playbook 11). Hoje é Microsoft 365 contratado pela GoDaddy (D41): confirmar se o termo de tratamento de dados da Microsoft cobre a conta contratada pela GoDaddy e se a GoDaddy, que administra a conta, entra como suboperador à parte.
 - [ ] **(g)** Akismet como suboperador.
 - [ ] **(h)** Prazos de retenção e se a exclusão alcança os backups (lixeira e backups do e-mail, inclusive do Gmail antigo enquanto ele existir; backup do WhatsApp).
 - [ ] **(i)** Papel do Google no Ads e no GA4 (operador ou controlador independente) e o prazo das conversões enviadas.
-- [ ] **(j)** Efeito da oposição por e-mail (a Lemamon deixa de informar ao Ads como o pedido evoluiu).
+- [ ] **(j)** Efeito da oposição por e-mail (a Lemamon.dev deixa de informar ao Ads como o pedido evoluiu).
 - [ ] **(k)** Base e texto do remarketing, se for ativado.
 - [ ] **(l)** Marco Civil, art. 15: guarda de registros de acesso e o prazo dos logs da Netlify.
 - [ ] **(m)** "Não vendemos dados pessoais": confirmar que o envio de conversões ao Ads não é venda nem compartilhamento comercial. A frase só vai ao ar com `privacidade.naoVendemosConfirmado = true` (sua confirmação e a do advogado).
@@ -164,7 +164,7 @@ Registre a decisão em [15](15-registro-de-decisoes.md) D05. O banner e o Consen
 
 **New Relic (B274):** a gravação de sessão **já está desligada no código**: `public/scripts/newrelic.js` tem `NREUM.init.session_replay.enabled = false` com `sampling_rate` e `error_sampling_rate` em 0, conferido pelo teste `src/components/shell/shell-assets.test.ts`. Ficam o desempenho (RUM), os erros de JS e o PageAction `lead_failed` (alerta do [06](06-ga4-e-medicao.md) §7). A Política já diz que o New Relic não grava reproduções das visitas (`privacy.sections.navigation_data.items.new_relic`). Falta o dono assinar a [15](15-registro-de-decisoes.md) D18. **Religar a gravação** exige, antes: trocar esse item da Política nos 3 idiomas (pedido ao `shell`), manter o `data-nr-block` com verificação automática (bloqueador 7, que segue valendo só como garantia para esse caso) e atualizar a D18.
 
-## 12. Quando a Lemamon é operadora (projetos de clientes)
+## 12. Quando a Lemamon.dev é operadora (projetos de clientes)
 
 - Contrato com cláusula de tratamento de dados (playbook 02 §10): seguir instruções do cliente, segurança, suboperadores, aviso de incidente ao cliente em [PREENCHER] horas, devolução e exclusão ao final.
 - Acesso mínimo a dados de produção; dados de teste anonimizados.

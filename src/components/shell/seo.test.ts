@@ -76,7 +76,7 @@ describe("JSON-LD por rota (BLUEPRINT §10.3)", () => {
       for (const locale of LOCALES) {
         const [node] = routeJsonLd(SERVICE_ROUTE[key], locale, "desc", flags);
         expect(node?.["@type"]).toBe("Service");
-        expect(node?.provider).toMatchObject({ "@type": "Organization", name: "Lemamon" });
+        expect(node?.provider).toMatchObject({ "@type": "Organization", name: "Lemamon.dev" });
       }
     }
     expect(routeJsonLd("discovery_sprint", "es", "desc", flags)[0]?.name).toBe("Sprint de Descubrimiento");

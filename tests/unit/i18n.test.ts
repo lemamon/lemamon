@@ -11,7 +11,7 @@ describe("i18n loader", () => {
   });
 
   it("interpola {placeholder}", () => {
-    expect(t("pt", "shared.footer.copyright", { ano: 2026 })).toBe("© 2026 Lemamon");
+    expect(t("pt", "shared.footer.copyright", { ano: 2026 })).toBe("© 2026 Lemamon.dev");
     expect(interpolate("Olá, {nome}", { nome: "Ana" })).toBe("Olá, Ana");
     expect(placeholders("{a} e {b}")).toEqual(["a", "b"]);
   });

@@ -2,7 +2,7 @@
 
 Tudo o que o site novo **não resolve com código**: processo comercial, oferta e preço, SLA, CRM, medição, Google Ads, Search Console, Perfil da Empresa, prova social, LGPD operacional, canais e rituais. Escritos em 19/10/2026 a partir do BLUEPRINT (fonte de verdade), do i18n, do 04-tecnico, do 06-marketing, do 07-negocios e do backlog aberto.
 
-**Regras usadas em todos:** nenhum dado da Lemamon inventado (o que falta está como `[PREENCHER]`); nenhum valor monetário da Lemamon; estimativas dos documentos de arquitetura aparecem como referência, nunca como meta; nada promete o que o BLUEPRINT §12 proíbe; onde um item do backlog conflita com o BLUEPRINT, vale o BLUEPRINT e o conflito está anotado.
+**Regras usadas em todos:** nenhum dado da Lemamon.dev inventado (o que falta está como `[PREENCHER]`); nenhum valor monetário da Lemamon.dev; estimativas dos documentos de arquitetura aparecem como referência, nunca como meta; nada promete o que o BLUEPRINT §12 proíbe; onde um item do backlog conflita com o BLUEPRINT, vale o BLUEPRINT e o conflito está anotado.
 
 **Praça:** São Paulo, SP desde 20/10/2026 (antes Florianópolis, SC; D38 em [15](15-registro-de-decisoes.md)). O BLUEPRINT e o COPY já dizem São Paulo; só as análises 01–07 e o BACKLOG de `docs/arquitetura/` mantêm Florianópolis como análise histórica. Para a cidade, vale o i18n. O que o dono precisa trocar fora do código está no [08](08-search-console-e-seo-local.md) §3, "Mudança de praça".
 

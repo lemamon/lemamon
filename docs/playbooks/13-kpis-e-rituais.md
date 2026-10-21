@@ -40,7 +40,7 @@ O painel tem duas partes: o **relatório do Looker Studio**, que atualiza sozinh
 
 ### 3.1 Relatório do Looker Studio (números do GA4, atualiza sozinho)
 
-1. https://lookerstudio.google.com › **Criar › Relatório** › conector **Google Analytics** (gratuito) › conta e propriedade `lemamon.dev`. Nome: `Lemamon — funil semanal`.
+1. https://lookerstudio.google.com › **Criar › Relatório** › conector **Google Analytics** (gratuito) › conta e propriedade `lemamon.dev`. Nome: `Lemamon.dev — funil semanal`.
 2. **Período padrão:** últimos 7 dias, comparando com o período anterior.
 3. **Scorecards no topo**, nesta ordem, cada um com a referência de meta numa caixa de texto ao lado:
 
@@ -185,7 +185,7 @@ Registre os números reais e as decisões em [15-registro-de-decisoes.md](15-reg
 
 ### 8.1 Componentes reutilizáveis (B368)
 
-Problema que aparece em vários clientes (reservas, controle de entregas, aprovação de pedidos, por exemplo) pode virar um componente que a Lemamon reaproveita. Isso aumenta a margem dos projetos de preço fechado. Produto próprio vem muito depois, e só com a trava abaixo.
+Problema que aparece em vários clientes (reservas, controle de entregas, aprovação de pedidos, por exemplo) pode virar um componente que a Lemamon.dev reaproveita. Isso aumenta a margem dos projetos de preço fechado. Produto próprio vem muito depois, e só com a trava abaixo.
 
 **Aba `Componentes` da planilha**, uma linha por problema recorrente:
 

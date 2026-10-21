@@ -30,7 +30,7 @@ O site **não** promete (BLUEPRINT §12): prazo de entrega da devolutiva, conte�
 
 ### Convite (WhatsApp ou e-mail)
 
-> Oi, {primeiro nome}. Aqui é {seu nome}, da Lemamon.
+> Oi, {primeiro nome}. Aqui é {seu nome}, da Lemamon.dev.
 > Ficou marcado o diagnóstico gratuito do pedido {protocolo}: {dia}, das {hora início} às {hora fim} ({formato e link}).
 > A pauta sai do que você respondeu: {tópico 1}; {tópico 2}; {tópico 3}.
 > Para aproveitar os 45 minutos, tenha à mão: quem decide com você (se puder, traga essa pessoa), exemplos de como o processo funciona hoje (planilhas, telas, mensagens), os sistemas que vocês já usam e como seria o "deu certo" para você.
@@ -38,11 +38,11 @@ O site **não** promete (BLUEPRINT §12): prazo de entrega da devolutiva, conte�
 
 EN (leads de `/en/`):
 
-> Hi {first name}, this is {your name} from Lemamon. Your free assessment for request {protocol} is set for {day}, {start}–{end} ({format and link}). Agenda, based on your answers: {topic 1}; {topic 2}; {topic 3}. To make the most of the 45 minutes, have at hand: who decides with you (bring them if you can), examples of how the process works today, the systems you already use, and what "it worked" would look like for you. After the conversation, you'll get written feedback.
+> Hi {first name}, this is {your name} from Lemamon.dev. Your free assessment for request {protocol} is set for {day}, {start}–{end} ({format and link}). Agenda, based on your answers: {topic 1}; {topic 2}; {topic 3}. To make the most of the 45 minutes, have at hand: who decides with you (bring them if you can), examples of how the process works today, the systems you already use, and what "it worked" would look like for you. After the conversation, you'll get written feedback.
 
 ES (leads de `/es/`, con "tú"):
 
-> Hola, {nombre}. Soy {tu nombre}, de Lemamon. Quedó agendado el diagnóstico gratuito de tu solicitud {protocolo}: {día}, de {inicio} a {fin} ({formato y enlace}). La agenda sale de lo que respondiste: {tema 1}; {tema 2}; {tema 3}. Para aprovechar los 45 minutos, ten a mano: quién decide contigo (si puedes, invítalo), ejemplos de cómo funciona el proceso hoy, los sistemas que ya usan y cómo sería "salió bien" para ti. Después de la conversación, te enviamos nuestras conclusiones por escrito.
+> Hola, {nombre}. Soy {tu nombre}, de Lemamon.dev. Quedó agendado el diagnóstico gratuito de tu solicitud {protocolo}: {día}, de {inicio} a {fin} ({formato y enlace}). La agenda sale de lo que respondiste: {tema 1}; {tema 2}; {tema 3}. Para aprovechar los 45 minutos, ten a mano: quién decide contigo (si puedes, invítalo), ejemplos de cómo funciona el proceso hoy, los sistemas que ya usan y cómo sería "salió bien" para ti. Después de la conversación, te enviamos nuestras conclusiones por escrito.
 
 ### Lembrete (véspera)
 
@@ -160,7 +160,7 @@ Você decide se segue.
  Referência de investimento: {faixas de precos.ts, lado a lado, nunca somadas}. Referência, não proposta.}
 
 Esta devolutiva é sua. Pode repassar a quem decide com você.
-{seu nome} · Lemamon · São Paulo, SP · {e-mail} · WhatsApp
+{seu nome} · Lemamon.dev · São Paulo, SP · {e-mail} · WhatsApp
 ```
 
 **Regras de escrita:** "a gente" e "você"; frases curtas; jargão só com explicação ("API, a porta de conexão de um sistema"); nenhum superlativo; nenhum prazo ou preço de desenvolvimento; recomendar software pronto quando ele atende é parte do método.

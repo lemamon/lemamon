@@ -128,7 +128,7 @@ Lead de anúncio também chega pelo `/contato` e pelo WhatsApp, e nenhum dos doi
 3. Contagem: `contact_submitted` **Uma**; `whatsapp_click` **Uma** (o mesmo visitante clicando várias vezes conta uma). As duas **secundárias**, sempre: `whatsapp_click` é um clique no botão, não uma conversa, e `contact_submitted` mistura assunto de projeto com parceria e "outro". Nunca entram nos lances.
 4. Leitura: elas mostram que palavra-chave e anúncio trazem gente que escreve em vez de pedir pelo wizard. A conversa de WhatsApp que vira oportunidade entra no CRM como linha `WA-…` com as UTMs da `Ref.: G-…` (playbook 05 §5) e conta nos critérios do §6 e na conferência do §7.
 
-**LGPD:** a Política já diz que a Lemamon informa ao Google Ads que um pedido foi enviado depois de um clique e como ele evoluiu (`purposes.items.attribution`). Quem se opuser por e-mail (`controls_opposition`) fica fora dos envios. O prazo `conversoesGoogleAds` da Política depende da revisão jurídica (`_notes.legal_review` itens a, i, j).
+**LGPD:** a Política já diz que a Lemamon.dev informa ao Google Ads que um pedido foi enviado depois de um clique e como ele evoluiu (`purposes.items.attribution`). Quem se opuser por e-mail (`controls_opposition`) fica fora dos envios. O prazo `conversoesGoogleAds` da Política depende da revisão jurídica (`_notes.legal_review` itens a, i, j).
 
 ## 5. Estrutura das campanhas (B314)
 
@@ -164,7 +164,7 @@ Comece com [PREENCHER] campanhas (06 §6.7 recomenda 2 a 3 no cenário enxuto: a
 | Devolutiva por Escrito | Sistemas web para a operação da sua empresa. Primeiro a gente combina, depois constrói. |
 | Entregas a Cada 2 Semanas | |
 | Pedir Diagnóstico Gratuito | |
-| Lemamon · São Paulo, SP | |
+| Lemamon.dev · São Paulo, SP | |
 
 Para os outros serviços, troque o primeiro título e a última descrição pelo serviço da campanha. **Proibido** em anúncio (BLUEPRINT §12): preço, duração de MVP ou de Descoberta, "melhor", "líder", "referência", "soluções", "inovação", nomes de clientes, número de projetos, "atendemos todo o Brasil" sem `outrasCidades`.
 
@@ -172,7 +172,7 @@ Para os outros serviços, troque o primeiro título e a última descrição pelo
 
 ## 6. Verba e critérios de escalada (B349)
 
-Os cenários do 06-marketing §6.7 são **estimativas de mercado**, não dado da Lemamon. Decida e registre:
+Os cenários do 06-marketing §6.7 são **estimativas de mercado**, não dado da Lemamon.dev. Decida e registre:
 
 | Item | Decisão |
 |---|---|

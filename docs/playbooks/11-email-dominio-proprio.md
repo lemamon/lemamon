@@ -56,7 +56,7 @@ Critério de aceite: um e-mail de teste chega e é respondido do mesmo domínio,
 
 1. **Feito em 20/10/2026:** `dados/dono.json › empresa.email` = `"comercial@lemamon.dev"` (nunca edite o código em `src/config/`). O `{email}` é interpolado em todas as chaves, nos 3 idiomas, inclusive `aria-label` (i18n `_notes.email`). Vai ao ar no próximo deploy; antes dele, faça o teste da §3.
 2. A resposta do FAQ de NDA (`faq.conditional.nda.answer_draft`) já usa `{email}` nos 3 idiomas.
-3. **Feito em 20/10/2026:** `privacidade.provedorEmail = "microsoft_365"`, e a Política diz "Microsoft 365 (contratado por meio da GoDaddy): o e-mail da Lemamon." Falta: o advogado confere o item (f) do [10](10-lgpd-operacional.md), e `privacidade.atualizadaEm` recebe a data em que a Política for publicada.
+3. **Feito em 20/10/2026:** `privacidade.provedorEmail = "microsoft_365"`, e a Política diz "Microsoft 365 (contratado por meio da GoDaddy): o e-mail da Lemamon.dev." Falta: o advogado confere o item (f) do [10](10-lgpd-operacional.md), e `privacidade.atualizadaEm` recebe a data em que a Política for publicada.
 4. Conferir:
    ```bash
    grep -rn "gmail.com" src | grep -v "_notes"

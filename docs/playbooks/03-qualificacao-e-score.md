@@ -96,7 +96,7 @@ O wizard cobre B, A, N e T. O diagnóstico confirma e acrescenta F e P (07 §7.5
 | **T** Prazo | Quando precisa estar no ar, e por quê? | data com motivo (evento, contrato, temporada) | sem data e sem motivo |
 | **A** Autoridade | Quem assina? Essa pessoa participa? | decisor na conversa | sem acesso ao decisor até a segunda conversa |
 | **B** Orçamento | O investimento está previsto? | aprovado ou em definição | expectativa muito abaixo do piso da oferta |
-| **F** Fit técnico | A Lemamon sabe entregar isso bem? | dentro dos serviços confirmados | fora de competência com prazo apertado |
+| **F** Fit técnico | A Lemamon.dev sabe entregar isso bem? | dentro dos serviços confirmados | fora de competência com prazo apertado |
 | **P** Pagamento | Empresa formalizada, aceita entrada antes do início? | aceita a condição de pagamento | resiste à entrada ou quer pagar só no fim |
 
 Registre no CRM: `score` original, `score revisado`, motivo da revisão. Exemplo: um `researching` (C) que, na conversa, traz o sócio que decide pode virar B.

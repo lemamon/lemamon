@@ -1,6 +1,6 @@
 # lemamon.dev
 
-Site da Lemamon (software sob medida, São Paulo/SP): Astro estático em 3 idiomas
+Site da Lemamon.dev (software sob medida, São Paulo/SP): Astro estático em 3 idiomas
 (pt-BR na raiz, `/en/`, `/es/`), com uma única ilha React (o wizard de `/orcamento`).
 Deploy no Netlify a partir do `netlify.toml`.
 
