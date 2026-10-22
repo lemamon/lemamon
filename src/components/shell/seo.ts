@@ -5,18 +5,22 @@
  *   cartão próprio nas páginas que têm `og_image_headline` no i18n, padrão do
  *   idioma nas demais. Os JPEGs são gerados por scripts/build-og-image.sh
  *   (mesma lista de páginas que OG_PAGE_HEADLINE) em public/assets/img/og/.
- * - JSON-LD por chave de rota (routeJsonLd): Organization + ProfessionalService
- *   (Home, Sobre), Service (serviços, Sprint de Descoberta). FAQPage é do
- *   componente Faq; BreadcrumbList, do Breadcrumb; Article, da view do post.
- *   Nenhum dado inventado: sem areaServed, sem nota, sem telefone; razão
- *   social, CNPJ e ano de fundação só com empresa.ts preenchido.
+ * - JSON-LD por chave de rota (routeJsonLd): WebSite (Home, o mesmo nó nos 3
+ *   idiomas), Organization + ProfessionalService (Home, Sobre), Person (Sobre,
+ *   uma por pessoa do time que atua em projetos) e Service (serviços, Sprint de
+ *   Descoberta). FAQPage é do componente Faq; BreadcrumbList, do Breadcrumb;
+ *   Article, da view do post (publisher e isPartOf por @id).
+ *   Nenhum dado inventado: sem nota, sem telefone, sem founder; areaServed e
+ *   idiomas só com as flags da D31 (confirmacoes.outrasCidades/atendeExterior,
+ *   auditoria SEO S02-3); razão social, CNPJ e ano de fundação só com
+ *   empresa.ts preenchido; Person só com hasTeam (pessoa real em dados/dono.json).
  */
 
 import { empresa, formatCnpj } from "@/config/empresa";
 import { PROFILE_IDS, perfis } from "@/config/perfis";
 import { absoluteUrl, canonicalUrl, SERVICE_KEYS, SERVICE_ROUTE, SITE_URL, urlFor, type RouteKey, type ServiceKey } from "@/config/routes";
 import { ADDRESS, SITE_NAME } from "@/config/site";
-import { LOCALE_META, t, tDynamic, type Locale, type TextKey } from "@/i18n";
+import { LOCALE_META, LOCALES, t, tDynamic, type Locale, type TextKey } from "@/i18n";
 
 export interface OgImage {
   /** Caminho em public/ ou URL absoluta. */
@@ -39,6 +43,15 @@ export const OG_PAGE_HEADLINE: Partial<Record<RouteKey, TextKey>> = {
 };
 
 export const OG_DIR = "/assets/img/og";
+
+/**
+ * <meta name="robots"> das páginas indexáveis (auditoria SEO S01-10): libera a
+ * prévia grande das imagens (Google Imagens, Discover). Com a camada fictícia,
+ * vale ROBOTS_FICTICIO (camada-ficticia.ts) em todas as páginas.
+ */
+export const ROBOTS_INDEX = "index, follow, max-image-preview:large";
+/** Páginas noindex/erro de routes.ts (404, pedido enviado). */
+export const ROBOTS_NOINDEX = "noindex, follow";
 
 /** Arquivo do cartão em public/ (sem a barra inicial: "assets/img/og/pricing-en.jpg"). */
 export function ogImageFile(route: RouteKey | "default", locale: Locale): string {
@@ -85,10 +98,42 @@ export function sameAs(): string[] {
 /** Flags de features.ts que o JSON-LD consulta (when_data: dado parcial não entra). */
 export interface SeoFlags {
   hasCompanyData: boolean;
+  /** features.confirm.outrasCidades (D31): atende a distância empresas de outras cidades do Brasil. */
+  outrasCidades?: boolean;
+  /** features.confirm.atendeExterior (D31; features.ts já exige outrasCidades): atende empresas de qualquer país. */
+  atendeExterior?: boolean;
 }
 
-/** Organization + ProfessionalService (Home e Sobre). */
-export function organizationNode(locale: Locale, flags: SeoFlags): JsonLdNode {
+/** Idiomas do site, no formato de <html lang> ("pt-BR", "en", "es"). */
+export const SITE_LANGUAGES: readonly string[] = LOCALES.map((locale) => LOCALE_META[locale].htmlLang);
+
+/**
+ * Pessoa do time em /sobre (auditoria SEO S03-1, S05-2), já no idioma da
+ * página. Só quem atua em projetos (hasTeam); o SEO.astro monta a lista a
+ * partir de dados/dono.json › time.
+ */
+export interface PersonInput {
+  /** id da pessoa em dados/dono.json › time (slug). */
+  id: string;
+  nome: string;
+  /** Papel no idioma da página (time[].papel). */
+  papel: string;
+  /** Foto já processada (caminho ou URL absoluta). */
+  image?: string;
+  /** Perfis pessoais (time[].linkedin e time[].github). */
+  sameAs?: readonly string[];
+}
+
+/**
+ * @id da pessoa: a URL de /sobre em pt + "#<id>", igual nos 3 idiomas (um @id
+ * é uma entidade só).
+ */
+export function personId(id: string): string {
+  return `${absoluteUrl(urlFor("about", "pt"))}#${id}`;
+}
+
+/** Organization + ProfessionalService (Home e Sobre). Em Sobre, `people` liga cada Person por @id. */
+export function organizationNode(locale: Locale, flags: SeoFlags, people: readonly PersonInput[] = []): JsonLdNode {
   const node: JsonLdNode = {
     "@type": ["Organization", "ProfessionalService"],
     "@id": ORGANIZATION_ID,
@@ -104,30 +149,69 @@ export function organizationNode(locale: Locale, flags: SeoFlags): JsonLdNode {
       addressRegion: ADDRESS.region,
       addressCountry: ADDRESS.country,
     },
-    sameAs: sameAs(),
   };
+  // D31 (auditoria SEO S02-3, S05-4): com o exterior, o mundo todo, nos 3
+  // idiomas do site; só com outras cidades, o Brasil. Sem flag, nada (o
+  // endereço já diz São Paulo). Sem telefone: o build usa o número de teste.
+  if (flags.atendeExterior) {
+    node.areaServed = "Worldwide";
+    node.knowsLanguage = [...SITE_LANGUAGES];
+    node.contactPoint = {
+      "@type": "ContactPoint",
+      contactType: "sales",
+      email: empresa.email,
+      url: absoluteUrl(urlFor("contact", locale)),
+      availableLanguage: [...SITE_LANGUAGES],
+    };
+  } else if (flags.outrasCidades) {
+    node.areaServed = { "@type": "Country", name: "BR" };
+  }
+  node.sameAs = sameAs();
   if (flags.hasCompanyData) {
     node.legalName = empresa.razaoSocial.trim();
     node.taxID = formatCnpj(empresa.cnpj);
   }
   if (empresa.anoFundacao) node.foundingDate = String(empresa.anoFundacao);
+  // Sem founder: nenhum campo de dados/dono.json diz quem fundou a empresa.
+  if (people.length) node.employee = people.map((person) => ({ "@id": personId(person.id) }));
   return node;
 }
 
-/** WebSite (Home), ligado à Organization. */
-export function websiteNode(locale: Locale): JsonLdNode {
+/** Person de /sobre, ligada à Organization por @id. */
+export function personNode(person: PersonInput): JsonLdNode {
+  const node: JsonLdNode = {
+    "@type": "Person",
+    "@id": personId(person.id),
+    name: person.nome,
+    jobTitle: person.papel,
+  };
+  if (person.image) node.image = absoluteUrl(person.image);
+  if (person.sameAs?.length) node.sameAs = [...person.sameAs];
+  node.worksFor = { "@id": ORGANIZATION_ID };
+  return node;
+}
+
+/**
+ * WebSite (Home), ligado à Organization. O MESMO nó nas 3 Homes (S02-7): um
+ * @id é uma entidade só, então url é a raiz e inLanguage lista os 3 idiomas.
+ */
+export function websiteNode(): JsonLdNode {
   return {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     name: SITE_NAME,
-    url: absoluteUrl(urlFor("home", locale)),
-    inLanguage: LOCALE_META[locale].htmlLang,
+    url: absoluteUrl(urlFor("home", "pt")),
+    inLanguage: [...SITE_LANGUAGES],
     publisher: { "@id": ORGANIZATION_ID },
   };
 }
 
-/** Referência embutida ao provedor (o @id sozinho não resolve fora da página da Home). */
-function providerRef(): JsonLdNode {
+/**
+ * Referência embutida à Organization (provider do Service, publisher do
+ * Article): o @id liga ao nó da Home e o tipo, o nome e a url resolvem a
+ * entidade sozinhos fora da página da Home.
+ */
+export function organizationRef(): JsonLdNode {
   return { "@type": "Organization", "@id": ORGANIZATION_ID, name: SITE_NAME, url: absoluteUrl(urlFor("home", "pt")) };
 }
 
@@ -154,14 +238,23 @@ export function serviceNode(route: RouteKey, locale: Locale, description: string
     serviceType,
     description,
     url: canonicalUrl(route, locale),
-    provider: providerRef(),
+    provider: organizationRef(),
   };
 }
 
-/** Nós JSON-LD que o SEO.astro emite para a rota (o resto vem dos componentes). */
-export function routeJsonLd(route: RouteKey, locale: Locale, description: string, flags: SeoFlags): JsonLdNode[] {
-  if (route === "home") return [websiteNode(locale), organizationNode(locale, flags)];
-  if (route === "about") return [organizationNode(locale, flags)];
+/**
+ * Nós JSON-LD que o SEO.astro emite para a rota (o resto vem dos componentes).
+ * `people`: só em Sobre (Person por pessoa + employee na Organization).
+ */
+export function routeJsonLd(
+  route: RouteKey,
+  locale: Locale,
+  description: string,
+  flags: SeoFlags,
+  people: readonly PersonInput[] = [],
+): JsonLdNode[] {
+  if (route === "home") return [websiteNode(), organizationNode(locale, flags)];
+  if (route === "about") return [organizationNode(locale, flags, people), ...people.map(personNode)];
   const service = serviceNode(route, locale, description);
   return service ? [service] : [];
 }

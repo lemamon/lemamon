@@ -155,12 +155,12 @@ describe("build SEM a flag: nada fictício no dist/", () => {
     expect(procurarMarcadores(semFicticio.outDir, [FIXTURE_MARK, ...FIXTURE_CASE_SLUGS, "fixture-lemamon"])).toEqual([]);
   });
 
-  it("robots normal (index ou noindex, follow) e nenhuma página que só a camada liga", () => {
+  it("robots normal (index, follow, max-image-preview:large ou noindex, follow) e nenhuma página que só a camada liga", () => {
     const paginas = htmls(semFicticio.outDir);
     expect(paginas.length).toBeGreaterThan(40);
     for (const pagina of paginas) {
       const html = readFileSync(pagina, "utf8");
-      expect(html, pagina).toMatch(/<meta name="robots" content="(index, follow|noindex, follow)">/);
+      expect(html, pagina).toMatch(/<meta name="robots" content="(index, follow, max-image-preview:large|noindex, follow)">/);
       expect(html, pagina).not.toContain(ATRIBUTO_FAIXA);
     }
     for (const rota of PAGINAS_SO_DA_CAMADA) {
@@ -291,6 +291,34 @@ describe("mídia do dono que não é imagem (depoimento em vídeo, B287; cases e
     const vistorias = ogDe("cases/exemplo-app-de-vistorias.html");
     expect(fretes).toMatch(/capa-exemplo-sistema-de-fretes/);
     expect(vistorias).toMatch(/capa-exemplo-app-de-vistorias/);
+  });
+
+  it("COM a flag: o Article liga publisher e isPartOf por @id (S02-13); /sobre tem uma Person por pessoa, ligada à Organization (S03-1)", () => {
+    const jsonLd = (pagina: string) =>
+      [...html(comFicticio.outDir, pagina).matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap(([, json]) => {
+        const data = JSON.parse(json ?? "{}") as Record<string, unknown> | Record<string, unknown>[];
+        const list = Array.isArray(data) ? data : [data];
+        return list.flatMap((node) => (Array.isArray(node["@graph"]) ? (node["@graph"] as Record<string, unknown>[]) : [node]));
+      });
+    const article = jsonLd("blog/exemplo-integrar-sistemas.html").find((node) => node["@type"] === "Article");
+    expect(article?.publisher).toMatchObject({ "@type": "Organization", "@id": "https://lemamon.dev/#organization" });
+    expect(article?.isPartOf).toEqual({ "@id": "https://lemamon.dev/#website" });
+
+    for (const pagina of ["sobre.html", "en/about.html", "es/nosotros.html"]) {
+      const nodes = jsonLd(pagina);
+      const people = nodes.filter((node) => node["@type"] === "Person");
+      expect(people.map((node) => node["@id"]), pagina).toEqual([
+        "https://lemamon.dev/sobre#exemplo-ana-souza",
+        "https://lemamon.dev/sobre#exemplo-bruno-lima",
+      ]);
+      for (const person of people) {
+        expect(person.worksFor, pagina).toEqual({ "@id": "https://lemamon.dev/#organization" });
+        expect(person.image, pagina).toMatch(/^https:\/\/lemamon\.dev\/_astro\//);
+      }
+      const org = nodes.find((node) => node["@id"] === "https://lemamon.dev/#organization");
+      expect(org?.employee, pagina).toEqual(people.map((node) => ({ "@id": node["@id"] })));
+      expect(org, pagina).not.toHaveProperty("founder");
+    }
   });
 
   it("COM a flag: o case anonimizado não leva o nome da empresa a lugar nenhum (B378)", () => {

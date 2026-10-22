@@ -5,7 +5,9 @@
  * description, og:image = capa do post, obrigatória no schema), o JSON-LD Article
  * (com `image` = a mesma capa), o
  * <CtaMeio /> ligado ao componente (CTA contextual no meio, sempre o
- * diagnóstico) e o CTA do fim (blog.post.end_cta).
+ * diagnóstico) e o CTA do fim (blog.post.end_cta). O Article liga a
+ * Organization (publisher) e o WebSite (isPartOf) por @id, os mesmos nós da
+ * Home (auditoria SEO S02-13).
  */
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
@@ -15,8 +17,9 @@ import { POST_MID_CTA_LOCAL, isoDate, type PostMidCtaContext } from "@/component
 import PostArticle from "@/components/gated/PostArticle.astro";
 import PostMidCta from "@/components/gated/PostMidCta.astro";
 import CtaFinal from "@/components/shared/CtaFinal.astro";
+import { organizationRef, WEBSITE_ID } from "@/components/shell/seo";
 import { LIMITS } from "@/config/features";
-import { absoluteUrl, SITE_URL, urlFor } from "@/config/routes";
+import { absoluteUrl, urlFor } from "@/config/routes";
 import { t } from "@/i18n";
 import { relatedPosts, truncateAtWord } from "@/lib/content";
 import { pageMessage } from "@/lib/whatsapp-messages";
@@ -59,7 +62,8 @@ const article = {
   mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
   url: canonical,
   author: { "@type": "Person", name: data.autor.nome, url: data.autor.link, jobTitle: data.autor.papelTecnico },
-  publisher: { "@type": "Organization", name: t(locale, "meta.site_name"), url: SITE_URL },
+  publisher: organizationRef(),
+  isPartOf: { "@id": WEBSITE_ID },
   image: absoluteUrl(cover.src),
 };
 const whatsappMessage = pageMessage(locale, t(locale, "shared.breadcrumb.blog"));

@@ -3,8 +3,10 @@
  * <head> de SEO por página — BLUEPRINT §10.3. Dono: shell.
  *
  * - <title> e description: das chaves meta.* (a view passa o texto pronto).
- * - robots: index, ou noindex nas rotas noindex/erro de routes.ts. Com a camada
- *   de dados fictícios ligada (só fora de produção), noindex,nofollow em todas.
+ * - robots: "index, follow, max-image-preview:large" (ROBOTS_INDEX; a prévia
+ *   grande das imagens no Google e no Discover, auditoria SEO S01-10), ou
+ *   "noindex, follow" nas rotas noindex/erro de routes.ts. Com a camada de dados
+ *   fictícios ligada (só fora de produção), noindex,nofollow em todas.
  * - canonical = canonicalUrl() e hreflang recíproco + x-default = alternates()
  *   (routes.ts). Ninguém escreve canonical ou hreflang à mão. A 404 não tem nenhum.
  * - Open Graph e Twitter com imagem 1200×630 por página e idioma (seo.ts →
@@ -12,18 +14,24 @@
  *   twitter:title = ogTitle (quando a view passa) ou o title: no post e no case
  *   o cartão do WhatsApp/LinkedIn mostra a frase inteira do H1, não o <title>
  *   truncado para o Google.
- * - JSON-LD por chave de rota (seo.ts): Organization/ProfessionalService na Home
- *   e em Sobre, Service nos serviços e na Sprint; mais o que a view passar em
+ * - JSON-LD por chave de rota (seo.ts): WebSite e Organization/ProfessionalService
+ *   na Home, Organization + Person (uma por pessoa do time, só com hasTeam) em
+ *   Sobre, Service nos serviços e na Sprint; mais o que a view passar em
  *   `jsonLd` (Article do post). FAQPage e BreadcrumbList vêm dos componentes.
+ *   areaServed e idiomas da Organization saem das flags da D31
+ *   (features.confirm.outrasCidades/atendeExterior).
  */
+import { getImage } from "astro:assets";
+
 import { ROBOTS_FICTICIO } from "@/config/camada-ficticia";
 import { MODO_FICTICIO } from "@/config/dono";
 import { getFeatures } from "@/config/features";
 import { absoluteUrl, alternates as routeAlternates, canonicalUrl, routeDef, type Alternate, type RouteKey, type RouteParams } from "@/config/routes";
 import { LOCALE_META, LOCALES, t, type Locale } from "@/i18n";
+import { teamItems } from "@/lib/content";
 
 import JsonLd from "./JsonLd.astro";
-import { graph, ogImageFor, routeJsonLd, type OgImage } from "./seo";
+import { graph, ogImageFor, ROBOTS_INDEX, ROBOTS_NOINDEX, routeJsonLd, type OgImage, type PersonInput } from "./seo";
 
 export type { OgImage } from "./seo";
 
@@ -54,13 +62,38 @@ const imageUrl = absoluteUrl(image.src);
 const IMAGE_TYPES: Record<string, string> = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp" };
 const imageType = IMAGE_TYPES[image.src.split("?")[0]?.split(".").pop()?.toLowerCase() ?? ""];
 const features = await getFeatures();
-const routeGraph = graph(routeJsonLd(route, locale, description, { hasCompanyData: features.hasCompanyData }));
+// Person em /sobre (S03-1): só com hasTeam, as mesmas pessoas da seção Time.
+const people: PersonInput[] =
+  route === "about" && features.hasTeam
+    ? await Promise.all(
+        (await teamItems()).map(async (person) => ({
+          id: person.id,
+          nome: person.data.nome,
+          papel: person.data.papel[locale],
+          image: (await getImage({ src: person.data.foto, width: 480 })).src,
+          sameAs: [person.data.linkedin, person.data.github].filter((url): url is string => Boolean(url)),
+        })),
+      )
+    : [];
+const routeGraph = graph(
+  routeJsonLd(
+    route,
+    locale,
+    description,
+    {
+      hasCompanyData: features.hasCompanyData,
+      outrasCidades: features.confirm.outrasCidades,
+      atendeExterior: features.confirm.atendeExterior,
+    },
+    people,
+  ),
+);
 const ogType = route === "blog_post" ? "article" : "website";
 ---
 
 <title>{title}</title>
 <meta name="description" content={description} />
-<meta name="robots" content={MODO_FICTICIO ? ROBOTS_FICTICIO : noindex ? "noindex, follow" : "index, follow"} />
+<meta name="robots" content={MODO_FICTICIO ? ROBOTS_FICTICIO : noindex ? ROBOTS_NOINDEX : ROBOTS_INDEX} />
 {canonical && <link rel="canonical" href={canonical} />}
 {pairs.map((pair) => <link rel="alternate" hreflang={pair.hreflang} href={pair.href} />)}
 
