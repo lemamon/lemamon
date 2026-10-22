@@ -17,6 +17,7 @@ Legenda: **D** = dono · **C** = comercial · **I** = integrador/agentes de cód
 - [ ] **D** Responder `formatoDiagnostico` e `escopoMudanca` (as duas confirmações de maior efeito em conversão) — [00](00-DADOS-DO-DONO.md) §B1 e §B5
 - [ ] **D** Notificação de formulários configurada + filtro no e-mail — [05](05-crm-e-funil.md) §3
 - [ ] **I** OG image nova por idioma; formulários fora do replay do New Relic (bloqueadores 6 e 7)
+- [ ] **D** Search Console: propriedade de **Domínio** `lemamon.dev` verificada pelo TXT gravado no **Netlify DNS** (não na GoDaddy), **pelo menos 3 dias antes do dia 0**, para a coleta começar antes da troca de site (auditoria SEO S01-2) — [08](08-search-console-e-seo-local.md) §1, passos 1 e 2
 - [ ] **D** Perfis com conteúdo antes do go-live: todo perfil que aparece no site (footer, Home, `/contato`, `/como-trabalhamos`) com pelo menos 1 conteúdo publicado, ou tirado do ar; em 20/10/2026 Medium e GitHub estavam vazios (decisão na D35, com a D01 para o footer e o `/contato`) — [00](00-DADOS-DO-DONO.md) §B3
 
 ## Quinzena 1 (dias 1–15) — Ligar e ver
@@ -27,7 +28,7 @@ Legenda: **D** = dono · **C** = comercial · **I** = integrador/agentes de cód
 - [ ] **C** WhatsApp Business: perfil, saudação, ausência, respostas rápidas, etiquetas — [04](04-sla-follow-up-e-nutricao.md) §7
 - [ ] **D** GA4: propriedade, medição aprimorada ajustada, eventos-chave, dimensões, tráfego interno, retenção — [06](06-ga4-e-medicao.md) §2 a §5
 - [ ] **D** Alerta de `lead_failed` e monitor de uptime — [06](06-ga4-e-medicao.md) §7 e §8
-- [ ] **D** Search Console (domínio) e Bing; sitemap enviado; indexação das páginas principais pedida — [08](08-search-console-e-seo-local.md) §1
+- [ ] **D** Dia 0: sitemap enviado no Search Console; inspeção de URL com pedido de indexação, cerca de 10 por dia (dia 0: `/`, `/en/`, `/es/`, `/orcamento` e as 5 páginas de serviço; dia 1: o resto); Bing Webmaster importado do Search Console; conferências técnicas do dia 0 (301 do host `*.netlify.app`, robots, `/llms.txt`) — [08](08-search-console-e-seo-local.md) §1
 - [ ] **D** Google Ads: auditoria das URLs finais (nada em `/projects`), "Solicitar cotação" registrando, conversão por URL criada como secundária, `lead_qualified` do GA4 importado como secundária — [07](07-google-ads.md) §3, §4 e §4.5
 - [ ] **C** Roteiro do diagnóstico e modelo da devolutiva em uso desde o primeiro pedido — [01](01-diagnostico-e-devolutiva.md)
 - [ ] **D** Perfis: a conferência do 00 §B3 repetida a cada deploy de produção, com o resultado em [15](15-registro-de-decisoes.md) §2 — [00](00-DADOS-DO-DONO.md) §B3

@@ -173,6 +173,19 @@ Marque as duas na agenda a partir do dia do lançamento.
 
 **Dia 90:** custo por pedido e custo de aquisição reais por canal; taxa pedido → cliente real; troca de **todas** as estimativas usadas nos playbooks por números seus (este playbook, 02 §1, 07 §6); alocação do trimestre seguinte pelo canal de menor custo de aquisição; avaliação do Decap CMS só se alguém fora do time técnico for publicar conteúdo (B265); revisão do tráfego por idioma (dado para o integrador, sem mudar a decisão do BLUEPRINT §1.7).
 
+**Revisão de SEO, nos dias 60 e 90** (auditoria SEO N-revisão, 22/10/2026; [AUDITORIA-SEO](../arquitetura/AUDITORIA-SEO.md) (c)). Várias trocas de title ficaram esperando dado; nesta revisão elas se decidem com o **Keyword Planner** ([08](08-search-console-e-seo-local.md) §2, B310) e o **Search Console** (Desempenho, 3 meses, filtrado por página e por consulta). Nenhuma troca entra sem os dois; a que entrar passa pelo BLUEPRINT (integrador) e pelo i18n (agente `shell`):
+
+| Pergunta | Dado que decide | Se sim |
+|---|---|---|
+| Title da Home (D37, dia 60) | CTR e posição média da Home para "desenvolvimento de software sob medida" e para as consultas com "são paulo" | aprovar o title com a praça ou a alternativa da D37 |
+| `/servicos/aplicativos` com a praça | impressões de "desenvolvimento de aplicativos em são paulo" contra "… sob medida" | "Desenvolvimento de aplicativos em São Paulo \| Lemamon.dev" (57) |
+| `/quanto-custa` | volume de "quanto custa um software sob medida" maior que o de "quanto custa desenvolver um sistema/aplicativo" | "Quanto custa um software sob medida? \| Lemamon.dev" (50); senão, manter |
+| Home × `/sobre` | consultas de entidade ("empresa de desenvolvimento de software em são paulo") caindo na Home ou em `/sobre` (quando existir) | cada intenção numa página só (canibalização 1 da auditoria) |
+| Marca | posição e cliques das consultas com "lemamon" e "lemon" | Home fora do 1º para "lemamon.dev" no dia 60: reabrir a entidade (`sameAs`, Página do LinkedIn, GitHub; D35) |
+| Páginas com impressão e sem clique | as 10 com mais impressões e CTR perto de zero | revisar title e description delas, uma de cada vez, e medir de novo no dia 90 |
+
+Registre o resultado de cada linha (manter ou trocar, com os números) em [15](15-registro-de-decisoes.md) §2.
+
 Registre os números reais e as decisões em [15-registro-de-decisoes.md](15-registro-de-decisoes.md) e peça ao integrador para atualizar as estimativas de `docs/arquitetura/06-marketing.md` e `07-negocios.md`.
 
 ## 8. Gatilhos e hábitos

@@ -108,7 +108,7 @@ Se você ainda não sabe se o seu caso precisa de uma Descoberta, o primeiro pas
 | Item | Valor |
 |---|---|
 | Slug | `preco-fechado-ou-por-hora` |
-| Palavra-chave (08 §2) | `desenvolvimento de software com preço fechado` · secundária a validar `contrato de software preço fechado` (12 §7) |
+| Palavra-chave (08 §2) | `escopo aberto ou fechado` · secundária `contrato escopo fechado` (6 sugestões no autocomplete em "escopo fechado"; validar no Planner, 12 §7). **Não** usar `desenvolvimento de software com preço fechado`, primária de `/como-trabalhamos` |
 | Leitor | quem está comparando propostas, uma por hora e outra com preço fechado |
 | Pergunta que o post responde | em cada modelo, quem carrega o risco quando a estimativa erra? |
 | Link interno | `/como-trabalhamos` (12 §7, pauta 3) e `/quanto-custa#como-comparar` |
@@ -129,7 +129,7 @@ publicadoEm: "[PREENCHER AAAA-MM-DD]"
 midCtaText: "Quer ver como o seu projeto ficaria com escopo, prazo e preço combinados antes de começar? Comece pelo diagnóstico gratuito: 45 minutos e uma devolutiva por escrito."
 relacionados: ["o-que-receber-de-uma-sprint-de-descoberta", "sistema-pronto-ou-sob-medida"]
 seoTitle: "Preço fechado ou por hora em software"
-seoDescription: "Preço fechado ou por hora no desenvolvimento de software: quem carrega o risco em cada modelo e o que perguntar a qualquer fornecedor antes de assinar."
+seoDescription: "Preço fechado ou por hora, escopo fechado ou aberto: quem carrega o risco em cada modelo e o que perguntar a qualquer fornecedor antes de assinar."
 rascunho: true
 ---
 ```
@@ -150,6 +150,12 @@ Esse modelo funciona quando o trabalho é pequeno e conhecido, ou quando você t
 No preço fechado, o preço vale para um escopo escrito. Se a estimativa estava curta, o risco fica com quem estimou, não com você.
 
 Para isso funcionar, o escopo precisa estar claro antes do preço. Preço fechado sem escopo escrito costuma virar discussão no meio do projeto, porque ninguém sabe dizer o que estava combinado.
+
+## Escopo fechado ou aberto: o mesmo debate com outro nome
+
+Algumas propostas falam em escopo fechado ou escopo aberto. É a mesma escolha, vista pelo que vai ser entregue.
+
+No escopo fechado, a lista do que entra está escrita antes, e o preço vale para ela. No escopo aberto, o que entra vai sendo decidido no caminho, e a conta acompanha as horas. A pergunta continua a mesma: quem paga quando a estimativa erra.
 
 ## O que perguntar em qualquer proposta
 
@@ -180,7 +186,7 @@ Se você quer ver como o seu projeto ficaria com escopo, prazo e preço combinad
 | Item | Valor |
 |---|---|
 | Slug | `sistema-pronto-ou-sob-medida` |
-| Palavra-chave (08 §2) | `sistema pronto ou sob medida` · relacionada `sistema sob medida` (BLUEPRINT §6.5) |
+| Palavra-chave (08 §2) | `sistema pronto ou sob medida` (0 sugestões no autocomplete; validar no Planner) · relacionada `sistema sob medida` (BLUEPRINT §6.5) |
 | Leitor | dono ou gestor com a operação presa em planilha, em dúvida entre contratar um sistema pronto e construir |
 | Pergunta que o post responde | quando um sistema pronto basta e quando vale construir sob medida? |
 | Link interno | `/servicos/sistemas-web` (12 §7, pauta 1), pelo campo `servico: "web_systems"` e no corpo |
@@ -201,7 +207,7 @@ publicadoEm: "[PREENCHER AAAA-MM-DD]"
 servico: "web_systems"
 midCtaText: "Ainda em dúvida entre um sistema pronto e um sob medida? Em 45 minutos de diagnóstico gratuito, a gente olha o seu processo e você recebe uma devolutiva por escrito."
 relacionados: ["o-que-receber-de-uma-sprint-de-descoberta", "preco-fechado-ou-por-hora"]
-seoTitle: "Sistema pronto ou sob medida: como decidir"
+seoTitle: "Sistema pronto, sob medida ou integrar?"
 seoDescription: "Sistema pronto ou sob medida? Sinais de que o pronto resolve, de que vale construir e de que o caminho é integrar. Perguntas para decidir com segurança."
 rascunho: true
 ---

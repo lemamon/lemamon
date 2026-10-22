@@ -65,6 +65,8 @@ Critério de aceite: lista com status por contato; indicações recebidas por co
 
 **Kit do parceiro:** o link `https://lemamon.dev/diagnostico?utm_source=parceiro&utm_medium=indicacao&utm_campaign={codigo-do-parceiro}`, o one-pager (playbook 02 §12), três frases para descrever a Lemamon.dev (as do BLUEPRINT §1.1 e §1.2) e o que **não** é perfil (site e landing page estão fora da lista confirmada).
 
+**Menção no site do parceiro** (opcional, nunca cláusula do acordo; auditoria SEO S04-4): peça uma linha com o que a Lemamon.dev faz e um link simples para https://lemamon.dev/, sem UTM (a UTM fica no link do kit, que é o que mede a indicação). Como o parceiro recebe comissão, não condicione a comissão ao link; se o link fizer parte do programa, ele leva `rel="sponsored"`. Registre o link na planilha do [08](08-search-console-e-seo-local.md) §5, com `tipo = parceiro` e o `rel` que ele tiver (visão única das fontes de link no 08 §6).
+
 Registre cada parceiro no CRM, na aba `Parceiros` (cabeçalho e fórmula no [05](05-crm-e-funil.md) §5). `codigo` é curto, sem dado pessoal, sempre do mesmo tamanho: `p001`, `p002`… (é ele que vai no `utm_campaign` do link).
 
 **Quem chega indicado pelo parceiro sem passar pelo link** (e-mail de apresentação, grupo de WhatsApp, ligação) entra no CRM à mão, com protocolo `PAR-AAAAMMDD-NN` e o código do parceiro em `observacoes` (ex.: "parceiro p003"). É esse registro que prova a indicação na hora de calcular a comissão. A coluna `indicacoes` da aba `Parceiros` soma os dois caminhos (link e `PAR-…`), e o indicador "Pedidos de parceiros" do relatório mensal também (05 §8).
@@ -119,15 +121,36 @@ Links com `utm_source=linkedin&utm_medium=organico&utm_campaign=post-{aaaa-mm}`.
 
 **Autor (B298):** [PREENCHER] nome, foto real, link verificável, papel técnico. Recomendação: a mesma pessoa da coleção `time/`.
 
-**Pauta inicial** (BLUEPRINT §6.12, escrevível sem números; o tema "quanto custa" fica em `/quanto-custa` e não vira post). **Rascunhos completos** dos posts 1, 2 e 3 e o briefing do post técnico 5 estão em [12a-rascunhos-blog.md](12a-rascunhos-blog.md), prontos para a revisão do autor:
+**Pauta inicial** (BLUEPRINT §6.12, escrevível sem números; o tema "quanto custa" fica em `/quanto-custa` e não vira post). **Rascunhos completos** dos posts 1, 2 e 3 e o briefing do post técnico 5 estão em [12a-rascunhos-blog.md](12a-rascunhos-blog.md), prontos para a revisão do autor (o 12a numera os 3 primeiros de outro jeito; vale o slug). Cada post tem uma keyword com sinal e um `seoTitle` próprio (auditoria SEO, (e) e N-blog, 22/10/2026). O sinal é do autocomplete do Google, **não é volume**: a keyword e o title só viram definitivos com o Keyword Planner (08 §2, B310), e toda troca de title com volume real passa pelo BLUEPRINT.
 
-| # | Título de trabalho | Palavra-chave a validar (08 §2) | CTA e link interno |
+| # | Título de trabalho | Keyword e sinal (validar no 08 §2) | `seoTitle` (car., ≤ 50) | Slug | CTA e link interno |
+|---|---|---|---|---|---|
+| 1 | Sistema pronto ou sob medida: como decidir | sistema pronto ou sob medida (0 sugestões) | Sistema pronto, sob medida ou integrar? (39) — o anterior era igual ao title de um concorrente | `sistema-pronto-ou-sob-medida` | diagnóstico · `/servicos/sistemas-web` (`servico: "web_systems"`); com o blog no ar, o FAQ "Sistema sob medida ou software pronto?" responde em 2 linhas e linka o post |
+| 2 | O que você deveria receber de uma Sprint de Descoberta | sprint de descoberta (0 sugestões) + discovery de produto (9 sugestões) num H2 e na description; qual dos dois é a primária decide o Keyword Planner | O que receber de uma Sprint de Descoberta (41) | `o-que-receber-de-uma-sprint-de-descoberta` | diagnóstico · `/sprint-de-descoberta` (âncora "Sprint de Descoberta gratuita") e `/como-trabalhamos` |
+| 3 | Preço fechado ou por hora: o que muda para quem contrata | escopo aberto ou fechado / contrato escopo fechado (6 sugestões em "escopo fechado"); "preço fechado ou por hora" tem 0 | Preço fechado ou por hora em software (37); com volume, Escopo fechado ou por hora: o que muda (38) | `preco-fechado-ou-por-hora` | diagnóstico · `/como-trabalhamos` e `/quanto-custa#como-comparar`. **Nunca** "desenvolvimento de software com preço fechado" no `seoTitle`: é a primária de `/como-trabalhamos` |
+| 4 | Como escolher uma empresa de desenvolvimento de software | como escolher empresa de desenvolvimento de software (0) × o que é software house (sugere) | Como escolher uma empresa de software (37) ou O que é software house e como escolher uma (42), pela forma de maior volume | `como-escolher-empresa-de-desenvolvimento-de-software` | diagnóstico · `/quanto-custa#como-comparar` |
+| 5 | Entregas a cada 2 semanas: o que você deveria ver funcionando | sem sinal de busca (serve a prova de método e o avaliador técnico) | Entregas a cada 2 semanas: o que ver (36) | `entregas-a-cada-2-semanas` | diagnóstico · `/como-trabalhamos` |
+| 6 | Como escrever um escopo sem ser da área de TI | escopo de projeto de software exemplo (validar) | Como escrever um escopo sem ser de TI (37) | `como-escrever-um-escopo` | `/sprint-de-descoberta` e `/orcamento` |
+| 7 | Sinais de que a planilha virou risco | transformar planilha em sistema (3 sugestões; SERP fraca). Evitar "como sair da planilha do excel" (SERP de tutorial) | Planilha virou sistema? Quando e como migrar (44) | `transformar-planilha-em-sistema` | `/servicos/sistemas-web` |
+| 8 | Integrar ou trocar de sistema | integração erp e commerce (sugestão exata) num H2; não usar "integração de sistemas via api", cauda da página de serviço | Integrar ou trocar de sistema: como decidir (43) | `integrar-ou-trocar-de-sistema` | `/servicos/integracoes`; só plataformas confirmadas pelo dono |
+| 9 | Publicar app nas lojas ("pode fazer parte do escopo") | quanto custa publicar app na play store / apple store (há demanda) | Publicar app na App Store e no Google Play (42) | `publicar-app-nas-lojas` | `/servicos/aplicativos`; taxas oficiais só com exceção do dono à regra de números (BLUEPRINT §12), com link para as páginas oficiais |
+| 10 | De quem é o código | propriedade intelectual desenvolvimento de software (5 sugestões); sem revisão jurídica (Lei 9.609/98), app nativo ou hibrido (sugestão exata) | De quem é o código do software encomendado? (43); a alternativa, App nativo ou híbrido: qual escolher? (37), só com o stack confirmado pelo dono | `de-quem-e-o-codigo-do-software` | `/como-trabalhamos` (FAQ "O código fica com a minha empresa?") |
+
+**Suplentes com sinal de busca** (trocar um item da pauta é decisão do dono, registrada aqui):
+
+| Título · `seoTitle` (car.) | Keyword | Condição | Link interno |
 |---|---|---|---|
-| 1 | Sistema pronto ou sob medida: como decidir | sistema pronto ou sob medida | diagnóstico · `/servicos/sistemas-web` |
-| 2 | O que você deveria receber de uma Sprint de Descoberta | sprint de descoberta / discovery de produto | diagnóstico · `/sprint-de-descoberta` |
-| 3 | Preço fechado ou por hora: o que muda para quem contrata | contrato de software preço fechado | diagnóstico · `/como-trabalhamos` |
-| 4 | Como escolher uma empresa de desenvolvimento de software | como escolher empresa de desenvolvimento de software | diagnóstico · `/quanto-custa` |
-| 5 | Entregas a cada 2 semanas: o que você deveria ver funcionando | entregas quinzenais software (validar) | diagnóstico · `/como-trabalhamos` |
+| Tenho uma ideia de aplicativo: e agora? (39) | tenho uma ideia de aplicativo mas não sei programar (10 sugestões em "ideia de aplicativo") | nenhuma | `/servicos/mvp`, `/sprint-de-descoberta` |
+| Lovable vale a pena para lançar o seu produto? (46) | lovable vale a pena (6 sugestões) | revisar o texto a cada 6 meses | `/servicos/mvp`, `/servicos/sustentacao` |
+| Como proteger a ideia do seu aplicativo (39) | como proteger uma ideia de aplicativo | revisão jurídica e NDA mútuo pronto (09 §3) | FAQ do NDA |
+| Desenvolvedor sumiu: como retomar o seu sistema (47) | meu desenvolvedor sumiu | **só com `confirmacoes.sistemaTerceiros: true`** | `/servicos/sustentacao` |
+
+**Proposta ao dono (auditoria SEO):** trocar o post 5 (sem sinal de busca) pelo suplente "Tenho uma ideia de aplicativo: e agora?", que tem sinal e é a pergunta de entrada de quem chega com uma ideia de produto; o post 5 passa para depois do 10. Decisão: [PREENCHER: trocar ou manter] · data: [PREENCHER].
+
+**Regras de keyword do blog:**
+- Âncora: o post linka o serviço com a **primária do serviço** como texto do link; o serviço linka o post com a primária do post. Nenhum `seoTitle` de post usa a primária de uma página de serviço nem a de `/como-trabalhamos` (canibalização).
+- Só pt-BR (BLUEPRINT §6.12) e nenhum conteúdo novo em espanhol no semestre (08 §2, S07-14).
+- `seoTitle` ≤ 50 caracteres (`postSchema`) e nenhum número além de 45 minutos e "a cada 2 semanas" (checklist B302).
 
 Temas compatíveis do 05-conteudo §6.3 para depois: como escrever um escopo sem ser da área de TI; sinais de que a planilha virou risco; integrar ou trocar de sistema; publicar app nas lojas ("pode fazer parte do escopo"); de quem é o código (só depois de `confirmacoes.codigoProprietario`). **Conflito resolvido:** 05 pede um número real em todo post; o BLUEPRINT pede pauta escrevível sem números. Vale o BLUEPRINT: número só se for real e confirmado.
 

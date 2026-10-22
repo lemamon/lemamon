@@ -18,7 +18,7 @@ Tudo o que o site novo **não resolve com código**: processo comercial, oferta 
 | 05 | [05-crm-e-funil.md](05-crm-e-funil.md) | Netlify Forms → notificação → planilha; verificação em produção; relatórios |
 | 06 | [06-ga4-e-medicao.md](06-ga4-e-medicao.md) | GA4, eventos de §7.11, dimensões, explorações, alertas, uptime |
 | 07 | [07-google-ads.md](07-google-ads.md) | URLs finais, conversão por evento, por URL e offline; campanhas; verba |
-| 08 | [08-search-console-e-seo-local.md](08-search-console-e-seo-local.md) | Search Console, Bing, Keyword Planner, Perfil da Empresa, diretórios |
+| 08 | [08-search-console-e-seo-local.md](08-search-console-e-seo-local.md) | Search Console, Bing, Keyword Planner, Perfil da Empresa, diretórios, links de referência (§6) |
 | 09 | [09-prova-cases-depoimentos.md](09-prova-cases-depoimentos.md) | cases, depoimentos, logos, termo de autorização, roteiro de entrevista |
 | 09a | [09a-catalogo-de-projetos.md](09a-catalogo-de-projetos.md) | os 29 cases do portfólio publicados sem o nome do cliente (`semTermo`, D45) e como um deles ganha o nome |
 | 10 | [10-lgpd-operacional.md](10-lgpd-operacional.md) | bloqueadores, operadores reais, retenção, rotina de exclusão, titulares |
