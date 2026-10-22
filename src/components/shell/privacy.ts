@@ -53,6 +53,12 @@ export interface PrivacyFlags {
    */
   linkedinInsight?: boolean;
   metaPixel?: boolean;
+  /**
+   * A data de atualização aparece no topo (privacidade.atualizadaEm preenchida).
+   * Sem ela, contact.body não promete "a data no topo" (auditoria SEO S03-14);
+   * com ela, contact.body_with_date. Ausente = sem data.
+   */
+  dated?: boolean;
 }
 
 export type PrivacyVars = Partial<Record<string, string>>;
@@ -192,6 +198,11 @@ function chooser(flags: PrivacyFlags): Record<string, (key: string) => string | 
         default:
           return key;
       }
+    },
+    contact: (key) => {
+      if (key === "body") return pick(Boolean(flags.dated), "body_with_date", "body");
+      if (key === "body_with_date") return null; // tratado em "body"
+      return key;
     },
     rights: (key) => {
       switch (key) {

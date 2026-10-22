@@ -98,6 +98,18 @@ for (const pixel of PIXELS) {
     throw new Error(`Pixel "${pixel}" publicado sem os itens da Política (${locale}): ${missing.join(", ")}. Peça ao redator antes de preencher o ID.`);
   }
 }
+// Data no topo: só com privacidade.atualizadaEm (AAAA-MM-DD). Sem ela, a seção de contato
+// não cita "a data no topo" (contact.body; com a data, body_with_date: auditoria SEO S03-14).
+const updated = /^\d{4}-\d{2}-\d{2}$/.test(privacidade.atualizadaEm)
+  ? {
+      iso: privacidade.atualizadaEm,
+      text: t(locale, "privacy.updated", {
+        data: new Intl.DateTimeFormat(LOCALE_META[locale].htmlLang, { dateStyle: "long", timeZone: "UTC" }).format(
+          new Date(`${privacidade.atualizadaEm}T00:00:00Z`),
+        ),
+      }),
+    }
+  : null;
 const sections = buildPrivacy(privacySections, vars, {
   ga4: features.hasGa4,
   googleAds: true,
@@ -112,18 +124,9 @@ const sections = buildPrivacy(privacySections, vars, {
   noSale: privacidade.naoVendemosConfirmado,
   linkedinInsight: pixelOn.linkedin,
   metaPixel: pixelOn.meta,
+  dated: updated !== null,
 });
 
-const updated = /^\d{4}-\d{2}-\d{2}$/.test(privacidade.atualizadaEm)
-  ? {
-      iso: privacidade.atualizadaEm,
-      text: t(locale, "privacy.updated", {
-        data: new Intl.DateTimeFormat(LOCALE_META[locale].htmlLang, { dateStyle: "long", timeZone: "UTC" }).format(
-          new Date(`${privacidade.atualizadaEm}T00:00:00Z`),
-        ),
-      }),
-    }
-  : null;
 const opensNewTab = t(locale, "shared.a11y.opens_new_tab");
 ---
 

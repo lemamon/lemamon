@@ -129,6 +129,26 @@ describe("Política de Privacidade: montagem", () => {
       expect(links).toContainEqual({ text: sections.navigation_data.title, href: "#navigation_data" });
     }
   });
+
+  it("contato (S03-14): sem data no topo, não promete 'a data no topo'; com a data, a variante que cita", () => {
+    const DATE_SENTENCE = { pt: "a data no topo", en: "date at the top", es: "fecha en la parte superior" } as const;
+    for (const locale of LOCALES) {
+      const sections = getSection(locale, "privacy.sections");
+      const contact = (dated?: boolean) =>
+        (buildPrivacy(sections, FULL_VARS, { ...BASE, dated })
+          .find((s) => s.id === "contact")
+          ?.blocks.flatMap((block) => (block.kind === "p" ? [block.segments.map((segment) => segment.text).join("")] : []))
+          .join("\n")) ?? "";
+      const withEmail = (text: string) => text.replace("{email}", FULL_VARS.email ?? "");
+      expect(sections.contact.body, locale).not.toContain(DATE_SENTENCE[locale]);
+      expect(sections.contact.body_with_date, locale).toContain(DATE_SENTENCE[locale]);
+      expect(contact(), locale).toContain(withEmail(sections.contact.body));
+      expect(contact(false), locale).not.toContain(DATE_SENTENCE[locale]);
+      expect(contact(true), locale).toContain(withEmail(sections.contact.body_with_date));
+      // Variante substitui a base: nunca as duas.
+      expect(contact(true).split(FULL_VARS.email ?? "").length - 1, locale).toBe(1);
+    }
+  });
 });
 
 describe("trava de lançamento da Política", () => {
