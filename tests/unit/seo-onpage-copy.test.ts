@@ -9,7 +9,7 @@ import { join } from "node:path";
 
 import { describe, expect, inject, it } from "vitest";
 
-import { ANCHORS, urlFor, type RouteKey } from "@/config/routes";
+import { anchorId, ANCHORS, urlFor, type RouteKey } from "@/config/routes";
 import { getSection, t, tDynamic, type Locale } from "@/i18n";
 import { fileForPath, textOf } from "@/integrations/verify-build";
 
@@ -22,16 +22,16 @@ function built(route: RouteKey, locale: Locale): string {
   return readFileSync(join(semFicticio.outDir, fileForPath(urlFor(route, locale))), "utf8");
 }
 const main = (html: string) => html.slice(html.indexOf("<main"), html.indexOf("</main>"));
-/** Trecho de uma <section id="…"> até a próxima <section. */
-function section(html: string, id: string): string {
-  const open = html.match(new RegExp(`<section[^>]*\\bid="${id}"[^>]*>`));
+/** Trecho de uma <section id="…"> até a próxima <section. `id` é o id pt; o publicado sai no idioma (anchorId, S01-8). */
+function section(html: string, id: string, locale: Locale): string {
+  const open = html.match(new RegExp(`<section[^>]*\\bid="${anchorId(id, locale)}"[^>]*>`));
   if (!open || open.index === undefined) return "";
   const next = html.indexOf("<section", open.index + open[0].length);
   return html.slice(open.index, next > 0 ? next : undefined);
 }
 const titleOf = (html: string) => textOf(html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "");
 const descriptionOf = (html: string) => textOf(html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? "");
-const faqIds = (html: string) => [...section(html, ANCHORS.faq).matchAll(/data-faq-id="([^"]+)"/g)].map((match) => match[1]);
+const faqIds = (html: string, locale: Locale) => [...section(html, ANCHORS.faq, locale).matchAll(/data-faq-id="([^"]+)"/g)].map((match) => match[1]);
 /** Perguntas do FAQPage JSON-LD da página. */
 function faqPageQuestions(html: string): string[] {
   const blocks = [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map((match) => JSON.parse(match[1] ?? "null"));
@@ -117,11 +117,11 @@ describe("Frase de entidade e FAQ citável (S05-1, S07-5, S05-7, S03-12)", () =>
       const question = t(locale, "faq.conditional.other_cities.question_with_abroad");
       for (const route of ["how_we_work", "home"] as const) {
         const html = built(route, locale);
-        expect(faqIds(main(html)), `${locale} ${route}`).toContain("other_cities");
+        expect(faqIds(main(html), locale), `${locale} ${route}`).toContain("other_cities");
         expect(faqPageQuestions(html), `${locale} ${route}`).toContain(question);
         expect(textOf(main(html)), `${locale} ${route}`).toContain(CATEGORY[locale]);
       }
-      expect(faqIds(main(built("how_we_work", locale))), locale).toHaveLength(9);
+      expect(faqIds(main(built("how_we_work", locale)), locale), locale).toHaveLength(9);
     }
   });
 });
@@ -134,15 +134,15 @@ describe("FAQs de serviço (S03-7, S07-9, S03-6, S03-10)", () => {
       expect(t(locale, "services.mvp.faq.what_goes_in.answer"), locale).toContain(DEFINITION[locale]);
       expect(t(locale, "services.mvp.faq.what_is_mvp.answer"), locale).not.toContain(DEFINITION[locale]);
       const html = built("service_mvp", locale);
-      expect(textOf(section(main(html), ANCHORS.faq)), locale).toContain(t(locale, "services.mvp.faq.what_goes_in.answer"));
-      expect(faqIds(main(html)), locale).toContain("what_is_mvp");
+      expect(textOf(section(main(html), ANCHORS.faq, locale)), locale).toContain(t(locale, "services.mvp.faq.what_goes_in.answer"));
+      expect(faqIds(main(html), locale), locale).toContain("what_is_mvp");
     }
   });
 
   it("sustentação responde NDA e propriedade do código no HTML e no FAQPage", () => {
     for (const locale of LOCALES) {
       const html = built("service_support", locale);
-      expect(faqIds(main(html)), locale).toEqual(["how_it_starts", "support_vs_evolution", "price", "nda", "code_ownership"]);
+      expect(faqIds(main(html), locale), locale).toEqual(["how_it_starts", "support_vs_evolution", "price", "nda", "code_ownership"]);
       expect(faqPageQuestions(html), locale).toContain(t(locale, "faq.conditional.nda.question"));
       expect(faqPageQuestions(html), locale).toContain(t(locale, "faq.conditional.code_ownership.question"));
     }
@@ -156,8 +156,8 @@ describe("FAQs de serviço (S03-7, S07-9, S03-6, S03-10)", () => {
       ["service_mvp", "after_mvp"],
     ];
     for (const locale of LOCALES) {
-      for (const [route, id] of own) expect(faqIds(main(built(route, locale))), `${locale} ${route}`).toContain(id);
-      expect(faqIds(main(built("home", locale))).length, locale).toBeLessThanOrEqual(9);
+      for (const [route, id] of own) expect(faqIds(main(built(route, locale)), locale), `${locale} ${route}`).toContain(id);
+      expect(faqIds(main(built("home", locale)), locale).length, locale).toBeLessThanOrEqual(9);
     }
   });
 });
@@ -186,7 +186,7 @@ describe("Termos da SERP em inglês (S07-8, S03-8)", () => {
   it("'time and materials' em /en/how-we-work e /en/pricing", () => {
     expect(t("en", "pricing.how_to_compare.questions.fixed_or_hourly.question")).toBe("Is the price fixed, or time and materials (billed by the hour)?");
     expect(textOf(main(built("how_we_work", "en")))).toContain("time and materials");
-    expect(textOf(section(main(built("pricing", "en")), "como-comparar"))).toContain("time and materials");
+    expect(textOf(section(main(built("pricing", "en")), "como-comparar", "en"))).toContain("time and materials");
   });
 
   it("'discovery phase' em /en/discovery-sprint, sem tirar o 'free' da Descoberta", () => {
@@ -198,7 +198,7 @@ describe("Termos da SERP em inglês (S07-8, S03-8)", () => {
 
   it("a Sprint aponta para a prova: link para /cases depois de 'O que você recebe', sem dizer que foi gratuita", () => {
     for (const locale of LOCALES) {
-      const deliverables = section(main(built("discovery_sprint", locale)), "entregaveis");
+      const deliverables = section(main(built("discovery_sprint", locale)), "entregaveis", locale);
       const label = t(locale, "discovery_sprint.deliverables.cases_link");
       expect(deliverables, locale).toContain(`href="${urlFor("cases_hub", locale)}"`);
       expect(textOf(deliverables), locale).toContain(label);
@@ -223,7 +223,7 @@ describe("Integrações: API, webhook, sistema sem API e IoT (S07-10)", () => {
 
   it("a 1ª menção de 'API' na página vira o toggletip do termo (§5.9)", () => {
     for (const locale of LOCALES) {
-      const examples = section(main(built("service_integrations", locale)), "exemplos");
+      const examples = section(main(built("service_integrations", locale)), "exemplos", locale);
       expect(examples, locale).toMatch(/popovertarget="[^"]+"[^>]*>API</);
     }
   });
@@ -244,7 +244,7 @@ describe("Âncoras internas (S06-10)", () => {
 
   it("o link do cartão do plano, na própria Home, fica com o rótulo curto", () => {
     for (const locale of LOCALES) {
-      const hero = section(main(built("home", locale)), "inicio");
+      const hero = section(main(built("home", locale)), "inicio", locale);
       expect(textOf(hero), locale).toContain(t(locale, "home.hero.plan_link"));
       expect(textOf(hero), locale).not.toContain(t(locale, "shared.cta.see_how_we_work"));
     }

@@ -459,9 +459,9 @@ describe("página de case e post (corpo)", () => {
       expect(links, locale).toEqual([
         [paths[locale].services[0], t(locale, "cases.hub.filters.web_systems")],
         [paths[locale].services[1], t(locale, "cases.hub.filters.mobile_apps")],
-        [`${paths[locale].how}#diagnostico`, t(locale, "shared.method_timeline.stages.diagnosis.name")],
+        [`${paths[locale].how}#${anchorId(ANCHORS.stage.diagnosis, locale)}`, t(locale, "shared.method_timeline.stages.diagnosis.name")],
         [paths[locale].sprint, t(locale, "shared.method_timeline.stages.discovery.name")],
-        [`${paths[locale].how}#desenvolvimento`, t(locale, "shared.method_timeline.stages.development.name")],
+        [`${paths[locale].how}#${anchorId(ANCHORS.stage.development, locale)}`, t(locale, "shared.method_timeline.stages.development.name")],
       ]);
       // O separador " · " entre os links é decorativo.
       expect(sheet).toMatch(/<span class="field-list__sep" aria-hidden="true"[^>]*>\s*·\s*<\/span>/);

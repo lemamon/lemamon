@@ -11,7 +11,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 import { expect, test } from "@playwright/test";
 
-import { SERVICE_ROUTE, urlFor, type ServiceKey } from "../../src/config/routes";
+import { anchorFor, ANCHORS, SERVICE_ROUTE, urlFor, type ServiceKey } from "../../src/config/routes";
 import type { Locale } from "../../src/i18n/locales";
 import { camposDoSitemap } from "../../src/integrations/sitemap-cases";
 
@@ -77,7 +77,7 @@ test.describe("página de case: slug por idioma, breadcrumb e ficha (auditoria d
         await expect(sheet.locator(`a[href="${urlFor(SERVICE_ROUTE[service], locale)}"]`)).toHaveCount(1);
       }
       await expect(sheet.locator(`a[href="${urlFor("discovery_sprint", locale)}"]`)).toHaveCount(1);
-      await expect(sheet.locator(`a[href="${urlFor("how_we_work", locale)}#desenvolvimento"]`)).toHaveCount(1);
+      await expect(sheet.locator(`a[href="${anchorFor("how_we_work", locale, ANCHORS.stage.development)}"]`)).toHaveCount(1);
       if (isMobile) {
         // Alvo de toque de 44px na altura (faixa de padding), sem mudar a linha.
         const heights = await sheet.locator(".field-list__links a").evaluateAll((links) => links.map((link) => link.getBoundingClientRect().height));
