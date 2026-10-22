@@ -111,7 +111,7 @@ Consequências práticas:
 - Uma página `/x` é o arquivo `src/pages/x.astro`, **nunca** `src/pages/x/index.astro` (isso geraria `/x/`). Uma página com filhas usa os dois: `orcamento.astro` + `orcamento/enviado.astro`.
 - **Todo** href interno, canonical, hreflang e entrada de sitemap sai de `src/config/routes.ts`. Nunca escreva `"/orcamento"` à mão; escreva `urlFor("quote", locale)` ou `quoteHref(locale, {...})`.
 - O sitemap (`sitemap-index.xml`) normaliza pela mesma função (`normalizePath`) e traz `xhtml:link` com os mesmos pares de `alternates()`.
-- Parâmetros de atribuição (`origem`, `servico`, `entrada`, `ref`) e âncoras entre páginas (`ANCHORS`) **não** variam por idioma. `?servico=` usa os slugs pt estáveis de `SERVICE_PARAM` (`sistemas-web`, `aplicativos`, `integracoes`, `mvp`, `sustentacao`) em `/en/quote` e `/es/cotizacion` também.
+- Parâmetros de atribuição (`origem`, `servico`, `entrada`, `ref`) **não** variam por idioma. As âncoras de seção (`ANCHORS`) têm o id pt como chave e, em en/es, saem no idioma (`LOCALIZED_ANCHORS`, auditoria SEO S01-8: `/en/how-we-work#development`), com o id pt como alias vazio na seção; quem linka usa `anchorFor()` ou `anchorId()`, nunca o id à mão. `?servico=` usa os slugs pt estáveis de `SERVICE_PARAM` (`sistemas-web`, `aplicativos`, `integracoes`, `mvp`, `sustentacao`) em `/en/quote` e `/es/cotizacion` também.
 
 ---
 
@@ -175,14 +175,15 @@ Variantes de texto (`*_with_pricing`, `*_no_whatsapp`, `*_with_format`...) são 
 | Helper | Retorna |
 |---|---|
 | `urlFor(key, locale, params?)` | caminho interno na política (§2); lança erro se a página não existe no idioma |
-| `anchorFor(key, locale, id)` | `urlFor + #id` |
+| `anchorFor(key, locale, id)` | `urlFor + #id`, com o id no idioma (`anchorId`); passe o id pt de `ANCHORS` |
+| `anchorId(id, locale)`, `anchorAlias(id, locale)` | id da seção no idioma da página (`id` da `<Section>` e link `#…` na própria página) e o id pt de compatibilidade (`Section aliasId`), quando difere |
 | `quoteHref(locale, { origem, servico?, entrada?, ref? })` | link do wizard com atribuição (`/orcamento?servico=mvp&origem=mvp-hero`) |
 | `canonicalUrl(key, locale, params?)` | URL absoluta (null na 404) |
 | `alternates(key, params?)` | pares hreflang recíprocos pt-BR/en/es + `x-default`→pt; `[]` se só 1 idioma (blog) ou 404 |
 | `localeFromPath(path)`, `matchRoute(path)`, `normalizePath(path)`, `isNoindexPath(path)` | utilidades (sitemap, seletor de idioma) |
 | `isRouteLive(key, features)` | when_data: a página existe com as flags atuais? |
 | `SERVICE_KEYS`, `SERVICE_ROUTE`, `SERVICE_PARAM`, `serviceFromParam()` | os 5 serviços |
-| `ANCHORS` | âncoras estáveis: `homeMethod` (`#como-trabalhamos`), `stage.{diagnosis,discovery,development,support}` (`#diagnostico`...), `investment`, `faq`, `engineering` (`#como-construimos`), `discoveryFormat` (`#como-acontece`), `supportFormat` (`#formato`), `relatedCases` (`#cases-relacionados`), `methodProof` (`#na-pratica`) |
+| `ANCHORS` | âncoras estáveis: `homeMethod` (`#como-trabalhamos`), `stage.{diagnosis,discovery,development,support}` (`#diagnostico`...), `investment`, `faq`, `engineering` (`#como-construimos`), `discoveryFormat` (`#como-acontece`), `supportFormat` (`#formato`), `relatedCases` (`#cases-relacionados`), `methodProof` (`#na-pratica`), `howToCompare` (`#como-comparar`), `contactForm` (`#formulario`); os ids de en/es ficam em `LOCALIZED_ANCHORS` |
 | `METHOD_SHORT_PATH`, `METHOD_SHORT_UTM` | URL curta do método por idioma (`/metodo`, `/en/method`, `/es/metodo`), usada no "Copiar resumo" do pós-envio; o 301 está no netlify.toml e o teste do shell confere o par |
 
 **Como as páginas são geradas:** arquivos finos por idioma em `src/pages/` renderizam uma *view* compartilhada em `src/views/` (`<HowWeWorkView locale="en" />`). Slugs ficam explícitos na árvore, cada agente é dono dos seus arquivos, e não há catch-all disputado.
@@ -377,4 +378,4 @@ Enquanto o pedido não entra, **não** contorne copiando o arquivo nem duplicand
 4. **CSP** em Report-Only até validar no preview.
 5. **React 19** na ilha: só nas 3 páginas do wizard (medição no relatório de integração; a Home não carrega React).
 6. **`/blog` 302** depende de o Netlify sombrear a regra quando `blog.html` existir — conferir com `curl -sI` no preview ao publicar o blog.
-7. Âncoras e parâmetros não localizados (`#diagnostico`, `?origem=` em pt) também em en/es, de propósito (§2).
+7. Parâmetros não localizados (`?origem=`, `?etapa=` em pt) também em en/es, de propósito (§2). As âncoras de seção passaram a sair no idioma em 22/10/2026 (auditoria SEO S01-8), com alias do id pt.

@@ -21,7 +21,7 @@ import JsonLd from "@/components/shell/JsonLd.astro";
 import ArrowLink from "@/components/ui/ArrowLink.astro";
 import Icon from "@/components/ui/Icon.astro";
 import Section from "@/components/ui/Section.astro";
-import { ANCHORS } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS } from "@/config/routes";
 import type { Locale } from "@/i18n";
 
 import { answerText, splitInlineLink, type FaqItem, type FaqLink } from "./faq";
@@ -44,7 +44,7 @@ interface Props {
   divider?: boolean;
 }
 
-const { title, items, id = ANCHORS.faq, intro, closingLink, surface = "canvas", eyebrow, index, divider } = Astro.props;
+const { locale, title, items, id = ANCHORS.faq, intro, closingLink, surface = "canvas", eyebrow, index, divider } = Astro.props;
 const indexLabel = eyebrow && index && index > 0 ? `${String(index).padStart(2, "0")} /` : undefined;
 const titleId = `${id}-title`;
 const rows = items.map((item) => ({ item, parts: splitInlineLink(item) }));
@@ -63,7 +63,7 @@ const jsonLd = items.length
 
 {
   items.length > 0 && (
-    <Section id={id} surface={surface} labelledby={titleId} divider={divider} class="faq">
+    <Section id={anchorId(id, locale)} aliasId={anchorAlias(id, locale)} surface={surface} labelledby={titleId} divider={divider} class="faq">
       <div class="faq__grid grid-12">
         <div class="faq__head">
           {eyebrow && (

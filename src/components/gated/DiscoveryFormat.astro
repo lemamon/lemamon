@@ -16,7 +16,7 @@ import { getFeatures, type Features } from "@/config/features";
 import { getSection, t, type Locale } from "@/i18n";
 
 import FieldList from "./FieldList.astro";
-import { ANCHORS } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS } from "@/config/routes";
 
 interface Props {
   locale: Locale;
@@ -40,7 +40,7 @@ const complete = items.length === DISCOVERY_FIELDS.length;
 
 {
   features.hasDiscoveryFormat && complete && (
-    <Section id={ANCHORS.discoveryFormat} labelledby={`${ANCHORS.discoveryFormat}-title`}>
+    <Section id={anchorId(ANCHORS.discoveryFormat, locale)} aliasId={anchorAlias(ANCHORS.discoveryFormat, locale)} labelledby={`${ANCHORS.discoveryFormat}-title`}>
       <SectionHeader
         id={`${ANCHORS.discoveryFormat}-title`}
         title={t(locale, "discovery_sprint.how_it_happens.title")}

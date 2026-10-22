@@ -19,7 +19,7 @@ import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
 import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
 import ArrowLink from "@/components/ui/ArrowLink.astro";
 import { getFeatures } from "@/config/features";
-import { ANCHORS, SERVICE_PARAM, urlFor, type ServiceKey } from "@/config/routes";
+import { anchorId, ANCHORS, SERVICE_PARAM, urlFor, type ServiceKey } from "@/config/routes";
 import { t, tDynamic, type Locale } from "@/i18n";
 
 import PageHero from "./kit/PageHero.astro";
@@ -61,7 +61,7 @@ const crumbs = [
     isMvp && (
       <div slot="after" class="service-hero__faq-link">
         <ArrowLink
-          href={`#${ANCHORS.faq}`}
+          href={`#${anchorId(ANCHORS.faq, locale)}`}
           text={t(locale, "services.mvp.hero_price_link")}
           icon="arrow-down"
           size="sm"

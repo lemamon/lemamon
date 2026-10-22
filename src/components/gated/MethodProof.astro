@@ -21,7 +21,7 @@ import Card from "@/components/ui/Card.astro";
 import Section from "@/components/ui/Section.astro";
 import SectionHeader from "@/components/ui/SectionHeader.astro";
 import { getFeatures, LIMITS, type Features } from "@/config/features";
-import { ANCHORS, urlFor } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS, urlFor } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 import { caseDisplayName, caseItems, testimonialItems, type CaseItem } from "@/lib/content";
 
@@ -51,7 +51,7 @@ const linkable = features.hasCases;
 
 {
   features.hasMethodProof && (items.length > 0 || processTestimonial) && (
-    <Section id={ANCHORS.methodProof} surface="subtle" labelledby={`${ANCHORS.methodProof}-title`}>
+    <Section id={anchorId(ANCHORS.methodProof, locale)} aliasId={anchorAlias(ANCHORS.methodProof, locale)} surface="subtle" labelledby={`${ANCHORS.methodProof}-title`}>
       <SectionHeader id={`${ANCHORS.methodProof}-title`} title={t(locale, "how_we_work.proof.title")} intro={t(locale, "how_we_work.proof.intro")} />
       {items.length > 0 && (
         <ul role="list" class="proof-cases" data-count={items.length}>

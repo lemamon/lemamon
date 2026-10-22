@@ -30,7 +30,7 @@ import ArrowLink from "@/components/ui/ArrowLink.astro";
 import Section from "@/components/ui/Section.astro";
 import SectionHeader from "@/components/ui/SectionHeader.astro";
 import { getFeatures } from "@/config/features";
-import { anchorFor } from "@/config/routes";
+import { anchorFor, ANCHORS } from "@/config/routes";
 import { getSection, hasText, t, tDynamic, type Locale } from "@/i18n";
 
 import { riskAnswers } from "./home-risks";
@@ -51,7 +51,7 @@ const answers = riskAnswers(locale, features);
 /** Link no fim da resposta (par com `link_text`): a régua de comparação de /quanto-custa. */
 const linkOf = (id: string) =>
   hasText(locale, `home.risks.pairs.${id}.link_text`) ? tDynamic(locale, `home.risks.pairs.${id}.link_text`) : undefined;
-const compareHref = anchorFor("pricing", locale, "como-comparar");
+const compareHref = anchorFor("pricing", locale, ANCHORS.howToCompare);
 const fearLabel = t(locale, "home.risks.fear_label");
 const answerLabel = t(locale, "home.risks.answer_label");
 ---

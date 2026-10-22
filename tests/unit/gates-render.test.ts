@@ -32,7 +32,7 @@ import { POST_MID_CTA_LOCAL } from "@/components/gated/blog";
 import { techIcon, techKey } from "@/components/gated/tech-icon";
 import { ENGINEERING_FIELDS } from "@/config/engenharia";
 import { getFeatures } from "@/config/features";
-import { SERVICE_KEYS } from "@/config/routes";
+import { anchorId, ANCHORS, SERVICE_KEYS } from "@/config/routes";
 import { hasText, t, tDynamic, type Locale } from "@/i18n";
 import type { CaseItem } from "@/lib/content";
 
@@ -88,7 +88,7 @@ describe("sem dado (estado real do repositório): nenhuma seção when_data gera
     it(`EngineeringSection (${locale}): sem engenharia preenchida, só a linha do GitHub publicado`, async () => {
       const out = await html(EngineeringSection, { locale });
       expect(out).not.toContain("<h2");
-      expect(out).not.toContain('id="como-construimos"');
+      expect(out).not.toContain(`id="${anchorId(ANCHORS.engineering, locale)}"`);
       expect(out).toContain('href="https://github.com/lemamon-dev"');
       expect(out).toContain('data-profile="github"');
     });
@@ -321,7 +321,9 @@ describe("com dado completo (fixtures injetadas), cada seção aparece; parcial 
 
   it("DiscoveryFormat: os 3 campos (sem duração, D44); com 1 faltando, nada", async () => {
     const on = await html(DiscoveryFormat, { locale: "es", data: { features: { hasDiscoveryFormat: true }, descoberta: completeDescoberta() } });
-    expect(on).toContain('id="como-acontece"');
+    // es: id localizado (auditoria SEO S01-8) e o id pt como alias vazio.
+    expect(on).toContain('id="como-funciona"');
+    expect(on).toMatch(/<span id="como-acontece" class="section__alias sr-only" aria-hidden="true"/);
     expect(on.match(/<dt/g)).toHaveLength(3);
     // A duração não aparece: o intro remete ao diagnóstico.
     expect(on).toContain(t("es", "discovery_sprint.how_it_happens.intro"));

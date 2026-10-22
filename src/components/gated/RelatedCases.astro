@@ -10,7 +10,7 @@ import ArrowLink from "@/components/ui/ArrowLink.astro";
 import Section from "@/components/ui/Section.astro";
 import SectionHeader from "@/components/ui/SectionHeader.astro";
 import { getFeatures, hasRelatedCases, LIMITS, type Features } from "@/config/features";
-import { ANCHORS, urlFor, type ServiceKey } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS, urlFor, type ServiceKey } from "@/config/routes";
 import { t, tDynamic, type Locale } from "@/i18n";
 import { relatedCaseItems, type CaseItem } from "@/lib/content";
 
@@ -41,7 +41,7 @@ const title =
 
 {
   visible && items.length > 0 && (
-    <Section id={ANCHORS.relatedCases} labelledby={`${ANCHORS.relatedCases}-title`}>
+    <Section id={anchorId(ANCHORS.relatedCases, locale)} aliasId={anchorAlias(ANCHORS.relatedCases, locale)} labelledby={`${ANCHORS.relatedCases}-title`}>
       <SectionHeader id={`${ANCHORS.relatedCases}-title`} title={title} />
       <CaseGrid locale={locale} items={items} />
       <p class="related-more">

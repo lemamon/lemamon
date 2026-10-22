@@ -20,7 +20,7 @@ import { perfis } from "@/config/perfis";
 import { getSection, t, type Locale } from "@/i18n";
 
 import FieldList from "./FieldList.astro";
-import { ANCHORS } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS } from "@/config/routes";
 
 interface Props {
   locale: Locale;
@@ -50,7 +50,7 @@ const showFallback = !features.hasEngineering && features.profiles.github;
 
 {
   features.hasEngineering && items.length > 0 && (
-    <Section id={ANCHORS.engineering} labelledby={`${ANCHORS.engineering}-title`}>
+    <Section id={anchorId(ANCHORS.engineering, locale)} aliasId={anchorAlias(ANCHORS.engineering, locale)} labelledby={`${ANCHORS.engineering}-title`}>
       <SectionHeader
         id={`${ANCHORS.engineering}-title`}
         title={t(locale, "how_we_work.engineering.title")}

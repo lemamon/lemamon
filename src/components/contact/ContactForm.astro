@@ -43,7 +43,7 @@ import Icon from "@/components/ui/Icon.astro";
 import Section from "@/components/ui/Section.astro";
 import { getFeatures, withPrimaryCtaLabel } from "@/config/features";
 import { privacidade } from "@/config/privacidade";
-import { quoteHref, urlFor } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS, quoteHref, urlFor } from "@/config/routes";
 import { deployContext } from "@/config/site";
 import { getSection, t, type Locale } from "@/i18n";
 import { contactSubject, FORM_NAMES, HONEYPOT_FIELD, isPreviewSubmitContext } from "@/lib/forms";
@@ -85,7 +85,14 @@ const adsConsentRequired = privacidade.baseAnuncios === "consentimento";
 const emailSuggestion = getSection(locale, "shared.forms.email_suggestion");
 ---
 
-<Section id="formulario" spacing="compact" trim="start" labelledby="contact-form-title" class="contact-form">
+<Section
+  id={anchorId(ANCHORS.contactForm, locale)}
+  aliasId={anchorAlias(ANCHORS.contactForm, locale)}
+  spacing="compact"
+  trim="start"
+  labelledby="contact-form-title"
+  class="contact-form"
+>
   <div class="contact-form__inner">
     <div class="contact-form__head">
       <h2 id="contact-form-title" class="contact-form__title">{form.title}</h2>

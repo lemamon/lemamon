@@ -35,7 +35,7 @@ import RenderedStyle from "@/components/ui/RenderedStyle.astro";
 import Section from "@/components/ui/Section.astro";
 import { getFeatures, pricingLinesFor, primaryCtaKey } from "@/config/features";
 import { getPriceLine, PRICE_LINE_LABEL, precos, type PriceLineId } from "@/config/precos";
-import { ANCHORS, quoteHref, type ServiceKey } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS, quoteHref, type ServiceKey } from "@/config/routes";
 import { t, tDynamic, type Locale } from "@/i18n";
 
 import css from "./Investment.css?inline";
@@ -112,7 +112,7 @@ const indexLabel = eyebrow && index && index > 0 ? `${String(index).padStart(2, 
 {rows.length > 0 && <RenderedStyle css={css} name="Investment" />}
 {
   rows.length > 0 && (
-    <Section id={id} surface={surface} labelledby={titleId} divider={divider}>
+    <Section id={anchorId(id, locale)} aliasId={anchorAlias(id, locale)} surface={surface} labelledby={titleId} divider={divider}>
       <div class="inv grid-12" data-pricing-view={origem}>
         <div class="inv__head">
           {eyebrow && (

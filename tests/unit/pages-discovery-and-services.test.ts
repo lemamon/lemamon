@@ -18,7 +18,7 @@ import { join } from "node:path";
 import { describe, expect, inject, it } from "vitest";
 
 import { SERVICE_FAQ_MAX } from "@/components/services/kit/service-faq";
-import { SERVICE_KEYS, SERVICE_ROUTE, urlFor } from "@/config/routes";
+import { anchorId, ANCHORS, SERVICE_KEYS, SERVICE_ROUTE, urlFor } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 import { fileForPath, textOf } from "@/integrations/verify-build";
 
@@ -115,7 +115,7 @@ describe("Páginas de projeto: um destaque só por seção (painel de design)", 
     for (const locale of LOCALES) {
       for (const service of ["web_systems", "mobile_apps", "integrations"] as const) {
         const path = urlFor(SERVICE_ROUTE[service], locale);
-        const html = section(main(built(semFicticio.outDir, path)), "perguntas");
+        const html = section(main(built(semFicticio.outDir, path)), anchorId(ANCHORS.faq, locale));
         expect(textOf(html), path).toContain(t(locale, "faq.items.wont_stall.question"));
         // Teto das páginas de serviço: 11 (SERVICE_FAQ_MAX, auditoria SEO S03-10).
         expect(html.match(/<details/g)?.length ?? 0, path).toBeLessThanOrEqual(SERVICE_FAQ_MAX);

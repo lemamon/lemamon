@@ -17,7 +17,7 @@ import { isFilledText } from "@/config/types";
 import { getSection, t, type Locale } from "@/i18n";
 
 import FieldList from "./FieldList.astro";
-import { ANCHORS } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS } from "@/config/routes";
 
 interface Props {
   locale: Locale;
@@ -40,7 +40,7 @@ const items = features.hasSupportFormat
 
 {
   features.hasSupportFormat && items.length > 0 && (
-    <Section id={ANCHORS.supportFormat} labelledby={`${ANCHORS.supportFormat}-title`}>
+    <Section id={anchorId(ANCHORS.supportFormat, locale)} aliasId={anchorAlias(ANCHORS.supportFormat, locale)} labelledby={`${ANCHORS.supportFormat}-title`}>
       <SectionHeader id={`${ANCHORS.supportFormat}-title`} title={t(locale, "services.support.format.title")} intro={t(locale, "services.support.format.intro")} />
       <FieldList items={items} />
     </Section>

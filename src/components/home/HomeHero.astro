@@ -29,7 +29,7 @@ import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
 import Icon from "@/components/ui/Icon.astro";
 import Section from "@/components/ui/Section.astro";
 import { getFeatures } from "@/config/features";
-import { ANCHORS } from "@/config/routes";
+import { anchorId, ANCHORS } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 
 interface Props {
@@ -78,7 +78,7 @@ const eyebrow = t(locale, features.confirm.atendeExterior ? "home.hero.eyebrow_w
         <div class="plan__body">
           <MethodTimeline locale={locale} variant="compact" links="none" orientation="vertical" />
         </div>
-        <a class="plan__link" href={`#${ANCHORS.homeMethod}`}>
+        <a class="plan__link" href={`#${anchorId(ANCHORS.homeMethod, locale)}`}>
           <span>{t(locale, "home.hero.plan_link")}</span>
           <Icon name="arrow-down" size={18} />
         </a>

@@ -68,7 +68,7 @@ import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
 import { getFeatures, hasPriceLine } from "@/config/features";
 import { SERVICE_PRICE_LINE, type PriceLineId } from "@/config/precos";
 import type { FaqInlineLink } from "@/components/shared/faq";
-import { ANCHORS, quoteHref, SERVICE_PARAM, SERVICE_ROUTE, type ServiceKey } from "@/config/routes";
+import { anchorId, ANCHORS, quoteHref, SERVICE_PARAM, SERVICE_ROUTE, type ServiceKey } from "@/config/routes";
 import Base from "@/layouts/Base.astro";
 import { t, tDynamic, type Locale } from "@/i18n";
 import { serviceMessage } from "@/lib/whatsapp-messages";
@@ -90,7 +90,7 @@ const serviceLine = SERVICE_PRICE_LINE[service];
 const lines: readonly PriceLineId[] = [serviceLine];
 const priceLink = hasPriceLine(features, serviceLine)
   ? {
-      href: `#${ANCHORS.investment}`,
+      href: `#${anchorId(ANCHORS.investment, locale)}`,
       text: isSupport ? t(locale, "services.support.price_answer_link") : t(locale, "services.template.price_answer_link"),
     }
   : undefined;

@@ -18,7 +18,7 @@
  * (B211); a raiz não declara padding-block nem borda própria.
  */
 import Section from "@/components/ui/Section.astro";
-import { ANCHORS, type StageId } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS, type StageId } from "@/config/routes";
 import { getSection, t, type Locale } from "@/i18n";
 
 interface Props {
@@ -33,11 +33,20 @@ const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
 const number = String(order.indexOf(stage) + 1).padStart(2, "0");
 const data = stages[stage];
 const tag = data.tag;
-const id = ANCHORS.stage[stage];
-const titleId = `${id}-title`;
+const id = anchorId(ANCHORS.stage[stage], locale);
+const titleId = `${ANCHORS.stage[stage]}-title`;
 ---
 
-<Section id={id} spacing="compact" width="full" divider labelledby={titleId} data-stage={stage} class="stage">
+<Section
+  id={id}
+  aliasId={anchorAlias(ANCHORS.stage[stage], locale)}
+  spacing="compact"
+  width="full"
+  divider
+  labelledby={titleId}
+  data-stage={stage}
+  class="stage"
+>
   <header class="stage__header">
     <div class="stage__meta">
       <span class="stage__number" aria-hidden="true">{number}</span>

@@ -36,7 +36,7 @@ import Investment from "@/components/shared/Investment.astro";
 import { planFirstMentions, termLabel, type TermId } from "@/components/shared/terms";
 import { getFeatures } from "@/config/features";
 import { PRICE_LINE_IDS } from "@/config/precos";
-import { ANCHORS, urlFor } from "@/config/routes";
+import { anchorId, ANCHORS, urlFor } from "@/config/routes";
 import Base from "@/layouts/Base.astro";
 import { getSection, t, type Locale } from "@/i18n";
 import { pageMessage } from "@/lib/whatsapp-messages";
@@ -57,7 +57,7 @@ const plan = homeSectionPlan(features);
 const faqItems = homeFaqItems(locale, {
   features,
   // O link de faixas só aponta para o bloco quando ele existe nesta página.
-  pricingHref: plan.investment.visible ? `#${ANCHORS.investment}` : undefined,
+  pricingHref: plan.investment.visible ? `#${anchorId(ANCHORS.investment, locale)}` : undefined,
 });
 
 /*

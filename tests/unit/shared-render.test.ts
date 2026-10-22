@@ -26,6 +26,7 @@ import Profiles from "@/components/shared/Profiles.astro";
 import Term from "@/components/shared/Term.astro";
 import { empresa } from "@/config/empresa";
 import { PRICE_LINE_IDS } from "@/config/precos";
+import { anchorId } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 import HomeView from "@/views/HomeView.astro";
 
@@ -52,8 +53,9 @@ describe("MethodTimeline (§5.1)", () => {
       expect(html).toContain(t(locale, "shared.method_timeline.stages.discovery.tag"));
       expect(html).not.toContain(t(locale, "shared.method_timeline.you_get_label"));
       const prefix = locale === "pt" ? "/como-trabalhamos" : locale === "en" ? "/en/how-we-work" : "/es/como-trabajamos";
+      // Id da âncora no idioma da página (auditoria SEO S01-8): /en/how-we-work#development.
       for (const id of ["diagnostico", "descoberta", "desenvolvimento", "sustentacao"]) {
-        expect(html).toContain(`href="${prefix}#${id}"`);
+        expect(html).toContain(`href="${prefix}#${anchorId(id, locale)}"`);
       }
     }
   });
@@ -216,9 +218,10 @@ describe("Home (§6.1) nos 3 idiomas", () => {
       expect(main).not.toContain("data-stub");
       expect(main.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, "")).not.toMatch(/\{[a-z_]+\}/);
       for (const id of ["inicio", "problema", "riscos", "como-trabalhamos", "servicos", "confira", "perguntas", "cta-final"]) {
-        expect(main, `${locale} #${id}`).toContain(`id="${id}"`);
+        expect(main, `${locale} #${id}`).toContain(`id="${anchorId(id, locale)}"`);
       }
       for (const id of ["logos", "depoimento", "cases", "investimento", "time"]) {
+        expect(main, `${locale} #${id}`).not.toContain(`id="${anchorId(id, locale)}"`);
         expect(main, `${locale} #${id}`).not.toContain(`id="${id}"`);
       }
       const diagnosis = [...main.matchAll(/<a\b[^>]*data-cta-id="diagnosis"[^>]*>/g)].map((match) => match[0]);

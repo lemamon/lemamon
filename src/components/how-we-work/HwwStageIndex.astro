@@ -19,7 +19,7 @@
  * desliga enquanto há foco dentro, para não puxar o chip focado de volta para
  * fora da área visível.
  */
-import { ANCHORS, type StageId } from "@/config/routes";
+import { anchorId, ANCHORS, type StageId } from "@/config/routes";
 import { getSection, t, type Locale } from "@/i18n";
 
 interface Props {
@@ -43,7 +43,7 @@ const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
     {
       order.map((id, index) => (
         <li>
-          <a href={`#${ANCHORS.stage[id]}`} class="stage-index__link">
+          <a href={`#${anchorId(ANCHORS.stage[id], locale)}`} class="stage-index__link">
             <span class="stage-index__number" aria-hidden="true">
               {String(index + 1).padStart(2, "0")}
             </span>

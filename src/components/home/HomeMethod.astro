@@ -22,7 +22,7 @@ import type { TermId } from "@/components/shared/terms";
 import ArrowLink from "@/components/ui/ArrowLink.astro";
 import Section from "@/components/ui/Section.astro";
 import SectionHeader from "@/components/ui/SectionHeader.astro";
-import { ANCHORS, urlFor, type StageId } from "@/config/routes";
+import { anchorAlias, anchorId, ANCHORS, urlFor, type StageId } from "@/config/routes";
 import { getSection, t, type Locale } from "@/i18n";
 
 interface Props {
@@ -43,7 +43,13 @@ const details = Object.fromEntries(
 ) as Record<StageId, StageDetail>;
 ---
 
-<Section id={ANCHORS.homeMethod} surface="inverse" labelledby="metodo-title" class="method">
+<Section
+  id={anchorId(ANCHORS.homeMethod, locale)}
+  aliasId={anchorAlias(ANCHORS.homeMethod, locale)}
+  surface="inverse"
+  labelledby="metodo-title"
+  class="method"
+>
   <SectionHeader
     id="metodo-title"
     eyebrow={t(locale, "home.method.eyebrow")}

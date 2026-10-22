@@ -17,9 +17,16 @@
  * width="full" não envolve o conteúdo em .container.
  * divider: linha de 1px no topo (--color-border-subtle), para separar duas
  * seções vizinhas da mesma superfície (03-ui §3.5.2, B216).
+ * aliasId: segundo id da seção, num <span> vazio fora do fluxo (.sr-only do
+ * global.css: position absolute, não ocupa espaço nem célula de grid, e sem
+ * CSS novo no orçamento de peso). É o id pt de uma âncora localizada em en/es
+ * (routes.ts anchorAlias, auditoria SEO S01-8): "/en/…#desenvolvimento" cai
+ * na mesma seção que "#development".
  */
 interface Props {
   id?: string;
+  /** Id de compatibilidade (o pt de uma âncora localizada). Igual a `id` ou vazio: nada é emitido. */
+  aliasId?: string;
   spacing?: "compact" | "default" | "spacious" | "strip" | "hero" | "hero-compact";
   surface?: "canvas" | "subtle" | "inverse";
   width?: "default" | "prose" | "wide" | "full";
@@ -38,6 +45,7 @@ interface Props {
 
 const {
   id,
+  aliasId,
   spacing = "default",
   surface = "canvas",
   width = "default",
@@ -63,6 +71,7 @@ const {
   aria-label={label}
   {...data}
 >
+  {aliasId && aliasId !== id && <span id={aliasId} class="section__alias sr-only" aria-hidden="true" />}
   {
     width === "full" ? (
       <slot />

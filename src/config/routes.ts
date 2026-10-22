@@ -214,8 +214,12 @@ export const SERVICE_PARAM: Record<ServiceKey, string> = {
 };
 
 /**
- * Âncoras estáveis entre páginas (iguais nos 3 idiomas, como os nomes de
- * parâmetro). Quem linka para uma seção de outra página usa daqui.
+ * Âncoras estáveis entre páginas: a CHAVE de cada seção é o id em pt. Em en/es
+ * o id publicado é o localizado (LOCALIZED_ANCHORS, auditoria SEO S01-8): use
+ * anchorFor() para link entre páginas e anchorId(id, locale) para o id da
+ * seção e o link "#…" na própria página. Quem linka para uma seção de outra
+ * página usa daqui. Parâmetros de URL (origem, servico, ref, etapa) continuam
+ * iguais nos 3 idiomas.
  */
 export const ANCHORS = {
   /** Seção do método na Home (BLUEPRINT §6.1 #6). */
@@ -241,7 +245,53 @@ export const ANCHORS = {
   relatedCases: "cases-relacionados",
   /** "O método na prática" em /como-trabalhamos (when_data, §6.2 #11). */
   methodProof: "na-pratica",
+  /** "Como comparar orçamentos" em /quanto-custa (§6.6), linkada da Home e dos posts. */
+  howToCompare: "como-comparar",
+  /** Formulário de /contato (link "Prefere escrever?" do hero, auditoria de conversão F39). */
+  contactForm: "formulario",
 } as const;
+
+type AnchorLocale = Exclude<Locale, "pt">;
+
+/**
+ * Id publicado em en/es de cada âncora de ANCHORS (auditoria SEO S01-8, fecha
+ * a parte das âncoras da F71 da auditoria de conversão): "/en/how-we-work#development",
+ * "/es/como-trabajamos#desarrollo". Chave = id pt; idioma ausente = o id pt já
+ * serve naquele idioma (es "diagnostico", "formato", "como-comparar"...).
+ * Ids do texto visível da seção, sem acento, minúsculas e hífen.
+ */
+export const LOCALIZED_ANCHORS: Readonly<Record<string, Readonly<Partial<Record<AnchorLocale, string>>>>> = {
+  "como-trabalhamos": { en: "how-we-work", es: "como-trabajamos" },
+  diagnostico: { en: "assessment" },
+  descoberta: { en: "discovery", es: "descubrimiento" },
+  desenvolvimento: { en: "development", es: "desarrollo" },
+  sustentacao: { en: "support", es: "mantenimiento" },
+  investimento: { en: "investment", es: "inversion" },
+  perguntas: { en: "faq", es: "preguntas" },
+  "como-construimos": { en: "how-we-build" },
+  "como-acontece": { en: "how-it-works", es: "como-funciona" },
+  formato: { en: "format" },
+  "cases-relacionados": { en: "related-cases", es: "casos-relacionados" },
+  "na-pratica": { en: "in-practice", es: "en-la-practica" },
+  "como-comparar": { en: "how-to-compare" },
+  formulario: { en: "form" },
+};
+
+/** Id da seção no idioma da página. Id fora de LOCALIZED_ANCHORS volta como veio. */
+export function anchorId(id: string, locale: Locale): string {
+  if (locale === "pt") return id;
+  return LOCALIZED_ANCHORS[id]?.[locale] ?? id;
+}
+
+/**
+ * Alias de compatibilidade: o id pt, quando ele difere do id publicado no
+ * idioma. A seção leva um <span> vazio com esse id (Section `aliasId`), para
+ * um link antigo "/en/how-we-work#desenvolvimento" continuar caindo na seção.
+ */
+export function anchorAlias(id: string, locale: Locale): string | undefined {
+  const published = anchorId(id, locale);
+  return published === id ? undefined : id;
+}
 
 /**
  * URL curta do método por idioma, usada no texto de "Copiar resumo" do
@@ -298,9 +348,9 @@ export function urlFor(key: RouteKey, locale: Locale = DEFAULT_LOCALE, params?: 
   return fillParams(pattern, params, key);
 }
 
-/** Âncora dentro de uma página: urlFor + "#id". */
+/** Âncora dentro de uma página: urlFor + "#id", com o id no idioma (anchorId). Passe o id pt de ANCHORS. */
 export function anchorFor(key: RouteKey, locale: Locale, id: string, params?: RouteParams): string {
-  return `${urlFor(key, locale, params)}#${id}`;
+  return `${urlFor(key, locale, params)}#${anchorId(id, locale)}`;
 }
 
 export function absoluteUrl(path: string): string {

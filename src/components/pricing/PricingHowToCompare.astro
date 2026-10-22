@@ -26,6 +26,7 @@ import TextCta from "@/components/services/kit/TextCta.astro";
 import Section from "@/components/ui/Section.astro";
 import { confirmacoes } from "@/config/confirmacoes";
 import { getFeatures } from "@/config/features";
+import { anchorAlias, anchorId, ANCHORS } from "@/config/routes";
 import { getSection, t, type Locale } from "@/i18n";
 
 interface Props {
@@ -61,7 +62,12 @@ const all: { id: string; question: string; why: string; answer: string; term?: T
 const questions = all.filter((item) => item.show);
 ---
 
-<Section id="como-comparar" labelledby="como-comparar-title" surface="subtle">
+<Section
+  id={anchorId(ANCHORS.howToCompare, locale)}
+  aliasId={anchorAlias(ANCHORS.howToCompare, locale)}
+  labelledby="como-comparar-title"
+  surface="subtle"
+>
   <SectionHeader id="como-comparar-title" title={t(locale, "pricing.how_to_compare.title")} intro={t(locale, "pricing.how_to_compare.intro")} />
   <ol role="list" class="compare">
     {

@@ -19,7 +19,7 @@ import { join } from "node:path";
 
 import { describe, expect, inject, it } from "vitest";
 
-import { ANCHORS, urlFor, type RouteKey } from "@/config/routes";
+import { anchorFor, anchorId, ANCHORS, urlFor, type RouteKey } from "@/config/routes";
 import { t, tDynamic, type Locale } from "@/i18n";
 import { fileForPath, textOf } from "@/integrations/verify-build";
 
@@ -36,7 +36,9 @@ function section(html: string, id: string): string {
   const next = html.indexOf("<section", open.index + open[0].length);
   return html.slice(open.index, next > 0 ? next : undefined);
 }
-const faqIds = (html: string) => [...section(html, ANCHORS.faq).matchAll(/data-faq-id="([^"]+)"/g)].map((match) => match[1]);
+/** Ids das perguntas do FAQ da página (a seção tem o id no idioma: #perguntas, #faq, #preguntas). */
+const faqIds = (html: string, locale: Locale) =>
+  [...section(html, anchorId(ANCHORS.faq, locale)).matchAll(/data-faq-id="([^"]+)"/g)].map((match) => match[1]);
 
 describe("Garantias à vista (F01, F41, F42, F37)", () => {
   it("Home: o 4º compromisso é o código; o risco 'fornecedor que some' cita o código; o par dos orçamentos linka a régua", () => {
@@ -46,9 +48,9 @@ describe("Garantias à vista (F01, F41, F42, F37)", () => {
       expect(text, locale).toContain(t(locale, "shared.commitments.items.code_owned"));
       expect(text, locale).not.toContain(t(locale, "shared.commitments.items.after_launch"));
       expect(text, locale).toContain(t(locale, "home.risks.pairs.vendor_disappears.answer_with_code_ownership"));
-      expect(section(html, "riscos"), locale).toContain(`href="${urlFor("pricing", locale)}#como-comparar"`);
+      expect(section(html, "riscos"), locale).toContain(`href="${anchorFor("pricing", locale, ANCHORS.howToCompare)}"`);
       expect(text, locale).toContain(t(locale, "shared.cta.microcopy_diagnosis"));
-      expect(faqIds(html).indexOf("code_ownership"), locale).toBe(2);
+      expect(faqIds(html, locale).indexOf("code_ownership"), locale).toBe(2);
     }
   });
 
@@ -62,13 +64,13 @@ describe("Garantias à vista (F01, F41, F42, F37)", () => {
         'data-id="code_owned"',
       ]);
       expect(textOf(section(html, "comparacao")), locale).toContain(t(locale, "how_we_work.comparison.rows.code.with"));
-      expect(textOf(section(html, ANCHORS.faq)), locale).toContain(t(locale, "faq.items.wont_stall.answer_with_code_ownership"));
+      expect(textOf(section(html, anchorId(ANCHORS.faq, locale))), locale).toContain(t(locale, "faq.items.wont_stall.answer_with_code_ownership"));
     }
   });
 
   it("/quanto-custa: a régua tem 7 perguntas, a última sobre o código", () => {
     for (const locale of LOCALES) {
-      const html = section(page("pricing", locale), "como-comparar");
+      const html = section(page("pricing", locale), anchorId(ANCHORS.howToCompare, locale));
       const ids = [...html.matchAll(/<li[^>]*data-id="([a-z_]+)"/g)].map((match) => match[1]);
       expect(ids, locale).toHaveLength(7);
       expect(ids.at(-1), locale).toBe("code_ownership");
@@ -89,14 +91,16 @@ describe("Preço e prazo pela afirmativa (F08, F12)", () => {
   it("MVP: preço e prazo são as 2 primeiras perguntas; o hero linka para elas e diz 'NDA se você pedir'", () => {
     for (const locale of LOCALES) {
       const html = page("service_mvp", locale);
-      expect(faqIds(html).slice(0, 2), locale).toEqual(["price", "how_long_mvp"]);
+      expect(faqIds(html, locale).slice(0, 2), locale).toEqual(["price", "how_long_mvp"]);
       const hero = html.slice(0, html.indexOf("</section>"));
-      expect(hero, locale).toMatch(/href="#perguntas"[^>]*data-track="cta_click"[^>]*data-cta-id="price_faq"[^>]*data-origem="mvp-hero-preco"/);
+      expect(hero, locale).toMatch(
+        new RegExp(`href="#${anchorId(ANCHORS.faq, locale)}"[^>]*data-track="cta_click"[^>]*data-cta-id="price_faq"[^>]*data-origem="mvp-hero-preco"`),
+      );
       expect(textOf(hero), locale).toContain(t(locale, "services.mvp.hero_price_link"));
       expect(textOf(hero), locale).toContain(`${t(locale, "shared.cta.microcopy_diagnosis")} · ${t(locale, "services.mvp.hero_nda_note")}`);
       // O link de preço vem depois do CTA (nunca entre o subtítulo e o botão).
       expect(hero.indexOf("mvp-hero-preco"), locale).toBeGreaterThan(hero.indexOf("origem=mvp-hero"));
-      expect(faqIds(html), locale).toContain("nda");
+      expect(faqIds(html, locale), locale).toContain("nda");
     }
   });
 });
@@ -105,11 +109,11 @@ describe("Integrações respondem NDA e acesso aos dados (F15)", () => {
   it("data_access perto do topo, com a pergunta do NDA; sem o condicional nda repetido nem how_follow_progress", () => {
     for (const locale of LOCALES) {
       const html = page("service_integrations", locale);
-      const ids = faqIds(html);
+      const ids = faqIds(html, locale);
       expect(ids.indexOf("data_access"), locale).toBeLessThanOrEqual(2);
       expect(ids, locale).not.toContain("nda");
       expect(ids, locale).not.toContain("how_follow_progress");
-      expect(textOf(section(html, ANCHORS.faq)), locale).toContain(t(locale, "services.integrations.faq.data_access.question_with_nda"));
+      expect(textOf(section(html, anchorId(ANCHORS.faq, locale))), locale).toContain(t(locale, "services.integrations.faq.data_access.question_with_nda"));
     }
   });
 });
@@ -120,7 +124,7 @@ describe("D31: atende empresas de qualquer país", () => {
       const html = page("home", locale);
       const text = textOf(html);
       expect(text, locale).toContain(t(locale, "home.hero.eyebrow_with_abroad"));
-      expect(faqIds(html).filter((id) => id === "other_cities"), locale).toHaveLength(1);
+      expect(faqIds(html, locale).filter((id) => id === "other_cities"), locale).toHaveLength(1);
       expect(text, locale).toContain(t(locale, "faq.conditional.other_cities.question_with_abroad"));
       expect(text, locale).not.toContain(t(locale, "faq.conditional.other_cities.question"));
     }
@@ -141,12 +145,12 @@ describe("D44: Sprint de Descoberta gratuita, só quando necessária, sem protó
       const html = page("discovery_sprint", locale);
       const text = textOf(html);
       expect(text, locale).toContain(t(locale, "discovery_sprint.hero.microcopy"));
-      expect(faqIds(html), locale).toEqual(["discovery_cost", "when_discovery", "discovery_duration", "obliged_to_continue", "need_scope_ready"]);
+      expect(faqIds(html, locale), locale).toEqual(["discovery_cost", "when_discovery", "discovery_duration", "obliged_to_continue", "need_scope_ready"]);
       expect(text, locale).toContain(t(locale, "faq.items.discovery_cost.answer"));
       expect(text, locale).toContain(t(locale, "faq.conditional.discovery_duration.answer_draft"));
-      expect(html, locale).not.toContain(`id="${ANCHORS.investment}"`);
+      expect(html, locale).not.toContain(`id="${anchorId(ANCHORS.investment, locale)}"`);
       // Sem formato publicado, "Como a Descoberta acontece" continua desligada.
-      expect(html, locale).not.toContain(`id="${ANCHORS.discoveryFormat}"`);
+      expect(html, locale).not.toContain(`id="${anchorId(ANCHORS.discoveryFormat, locale)}"`);
       // 3 entregas, sem protótipo.
       expect(section(html, "entregaveis").match(/<li data-id="/g) ?? [], locale).toHaveLength(3);
     }
@@ -155,8 +159,8 @@ describe("D44: Sprint de Descoberta gratuita, só quando necessária, sem protó
   it("linha do método (Home) e etapa 2 em /como-trabalhamos: tag 'gratuita, se for necessária', sem duração", () => {
     for (const locale of LOCALES) {
       const tag = t(locale, "shared.method_timeline.stages.discovery.tag");
-      const home = textOf(section(page("home", locale), "como-trabalhamos"));
-      const stage = textOf(section(page("how_we_work", locale), ANCHORS.stage.discovery));
+      const home = textOf(section(page("home", locale), anchorId(ANCHORS.homeMethod, locale)));
+      const stage = textOf(section(page("how_we_work", locale), anchorId(ANCHORS.stage.discovery, locale)));
       expect(home, locale).toContain(tag);
       expect(stage, locale).toContain(tag);
       for (const text of [home, stage]) expect(text, locale).not.toContain(TYPICAL_DURATION[locale]);
@@ -201,7 +205,7 @@ describe("D44: Sprint de Descoberta gratuita, só quando necessária, sem protó
   it("MVP: o FAQ responde quanto dura a Descoberta, sem número", () => {
     for (const locale of LOCALES) {
       const html = page("service_mvp", locale);
-      expect(faqIds(html), locale).toContain("discovery_duration");
+      expect(faqIds(html, locale), locale).toContain("discovery_duration");
       expect(textOf(html), locale).toContain(t(locale, "faq.conditional.discovery_duration.answer_draft"));
     }
   });
