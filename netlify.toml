@@ -44,6 +44,21 @@
 # página por rota e a 404.html, e um "/* /index.html 200" mascararia todo 404.
 # ---------------------------------------------------------------------------
 
+# Host do Netlify (auditoria SEO, S01-1): boring-shockley-7c50b2.netlify.app
+# serve a produção com 200 e "index, follow", uma cópia rastreável do
+# lemamon.dev (o Netlify só manda `Link: rel=canonical`). Regra de DOMÍNIO: casa
+# só com este host exato, então só vale no deploy de produção. O deploy preview
+# (deploy-preview-N--boring-shockley-7c50b2.netlify.app) e o branch deploy
+# (<branch>--boring-shockley-7c50b2.netlify.app) são outros hosts e continuam
+# 200, com o noindex do próprio Netlify. Conferir depois do merge (playbook 08 §1):
+#   curl -sI https://boring-shockley-7c50b2.netlify.app/servicos/mvp
+#   → 301 para https://lemamon.dev/servicos/mvp
+[[redirects]]
+  from = "https://boring-shockley-7c50b2.netlify.app/*"
+  to = "https://lemamon.dev/:splat"
+  status = 301
+  force = true
+
 # Wizard antigo. A conversão "Solicitar cotação" do Google Ads é por evento e
 # sobrevive à troca de rota; o 301 é obrigatório (BLUEPRINT §1.6). O Netlify
 # repassa a query string (gclid, utm_*) para o destino.
@@ -129,6 +144,77 @@
   from = "/blog"
   to = "/"
   status = 302
+
+# Endereços prováveis que davam 404 (auditoria SEO S01-4, conversão F90): quem
+# digita a URL em inglês, a do wizard antigo com outra grafia ou o sitemap no
+# nome padrão. force: nenhum desses arquivos existe, mas a regra não depende disso.
+[[redirects]]
+  from = "/contact"
+  to = "/contato"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/quote"
+  to = "/orcamento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/Diagnostico"
+  to = "/orcamento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/servicos/sistema-web"
+  to = "/servicos/sistemas-web"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/projects"
+  to = "/en/quote"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/es/projects"
+  to = "/es/cotizacion"
+  status = 301
+  force = true
+
+# O @astrojs/sitemap gera sitemap-index.xml (o que o robots.txt e o Search
+# Console usam); /sitemap.xml é o nome que ferramentas e pessoas tentam primeiro.
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301
+  force = true
+
+# /index.html por idioma (S01-5): o arquivo existe e respondia 200; o canonical
+# já apontava a raiz, o 301 tira a URL duplicada. force porque o arquivo existe.
+# A regra casa com o caminho PEDIDO: "/" continua servindo o index.html com 200.
+# Conferir no deploy preview antes do merge (tests/e2e/redirects.spec.ts):
+#   curl -sI <preview>/ → 200 e curl -sI <preview>/index.html → 301 para /.
+# Se "/" entrar em loop, apague as 3 regras: o canonical resolve sozinho.
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/index.html"
+  to = "/en/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/es/index.html"
+  to = "/es/"
+  status = 301
+  force = true
 
 # 404 por idioma. Sem force: só vale quando nenhum arquivo casa. Fora de
 # /en/ e /es/, o Netlify serve /404.html automaticamente.

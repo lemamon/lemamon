@@ -29,7 +29,45 @@ test.describe("(g) redirects do Netlify", () => {
     ["/home", "/", 301],
     ["/post/1", "/", 301],
     ["/blog", "/", 302],
+    // Auditoria SEO S01-4 (F90): endereços prováveis que davam 404.
+    ["/contact", "/contato", 301],
+    ["/quote", "/orcamento", 301],
+    ["/Diagnostico", "/orcamento", 301],
+    ["/servicos/sistema-web", "/servicos/sistemas-web", 301],
+    ["/en/projects", "/en/quote", 301],
+    ["/es/projects", "/es/cotizacion", 301],
+    ["/sitemap.xml", "/sitemap-index.xml", 301],
+    // S01-5: /index.html por idioma vai para a raiz (a raiz continua 200, ver abaixo).
+    ["/index.html", "/", 301],
+    ["/en/index.html", "/en/", 301],
+    ["/es/index.html", "/es/", 301],
   ];
+
+  // S01-5: a regra de /index.html casa com o caminho pedido; a raiz de cada
+  // idioma continua servindo o arquivo com 200, sem loop de redirect.
+  for (const root of ["/", "/en/", "/es/"]) {
+    test(`${root} responde 200 sem redirect (sem loop com o 301 de index.html)`, async ({ request }) => {
+      const response = await request.get(root, { maxRedirects: 0 });
+      expect(response.status()).toBe(200);
+    });
+  }
+
+  // S01-1: o host *.netlify.app de produção vai para lemamon.dev; o deploy
+  // preview e o branch deploy (<algo>--boring-shockley-7c50b2.netlify.app) são
+  // outros hosts e NÃO são redirecionados.
+  const NETLIFY_HOST = "boring-shockley-7c50b2.netlify.app";
+  test("host do Netlify: preview sem redirect; produção → lemamon.dev (301)", async ({ request }) => {
+    const host = new URL(NETLIFY ?? "http://localhost").hostname;
+    if (host.endsWith(`--${NETLIFY_HOST}`)) {
+      const response = await request.get("/servicos/mvp", { maxRedirects: 0 });
+      expect(response.status()).toBe(200);
+      return;
+    }
+    test.skip(host !== "lemamon.dev", "só faz sentido contra o deploy preview ou contra produção");
+    const response = await request.get(`https://${NETLIFY_HOST}/servicos/mvp`, { maxRedirects: 0 });
+    expect(response.status()).toBe(301);
+    expect(response.headers().location).toBe("https://lemamon.dev/servicos/mvp");
+  });
 
   for (const [from, to, status] of RULES) {
     test(`${from} → ${to} (${status})`, async ({ request }) => {

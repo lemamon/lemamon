@@ -93,6 +93,7 @@ describe("netlify.toml (BLUEPRINT §10.1)", () => {
   it("redirects na ordem e com os status de §10.1, sem catch-all", () => {
     const summary = rules.map((rule) => `${field(rule, "from")} → ${field(rule, "to")} ${field(rule, "status")}`);
     expect(summary).toEqual([
+      "https://boring-shockley-7c50b2.netlify.app/* → https://lemamon.dev/:splat 301",
       "/projects → /orcamento 301",
       "/projects/* → /orcamento 301",
       "/diagnostico → /orcamento 301",
@@ -105,10 +106,52 @@ describe("netlify.toml (BLUEPRINT §10.1)", () => {
       "/ → /en/ 301",
       "/ → /es/ 301",
       "/blog → / 302",
+      "/contact → /contato 301",
+      "/quote → /orcamento 301",
+      "/Diagnostico → /orcamento 301",
+      "/servicos/sistema-web → /servicos/sistemas-web 301",
+      "/en/projects → /en/quote 301",
+      "/es/projects → /es/cotizacion 301",
+      "/sitemap.xml → /sitemap-index.xml 301",
+      "/index.html → / 301",
+      "/en/index.html → /en/ 301",
+      "/es/index.html → /es/ 301",
       "/en/* → /en/404.html 404",
       "/es/* → /es/404.html 404",
     ]);
     expect(toml).not.toMatch(/to\s*=\s*"\/index\.html"/);
+  });
+
+  it("host do Netlify → lemamon.dev (S01-1): regra de domínio forçada, só o host exato de produção", () => {
+    const host = rules.find((rule) => field(rule, "from")?.startsWith("https://")) ?? "";
+    expect(field(host, "from")).toBe("https://boring-shockley-7c50b2.netlify.app/*");
+    expect(field(host, "to")).toBe("https://lemamon.dev/:splat");
+    expect(host).toMatch(/^\s*force = true/m);
+    // Deploy preview e branch deploy (deploy-preview-N--… e <branch>--…) são outros hosts: nenhuma regra de domínio casa com eles.
+    expect(rules.filter((rule) => /from\s*=\s*"https?:/.test(rule))).toHaveLength(1);
+    expect(toml).not.toMatch(/from\s*=\s*"https?:\/\/[^"]*--/);
+  });
+
+  it("404 prováveis e /index.html (S01-4, S01-5): 301 forçados para páginas que existem, antes do 404 por idioma", () => {
+    const targets: Record<string, string> = {
+      "/contact": urlFor("contact", "pt"),
+      "/quote": urlFor("quote", "pt"),
+      "/Diagnostico": urlFor("quote", "pt"),
+      "/servicos/sistema-web": urlFor("service_web_systems", "pt"),
+      "/en/projects": urlFor("quote", "en"),
+      "/es/projects": urlFor("quote", "es"),
+      "/index.html": urlFor("home", "pt"),
+      "/en/index.html": urlFor("home", "en"),
+      "/es/index.html": urlFor("home", "es"),
+    };
+    const firstNotFound = rules.findIndex((rule) => field(rule, "status") === "404");
+    for (const [from, to] of Object.entries(targets)) {
+      const index = rules.findIndex((rule) => field(rule, "from") === from);
+      expect(index, from).toBeGreaterThanOrEqual(0);
+      expect(index, from).toBeLessThan(firstNotFound);
+      expect(field(rules[index] ?? "", "to"), from).toBe(to);
+      expect(rules[index], from).toMatch(/^\s*force = true/m);
+    }
   });
 
   it("URL curta do método (Copiar resumo) = METHOD_SHORT_PATH → página do método com a utm", () => {
