@@ -7,20 +7,20 @@ servicos: ["web_systems", "integrations"]
 problema: "Un fabricante necesitaba saber en tiempo real cuántos artículos fabricaba su línea y seguir las métricas industriales."
 combinado:
   escopo: "El proyecto abarcó el sistema de control de la línea de producción en tres partes: la detección y el conteo de los artículos fabricados en tiempo real, hechos por una pequeña placa electrónica; un back-end estructurado, la parte del sistema que corre en el servidor; y un panel (dashboard) donde las métricas industriales se registran y se visualizan."
-entregue: "Los artículos fabricados en la línea de producción se detectan y cuentan en tiempo real con una pequeña placa electrónica. Las métricas industriales quedan registradas y a la vista en un panel, con un back-end detrás, para quien controla la producción."
+entregue: "Los artículos fabricados en la línea se detectan y se cuentan con una pequeña placa electrónica, y las métricas industriales quedan registradas y a la vista en un panel, con un back-end detrás, para quien controla la producción."
 comoFoi:
   - etapa: "diagnosis"
     quando: "Al inicio"
-    texto: "Conversación inicial para entender el pedido y el problema del cliente, un fabricante: saber en tiempo real cuántos artículos fabricaba la línea y seguir las métricas industriales."
+    texto: "Conversación inicial para entender el pedido y el problema del cliente."
   - etapa: "discovery"
     quando: "Antes de construir"
-    texto: "Entendimiento del problema y alcance definido antes de empezar a construir: el conteo de los artículos con una pequeña placa en la línea, un back-end estructurado y un panel para registrar y visualizar las métricas industriales."
+    texto: "Se entendió el problema y se definió el alcance."
   - etapa: "development"
     quando: "Entre 2017 y 2019"
-    texto: "Construcción con entregas parciales a lo largo del proyecto, y no una sola entrega al final. El sistema unió tres partes: la pequeña placa, que detecta y contabiliza los artículos en tiempo real; el back-end; y el panel de métricas. El software usa React, Prisma y GraphQL."
+    texto: "Construcción con entregas parciales a lo largo del proyecto, y no una sola entrega al final."
   - etapa: "support"
     quando: "Después del lanzamiento"
-    texto: "Con el sistema en funcionamiento, hubo soporte, correcciones o evolución para el conteo que hace la pequeña placa electrónica, el back-end y el panel de métricas de la línea."
+    texto: "El sistema siguió con soporte."
 fichaTecnica:
   stack: ["React", "Prisma", "GraphQL"]
 capa:
@@ -35,21 +35,16 @@ semTermo:
 publicado: true
 seoTitle: "Control de producción con conteo automático"
 seoDescription: "Una pequeña placa cuenta en tiempo real los artículos de un fabricante, y un panel muestra las métricas de la línea de producción."
+slugUrl: "control-de-produccion-con-conteo-automatico"
 ---
 
 ### Para quién
 
-El sistema se hizo para un fabricante y para quien controla su línea de producción: quien necesita saber cuántos artículos está fabricando la línea en ese momento y seguir las métricas industriales que registra el sistema.
+El sistema se hizo para un fabricante y para quien controla su línea de producción.
 
 ### Cómo funciona
 
-En la línea de producción, una pequeña placa electrónica detecta cada artículo fabricado y lo contabiliza al instante, en tiempo real. Ese conteo va al back-end, la parte del sistema que corre en el servidor. En el panel (dashboard), las métricas industriales quedan registradas y las puede visualizar quien controla la línea.
-
-### Qué se construyó
-
-- La detección y el conteo de los artículos fabricados en tiempo real, hechos por una pequeña placa electrónica en la línea de producción.
-- Un back-end estructurado, la parte del sistema que corre en el servidor y recibe el conteo.
-- Un panel (dashboard) para registrar y visualizar las métricas industriales de la línea.
+En la línea, la pequeña placa detecta cada artículo fabricado y lo contabiliza al instante. Ese conteo va al back-end, que está detrás del panel de métricas.
 
 ### La tecnología, en palabras simples
 

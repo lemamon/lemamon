@@ -7,20 +7,20 @@ servicos: ["web_systems", "integrations"]
 problema: "Una multinacional del comercio minorista necesitaba un componente que pudiera incorporarse en sitios externos para mostrar la calidad del aire de una ciudad seleccionada. La información tenía que aparecer en gráficos dinámicos, conectados a una API de datos ambientales, el servicio que provee esos datos."
 combinado:
   escopo: "Componente en formato de acordeón (un bloque que se abre y se cierra), diseñado para incorporarse en sitios externos. En él, gráficos dinámicos muestran la calidad del aire de la ciudad seleccionada y están conectados a una API de datos ambientales, de donde viene la información."
-entregue: "Los sitios externos pueden incorporar un widget en acordeón que muestra en gráficos dinámicos la calidad del aire de la ciudad seleccionada, con datos que vienen de una API de datos ambientales."
+entregue: "Los sitios externos pueden incorporar el widget y mostrarles a sus visitantes la calidad del aire de la ciudad seleccionada."
 comoFoi:
   - etapa: "diagnosis"
     quando: "Al inicio"
-    texto: "Conversación inicial para entender el pedido y el problema del cliente: un componente para sitios externos que mostrara la calidad del aire de una ciudad seleccionada."
+    texto: "Conversación inicial para entender el pedido y el problema del cliente."
   - etapa: "discovery"
     quando: "Antes de construir"
-    texto: "Comprensión del problema y alcance definido antes de empezar a construir: un componente en acordeón, con gráficos dinámicos conectados a una API de datos ambientales."
+    texto: "Se entendió el problema y se definió el alcance."
   - etapa: "development"
     quando: "Entre 2019 y 2021"
-    texto: "Construcción con entregas parciales a lo largo del proyecto. El widget se hizo con React y JavaScript, y los gráficos, con Chart.js, conectados a la API que provee la calidad del aire de la ciudad seleccionada."
+    texto: "Construcción con entregas parciales a lo largo del proyecto, y no una sola entrega al final."
   - etapa: "support"
     quando: "Después del lanzamiento"
-    texto: "Con el widget en funcionamiento, hubo soporte, correcciones o evolución para el acordeón, los gráficos de calidad del aire y la conexión con la API de datos ambientales."
+    texto: "El widget siguió con soporte."
 fichaTecnica:
   stack: ["React", "JavaScript", "Chart.js"]
 capa:
@@ -35,23 +35,18 @@ semTermo:
 publicado: true
 seoTitle: "Widget de calidad del aire para sitios"
 seoDescription: "Widget para sitios externos que muestra en gráficos dinámicos la calidad del aire de la ciudad seleccionada, con datos de una API."
+slugUrl: "widget-de-calidad-del-aire"
 ---
 
 ### Para quién
 
-Para los sitios externos que incorporan el widget y para quienes los visitan y quieren ver la calidad del aire de una ciudad. El componente se desarrolló para una multinacional del comercio minorista.
+Para los sitios externos que incorporan el widget y para quienes los visitan. El componente se desarrolló para una multinacional del comercio minorista.
 
 ### Cómo funciona
 
-El widget es un acordeón: un bloque que se abre y se cierra dentro de la página del sitio que lo incorpora. Muestra la calidad del aire de la ciudad seleccionada por medio de gráficos dinámicos.
+El acordeón se abre y se cierra dentro de la página del sitio que lo incorpora.
 
-Los gráficos están conectados a una API de datos ambientales. Una API es la puerta por la que un sistema le entrega datos a otro. De esa API viene la información de calidad del aire de la ciudad seleccionada.
-
-### Qué se construyó
-
-- El componente en formato de acordeón, diseñado para incorporarse en sitios externos.
-- Los gráficos dinámicos que muestran la calidad del aire de la ciudad seleccionada.
-- La conexión de los gráficos con una API de datos ambientales, de donde viene la información.
+Una API es la puerta por la que un sistema le entrega datos a otro: de la API de datos ambientales viene la información que muestran los gráficos.
 
 ### La tecnología, en palabras simples
 
