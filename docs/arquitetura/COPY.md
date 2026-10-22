@@ -2400,7 +2400,7 @@ O que aparece no Google e na prévia de links (WhatsApp, LinkedIn). Title até 6
   - **`description_no_whatsapp`** _(variante sem WhatsApp configurado)_: Contato da Lemamon.dev: e-mail e um formulário curto. Para projeto novo, comece pelo diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
 - **`cases_hub`**
   - **Título**: Cases de desenvolvimento de software | Lemamon.dev
-  - **Descrição**: Projetos de software sob medida: o problema de cada cliente, o que foi combinado, o que foi entregue e, quando o cliente autoriza, o resultado.
+  - **Descrição**: Cases de software sob medida em indústria, varejo, educação, saúde e setor público: o problema do cliente, o que foi combinado e o que foi entregue. _(Auditoria de SEO S06-12: setores dos cases publicados, sem o número de projetos.)_
 - **`case_template`**
   - **Título**: {tipo_de_sistema} para {cliente_ou_setor} | Lemamon.dev
   - **Descrição**: {cliente_ou_setor}: {problema_resolvido}. O que foi combinado, o que foi entregue e como foi o projeto.
