@@ -845,13 +845,20 @@ async function candidataDe(sharp: FabricaSharp, bytes: Buffer): Promise<Candidat
  * Semelhança (0 a 1) da candidata com a referência: a maior correlação entre
  * a imagem inteira (mesma proporção, ±3%) e qualquer recorte de 80% a 100% da
  * largura da referência (≥ 60% da área), refinado em resolução cheia.
+ *
+ * Para no primeiro valor que chega a `bastante` (padrão: o limiar): quem chama
+ * só decide se a candidata passa do limiar, e a resposta é a mesma de buscar o
+ * máximo. Sem a parada, a candidata que É a referência (toda webp/jpg que o
+ * Astro gera da camada) refinava as 8 escalas, até 75 amostras em resolução
+ * cheia cada, e o custo crescia com o número de imagens da camada (D45).
  */
-async function semelhanca(sharp: FabricaSharp, ref: Referencia, cand: Candidata): Promise<number> {
+async function semelhanca(sharp: FabricaSharp, ref: Referencia, cand: Candidata, bastante = LIMIAR_DE_SEMELHANCA): Promise<number> {
   if (cand.desvio < DESVIO_MINIMO || cand.cw < 4 || cand.ch < 4) return 0;
   let melhor = 0;
   const razao = cand.largura / cand.altura / (ref.largura / ref.altura);
   if (razao > 0.97 && razao < 1.03) {
     melhor = correlacao(await amostraDaReferencia(sharp, ref, cand.cw, cand.ch), cand.cw, cand.pixels, cand.cw, cand.ch, 0, 0);
+    if (melhor >= bastante) return melhor;
   }
   for (const escala of ESCALAS_DE_RECORTE) {
     const rw = Math.round(cand.cw / escala);
@@ -868,6 +875,7 @@ async function semelhanca(sharp: FabricaSharp, ref: Referencia, cand: Candidata)
       }
     }
     melhor = Math.max(melhor, nota);
+    if (melhor >= bastante) return melhor;
     if (nota < LIMIAR_DE_REFINO || nota >= 0.999) continue;
     // Refino em resolução cheia: posição em quartos de pixel da grade e escala ±1,5%.
     const fx = ref.largura / rw;
@@ -884,6 +892,7 @@ async function semelhanca(sharp: FabricaSharp, ref: Referencia, cand: Candidata)
           if (left < 0 || top < 0 || width < 2 || height < 2 || left + width > ref.largura || top + height > ref.altura) continue;
           const pixels = await amostra(sharp, ref.png, cand.cw, cand.ch, { left, top, width, height });
           melhor = Math.max(melhor, correlacao(pixels, cand.cw, cand.pixels, cand.cw, cand.ch, 0, 0));
+          if (melhor >= bastante) return melhor;
         }
       }
     }
@@ -932,7 +941,7 @@ export interface ImagemParecida {
   arquivo: string;
   /** Imagem fictícia de origem (dados/ficticio/imagens/...). */
   origem: string;
-  /** Semelhança (0 a 1). */
+  /** Semelhança (0 a 1), ≥ LIMIAR_DE_SEMELHANCA: a primeira que passou do limiar, não necessariamente a máxima. */
   nota: number;
 }
 
@@ -960,10 +969,17 @@ export async function imagensParecidas(lista: readonly [string, string][], root:
   for (const [rotulo, caminho] of candidatas) {
     const cand = await candidataDe(sharp, readFileSync(caminho));
     if (!cand) continue;
+    // Nome que começa com o de uma imagem da camada (o Astro gera "capa-x.<hash>_<variante>.webp"): compara com
+    // ela primeiro e, se passar do limiar, as outras não mudam a resposta. Sem essa dica (toda imagem real), compara
+    // com todas, como sempre.
+    const nome = basename(caminho);
+    const dica = referencias.find((ref) => nome.startsWith(`${basename(ref.arquivo, extname(ref.arquivo))}.`));
+    const ordem = dica ? [dica, ...referencias.filter((ref) => ref !== dica)] : referencias;
     let melhor: ImagemParecida | null = null;
-    for (const ref of referencias) {
+    for (const ref of ordem) {
       const nota = await semelhanca(sharp, ref, cand);
       if (nota >= LIMIAR_DE_SEMELHANCA && (!melhor || nota > melhor.nota)) melhor = { arquivo: rotulo, origem: ref.arquivo, nota };
+      if (melhor && ref === dica) break;
     }
     if (melhor) achados.push(melhor);
   }

@@ -95,6 +95,31 @@ describe("schema de case (cases/<idioma>/<slug>.mdx)", () => {
     expect(issuesOf(schemas.cases.safeParse(comDepoimento)).join("\n")).toMatch(/depoimento: case anonimizado/);
   });
 
+  /** Case anonimizado publicado sem termo, por decisão registrada do dono (D45). */
+  const semTermo = () =>
+    variant(anonimizado, (d) => {
+      Reflect.deleteProperty(d, "autorizacao");
+      Reflect.deleteProperty(d, "resultado");
+      Reflect.deleteProperty(d.combinado, "prazoEPreco");
+      (d as Record<string, unknown>).semTermo = { decididoPor: "dono", data: "2026-10-21", registro: "D45 em docs/playbooks/15-registro-de-decisoes.md" };
+    });
+
+  it("anonimizado com semTermo (decisão do dono) é válido sem autorização", () => {
+    expect(issuesOf(schemas.cases.safeParse(semTermo()))).toEqual([]);
+  });
+
+  it.each([
+    ["com o nome do cliente", (d: Record<string, unknown>) => void (d.cliente = "Fixture Lemamon Cliente"), /cliente: nome do cliente exige/],
+    ["com resultado", (d: Record<string, unknown>) => void (d.resultado = structuredClone(caseFrontmatter().resultado)), /resultado: resultado exige/],
+    ["com prazo e preço", (d: Record<string, unknown>) => void ((d.combinado as Record<string, unknown>).prazoEPreco = "No prazo"), /prazoEPreco/],
+    ["junto com autorizacao", (d: Record<string, unknown>) => void (d.autorizacao = structuredClone(caseFrontmatter().autorizacao)), /semTermo: use/],
+    ["decidido por outra pessoa", (d: Record<string, unknown>) => void ((d.semTermo as Record<string, unknown>).decididoPor = "cliente"), /decididoPor/],
+    ["sem registro da decisão", (d: Record<string, unknown>) => void ((d.semTermo as Record<string, unknown>).registro = " "), /registro/],
+  ])("semTermo quebra %s", (_label, mutate, expected) => {
+    const data = variant(semTermo, (d) => mutate(d as Record<string, unknown>));
+    expect(issuesOf(schemas.cases.safeParse(data)).join("\n")).toMatch(expected);
+  });
+
   it("resultado é opcional (o case faz sentido sem ele)", () => {
     const without = variant(caseFrontmatter, (d) => {
       Reflect.deleteProperty(d, "resultado");

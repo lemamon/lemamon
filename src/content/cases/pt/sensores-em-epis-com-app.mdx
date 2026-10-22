@@ -1,0 +1,57 @@
+---
+titulo: "Monitorar e validar se os trabalhadores usam os EPIs da forma correta, com sensores no próprio equipamento"
+tipoDeSistema: "Sistema de monitoramento de EPIs vestíveis"
+setor: "Energia"
+porte: "Grande empresa"
+servicos: ["integrations", "mobile_apps"]
+problema: "Uma grande empresa do setor de energia precisava saber se os trabalhadores usavam da forma correta os Equipamentos de Proteção Individual (EPIs), os itens de segurança que cada um veste no trabalho. Para isso, era preciso monitorar o uso desses equipamentos e validar se ele estava correto."
+combinado:
+  escopo: "O projeto cobriu um conjunto de sensores integrados aos EPIs vestíveis, ou seja, instalados no próprio equipamento de proteção, e um aplicativo móvel conectado a esses sensores. Juntos, servem para monitorar o uso dos EPIs e validar se os trabalhadores os usam da forma correta."
+entregue: "O uso dos EPIs pelos trabalhadores é monitorado e validado a partir do próprio equipamento: sensores integrados aos EPIs vestíveis se conectam a um aplicativo móvel, que serve para conferir se a proteção é usada da forma correta."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "No início"
+    texto: "Conversa inicial para entender o pedido e o problema do cliente: saber se os trabalhadores usavam da forma correta os EPIs, os equipamentos de proteção que vestem no trabalho."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Entendimento do problema e escopo definido antes de começar a construir: um conjunto de sensores integrados aos EPIs vestíveis e um aplicativo móvel conectado a eles, para monitorar e validar o uso dos equipamentos."
+  - etapa: "development"
+    quando: "Entre 2018 e 2019"
+    texto: "Construção com entregas parciais ao longo do projeto, e não tudo só no fim. As partes foram os sensores integrados aos EPIs vestíveis e o aplicativo móvel para Android conectado a eles, com Node.js, Android e C."
+  - etapa: "support"
+    quando: "Depois de entrar no ar"
+    texto: "Com o sistema no ar, vieram suporte, correções ou evolução para os sensores integrados aos EPIs vestíveis e para o aplicativo conectado a eles."
+fichaTecnica:
+  stack: ["Node.js", "Android", "C"]
+capa:
+  src: "../_imagens/sensores-em-epis-com-app/capa.png"
+  alt: "Ilustração de equipamentos de proteção individual com sensores, conectados a um aplicativo aberto em um celular"
+relacionados: ["controle-de-producao-com-contagem-automatica", "app-android-para-placa-educativa"]
+ordem: 14
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "EPIs vestíveis com sensores e app de monitoramento"
+seoDescription: "Sensores em EPIs vestíveis e um app móvel para uma empresa de energia monitorar e validar se os trabalhadores usam os equipamentos corretamente."
+---
+
+### Para quem
+
+O sistema foi feito para uma grande empresa do setor de energia e diz respeito aos trabalhadores que usam Equipamentos de Proteção Individual (EPIs) vestíveis, os itens de segurança que eles levam no corpo durante o trabalho. É o uso desses equipamentos, por esses trabalhadores, que o sistema monitora e valida.
+
+### Como funciona
+
+Os sensores ficam integrados aos próprios EPIs vestíveis, ou seja, vão no equipamento que o trabalhador usa. Esses sensores se conectam a um aplicativo móvel. É com essa ligação entre os sensores no EPI e o aplicativo que o sistema monitora o uso dos equipamentos e valida se os trabalhadores os usam da forma correta.
+
+### O que foi construído
+
+- Um conjunto de sensores integrados aos EPIs vestíveis, a parte do sistema que fica no próprio equipamento de proteção.
+- Um aplicativo móvel, para Android, que se conecta a esses sensores e serve para monitorar e validar o uso correto dos EPIs.
+
+### Tecnologia, em linguagem simples
+
+- **Node.js**: ambiente que executa JavaScript fora do navegador, muito usado para criar servidores e APIs (as portas pelas quais um sistema entrega dados a outro).
+- **Android**: sistema operacional do Google para celulares e tablets; no projeto, é a plataforma do aplicativo móvel.
+- **C**: linguagem de programação de uso geral, muito usada em software que roda perto do hardware, como em aparelhos eletrônicos e sistemas embarcados.

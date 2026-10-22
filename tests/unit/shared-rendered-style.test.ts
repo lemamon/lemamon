@@ -77,13 +77,20 @@ describe("RenderedStyle — nos builds reais (globalSetup)", () => {
   }
   const minifiedSelector = (selector: string) => selector.replace(/"/g, "");
 
-  it("produção sem dado do dono: a Home não carrega CSS de seção que não renderiza", () => {
+  /** A página tem um elemento com a classe do seletor (e o atributo, no Badge "solid")? */
+  function renderiza(html: string, selector: string): boolean {
+    const [, classe = "", atributo] = /^\.([\w-]+)(?:\[([^\]]+)\])?/.exec(selector) ?? [];
+    const comClasse = new RegExp(`<[a-z][^>]*\\sclass="(?:[^"]*\\s)?${classe}(?:\\s[^"]*)?"[^>]*>`, "g");
+    return [...html.matchAll(comClasse)].some(([tag]) => !atributo || tag.includes(atributo));
+  }
+
+  it("produção: a Home só carrega o CSS das seções que renderiza (sem dado do dono, nenhuma; desde a D45, a de cases)", () => {
     expect(semFicticio.status, semFicticio.saida.slice(-2000)).toBe(0);
     for (const page of ["index.html", "en/index.html", "es/index.html"]) {
-      const { links, all } = pageCss(semFicticio.outDir, page);
+      const { html, links, all } = pageCss(semFicticio.outDir, page);
       for (const [name, selector] of Object.entries(RENDERED)) {
         expect(links.some((href) => href.includes(`/${name}.`)), `${page}: <link> de ${name}`).toBe(false);
-        expect(all.includes(minifiedSelector(selector)), `${page}: regra ${selector} no pacote`).toBe(false);
+        expect(all.includes(minifiedSelector(selector)), `${page}: regra ${selector} no pacote`).toBe(renderiza(html, selector));
       }
     }
   });

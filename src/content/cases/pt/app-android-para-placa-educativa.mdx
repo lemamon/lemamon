@@ -1,0 +1,63 @@
+---
+titulo: "Um app que faz a placa Micro:bit trocar dados com aparelhos Android, por cabo ou por Bluetooth"
+tipoDeSistema: "App Android de conexão com a Micro:bit"
+setor: "Educação"
+porte: "Grande empresa"
+servicos: ["integrations", "mobile_apps"]
+problema: "Uma grande empresa da área de educação precisava que a placa Micro:bit e dispositivos Android se comunicassem e transferissem dados entre si. A ligação tinha de funcionar de dois jeitos: por cabo MicroUSB e sem fio, por Bluetooth Low Energy (BLE), a versão do Bluetooth feita para gastar pouca energia."
+combinado:
+  escopo: "Arquitetura e desenvolvimento de um app Android que estabelece a comunicação e a transferência de dados com a placa Micro:bit. O escopo cobriu os dois caminhos de conexão: o cabo MicroUSB, que liga a placa ao aparelho, e o Bluetooth Low Energy (BLE), sem fio."
+entregue: "A placa Micro:bit e aparelhos Android passam a se comunicar e a transferir dados entre si, por cabo MicroUSB ou sem fio, via Bluetooth Low Energy (BLE), com um app Android arquitetado e desenvolvido para isso."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "No início"
+    texto: "Conversa inicial para entender o pedido e o problema do cliente: fazer a placa Micro:bit e dispositivos Android se comunicarem e transferirem dados entre si."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Entendimento do problema e escopo definido antes de começar a construir: um app Android e dois caminhos de conexão com a placa, o cabo MicroUSB e o Bluetooth Low Energy (BLE)."
+  - etapa: "development"
+    quando: "Entre 2017 e 2019"
+    texto: "Construção com entregas parciais ao longo do projeto. A comunicação entre a placa Micro:bit e o Android foi arquitetada e desenvolvida com Android, Java e C++, pelos dois caminhos: cabo MicroUSB e Bluetooth Low Energy (BLE)."
+  - etapa: "support"
+    quando: "Depois de entrar no ar"
+    texto: "Com o app no ar, vieram suporte, correções ou evolução para a comunicação entre a placa Micro:bit e o Android, por cabo MicroUSB e por Bluetooth Low Energy (BLE)."
+fichaTecnica:
+  stack: ["Android", "Java", "C++", "Bluetooth Low Energy (BLE)", "Micro:bit"]
+capa:
+  src: "../_imagens/app-android-para-placa-educativa/capa.png"
+  alt: "Ilustração de uma placa Micro:bit ligada a um aparelho Android por cabo e por sinal de Bluetooth"
+relacionados: ["sensores-em-epis-com-app", "controle-de-producao-com-contagem-automatica"]
+ordem: 20
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "App Android para a placa Micro:bit"
+seoDescription: "App Android que se comunica com a placa Micro:bit e transfere dados por cabo MicroUSB ou por Bluetooth Low Energy (BLE)."
+---
+
+### Para quem
+
+Para quem usa a placa Micro:bit junto com um aparelho Android. O projeto foi criado para uma grande empresa da área de educação.
+
+### Como funciona
+
+O app Android estabelece a comunicação com a placa Micro:bit e permite transferir dados entre a placa e o aparelho. Há dois caminhos para essa ligação: por cabo MicroUSB, com a placa conectada fisicamente ao aparelho, ou sem fio, por Bluetooth Low Energy (BLE), a versão do Bluetooth feita para gastar pouca energia.
+
+Além do app, o projeto definiu a arquitetura dessa comunicação, ou seja, a forma como as partes se organizam para conversar pelos dois caminhos. O desenvolvimento usou Android, Java e C++.
+
+### O que foi construído
+
+- O app Android, que se comunica com a placa Micro:bit e transfere dados entre a placa e o aparelho.
+- A conexão por cabo MicroUSB entre a placa e o aparelho Android.
+- A conexão sem fio por Bluetooth Low Energy (BLE).
+- A arquitetura da comunicação entre a placa Micro:bit e os dispositivos Android.
+
+### Tecnologia, em linguagem simples
+
+- **Android**: sistema operacional do Google para celulares e tablets. É a plataforma do app do projeto.
+- **Java**: linguagem de programação de uso geral, por muitos anos a principal linguagem para criar apps Android. Foi usada no desenvolvimento do app.
+- **C++**: linguagem de programação comum em software que trabalha perto do hardware, como o de placas e dispositivos eletrônicos. Fez parte do desenvolvimento do projeto.
+- **Bluetooth Low Energy (BLE)**: versão do Bluetooth feita para trocar pequenas quantidades de dados gastando pouca energia. É o caminho sem fio entre a placa e o aparelho Android.
+- **Micro:bit**: pequena placa programável criada para o ensino de programação, com botões, luzes de LED e sensores. É a placa que o app conecta ao Android.

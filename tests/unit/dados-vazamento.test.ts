@@ -70,6 +70,10 @@ function arquivosDe(dir: string): string[] {
 const htmls = (dir: string) => arquivosDe(dir).filter((file) => file.endsWith(".html"));
 
 const PAGINAS_SO_COM_DADO = ["about", "cases_hub", "blog_hub"] as const;
+/** Desde a D45 o dado REAL tem cases (src/content/cases): /cases deixa de ser página que só a camada liga. */
+const DIR_CASES_REAIS = join(ROOT, "src", "content", "cases", "pt");
+const CASES_REAIS = existsSync(DIR_CASES_REAIS) && readdirSync(DIR_CASES_REAIS).some((nome) => /\.mdx?$/.test(nome));
+const PAGINAS_SO_DA_CAMADA = PAGINAS_SO_COM_DADO.filter((rota) => !(rota === "cases_hub" && CASES_REAIS));
 
 describe("marcadores fictícios (o que o caçador procura)", () => {
   it("cobrem identidade, empresa, textos, frontmatter e corpo dos MDX, imagens e a faixa", () => {
@@ -159,13 +163,13 @@ describe("build SEM a flag: nada fictício no dist/", () => {
       expect(html, pagina).toMatch(/<meta name="robots" content="(index, follow|noindex, follow)">/);
       expect(html, pagina).not.toContain(ATRIBUTO_FAIXA);
     }
-    for (const rota of PAGINAS_SO_COM_DADO) {
+    for (const rota of PAGINAS_SO_DA_CAMADA) {
       for (const path of Object.values(ROUTES[rota].paths)) {
         expect(existsSync(join(semFicticio.outDir, fileForPath(path))), `${rota} ${path}`).toBe(false);
       }
     }
     const sitemap = readFileSync(join(semFicticio.outDir, "sitemap-0.xml"), "utf8");
-    expect(sitemap).not.toMatch(/\/sobre<|\/cases<|\/blog</);
+    expect(sitemap).not.toMatch(CASES_REAIS ? /\/sobre<|\/blog</ : /\/sobre<|\/cases<|\/blog</);
   });
 });
 
@@ -175,7 +179,9 @@ describe("build COM a flag (local): a camada aparece, marcada", () => {
     expect(comFicticio.saida).toContain(AVISO_ATIVA);
   });
 
-  it("o caçador acha os marcadores (controle positivo: a varredura não é cega)", () => {
+  // Mesma varredura do teste "nenhum arquivo nem nome de arquivo…", agora no dist COM a camada: cada frase dos
+  // cases do portfólio (D45) é marcador, e o tempo passa dos 5 s padrão (~7 s com 4,5 mil marcadores).
+  it("o caçador acha os marcadores (controle positivo: a varredura não é cega)", { timeout: 120_000 }, () => {
     const achados = new Set(procurarMarcadores(comFicticio.outDir, marcadores, imagens).map((achado) => achado.marcador));
     for (const esperado of [
       "Empresa Exemplo Ltda",
@@ -314,7 +320,8 @@ describe("build de PRODUÇÃO com a flag ligada", () => {
     expect(producaoComFlagVazio.saida).toMatch(/dados\/dono\.json › empresa: razão social \+ CNPJ válido, ou responsável/);
   });
 
-  it("com dado real preenchido: passa, ignora a camada e não tem nada fictício", () => {
+  // Varre o dist inteiro contra todos os marcadores da camada (milhares desde a D45): tempo das outras varreduras.
+  it("com dado real preenchido: passa, ignora a camada e não tem nada fictício", { timeout: 120_000 }, () => {
     expect(producaoComFlag.status, producaoComFlag.saida.slice(-3000)).toBe(0);
     expect(producaoComFlag.saida).toContain(AVISO_PRODUCAO);
     expect(producaoComFlag.saida).not.toContain(AVISO_ATIVA);
@@ -490,7 +497,9 @@ describe("imagem fictícia alterada não chega ao site (janelas de bytes e semel
 
   it("controle: as webp/jpg que o Astro gera da camada no build COM a flag são reconhecidas; no build SEM a flag, nada", { timeout: 120_000 }, async () => {
     const astro = (dist: string) => lista(join(dist, "_astro")).filter(([nome]) => /\.(webp|jpe?g|png|avif)$/.test(nome));
-    const geradas = astro(comFicticio.outDir);
+    // Só as que existem por causa da camada: as capas dos cases REAIS (D45) saem iguais nos dois builds.
+    const reais = new Set(astro(semFicticio.outDir).map(([nome]) => nome));
+    const geradas = astro(comFicticio.outDir).filter(([nome]) => !reais.has(nome));
     expect(geradas.length).toBeGreaterThan(5);
     const achados = await imagensParecidas(geradas, ROOT);
     expect(achados.map((achado) => achado.arquivo).sort()).toEqual(geradas.map(([nome]) => nome).sort());

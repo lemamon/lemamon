@@ -7,7 +7,7 @@
  * erro de SINTAXE no JSON sai em pt-BR com linha e coluna; e texto de exemplo
  * ou valor COPIADO da camada fictícia no dado real (dono.json ou MDX) derruba o build.
  */
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -169,7 +169,10 @@ describe("dados/dono.ficticio.json — camada fictícia", () => {
   });
 
   it("conteúdo MDX fictício fica separado (dados/ficticio/) e só entra com a camada", () => {
-    expect(temMdx("cases", ROOT, false)).toBe(false);
+    // Desde a D45 há cases REAIS em src/content/cases: nenhum é um arquivo da camada (mesmo idioma e nome).
+    const mdx = (dir: string) => ["pt", "en", "es"].flatMap((l) => (existsSync(join(dir, l)) ? readdirSync(join(dir, l)).map((f) => `${l}/${f}`) : []));
+    const daCamada = new Set(mdx(join(ROOT, "dados", "ficticio", "cases")));
+    expect(mdx(join(ROOT, "src", "content", "cases")).filter((nome) => daCamada.has(nome))).toEqual([]);
     expect(temMdx("posts", ROOT, false)).toBe(false);
     expect(temMdx("cases", ROOT, true)).toBe(true);
     expect(temMdx("posts", ROOT, true)).toBe(true);
@@ -526,7 +529,9 @@ describe("valor COPIADO de dados/dono.ficticio.json ou de dados/ficticio/ derrub
     return dir;
   }
 
-  it("src/, public/ e dados/ de hoje não têm cópia (sem falso positivo no projeto real)", async () => {
+  // Varre src/, public/ e dados/ inteiros contra cada imagem da camada (janelas de bytes e semelhança):
+  // o tempo cresce com a camada (31 capas de case desde a D45), como as varreduras de dados-vazamento.test.ts.
+  it("src/, public/ e dados/ de hoje não têm cópia (sem falso positivo no projeto real)", { timeout: 120_000 }, async () => {
     expect(await copiasDaCamadaFicticia(ROOT)).toEqual([]);
   });
 
@@ -539,7 +544,7 @@ describe("valor COPIADO de dados/dono.ficticio.json ou de dados/ficticio/ derrub
     }
   });
 
-  it("seções inteiras copiadas para o dono.json (cenário X8): cada valor, com o caminho dos dois lados", async () => {
+  it("seções inteiras copiadas para o dono.json (cenário X8): cada valor, com o caminho dos dois lados", { timeout: 120_000 }, async () => {
     const problemas = (await copiasDaCamadaFicticia(
       raiz((doc) => {
         for (const secao of ["descoberta", "sustentacao", "engenharia", "precos"]) doc[secao] = structuredClone(ficticio[secao]);
@@ -557,7 +562,7 @@ describe("valor COPIADO de dados/dono.ficticio.json ou de dados/ficticio/ derrub
     expect(problemas).not.toMatch(/\.id: valor copiado|\.unidade: valor copiado/);
   });
 
-  it("post fictício copiado para src/content/posts com título, slug e autor trocados (cenário X9b)", async () => {
+  it("post fictício copiado para src/content/posts com título, slug e autor trocados (cenário X9b)", { timeout: 120_000 }, async () => {
     const original = readFileSync(join(ROOT, "dados", "ficticio", "posts", "exemplo-integrar-sistemas.mdx"), "utf8");
     const corpo = original.split("---").slice(2).join("---");
     const frontmatter = '---\ntitulo: "O que muda quando os sistemas conversam"\nresumo: "Por onde começar."\nautor:\n  nome: "Bruno Real Lima"\n  foto: "./autor.png"\n  link: "https://www.linkedin.com/in/bruno-real"\n  papelTecnico: "Desenvolvedor"\npublicadoEm: "2026-08-25"\n---';

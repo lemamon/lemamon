@@ -1,0 +1,58 @@
+---
+titulo: "Itens fabricados contados em tempo real, com as métricas da linha num painel"
+tipoDeSistema: "Sistema de controle de linha de produção"
+setor: "Indústria"
+porte: "Fabricante"
+servicos: ["web_systems", "integrations"]
+problema: "Uma fabricante precisava saber em tempo real quantos itens a linha fabricava e acompanhar as métricas industriais."
+combinado:
+  escopo: "O projeto cobriu o sistema de controle da linha de produção em três partes: a detecção e a contagem dos itens fabricados em tempo real, feitas por uma microplaca (uma pequena placa eletrônica); um back-end estruturado, a parte do sistema que roda no servidor; e um painel (dashboard) onde as métricas industriais são registradas e visualizadas."
+entregue: "Os itens fabricados na linha de produção são detectados e contados em tempo real por uma microplaca. As métricas industriais ficam registradas e à vista em um painel, com um back-end por trás, para quem controla a produção."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "No início"
+    texto: "Conversa inicial para entender o pedido e o problema do cliente, uma fabricante: saber em tempo real quantos itens a linha fabricava e acompanhar as métricas industriais."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Entendimento do problema e escopo definido antes de começar a construir: a contagem dos itens por uma microplaca na linha, um back-end estruturado e um painel para registrar e visualizar as métricas industriais."
+  - etapa: "development"
+    quando: "Entre 2017 e 2019"
+    texto: "Construção com entregas parciais ao longo do projeto, e não tudo só no fim. O sistema uniu três partes: a microplaca, que detecta e contabiliza os itens em tempo real; o back-end; e o painel de métricas. O software usa React, Prisma e GraphQL."
+  - etapa: "support"
+    quando: "Depois de entrar no ar"
+    texto: "Com o sistema no ar, vieram suporte, correções ou evolução para a contagem feita pela microplaca, o back-end e o painel de métricas da linha."
+fichaTecnica:
+  stack: ["React", "Prisma", "GraphQL"]
+capa:
+  src: "../_imagens/controle-de-producao-com-contagem-automatica/capa.png"
+  alt: "Ilustração de uma linha de produção com contador de itens e painel de métricas"
+relacionados: ["painel-de-controle-de-producao", "sensores-em-epis-com-app"]
+ordem: 10
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Controle de produção com contagem automática"
+seoDescription: "Uma microplaca conta em tempo real os itens fabricados por uma fabricante, e um painel mostra as métricas da linha de produção."
+---
+
+### Para quem
+
+O sistema foi feito para uma fabricante e para quem controla a sua linha de produção: quem precisa saber quantos itens a linha está fabricando naquele momento e acompanhar as métricas industriais que o sistema registra.
+
+### Como funciona
+
+Na linha de produção, uma microplaca (uma pequena placa eletrônica) detecta cada item fabricado e o contabiliza na hora, em tempo real. Essa contagem segue para o back-end, a parte do sistema que roda no servidor. No painel (dashboard), as métricas industriais ficam registradas e podem ser visualizadas por quem controla a linha.
+
+### O que foi construído
+
+- A detecção e a contagem dos itens fabricados em tempo real, feitas por uma microplaca na linha de produção.
+- Um back-end estruturado, a parte do sistema que roda no servidor e recebe a contagem.
+- Um painel (dashboard) para registrar e visualizar as métricas industriais da linha.
+
+### Tecnologia, em linguagem simples
+
+- **React**: biblioteca JavaScript para montar interfaces a partir de componentes reutilizáveis; no projeto, a interface é o painel de métricas.
+- **Prisma**: ferramenta para Node.js e TypeScript que faz a ponte entre o código do servidor e o banco de dados.
+- **GraphQL**: linguagem de consulta para APIs, em que quem pede os dados diz exatamente quais quer receber.

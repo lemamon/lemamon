@@ -1,0 +1,57 @@
+---
+titulo: "Control de la producción con los datos de los productos fabricados registrados y mostrados en un panel"
+tipoDeSistema: "Sistema de control de producción"
+setor: "Industria"
+porte: "Fabricante"
+servicos: ["web_systems"]
+problema: "Un fabricante necesitaba controlar su producción a partir de los datos de los productos fabricados. Para eso, había que registrar esos datos y mostrarlos a quienes administran la producción."
+combinado:
+  escopo: "El proyecto abarcó las dos partes del sistema de control de producción: un back-end dedicado, la parte que corre en el servidor y atiende solo a este sistema, y un panel administrativo (dashboard), donde los datos sobre los productos fabricados se registran y se muestran."
+entregue: "Los datos sobre los productos fabricados quedan registrados y a la vista en un panel administrativo, con un back-end dedicado detrás: la base para que el fabricante controle la producción."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "Al inicio"
+    texto: "Conversación inicial para entender el pedido y el problema del cliente, un fabricante: controlar la producción a partir de los datos de los productos fabricados."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Entendimiento del problema y alcance definido antes de empezar a construir: un back-end dedicado y un panel administrativo para registrar y mostrar los datos de los productos fabricados."
+  - etapa: "development"
+    quando: "Entre 2017 y 2019"
+    texto: "Construcción con entregas parciales a lo largo del proyecto, y no una sola entrega al final. El back-end dedicado se hizo con LoopBack y el panel administrativo con AngularJS, ambos en JavaScript; el back-end atiende al panel."
+  - etapa: "support"
+    quando: "Después del lanzamiento"
+    texto: "Con el sistema en funcionamiento, hubo soporte, correcciones o evolución para el back-end dedicado y el panel administrativo de los datos de los productos fabricados."
+fichaTecnica:
+  stack: ["AngularJS", "JavaScript", "LoopBack"]
+capa:
+  src: "../_imagens/painel-de-controle-de-producao/capa.png"
+  alt: "Ilustración de un panel administrativo con gráficos y una tabla de productos fabricados"
+relacionados: ["controle-de-producao-com-contagem-automatica", "sensores-em-epis-com-app"]
+ordem: 17
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Panel de control de producción"
+seoDescription: "Sistema de control de producción de un fabricante, con back-end dedicado y panel administrativo para registrar y mostrar datos de productos fabricados."
+---
+
+### Para quién
+
+El sistema se hizo para un fabricante y para quien controla su producción. El panel es administrativo, es decir, está pensado para quienes administran los datos sobre los productos fabricados.
+
+### Cómo funciona
+
+El sistema tiene dos partes que trabajan juntas. En el panel administrativo (dashboard), los datos sobre los productos fabricados se registran y se muestran. Detrás está el back-end dedicado, la parte que corre en el servidor y atiende solo a este sistema: es el que da soporte al registro y a la visualización de esos datos en el panel.
+
+### Qué se construyó
+
+- Un back-end dedicado, la parte del sistema de control de producción que corre en el servidor.
+- Un panel administrativo (dashboard) para registrar y mostrar datos sobre los productos fabricados.
+
+### La tecnología, en palabras simples
+
+- **AngularJS**: framework de JavaScript para construir interfaces web que corren en el navegador; en el proyecto, es la base del panel administrativo.
+- **JavaScript**: el lenguaje de programación de la web, que le da comportamiento a las páginas en el navegador y también corre en servidores; en el proyecto, está en el panel y en el back-end.
+- **LoopBack**: framework de Node.js para crear APIs, las puertas por las que el panel pide y recibe datos del servidor; en el proyecto, es la base del back-end dedicado.

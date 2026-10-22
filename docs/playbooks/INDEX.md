@@ -20,6 +20,7 @@ Tudo o que o site novo **não resolve com código**: processo comercial, oferta 
 | 07 | [07-google-ads.md](07-google-ads.md) | URLs finais, conversão por evento, por URL e offline; campanhas; verba |
 | 08 | [08-search-console-e-seo-local.md](08-search-console-e-seo-local.md) | Search Console, Bing, Keyword Planner, Perfil da Empresa, diretórios |
 | 09 | [09-prova-cases-depoimentos.md](09-prova-cases-depoimentos.md) | cases, depoimentos, logos, termo de autorização, roteiro de entrevista |
+| 09a | [09a-catalogo-de-projetos.md](09a-catalogo-de-projetos.md) | os 29 cases do portfólio publicados sem o nome do cliente (`semTermo`, D45) e como um deles ganha o nome |
 | 10 | [10-lgpd-operacional.md](10-lgpd-operacional.md) | bloqueadores, operadores reais, retenção, rotina de exclusão, titulares |
 | 11 | [11-email-dominio-proprio.md](11-email-dominio-proprio.md) | e-mail @lemamon.dev com SPF, DKIM e DMARC |
 | 12 | [12-canais-indicacao-linkedin-conteudo.md](12-canais-indicacao-linkedin-conteudo.md) | indicação, parcerias, comunidade, LinkedIn, blog, Medium |

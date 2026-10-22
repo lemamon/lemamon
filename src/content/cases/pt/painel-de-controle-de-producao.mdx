@@ -1,0 +1,57 @@
+---
+titulo: "Controle da produção com os dados dos produtos fabricados registrados e exibidos em um painel"
+tipoDeSistema: "Sistema de controle de produção"
+setor: "Indústria"
+porte: "Fabricante"
+servicos: ["web_systems"]
+problema: "Uma fabricante precisava controlar a sua produção a partir dos dados dos produtos fabricados. Para isso, era preciso registrar esses dados e exibi-los para quem administra a produção."
+combinado:
+  escopo: "O projeto cobriu as duas partes do sistema de controle de produção: um back-end dedicado, a parte que roda no servidor e atende só a esse sistema, e um painel administrativo (dashboard), onde os dados sobre os produtos fabricados são registrados e exibidos."
+entregue: "Os dados sobre os produtos fabricados ficam registrados e à vista em um painel administrativo, com um back-end dedicado por trás: a base para a fabricante controlar a produção."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "No início"
+    texto: "Conversa inicial para entender o pedido e o problema do cliente, uma fabricante: controlar a produção a partir dos dados dos produtos fabricados."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Entendimento do problema e escopo definido antes de começar a construir: um back-end dedicado e um painel administrativo para registrar e exibir os dados dos produtos fabricados."
+  - etapa: "development"
+    quando: "Entre 2017 e 2019"
+    texto: "Construção com entregas parciais ao longo do projeto, e não tudo só no fim. O back-end dedicado foi feito com LoopBack e o painel administrativo com AngularJS, ambos em JavaScript; o back-end atende ao painel."
+  - etapa: "support"
+    quando: "Depois de entrar no ar"
+    texto: "Com o sistema no ar, vieram suporte, correções ou evolução para o back-end dedicado e o painel administrativo dos dados dos produtos fabricados."
+fichaTecnica:
+  stack: ["AngularJS", "JavaScript", "LoopBack"]
+capa:
+  src: "../_imagens/painel-de-controle-de-producao/capa.png"
+  alt: "Ilustração de um painel administrativo com gráficos e uma tabela de produtos fabricados"
+relacionados: ["controle-de-producao-com-contagem-automatica", "sensores-em-epis-com-app"]
+ordem: 17
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Painel de controle de produção"
+seoDescription: "Sistema de controle de produção de uma fabricante, com back-end dedicado e painel administrativo para registrar e exibir dados dos produtos fabricados."
+---
+
+### Para quem
+
+O sistema foi feito para uma fabricante e para quem controla a sua produção. O painel é administrativo, ou seja, voltado a quem administra os dados sobre os produtos fabricados.
+
+### Como funciona
+
+O sistema tem duas partes que trabalham juntas. No painel administrativo (dashboard), os dados sobre os produtos fabricados são registrados e exibidos. Por trás dele fica o back-end dedicado, a parte que roda no servidor e atende só a esse sistema: é ele que dá suporte ao registro e à exibição desses dados no painel.
+
+### O que foi construído
+
+- Um back-end dedicado, a parte do sistema de controle de produção que roda no servidor.
+- Um painel administrativo (dashboard) para registrar e exibir dados sobre os produtos fabricados.
+
+### Tecnologia, em linguagem simples
+
+- **AngularJS**: framework JavaScript para construir interfaces web que rodam no navegador; no projeto, é a base do painel administrativo.
+- **JavaScript**: linguagem de programação da web, que dá comportamento às páginas no navegador e também roda em servidores; no projeto, está no painel e no back-end.
+- **LoopBack**: framework de Node.js para criar APIs, as portas pelas quais o painel pede e recebe dados do servidor; no projeto, é a base do back-end dedicado.

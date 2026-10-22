@@ -1,0 +1,57 @@
+---
+titulo: "Monitorear y validar que los trabajadores usen los EPP de forma correcta, con sensores en el propio equipo"
+tipoDeSistema: "Sistema de monitoreo de EPP vestibles"
+setor: "Energía"
+porte: "Gran empresa"
+servicos: ["integrations", "mobile_apps"]
+problema: "Una gran empresa del sector energético necesitaba saber si los trabajadores usaban de forma correcta los Equipos de Protección Personal (EPP), es decir, el equipo de seguridad que cada uno lleva puesto en el trabajo. Para eso, había que monitorear el uso de esos equipos y validar que fuera correcto."
+combinado:
+  escopo: "El proyecto abarcó un conjunto de sensores integrados a los EPP vestibles, es decir, instalados en el propio equipo de protección, y una aplicación móvil conectada a esos sensores. Juntos, sirven para monitorear el uso de los EPP y validar que los trabajadores los usen de forma correcta."
+entregue: "El uso de los EPP por parte de los trabajadores se monitorea y valida desde el propio equipo: sensores integrados a los EPP vestibles se conectan a una aplicación móvil, que sirve para comprobar que la protección se use de forma correcta."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "Al inicio"
+    texto: "Conversación inicial para entender el pedido y el problema del cliente: saber si los trabajadores usaban de forma correcta los EPP, los equipos de protección que llevan puestos en el trabajo."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Entendimiento del problema y alcance definido antes de empezar a construir: un conjunto de sensores integrados a los EPP vestibles y una aplicación móvil conectada a ellos, para monitorear y validar el uso de los equipos."
+  - etapa: "development"
+    quando: "Entre 2018 y 2019"
+    texto: "Construcción con entregas parciales a lo largo del proyecto, y no una sola entrega al final. Las partes fueron los sensores integrados a los EPP vestibles y la aplicación móvil para Android conectada a ellos, con Node.js, Android y C."
+  - etapa: "support"
+    quando: "Después del lanzamiento"
+    texto: "Con el sistema en funcionamiento, hubo soporte, correcciones o evolución para los sensores integrados a los EPP vestibles y la aplicación conectada a ellos."
+fichaTecnica:
+  stack: ["Node.js", "Android", "C"]
+capa:
+  src: "../_imagens/sensores-em-epis-com-app/capa.png"
+  alt: "Ilustración de equipos de protección personal con sensores, conectados a una app abierta en un celular"
+relacionados: ["controle-de-producao-com-contagem-automatica", "app-android-para-placa-educativa"]
+ordem: 14
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "EPP vestibles con sensores y app de monitoreo"
+seoDescription: "Sensores en EPP vestibles y una app móvil para que una empresa de energía monitoree y valide que los trabajadores usen sus equipos correctamente."
+---
+
+### Para quién
+
+El sistema se hizo para una gran empresa del sector energético y tiene que ver con los trabajadores que usan Equipos de Protección Personal (EPP) vestibles, el equipo de seguridad que llevan puesto mientras trabajan. Es el uso de esos equipos, por parte de esos trabajadores, lo que el sistema monitorea y valida.
+
+### Cómo funciona
+
+Los sensores están integrados a los propios EPP vestibles, es decir, van en el equipo que usa el trabajador. Esos sensores se conectan a una aplicación móvil. Con esa conexión entre los sensores del EPP y la aplicación, el sistema monitorea el uso de los equipos y valida que los trabajadores los usen de forma correcta.
+
+### Qué se construyó
+
+- Un conjunto de sensores integrados a los EPP vestibles, la parte del sistema que va en el propio equipo de protección.
+- Una aplicación móvil, para Android, que se conecta a esos sensores y sirve para monitorear y validar el uso correcto de los EPP.
+
+### La tecnología, en palabras simples
+
+- **Node.js**: entorno que ejecuta JavaScript fuera del navegador, muy usado para crear servidores y APIs (las puertas por las que un sistema le entrega datos a otro).
+- **Android**: sistema operativo de Google para celulares y tabletas; en el proyecto, es la plataforma de la aplicación móvil.
+- **C**: lenguaje de programación de uso general, muy usado en software que corre cerca del hardware, como en aparatos electrónicos y sistemas embebidos.

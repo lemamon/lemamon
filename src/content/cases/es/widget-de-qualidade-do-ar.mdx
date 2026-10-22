@@ -1,0 +1,60 @@
+---
+titulo: "Un widget para sitios externos que muestra en gráficos la calidad del aire de la ciudad seleccionada"
+tipoDeSistema: "Widget de calidad del aire"
+setor: "Comercio minorista"
+porte: "Multinacional"
+servicos: ["web_systems", "integrations"]
+problema: "Una multinacional del comercio minorista necesitaba un componente que pudiera incorporarse en sitios externos para mostrar la calidad del aire de una ciudad seleccionada. La información tenía que aparecer en gráficos dinámicos, conectados a una API de datos ambientales, el servicio que provee esos datos."
+combinado:
+  escopo: "Componente en formato de acordeón (un bloque que se abre y se cierra), diseñado para incorporarse en sitios externos. En él, gráficos dinámicos muestran la calidad del aire de la ciudad seleccionada y están conectados a una API de datos ambientales, de donde viene la información."
+entregue: "Los sitios externos pueden incorporar un widget en acordeón que muestra en gráficos dinámicos la calidad del aire de la ciudad seleccionada, con datos que vienen de una API de datos ambientales."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "Al inicio"
+    texto: "Conversación inicial para entender el pedido y el problema del cliente: un componente para sitios externos que mostrara la calidad del aire de una ciudad seleccionada."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Comprensión del problema y alcance definido antes de empezar a construir: un componente en acordeón, con gráficos dinámicos conectados a una API de datos ambientales."
+  - etapa: "development"
+    quando: "Entre 2019 y 2021"
+    texto: "Construcción con entregas parciales a lo largo del proyecto. El widget se hizo con React y JavaScript, y los gráficos, con Chart.js, conectados a la API que provee la calidad del aire de la ciudad seleccionada."
+  - etapa: "support"
+    quando: "Después del lanzamiento"
+    texto: "Con el widget en funcionamiento, hubo soporte, correcciones o evolución para el acordeón, los gráficos de calidad del aire y la conexión con la API de datos ambientales."
+fichaTecnica:
+  stack: ["React", "JavaScript", "Chart.js"]
+capa:
+  src: "../_imagens/widget-de-qualidade-do-ar/capa.png"
+  alt: "Ilustración de un widget en acordeón abierto, con elección de ciudad y gráficos de calidad del aire"
+relacionados: ["painel-de-qualidade-do-ar", "seletores-de-produtos-para-varejo"]
+ordem: 24
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Widget de calidad del aire para sitios"
+seoDescription: "Widget para sitios externos que muestra en gráficos dinámicos la calidad del aire de la ciudad seleccionada, con datos de una API."
+---
+
+### Para quién
+
+Para los sitios externos que incorporan el widget y para quienes los visitan y quieren ver la calidad del aire de una ciudad. El componente se desarrolló para una multinacional del comercio minorista.
+
+### Cómo funciona
+
+El widget es un acordeón: un bloque que se abre y se cierra dentro de la página del sitio que lo incorpora. Muestra la calidad del aire de la ciudad seleccionada por medio de gráficos dinámicos.
+
+Los gráficos están conectados a una API de datos ambientales. Una API es la puerta por la que un sistema le entrega datos a otro. De esa API viene la información de calidad del aire de la ciudad seleccionada.
+
+### Qué se construyó
+
+- El componente en formato de acordeón, diseñado para incorporarse en sitios externos.
+- Los gráficos dinámicos que muestran la calidad del aire de la ciudad seleccionada.
+- La conexión de los gráficos con una API de datos ambientales, de donde viene la información.
+
+### La tecnología, en palabras simples
+
+- **React**: biblioteca de JavaScript para armar interfaces a partir de componentes reutilizables. Se empleó para construir el widget.
+- **JavaScript**: el lenguaje de programación de la web, que le da comportamiento a las páginas en el navegador y también corre en servidores. También se empleó en el widget.
+- **Chart.js**: biblioteca de JavaScript de código abierto para dibujar gráficos en páginas web. En el widget, es la tecnología de los gráficos de calidad del aire.

@@ -8,7 +8,7 @@
 ## 1. Regras que não mudam
 
 1. **Nada inventado.** Nenhum cliente, logo, número ou citação sem fonte real. O exemplo de 05-conteudo §5.3 ("Transportadora de médio porte — SC") **nunca** é publicado.
-2. **Toda prova tem autorização por escrito**, inclusive o case anonimizado. O schema exige `autorizacao` com `porEscrito: true`, `autorizadoPor`, `data` e `registro` (e, no case, o `escopo` do que foi autorizado): sem ela, a entrada não valida e o build quebra. A autorização nunca é publicada; fica no repositório para auditoria.
+2. **Toda prova tem autorização por escrito**, inclusive o case anonimizado. O schema exige `autorizacao` com `porEscrito: true`, `autorizadoPor`, `data` e `registro` (e, no case, o `escopo` do que foi autorizado): sem ela, a entrada não valida e o build quebra. A autorização nunca é publicada; fica no repositório para auditoria. **Exceção (D45, decisão do dono):** o case anonimizado pode ir ao ar sem termo, com `semTermo` (`decididoPor: "dono"`, `data`, `registro` de onde a decisão está anotada) no lugar de `autorizacao`; o schema só aceita `semTermo` em case sem `cliente`, sem `resultado`, sem prazo e preço, sem link do produto e sem depoimento, que continuam exigindo o termo.
 3. **Depoimento é sempre nominal** (nome completo, cargo, empresa). Anônimo não existe no site.
 4. **Resultado numérico é opcional.** O case faz sentido sem ele. Número só com fonte e autorização.
 5. **Três idiomas.** Um case só conta quando existe e está publicado em pt, en e es. `hasCases` exige 2 assim.
@@ -205,7 +205,7 @@ Quando o cliente autoriza contar o projeto, mas não o nome:
 
 - `cliente` fica fora; o card usa `setor` + `porte` (+ UF no texto, se autorizado).
 - Sem logo, sem nome de pessoa, sem link do produto.
-- **Ainda exige termo assinado** (opção "Publicação sem o nome" na §6).
+- **Exige termo assinado** (opção "Publicação sem o nome" na §6), salvo decisão do dono registrada em `semTermo` (exceção da §1, regra 2; D45).
 - Confira se setor + porte + UF não identificam a empresa num mercado pequeno; se identificarem, generalize (ex.: só a região).
 - Números: os mesmos critérios de fonte e autorização.
 

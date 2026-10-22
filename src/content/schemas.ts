@@ -13,7 +13,8 @@
  * BUILD com a mensagem do campo — nunca renderizam pela metade.
  *
  * O que nunca é publicado (só fica no repositório, para auditoria): o bloco
- * `autorizacao` inteiro e a `fonte` de cada métrica de resultado.
+ * `autorizacao` inteiro (ou o `semTermo` do case anonimizado) e a `fonte` de
+ * cada métrica de resultado.
  */
 
 import { z } from "astro/zod";
@@ -271,6 +272,21 @@ export const caseAuthorization = authorization.extend({
   }),
 });
 
+/**
+ * Case ANONIMIZADO publicado SEM termo do cliente, por decisão registrada do dono
+ * (D45 em docs/playbooks/15-registro-de-decisoes.md). Fica no lugar de
+ * `autorizacao` só no case sem `cliente`: nome, resultado, prazo e preço, link
+ * do produto e depoimento continuam exigindo o termo. Nunca é renderizado.
+ */
+export const caseOwnerDecision = z.strictObject({
+  /** Quem decidiu publicar sem termo: sempre o dono. */
+  decididoPor: z.literal("dono", { error: 'decididoPor: "dono" (só o dono decide publicar sem termo)' }),
+  /** Data da decisão. */
+  data: date({ notFuture: true }),
+  /** Onde a decisão está registrada (ex.: "D45 em docs/playbooks/15-registro-de-decisoes.md"). */
+  registro: text(240),
+});
+
 /** Autorização de depoimento: inclui a foto e o vídeo, quando houver. */
 export const testimonialAuthorization = authorization.extend({
   /** A pessoa autorizou a foto (campo `foto`). */
@@ -387,7 +403,10 @@ export function caseSchema<Img extends z.ZodType, Ref extends z.ZodType>(
       relacionados: z.array(slug).max(2).refine(isUnique, "slug repetido").optional(),
       /** Ordem nas listas (menor primeiro). */
       ordem: z.number().int().min(0).default(0),
-      autorizacao: caseAuthorization,
+      /** Termo POR ESCRITO do cliente. Obrigatório, salvo `semTermo` em case anonimizado. */
+      autorizacao: caseAuthorization.optional(),
+      /** Case anonimizado publicado sem termo, por decisão registrada do dono. Nunca junto com `autorizacao`. */
+      semTermo: caseOwnerDecision.optional(),
       /** Só vai ao ar com `true` nos 3 idiomas. */
       publicado: z.boolean().default(false),
       /** Title sem a marca, até 50 caracteres (a marca entra no template). */
@@ -395,11 +414,27 @@ export function caseSchema<Img extends z.ZodType, Ref extends z.ZodType>(
       seoDescription: text(155).optional(),
     })
     .superRefine((data, ctx) => {
+      if (!data.autorizacao && !data.semTermo) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["autorizacao"],
+          message: "autorizacao obrigatória (termo POR ESCRITO); só o case anonimizado aceita `semTermo`, a decisão registrada do dono",
+        });
+      }
+      if (data.autorizacao && data.semTermo) {
+        ctx.addIssue({ code: "custom", path: ["semTermo"], message: "use `autorizacao` (termo) ou `semTermo` (decisão do dono), nunca os dois" });
+      }
+      // Sem termo não há escopo autorizado: nome, resultado e prazo e preço ficam de fora.
+      const escopo = data.autorizacao?.escopo;
       if (!data.cliente && !data.porte) {
         ctx.addIssue({ code: "custom", path: ["porte"], message: "sem `cliente`, setor + porte são obrigatórios" });
       }
-      if (data.cliente && !data.autorizacao.escopo.nomeDoCliente) {
-        ctx.addIssue({ code: "custom", path: ["cliente"], message: "nome do cliente exige autorizacao.escopo.nomeDoCliente: true" });
+      if (data.cliente && !escopo?.nomeDoCliente) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["cliente"],
+          message: "nome do cliente exige autorizacao.escopo.nomeDoCliente: true (`semTermo` nunca publica o nome)",
+        });
       }
       // Case ANONIMIZADO (sem `cliente`, só setor + porte): nada na página pode
       // identificar a empresa (playbook 09 §10). O link do produto no ar e o
@@ -420,10 +455,10 @@ export function caseSchema<Img extends z.ZodType, Ref extends z.ZodType>(
           message: "case anonimizado (sem `cliente`) não liga depoimento nominal: o depoimento mostra a empresa e a pessoa",
         });
       }
-      if (data.resultado && !data.autorizacao.escopo.resultados) {
+      if (data.resultado && !escopo?.resultados) {
         ctx.addIssue({ code: "custom", path: ["resultado"], message: "resultado exige autorizacao.escopo.resultados: true" });
       }
-      if (data.combinado.prazoEPreco && !data.autorizacao.escopo.prazoEPreco) {
+      if (data.combinado.prazoEPreco && !escopo?.prazoEPreco) {
         ctx.addIssue({
           code: "custom",
           path: ["combinado", "prazoEPreco"],
