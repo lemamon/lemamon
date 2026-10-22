@@ -9,7 +9,10 @@
  * por escrito" (auditoria F41: "gratuito" já está no botão) e, ao
  * lado (abaixo dos CTAs no mobile), o plano do método: a linha compacta com a
  * etapa 1 em "Comece aqui". O cartão inteiro é um link para #como-trabalhamos
- * (um único <a> esticado, para não haver 4 links iguais).
+ * (um único <a> esticado, para não haver 4 links iguais). O rótulo é
+ * home.hero.plan_link ("Ver como trabalhamos"), curto, porque o link fica na
+ * própria Home; shared.cta.see_how_we_work, que leva a /como-trabalhamos,
+ * ganhou a âncora descritiva da auditoria SEO (S06-10).
  *
  * LCP = o H1 em HTML estático: sem imagem, sem animação, sem fonte bloqueante
  * (font-display: swap). Altura automática, nunca 100vh. Grid 7+5 no desktop,
@@ -76,7 +79,7 @@ const eyebrow = t(locale, features.confirm.atendeExterior ? "home.hero.eyebrow_w
           <MethodTimeline locale={locale} variant="compact" links="none" orientation="vertical" />
         </div>
         <a class="plan__link" href={`#${ANCHORS.homeMethod}`}>
-          <span>{t(locale, "shared.cta.see_how_we_work")}</span>
+          <span>{t(locale, "home.hero.plan_link")}</span>
           <Icon name="arrow-down" size={18} />
         </a>
       </div>

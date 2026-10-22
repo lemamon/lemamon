@@ -69,8 +69,8 @@ palavra_chave,pagina,intencao,volume_brasil,volume_sp,concorrencia,lance_baixo,l
 | `/como-trabalhamos` | desenvolvimento de software com preço fechado | — |
 | `/sprint-de-descoberta` | sprint de descoberta | discovery de produto |
 | `/servicos` | serviços de desenvolvimento de software | — |
-| `/servicos/sistemas-web` | desenvolvimento de sistemas para empresas | sistema sob medida, erp sob medida, crm sob medida, portal do cliente |
-| `/servicos/aplicativos` | desenvolvimento de aplicativo sob medida | criar aplicativo para empresa, aplicativo ios e android, quanto custa desenvolver um aplicativo |
+| `/servicos/sistemas-web` | desenvolvimento de sistemas web para empresas (auditoria SEO S06-6: sugestão exata; sem "web", a SERP é de cursos) | desenvolvimento de sistemas para empresas, sistema sob medida, erp sob medida, crm sob medida, portal do cliente |
+| `/servicos/aplicativos` | desenvolvimento de aplicativos sob medida (auditoria SEO S06-6: o plural tem sugestão, o singular não) | desenvolvimento de aplicativo sob medida, criar aplicativo para empresa, aplicativo ios e android, quanto custa desenvolver um aplicativo |
 | `/servicos/integracoes` | integração de sistemas | integração erp e e-commerce, automação de processos, chatbot para empresas |
 | `/servicos/mvp` | desenvolvimento de mvp | criar mvp para startup, desenvolvimento de produto digital |
 | `/servicos/sustentacao` | sustentação de sistemas | manutenção de software, evolução de sistema |
@@ -97,7 +97,7 @@ A praça das palavras-chave locais é **São Paulo** desde 20/10/2026 (D38). O 0
 | diferença entre app nativo e híbrido | informacional | tema de blog (meio de funil), link para `/servicos/aplicativos` | candidato à pauta depois dos 5 primeiros posts (12 §7) |
 | como escolher uma fábrica de software | informacional | tema de blog | comparar com "como escolher empresa de desenvolvimento de software", a forma da pauta 4 (12 §7; BLUEPRINT §6.12); o título usa a de maior volume |
 | checklist para contratar desenvolvimento de software | informacional | `/quanto-custa#como-comparar` (a régua de perguntas) e tema de blog | isca com captura de e-mail fora por enquanto (12 §8, D17) |
-| o que é MVP | informacional | `/servicos/mvp` (termos explicados) | medir; genérico demais para post próprio (06) |
+| o que é MVP | informacional | `/servicos/mvp` (a definição abre a resposta do FAQ "O que entra na primeira versão?", `what_goes_in`, e vai no FAQPage; auditoria SEO S03-7) | medir; genérico demais para post próprio (06) |
 | como criar um aplicativo do zero | informacional | — | fora do posicionamento: intenção de fazer sozinho (06 §6.3.1); negativa no Ads |
 | react ou angular / react vs vue | informacional | — | fora: Squad não é oferta pública (02 §2, D02); atrai desenvolvedor, não comprador |
 

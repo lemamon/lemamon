@@ -55,7 +55,10 @@ export interface FaqItem {
 export type FaqBankKey = keyof Messages["faq"]["items"];
 export type FaqConditionalKey = keyof Messages["faq"]["conditional"];
 
-/** Teto do site: no máximo 9 perguntas visíveis por página (faq._notes.faq_ceiling). */
+/**
+ * Teto do site: no máximo 9 perguntas visíveis por página (faq._notes.faq_ceiling).
+ * Exceção: as páginas de serviço usam SERVICE_FAQ_MAX (11, kit/service-faq.ts).
+ */
 export const FAQ_MAX = 9;
 
 type BankFeatures = Pick<Features, "hasPricing"> & Partial<Pick<Features, "confirm">>;

@@ -39,8 +39,14 @@ export type FaqFeatures = Pick<Features, "hasPricing" | "hasCompanyData" | "conf
 export interface OrderedFaqOptions {
   /** Serviço dono das perguntas `{ own }`. */
   service?: ServiceKey;
-  /** Ordem de remoção acima do teto de 9 (ids), como declarada na nota da página. */
+  /** Ordem de remoção acima do teto (ids), como declarada na nota da página. */
   removalOrder?: readonly string[];
+  /**
+   * Teto de perguntas visíveis desta página. Padrão: FAQ_MAX (9). As páginas
+   * de serviço passam SERVICE_FAQ_MAX (11), para o teto não cortar as
+   * perguntas próprias do serviço (auditoria SEO S03-10).
+   */
+  max?: number;
   /** Âncora das faixas DESTA página (só quando o bloco existe nela): sufixo-link do banco. */
   pricingHref?: string;
   /** Link no fim de uma pergunta própria (ex.: price → #investimento), por id. */
@@ -103,7 +109,7 @@ export function orderedFaq(
   features: FaqFeatures,
   options: OrderedFaqOptions = {},
 ): FaqItem[] {
-  const { service, removalOrder, pricingHref, ownLinks = {}, ownInlineLinks = {} } = options;
+  const { service, removalOrder, max, pricingHref, ownLinks = {}, ownInlineLinks = {} } = options;
   const items = entries.flatMap((entry): FaqItem[] => {
     if ("bank" in entry) return bankItems(locale, [entry.bank], features, { pricingHref });
     if ("cond" in entry) return conditionalItems(locale, [entry.cond], features);
@@ -111,5 +117,5 @@ export function orderedFaq(
     const item = ownItem(locale, service, entry.own, features, ownLinks[entry.own], ownInlineLinks[entry.own]);
     return item ? [item] : [];
   });
-  return capFaq(items, { removalOrder });
+  return capFaq(items, { removalOrder, max });
 }

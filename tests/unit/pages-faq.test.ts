@@ -7,8 +7,8 @@ import { describe, expect, it } from "vitest";
 
 import { HWW_FAQ, HWW_FAQ_NEVER_REMOVED, HWW_FAQ_REMOVAL } from "@/components/how-we-work/hww-faq";
 import { orderedFaq, type FaqEntry } from "@/components/services/kit/faq-compose";
-import { SERVICE_FAQ, SERVICE_FAQ_NEVER_REMOVED, SERVICE_FAQ_REMOVAL } from "@/components/services/kit/service-faq";
-import { capFaq, splitInlineLink, type FaqItem } from "@/components/shared/faq";
+import { SERVICE_FAQ, SERVICE_FAQ_MAX, SERVICE_FAQ_NEVER_REMOVED, SERVICE_FAQ_REMOVAL } from "@/components/services/kit/service-faq";
+import { capFaq, FAQ_MAX, splitInlineLink, type FaqItem } from "@/components/shared/faq";
 import { empresa } from "@/config/empresa";
 import { computeFeatures, type Features } from "@/config/features";
 import { SERVICE_KEYS, type ServiceKey } from "@/config/routes";
@@ -42,11 +42,27 @@ describe("orderedFaq — páginas de serviço", () => {
     expect(items.every((item) => item.question.length > 0 && item.answer.length > 0)).toBe(true);
   });
 
-  it("condicionais entram intercaladas e o teto de 9 tira invoice → skip_discovery → need_tech_knowledge → start_with_part; o NDA fica (F01)", () => {
+  it("condicionais entram intercaladas; o teto de 11 (S03-10) tira invoice → skip_discovery e as perguntas próprias ficam; o NDA fica (F01)", () => {
     const on = features({ migracaoDados: true, escopoMudanca: true, semDescoberta: true, nda: true, notaFiscal: true });
-    const items = orderedFaq("pt", WEB_SYSTEMS, on, { service: "web_systems", removalOrder: REMOVAL.web_systems });
-    expect(items).toHaveLength(9);
+    const items = orderedFaq("pt", WEB_SYSTEMS, on, { service: "web_systems", removalOrder: REMOVAL.web_systems, max: SERVICE_FAQ_MAX });
+    expect(items).toHaveLength(SERVICE_FAQ_MAX);
     expect(items.map((item) => item.id)).toEqual([
+      "custom_vs_ready",
+      "need_tech_knowledge",
+      "start_with_part",
+      "data_migration",
+      "price",
+      "pay_before_development",
+      "how_long_system",
+      "wont_stall",
+      "scope_change",
+      "how_follow_progress",
+      "nda",
+    ]);
+    // A ordem declarada continua valendo abaixo de 11: no teto de 9 do site, saem também need_tech_knowledge e start_with_part.
+    const atNine = orderedFaq("pt", WEB_SYSTEMS, on, { service: "web_systems", removalOrder: REMOVAL.web_systems, max: FAQ_MAX });
+    expect(atNine).toHaveLength(9);
+    expect(atNine.map((item) => item.id)).toEqual([
       "custom_vs_ready",
       "data_migration",
       "price",
@@ -104,10 +120,10 @@ describe("orderedFaq — páginas do método", () => {
     }
   });
 
-  it("/como-trabalhamos com todas as flags (13 itens): o teto deixa 9 e nunca tira wont_stall", () => {
+  it("/como-trabalhamos com todas as flags (14 itens): o teto deixa 9 e nunca tira wont_stall", () => {
     // Pior caso, independente dos dados do dono: um item por entrada declarada.
     const ids = HWW_FAQ.map((entry) => ("bank" in entry ? entry.bank : "cond" in entry ? entry.cond : entry.own));
-    expect(ids).toHaveLength(13);
+    expect(ids).toHaveLength(14);
     const all: FaqItem[] = ids.map((id) => ({ id, question: id, answer: id, source: "bank" }));
     const capped = capFaq(all, { removalOrder: HWW_FAQ_REMOVAL }).map((item) => item.id);
     expect(capped).toEqual([
@@ -118,10 +134,31 @@ describe("orderedFaq — páginas do método", () => {
       "scope_change",
       "code_ownership",
       "skip_discovery",
-      "nda",
+      "other_cities",
       "payment_terms",
     ]);
     for (const id of HWW_FAQ_NEVER_REMOVED) expect(capped, id).toContain(id);
+  });
+
+  it("/como-trabalhamos com os dados de hoje: other_cities logo depois do nda, na variante do exterior; sai need_tech_knowledge (S05-7)", () => {
+    const real = computeFeatures(realSources());
+    for (const locale of ["pt", "en", "es"] as const) {
+      const items = orderedFaq(locale, HWW_FAQ, real, { removalOrder: HWW_FAQ_REMOVAL });
+      expect(ids(items), locale).toEqual([
+        "pay_before_development",
+        "how_long",
+        "wont_stall",
+        "diagnosis_commitment",
+        "scope_change",
+        "code_ownership",
+        "discovery_duration",
+        "nda",
+        "other_cities",
+      ]);
+      const cities = items.find((item) => item.id === "other_cities");
+      expect(cities?.question, locale).toBe(t(locale, "faq.conditional.other_cities.question_with_abroad"));
+      expect(cities?.answer, locale).toBe(t(locale, "faq.conditional.other_cities.answer_with_abroad"));
+    }
   });
 
   it("os 3 idiomas devolvem o mesmo conjunto de perguntas", () => {
@@ -167,7 +204,7 @@ describe("'O projeto vai parar no meio?' nas páginas de projeto da PME (faq._no
   for (const locale of ["pt", "en", "es"] as const) {
     it(`${locale}: wont_stall do banco logo depois do how_long_*, e cada FAQ fica com 9`, () => {
       for (const [service, howLong] of PME) {
-        const items = orderedFaq(locale, SERVICE_FAQ[service], approved(), { service, removalOrder: REMOVAL[service] });
+        const items = orderedFaq(locale, SERVICE_FAQ[service], approved(), { service, removalOrder: REMOVAL[service], max: SERVICE_FAQ_MAX });
         const ids = items.map((item) => item.id);
         expect(ids[ids.indexOf(howLong) + 1], `${locale} ${service}`).toBe("wont_stall");
         const item = items.find((entry) => entry.id === "wont_stall");
@@ -193,7 +230,7 @@ describe("'O projeto vai parar no meio?' nas páginas de projeto da PME (faq._no
   });
 });
 
-describe("Teto de 9 nas 5 páginas de serviço, no pior caso (todas as entradas visíveis)", () => {
+describe("Teto de 11 (SERVICE_FAQ_MAX, auditoria SEO S03-10) nas 5 páginas de serviço, no pior caso (todas as entradas visíveis)", () => {
   // Pior caso: toda condicional ligada e com texto. Algumas dependem de texto
   // escolhido pelo dono (ex.: code_ownership), que o orderedFaq lê do
   // confirmacoes real; por isso o teto é provado direto no capFaq, com um item
@@ -203,10 +240,10 @@ describe("Teto de 9 nas 5 páginas de serviço, no pior caso (todas as entradas 
     SERVICE_FAQ[service].map((entry) => ({ id: entryId(entry), question: "q", answer: "a", source: "page" as const }));
 
   for (const service of SERVICE_KEYS) {
-    it(`${service}: no máximo 9, e as objeções que nunca saem continuam lá`, () => {
+    it(`${service}: no máximo 11, e as objeções que nunca saem continuam lá`, () => {
       const all = worstCase(service);
-      const kept = capFaq(all, { removalOrder: REMOVAL[service] });
-      expect(kept.length, service).toBeLessThanOrEqual(9);
+      const kept = capFaq(all, { removalOrder: REMOVAL[service], max: SERVICE_FAQ_MAX });
+      expect(kept.length, service).toBeLessThanOrEqual(SERVICE_FAQ_MAX);
       const ids = new Set(kept.map((item) => item.id));
       for (const id of SERVICE_FAQ_NEVER_REMOVED) {
         if (all.some((item) => item.id === id)) expect(ids.has(id), `${service}: ${id}`).toBe(true);
@@ -214,11 +251,17 @@ describe("Teto de 9 nas 5 páginas de serviço, no pior caso (todas as entradas 
     });
   }
 
-  it("aplicativos: com code_ownership ligado, store_publishing é quem sai (o código cabe)", () => {
-    const kept = capFaq(worstCase("mobile_apps"), { removalOrder: REMOVAL.mobile_apps }).map((item) => item.id);
+  it("aplicativos: no pior caso só invoice sai; code_ownership, nda e a pergunta própria store_publishing ficam", () => {
+    const kept = capFaq(worstCase("mobile_apps"), { removalOrder: REMOVAL.mobile_apps, max: SERVICE_FAQ_MAX }).map((item) => item.id);
     expect(kept).toContain("code_ownership");
     expect(kept).toContain("nda");
-    expect(kept).not.toContain("store_publishing");
+    expect(kept).toContain("store_publishing");
+    expect(kept).not.toContain("invoice");
+  });
+
+  it("o teto de 11 vale só nas páginas de serviço: o resto do site continua em 9", () => {
+    expect(SERVICE_FAQ_MAX).toBe(11);
+    expect(FAQ_MAX).toBe(9);
   });
 
   it("toda entrada declarada existe no i18n (nenhuma pergunta some em silêncio)", () => {
@@ -264,11 +307,14 @@ describe("Garantias e preço à vista nas páginas de serviço (auditoria de con
     }
   });
 
-  it("dados de hoje (dados/dono.json, 21/10/2026): o que cada página de serviço mostra", () => {
+  it("dados de hoje (dados/dono.json, 22/10/2026): o que cada página de serviço mostra, sem cortar pergunta própria (S03-10)", () => {
     const real = computeFeatures(realSources());
-    const visible = (service: ServiceKey) => ids(orderedFaq("pt", SERVICE_FAQ[service], real, { service, removalOrder: REMOVAL[service] }));
+    const visible = (service: ServiceKey) =>
+      ids(orderedFaq("pt", SERVICE_FAQ[service], real, { service, removalOrder: REMOVAL[service], max: SERVICE_FAQ_MAX }));
     expect(visible("web_systems")).toEqual([
       "custom_vs_ready",
+      "need_tech_knowledge",
+      "start_with_part",
       "price",
       "pay_before_development",
       "how_long_system",
@@ -281,16 +327,19 @@ describe("Garantias e preço à vista nas páginas de serviço (auditoria de con
     expect(visible("mobile_apps")).toEqual([
       "app_or_web",
       "ios_android",
+      "store_publishing",
       "price",
       "pay_before_development",
       "how_long_app",
       "wont_stall",
       "scope_change",
+      "how_follow_progress",
       "code_ownership",
       "nda",
     ]);
     expect(visible("integrations")).toEqual([
       "integrate_existing",
+      "need_tech_knowledge",
       "data_access",
       "integrate_or_replace",
       "price",
@@ -310,7 +359,11 @@ describe("Garantias e preço à vista nas páginas de serviço (auditoria de con
       "nda",
       "scope_change",
       "what_goes_in",
+      "after_mvp",
+      "what_is_mvp",
     ]);
+    // Sustentação responde NDA e propriedade do código logo depois do preço (S03-6).
+    expect(visible("support")).toEqual(["how_it_starts", "support_vs_evolution", "price", "nda", "code_ownership"]);
   });
 
   it("prazos e preço do MVP abrem pela afirmativa (F08): sem 'não chuta prazo' nem 'Depende' na 1ª palavra", () => {

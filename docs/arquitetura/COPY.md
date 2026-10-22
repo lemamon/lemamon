@@ -121,6 +121,8 @@ Ordem das seções conforme o BLUEPRINT §6.1. Hoje vão ao ar 8 seções; as co
 
 > Abaixo dos botões: texto de apoio `shared.cta.microcopy_diagnosis` e a linha do método compacta (ver item 6).
 
+- **`plan_link`** _(link do cartão do plano, para a seção do método na própria Home)_: Ver como trabalhamos
+
 #### 2. Faixa de compromissos · `shared.commitments`
 > Componente compartilhado, mostrado aqui porque fica logo abaixo do hero.
 
@@ -464,8 +466,9 @@ Perguntas, nesta ordem (as respostas completas estão em [Perguntas frequentes �
 
 1. Pago alguma coisa antes do desenvolvimento? · `faq.items.pay_before_development`
 2. Quanto tempo leva para desenvolver um sistema ou aplicativo? · `faq.items.how_long`
-3. O diagnóstico gratuito tem algum compromisso? · `faq.items.diagnosis_commitment`
-4. Preciso entender de tecnologia para contratar? · `faq.items.need_tech_knowledge`
+3. Como eu sei que o projeto não vai parar no meio? · `faq.items.wont_stall`
+4. O diagnóstico gratuito tem algum compromisso? · `faq.items.diagnosis_commitment`
+5. Preciso entender de tecnologia para contratar? · `faq.items.need_tech_knowledge`
 
 Condicionais (entram quando o dono ligar a flag):
 
@@ -476,9 +479,10 @@ Condicionais (entram quando o dono ligar a flag):
 - Quanto tempo dura a Sprint de Descoberta? · `faq.conditional.discovery_duration` (resposta sem número, D44)
 - Posso começar direto pelo desenvolvimento? · `faq.conditional.skip_discovery`
 - Vocês assinam acordo de confidencialidade (NDA)? · `faq.conditional.nda`
+- Vocês atendem empresas de outras cidades ou de fora do Brasil? · `faq.conditional.other_cities` (auditoria SEO S05-7: a resposta para quem é de fora do Brasil, que só aparecia na Home)
 - Como é feito o pagamento? · `faq.conditional.payment_terms`
 
-Teto de 9 perguntas visíveis; a ordem de remoção está em `how_we_work._notes.faq_composition`.
+Teto de 9 perguntas visíveis; a ordem de remoção está em `how_we_work._notes.faq_composition`. Com os dados de 22/10/2026 são 10, e sai `need_tech_knowledge`, que continua na Home.
 
 #### 15. CTA final · `how_we_work.cta_final`
 
@@ -530,6 +534,7 @@ Página da etapa 2, gratuita e só quando o diagnóstico mostra que é necessár
 
 - **Título**: O que você recebe
 - **Introdução**: A Descoberta termina com três entregas:
+- **`cases_link`** _(só com cases no ar, `hasCases`; auditoria SEO S03-8)_: Veja nos cases como a Descoberta entrou em projetos reais
 
 #### 3a. Os 3 entregáveis · `shared.discovery_deliverables`
 > Componente compartilhado.
@@ -631,7 +636,7 @@ Página da busca nº 1 do comprador. Funciona sem números. Ordem conforme o BLU
 #### 3. O que define o preço · `pricing.factors`
 
 - **Título**: O que define o preço de um software
-- **Introdução**: O preço de um sistema, aplicativo ou primeira versão de um produto (MVP) acompanha o tamanho do trabalho, e o tamanho do trabalho depende destes fatores.
+- **Introdução**: O preço de um sistema, aplicativo ou primeira versão de produto (MVP) acompanha o tamanho do trabalho. Estes são os 7 fatores que mais pesam:
 - **Itens**
   - **`scope_size`**
     - **Título**: Tamanho do escopo
@@ -754,11 +759,11 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
 
 - **`how_much`**
   - **Pergunta**: Quanto custa um projeto de software?
-  - **Resposta**: Depende do que o software precisa fazer. Antes do desenvolvimento, você recebe o preço fechado e só então decide se segue. Tem um valor em mente? Indique a faixa no pedido de diagnóstico.
+  - **Resposta** _(pela afirmativa, auditoria SEO S05-5)_: O preço sai fechado, por escrito, antes do desenvolvimento, e acompanha principalmente o tamanho do escopo, as integrações com outros sistemas e as plataformas (web, iOS, Android). Com o preço na mão, você decide se segue. Tem um valor em mente? Indique a faixa no pedido de diagnóstico.
   - **`answer_with_pricing_suffix`** _(só com faixas de preço preenchidas)_: Para se planejar, veja as faixas de referência de investimento.
 - **`how_long`**
   - **Pergunta**: Quanto tempo leva para desenvolver um sistema ou aplicativo?
-  - **Resposta**: Depende do escopo, por isso o prazo sai fechado antes do desenvolvimento, junto com o preço. Tem uma data, como um lançamento ou um piloto? Conte no diagnóstico: o plano mostra o que dá para entregar até lá.
+  - **Resposta** _(pela afirmativa, auditoria SEO S05-5)_: O prazo sai fechado antes do desenvolvimento, junto com o preço, e depende do escopo. Tem uma data, como um lançamento ou um piloto? Conte no diagnóstico: o plano mostra o que dá para entregar até lá.
 - **`pay_before_development`** _(no lugar de `why_discovery_paid`, D44, 21/10/2026)_
   - **Pergunta**: Pago alguma coisa antes do desenvolvimento?
   - **Resposta**: Não. O diagnóstico e a Sprint de Descoberta, quando ela é necessária, são gratuitos. As etapas pagas são o desenvolvimento, com escopo, prazo e preço fechados antes de começar, e a sustentação, se você quiser.
@@ -825,9 +830,9 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
   - **`answer_with_terms`** _(variante: só quando o dado indicado existir)_: {condicoes_pagamento}
 - **`other_cities`**
   - **Pergunta**: Vocês atendem empresas de outras cidades?
-  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. A Lemamon.dev fica em São Paulo, SP, e atende empresas de outras cidades do Brasil a distância, com o mesmo processo: diagnóstico, Sprint de Descoberta quando necessária e entregas a cada 2 semanas.
+  - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. A Lemamon.dev é uma empresa de desenvolvimento de software sob medida de São Paulo, SP, e atende empresas de outras cidades do Brasil a distância, com o mesmo processo: diagnóstico, Sprint de Descoberta quando necessária e entregas a cada 2 semanas.
   - **`question_with_abroad`** _(variante: com `confirmacoes.atendeExterior`, D31)_: Vocês atendem empresas de outras cidades ou de fora do Brasil?
-  - **`answer_with_abroad`** _(variante: com `confirmacoes.atendeExterior`, D31)_: Sim. A Lemamon.dev fica em São Paulo, SP, e atende a distância empresas de outras cidades do Brasil e de outros países, em português, inglês ou espanhol, com o mesmo processo: diagnóstico, Sprint de Descoberta quando necessária e entregas a cada 2 semanas. Com empresas de fora do Brasil, moeda, contrato e forma de pagamento são combinados por escrito antes de começar.
+  - **`answer_with_abroad`** _(variante: com `confirmacoes.atendeExterior`, D31; a 1ª frase nomeia a categoria, auditoria SEO S05-1)_: Sim. A Lemamon.dev é uma empresa de desenvolvimento de software sob medida de São Paulo, SP, e atende a distância empresas de outras cidades do Brasil e de outros países, em português, inglês ou espanhol, com o mesmo processo: diagnóstico, Sprint de Descoberta quando necessária e entregas a cada 2 semanas. Com empresas de fora do Brasil, moeda, contrato e forma de pagamento são combinados por escrito antes de começar.
 - **`nda`**
   - **Pergunta**: Vocês assinam acordo de confidencialidade (NDA)?
   - **`answer_draft`** _(rascunho: só vai ao ar quando o dono aprovar a flag)_: Sim. Se o seu projeto pede sigilo, a gente assina o acordo antes de você compartilhar os detalhes. É só pedir pelo WhatsApp ou pelo e-mail lemamon.dev@gmail.com.
@@ -919,7 +924,7 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
 - **`engineering_link`**: Ver como a gente constrói
 - **`price_factors_closing`**: A gente pesa cada ponto no seu caso e fecha prazo e preço antes do desenvolvimento, sem cobrar nada até lá.
 - **`price_factors_cta_lead`**: Você não precisa ter essas respostas para conversar:
-- **`price_factors_link`**: Ver o que define o preço de um projeto
+- **`price_factors_link`** _(âncora com a keyword de /quanto-custa, auditoria SEO S06-10)_: Quanto custa um software sob medida: o que define o preço
 - **`price_factors_link_with_pricing`** _(só com faixas de preço preenchidas)_: Ver quanto custa um projeto de software
 - **`investment_note`**: Referência, não proposta.
 - **`price_answer_link`**: Ver as faixas de referência deste serviço
@@ -1124,7 +1129,7 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
 - **Exemplos**
   - **1.**
     - **Título**: Sistemas que você já usa, conectados
-    - **Texto**: ERP e e-commerce, por exemplo: pedido, estoque e nota fiscal passam de um para o outro sem redigitação.
+    - **Texto**: ERP e e-commerce, por exemplo: pedido, estoque e nota fiscal passam de um para o outro sem redigitação, por API ou webhook (um aviso automático entre os sistemas); quando um sistema não tem API, às vezes por troca de arquivos.
   - **2.**
     - **Título**: Meios de pagamento
     - **Texto**: Cobrança, confirmação de pagamento e baixa no financeiro sem conferência manual.
@@ -1140,6 +1145,9 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
   - **6.**
     - **Título**: IA para automação e análise de dados
     - **Texto**: Classificar pedidos, ler documentos ou resumir dados para a equipe decidir com a informação pronta.
+  - **7.** _(auditoria SEO S07-10, apoiado nos cases de indústria)_
+    - **Título**: Sensores e equipamentos conectados ao sistema
+    - **Texto**: Máquinas, sensores e dispositivos enviando dados para um painel ou aplicativo, como na contagem de produção em tempo real.
 - **Etapas do método nesta página**
   - **Diagnóstico**: Quais sistemas você usa, o que é digitado duas vezes e onde o trabalho manual dói.
   - **Sprint de Descoberta**: Escopo priorizado do que cada sistema troca, e plano com prazo e preço fechados.
@@ -1269,10 +1277,10 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
     - **Resposta**: O prazo sai fechado antes do desenvolvimento, junto com o preço, e depende do que a primeira versão precisa provar. Tem data de captação ou de piloto? Conte no diagnóstico: o plano mostra o que cabe até lá. No desenvolvimento, você recebe software funcionando a cada 2 semanas.
   - **`what_goes_in`**
     - **Pergunta**: O que entra na primeira versão?
-    - **Resposta**: O mínimo para provar a ideia. O que entra e o que fica para depois é decidido com você antes do desenvolvimento: é o escopo priorizado.
+    - **Resposta** _(abre pela definição de MVP, auditoria SEO S03-7: what_is_mvp é o 2º da ordem de remoção do teto)_: MVP (produto mínimo viável) é a menor versão do produto que já resolve o problema principal para usuários reais: o mínimo para provar a ideia. O que entra e o que fica para depois é decidido com você antes do desenvolvimento: é o escopo priorizado.
   - **`what_is_mvp`**
     - **Pergunta**: O que é um MVP, na prática?
-    - **Resposta**: MVP (produto mínimo viável) é a menor versão do produto que já resolve o problema principal para usuários reais. Não é protótipo nem demonstração: é software funcionando, com o resto deixado para depois de propósito.
+    - **Resposta** _(sem repetir a definição, que está em what_goes_in)_: Não é protótipo nem demonstração: é software funcionando, usado por usuários reais, com o resto deixado para depois de propósito.
   - **`after_mvp`**
     - **Pergunta**: E depois do MVP?
     - **Resposta**: O produto pode seguir com a Lemamon.dev em sustentação e evolução contínua. As próximas versões são priorizadas a partir do uso real, não da lista de desejos do início.
@@ -1355,6 +1363,9 @@ No lugar de 'O que pesa no preço', esta página tem 'o que é cada uma' e 'o qu
   - **`price`**
     - **Pergunta**: Quanto custa a manutenção de um sistema?
     - **Resposta**: Depende do que está no ar e de quanto a operação pede de evolução. O formato e o valor são combinados com você antes de começar. O primeiro passo é o diagnóstico gratuito.
+
+> Logo depois de `price`, o FAQ da sustentação mostra as condicionais do banco "Vocês assinam acordo de confidencialidade (NDA)?" (`faq.conditional.nda`) e "O código fica com a minha empresa?" (`faq.conditional.code_ownership`), já confirmadas (auditoria SEO S03-6). As páginas de serviço têm teto de 11 perguntas (`services._notes.faq_composition`, S03-10).
+
 - **Linha em 'outros serviços'**: Manutenção e evolução do sistema depois que ele entra no ar.
 - **Texto da imagem de compartilhamento**: Manutenção e evolução de software
 - **CTA final**
@@ -2186,7 +2197,7 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 - **`continue_order`**: Continuar meu pedido
 - **WhatsApp**: Falar no WhatsApp
 - **`whatsapp_questions`**: Tirar dúvidas no WhatsApp
-- **`see_how_we_work`**: Ver como trabalhamos
+- **`see_how_we_work`** _(âncora com a keyword de /como-trabalhamos, auditoria SEO S06-10; o cartão do plano no hero da Home usa `home.hero.plan_link`)_: Ver como funciona o desenvolvimento com preço fechado
 - **`see_method_detail`**: Ver cada etapa em detalhe
 - **`see_service`**: Ver como funciona
 - **`see_service_aria`**: Ver como funciona: {servico}
@@ -2366,16 +2377,16 @@ O que aparece no Google e na prévia de links (WhatsApp, LinkedIn). Title até 6
   - **Descrição**: Escopo, prazo e preço fechados antes de construir. Diagnóstico de 45 min e Sprint de Descoberta (se necessária) gratuitos; entregas a cada 2 semanas.
 - **`discovery_sprint`**
   - **Título**: Sprint de Descoberta: do problema ao preço fechado | Lemamon.dev
-  - **Descrição**: O seu problema vira escopo priorizado e plano com prazo e preço fechados. Discovery de produto gratuito, feito após o diagnóstico de 45 minutos.
+  - **Descrição** _(D44, auditoria SEO S06-7)_: O seu problema vira escopo priorizado e plano com prazo e preço fechados. Discovery de produto gratuito, quando o diagnóstico mostra que é preciso.
 - **`services_hub`**
   - **Título**: Serviços de desenvolvimento de software | Lemamon.dev
   - **Descrição**: Sistemas web, aplicativos, integrações e MVPs com escopo, prazo e preço combinados antes de começar, e sustentação e evolução depois que entram no ar.
-- **`services_web_systems`**
-  - **Título**: Desenvolvimento de sistemas para empresas | Lemamon.dev
-  - **Descrição**: Sistema de gestão, ERP, CRM, painéis e portal do cliente feitos para o processo da sua empresa, com escopo, prazo e preço fechados antes de construir.
-- **`services_mobile_apps`**
-  - **Título**: Desenvolvimento de aplicativo sob medida | Lemamon.dev
-  - **Descrição**: Desenvolvimento de aplicativo sob medida para empresas, no iOS e no Android: escopo e preço fechados antes de construir e entregas a cada 2 semanas.
+- **`services_web_systems`** _(com "web", auditoria SEO S06-6)_
+  - **Título**: Desenvolvimento de sistemas web para empresas | Lemamon.dev
+  - **Descrição**: Desenvolvimento de sistemas web sob medida para empresas: ERP, CRM, painéis e portal do cliente, com escopo, prazo e preço fechados antes de construir.
+- **`services_mobile_apps`** _(no plural, auditoria SEO S06-6)_
+  - **Título**: Desenvolvimento de aplicativos sob medida | Lemamon.dev
+  - **Descrição**: Desenvolvimento de aplicativos sob medida para empresas, no iOS e no Android: escopo e preço fechados antes de construir e entregas a cada 2 semanas.
 - **`services_integrations`**
   - **Título**: Integração de sistemas e automação de processos | Lemamon.dev
   - **Descrição**: Integração de sistemas e automação: ERP, e-commerce, pagamento e CRM trocando dados sozinhos. Escopo, prazo e preço combinados antes de começar.
@@ -2390,13 +2401,13 @@ O que aparece no Google e na prévia de links (WhatsApp, LinkedIn). Title até 6
   - **Descrição**: O que pesa no preço de um sistema ou aplicativo, como comparar propostas e como chegar a escopo, prazo e preço fechados antes do desenvolvimento.
 - **`quote`**
   - **Título**: Orçamento de software: diagnóstico gratuito | Lemamon.dev
-  - **Descrição**: Orçamento de desenvolvimento de software: em 6 perguntas, veja o que pesa no prazo e no preço do seu caso e peça o diagnóstico gratuito de 45 minutos.
+  - **Descrição** _(sem repetir o title, auditoria SEO S06-11)_: Responda 6 perguntas sobre o seu projeto, veja o que pesa no prazo e no preço e peça o diagnóstico gratuito de 45 minutos.
 - **`quote_sent`**
   - **Título**: Pedido recebido | Lemamon.dev
   - **Descrição**: Seu pedido de diagnóstico gratuito chegou à Lemamon.dev. Veja o que acontece agora e como aproveitar os 45 minutos de conversa.
 - **`contact`**
-  - **Título**: Contato | Lemamon.dev · software sob medida em São Paulo
-  - **Descrição**: Contato da Lemamon.dev: WhatsApp, e-mail e um formulário curto. Para projeto novo, comece pelo diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
+  - **Título** _(termina na marca, sem a praça da Home, auditoria SEO S06-8)_: Contato | Lemamon.dev
+  - **Descrição**: Contato da Lemamon.dev: WhatsApp, e-mail e formulário curto. Projeto novo? Comece pelo diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
   - **`description_no_whatsapp`** _(variante sem WhatsApp configurado)_: Contato da Lemamon.dev: e-mail e um formulário curto. Para projeto novo, comece pelo diagnóstico gratuito de 45 minutos, com devolutiva por escrito.
 - **`cases_hub`**
   - **Título**: Cases de desenvolvimento de software | Lemamon.dev

@@ -36,10 +36,10 @@
  * dois conjuntos não divergirem.
  *
  * FAQ por slug (kit/service-faq.ts, services._notes.faq_composition):
- * perguntas próprias, do banco e condicionais intercaladas; teto de 9 com a
- * ordem de remoção invoice → nda → skip_discovery → need_tech_knowledge →
- * start_with_part → store_publishing → what_is_mvp → third_party_system →
- * discovery_plan_ownership. wont_stall ("o projeto vai parar no meio?") entra
+ * perguntas próprias, do banco e condicionais intercaladas; teto de 11
+ * (SERVICE_FAQ_MAX, auditoria SEO S03-10: o de 9 cortava as perguntas
+ * próprias do serviço) com a ordem de remoção de cada página
+ * (SERVICE_FAQ_REMOVAL). wont_stall ("o projeto vai parar no meio?") entra
  * nas 4 páginas de projeto logo depois do how_long_*. Nenhuma página de serviço
  * usa faq.items.how_long (cada uma tem how_long_*). A pergunta de preço ganha
  * o link para as faixas desta página só com a linha do serviço preenchida
@@ -58,7 +58,7 @@ import ServicePriceFactors from "@/components/services/ServicePriceFactors.astro
 import ServiceSignals from "@/components/services/ServiceSignals.astro";
 import ServiceWhatItIs from "@/components/services/ServiceWhatItIs.astro";
 import { orderedFaq } from "@/components/services/kit/faq-compose";
-import { SERVICE_FAQ, SERVICE_FAQ_DIAGNOSIS_LINK, SERVICE_FAQ_REMOVAL } from "@/components/services/kit/service-faq";
+import { SERVICE_FAQ, SERVICE_FAQ_DIAGNOSIS_LINK, SERVICE_FAQ_MAX, SERVICE_FAQ_REMOVAL } from "@/components/services/kit/service-faq";
 import Commitments from "@/components/shared/Commitments.astro";
 import CtaFinal from "@/components/shared/CtaFinal.astro";
 import Faq from "@/components/shared/Faq.astro";
@@ -103,6 +103,7 @@ const diagnosisLink: FaqInlineLink = {
 const faqItems = orderedFaq(locale, SERVICE_FAQ[service], features, {
   service,
   removalOrder: SERVICE_FAQ_REMOVAL[service],
+  max: SERVICE_FAQ_MAX,
   ownLinks: { price: priceLink },
   ownInlineLinks: Object.fromEntries((SERVICE_FAQ_DIAGNOSIS_LINK[service] ?? []).map((id) => [id, diagnosisLink])),
 });

@@ -12,19 +12,31 @@
  *   entre sustentação e evolução já foi definida em what_it_is, logo depois
  *   dos sinais (painel de design).
  * - Garantias à vista (auditoria de conversão F01, F12, F15): o NDA nunca sai
- *   pelo teto onde aparece (sistemas web, aplicativos e MVP; no MVP logo
+ *   pelo teto onde aparece (sistemas web, aplicativos, MVP e sustentação; no MVP logo
  *   depois de code_ownership). Em integrações, `data_access` ("Vocês assinam
  *   NDA? E quem acessa os dados dos meus sistemas?") entra perto do topo no
  *   lugar de how_follow_progress e do condicional nda, que repetiria a mesma
  *   resposta. No MVP, how_long_mvp vem logo depois de price (preço e prazo nas
  *   duas primeiras perguntas) e what_is_mvp desce para a ordem de remoção.
  *
- * Teto de 9 visíveis; acima disso, cada página tira os itens na ordem da SUA
- * lista em SERVICE_FAQ_REMOVAL. Nunca saem: SERVICE_FAQ_NEVER_REMOVED (price,
- * pay_before_development, how_long_*, wont_stall, scope_change, code_ownership,
- * nda e data_access). pay_before_development ("Pago alguma coisa antes do
- * desenvolvimento?") entrou no lugar de why_discovery_paid em 21/10/2026 (D44:
- * a Sprint de Descoberta é gratuita), na mesma posição. how_follow_progress pode sair em sistemas web e
+ * - Sustentação responde NDA e propriedade do código (auditoria SEO S03-6),
+ *   logo depois de price: os dois já estão confirmados pelo dono, e quem vai
+ *   dar acesso ao sistema no ar pergunta pelos dois.
+ * - MVP: what_goes_in abre pela definição de MVP (produto mínimo viável;
+ *   auditoria SEO S03-7), porque what_is_mvp é o 2º da ordem de remoção. Por
+ *   isso what_is_mvp fica só com o "na prática" (não é protótipo nem
+ *   demonstração), sem repetir a definição quando as duas aparecem.
+ *
+ * Teto de SERVICE_FAQ_MAX (11) visíveis, acima do teto de 9 do resto do site
+ * (auditoria SEO S03-10): com 9, o teto cortava perguntas próprias de cada
+ * serviço (start_with_part, need_tech_knowledge, store_publishing, what_is_mvp,
+ * after_mvp), que são o texto de cauda longa da página. Acima disso, cada
+ * página tira os itens na ordem da SUA lista em SERVICE_FAQ_REMOVAL. Nunca
+ * saem: SERVICE_FAQ_NEVER_REMOVED (price, pay_before_development, how_long_*,
+ * wont_stall, scope_change, code_ownership, nda e data_access).
+ * pay_before_development ("Pago alguma coisa antes do desenvolvimento?") entrou
+ * no lugar de why_discovery_paid em 21/10/2026 (D44: a Sprint de Descoberta é
+ * gratuita), na mesma posição. how_follow_progress pode sair em sistemas web e
  * aplicativos: wont_stall, logo acima, já diz que a cada 2 semanas você recebe
  * uma parte funcionando. Pior caso testado em tests/unit/pages-faq.test.ts.
  */
@@ -98,10 +110,15 @@ export const SERVICE_FAQ: Readonly<Record<ServiceKey, readonly FaqEntry[]>> = {
     { own: "support_vs_evolution" },
     { cond: "third_party_system" },
     { own: "price" },
+    { cond: "nda" },
+    { cond: "code_ownership" },
     { cond: "skip_discovery" },
     { cond: "invoice" },
   ],
 };
+
+/** Teto das páginas de serviço (services._notes.faq_composition; auditoria SEO S03-10). O resto do site usa FAQ_MAX (9). */
+export const SERVICE_FAQ_MAX = 11;
 
 /** Perguntas próprias em que "diagnóstico gratuito" vira link (services._notes.faq_links). */
 export const SERVICE_FAQ_DIAGNOSIS_LINK: Readonly<Partial<Record<ServiceKey, readonly string[]>>> = {
@@ -111,12 +128,13 @@ export const SERVICE_FAQ_DIAGNOSIS_LINK: Readonly<Partial<Record<ServiceKey, rea
 };
 
 /**
- * Ordem de remoção acima do teto de 9, por página (services._notes.faq_composition).
- * Com os dados de hoje (escopo, código, NDA e duração da Descoberta ligados;
- * a duração sem número desde a D44):
- * sistemas web tira need_tech_knowledge e start_with_part; aplicativos,
- * store_publishing e how_follow_progress; integrações, need_tech_knowledge;
- * MVP, what_is_mvp e after_mvp.
+ * Ordem de remoção acima do teto de SERVICE_FAQ_MAX (11), por página
+ * (services._notes.faq_composition). Com os dados de hoje (escopo, código, NDA
+ * e duração da Descoberta ligados; a duração sem número desde a D44), nada
+ * sai: sistemas web, aplicativos e MVP ficam com 11, integrações com 10 e
+ * sustentação com 5. No pior caso (todas as condicionais ligadas), sistemas
+ * web tira invoice, skip_discovery e need_tech_knowledge; aplicativos e
+ * integrações, invoice; MVP, skip_discovery, what_is_mvp e third_party_system.
  */
 export const SERVICE_FAQ_REMOVAL: Readonly<Record<ServiceKey, readonly string[]>> = {
   web_systems: ["invoice", "skip_discovery", "need_tech_knowledge", "start_with_part", "how_follow_progress"],

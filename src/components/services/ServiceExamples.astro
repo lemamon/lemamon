@@ -8,7 +8,11 @@
  * Fecha com "Não viu o seu caso na lista? Pedir diagnóstico gratuito" →
  * /orcamento?servico={slug}&origem={slug}-exemplos.
  * Cada exemplo é um <Card as="li"> (B214); gutter = --grid-gap (B222).
+ * Integrações: o 1º exemplo que cita "API" (services._notes.integrations_examples,
+ * auditoria SEO S07-10) é a 1ª menção do termo na página, e ela vira o
+ * toggletip shared.terms.api (§5.9: jargão só com explicação curta).
  */
+import TermText from "@/components/shared/TermText.astro";
 import Card from "@/components/ui/Card.astro";
 import Section from "@/components/ui/Section.astro";
 import { SERVICE_PARAM, type ServiceKey } from "@/config/routes";
@@ -25,6 +29,8 @@ interface Props {
 const { locale, service } = Astro.props;
 const title = service === "support" ? t(locale, "services.support.examples_title") : t(locale, "services.template.examples_title");
 const examples: readonly { title: string; text: string }[] = getSection(locale, `services.${service}.examples` as const);
+/** Índice do exemplo com a 1ª menção de "API" (só integrações; -1 = nenhum). */
+const apiExample = service === "integrations" ? examples.findIndex((example) => /\bAPI\b/.test(example.text)) : -1;
 const common =
   service === "mobile_apps"
     ? {
@@ -44,7 +50,9 @@ const common =
             {String(index + 1).padStart(2, "0")}
           </span>
           <h3 class="examples__title">{example.title}</h3>
-          <p class="examples__text">{example.text}</p>
+          <p class="examples__text">
+            {index === apiExample ? <TermText locale={locale} text={example.text} terms={["api"]} /> : example.text}
+          </p>
         </Card>
       ))
     }

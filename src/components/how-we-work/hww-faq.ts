@@ -15,8 +15,15 @@
  *   abre a página no lugar de why_discovery_paid desde 21/10/2026 (D44: a
  *   Sprint de Descoberta é gratuita) e nunca sai pelo teto.
  *
- * Teto de 9 visíveis; com todas as flags são 13 itens, e saem os 4 primeiros
- * visíveis de HWW_FAQ_REMOVAL. discovery_duration e discovery_plan_ownership
+ * - `other_cities` ("Vocês atendem empresas de outras cidades ou de fora do
+ *   Brasil?") entra logo depois do nda (auditoria SEO S05-7 e S03-12): era a
+ *   única resposta para quem é de fora do Brasil e só aparecia na Home, e a
+ *   1ª frase dela nomeia a categoria da empresa (S05-1). Com os dados de hoje
+ *   são 10 itens e sai need_tech_knowledge, que continua na Home.
+ *
+ * Teto de 9 visíveis; com todas as flags são 14 itens, e saem os 5 visíveis de
+ * HWW_FAQ_REMOVAL (o nda, a reserva, também: ele continua nas páginas de
+ * serviço e em /contato). discovery_duration e discovery_plan_ownership
  * saem antes dos outros condicionais porque /sprint-de-descoberta, ligada em
  * stage_discovery.link, responde os dois.
  */
@@ -35,6 +42,7 @@ export const HWW_FAQ: readonly FaqEntry[] = [
   { cond: "discovery_duration" },
   { cond: "skip_discovery" },
   { cond: "nda" },
+  { cond: "other_cities" },
   { cond: "payment_terms" },
 ];
 
