@@ -20,11 +20,13 @@ import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
+import { fileURLToPath } from "node:url";
 
 import { alternates, isNoindexPath, matchRoute, normalizePath, SITE_URL } from "./src/config/routes.ts";
 import csp from "./src/integrations/csp.ts";
 import dadosFicticios from "./src/integrations/dados-ficticios.ts";
 import mapasDeConteudo from "./src/integrations/mapas-de-conteudo.ts";
+import { lastmodDosCases } from "./src/integrations/sitemap-cases.ts";
 import verifyBuild from "./src/integrations/verify-build.ts";
 import wizardCss from "./src/integrations/wizard-css.ts";
 
@@ -41,6 +43,12 @@ import wizardCss from "./src/integrations/wizard-css.ts";
  * vale o padrão de 4096.
  */
 const CSS_INLINE_LIMIT = 5 * 1024;
+
+/**
+ * <lastmod> dos cases (auditoria de SEO S01-6): só com `atualizadoEm` no
+ * frontmatter, nunca a data do build. As outras páginas saem sem lastmod.
+ */
+const CASE_LASTMOD = lastmodDosCases(fileURLToPath(new URL(".", import.meta.url)));
 
 export default defineConfig({
   site: SITE_URL,
@@ -72,14 +80,19 @@ export default defineConfig({
       // Fora do sitemap: 404, /orcamento/enviado e equivalentes (noindex em routes.ts).
       // Páginas when_data sem dado nem são geradas, então não entram.
       filter: (page) => !isNoindexPath(new URL(page).pathname),
+      // Case: sem xhtml:link. O slug muda por idioma (slugUrl, S01-3) e o
+      // hreflang certo já está no <head> de cada página (CaseView); o sitemap
+      // não sabe o slug dos outros idiomas.
       serialize: (item) => {
         const pathname = normalizePath(new URL(item.url).pathname);
         const match = matchRoute(pathname);
-        const links = match ? alternates(match.key, match.params) : [];
+        const links = match && match.key !== "case" ? alternates(match.key, match.params) : [];
+        const lastmod = CASE_LASTMOD.get(pathname);
         return {
           ...item,
           url: new URL(pathname, SITE_URL).href,
           links: links.map((link) => ({ lang: link.hreflang, url: link.href })),
+          ...(lastmod ? { lastmod } : {}),
         };
       },
     }),

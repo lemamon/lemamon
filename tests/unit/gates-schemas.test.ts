@@ -64,7 +64,19 @@ describe("schema de case (cases/<idioma>/<slug>.mdx)", () => {
     ["capa sem alt", (d) => void (d.capa.alt = ""), /capa/],
     ["campo desconhecido (typo)", (d) => void ((d as Record<string, unknown>).titlo = "x"), /titlo|Unrecognized|desconhecid/i],
     ["seoTitle acima de 50", (d) => void ((d as Record<string, unknown>).seoTitle = "x".repeat(51)), /seoTitle/],
+    ["slugUrl fora do padrão (S01-3)", (d) => void ((d as Record<string, unknown>).slugUrl = "Freight_System"), /slugUrl/],
+    ["atualizadoEm no futuro (S01-6: só data verdadeira)", (d) => void ((d as Record<string, unknown>).atualizadoEm = "2999-01-01"), /atualizadoEm/],
+    ["atualizadoEm fora do formato", (d) => void ((d as Record<string, unknown>).atualizadoEm = "ontem"), /atualizadoEm/],
   ];
+
+  it("slugUrl e atualizadoEm são opcionais e aceitam slug e data AAAA-MM-DD (S01-3, S01-6)", () => {
+    const data = schemas.cases.parse({ ...caseFrontmatter("en"), slugUrl: "freight-system", atualizadoEm: "2026-10-22" });
+    expect(data.slugUrl).toBe("freight-system");
+    expect(data.atualizadoEm).toEqual(new Date("2026-10-22"));
+    const plain = schemas.cases.parse(caseFrontmatter("en"));
+    expect(plain.slugUrl).toBeUndefined();
+    expect(plain.atualizadoEm).toBeUndefined();
+  });
 
   it.each(invalid)("quebra: %s", (_label, mutate, expected) => {
     const issues = issuesOf(schemas.cases.safeParse(variant(() => caseFrontmatter(), mutate)));

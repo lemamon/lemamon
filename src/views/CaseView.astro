@@ -5,7 +5,13 @@
  * problema resolvido). Corpo em components/gated/CaseArticle.astro; aqui ficam
  * os dados, o <head> (title, description, og:image = capa do case) e o CTA final
  * "Quer algo parecido?" → /orcamento?ref={slug}&servico={tag principal}, com
- * WhatsApp "Vim pelo case {nome}".
+ * WhatsApp "Vim pelo case {nome}" (o nome do projeto, caseProjectName; S02-10).
+ *
+ * URL por idioma (auditoria de SEO S01-3): `slug` é a CHAVE do case (nome do
+ * arquivo, igual nos 3 idiomas: ?ref=, relacionados); a URL deste idioma usa
+ * `slugUrl` quando existe. Canonical, hreflang (alternates) e o seletor de idioma
+ * (paramsByLocale) recebem o slug da URL de cada idioma; o ?ref= dos CTAs do
+ * chrome continua sendo a chave (quoteAttribution).
  */
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
@@ -14,13 +20,15 @@ import { getImage } from "astro:assets";
 import CaseArticle from "@/components/gated/CaseArticle.astro";
 import CtaFinal from "@/components/shared/CtaFinal.astro";
 import { LIMITS } from "@/config/features";
+import { alternates } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
-import { caseDisplayName, relatedCaseItems, testimonialById, truncateAtWord } from "@/lib/content";
+import { caseDisplayName, caseProjectName, caseUrlSlug, caseUrlSlugs, relatedCaseItems, testimonialById, truncateAtWord } from "@/lib/content";
 import { caseMessage } from "@/lib/whatsapp-messages";
 import Base from "@/layouts/Base.astro";
 
 interface Props {
   locale: Locale;
+  /** Chave do case (nome do arquivo). */
   slug: string;
   entry: CollectionEntry<"cases">;
 }
@@ -28,6 +36,7 @@ interface Props {
 const { locale, slug, entry } = Astro.props;
 const data = entry.data;
 const name = caseDisplayName(entry);
+const urlSlug = caseUrlSlug(entry, slug);
 const title = data.seoTitle
   ? `${data.seoTitle} | ${t(locale, "meta.site_name")}`
   : t(locale, "meta.case_template.title", { tipo_de_sistema: data.tipoDeSistema, cliente_ou_setor: name });
@@ -38,7 +47,7 @@ const description =
     155,
   );
 
-const [{ Content }, testimonial, related, og] = await Promise.all([
+const [{ Content }, testimonial, related, og, urlSlugs] = await Promise.all([
   render(entry),
   testimonialById(data.depoimento?.id),
   relatedCaseItems(locale, {
@@ -48,14 +57,20 @@ const [{ Content }, testimonial, related, og] = await Promise.all([
     limit: LIMITS.relatedCasesCase,
   }),
   getImage({ src: data.capa.src, width: 1200, height: 630, fit: "cover", format: "jpg" }),
+  caseUrlSlugs(slug),
 ]);
-const whatsappMessage = caseMessage(locale, name);
+const paramsByLocale = Object.fromEntries(Object.entries(urlSlugs).map(([target, value]) => [target, { slug: value }]));
+const pairs = alternates("case", (target) => (urlSlugs[target] ? { slug: urlSlugs[target] } : null));
+const whatsappMessage = caseMessage(locale, caseProjectName(entry));
 ---
 
 <Base
   locale={locale}
   route="case"
-  params={{ slug }}
+  params={{ slug: urlSlug }}
+  paramsByLocale={paramsByLocale}
+  alternates={pairs}
+  quoteAttribution={{ ref: slug }}
   title={title}
   description={description}
   ogImage={{ src: og.src, alt: data.capa.alt, width: 1200, height: 630 }}

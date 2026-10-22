@@ -186,7 +186,11 @@ function semExemplo(permitir: boolean | undefined) {
   };
 }
 
-/** slug de URL: minúsculas, números e hífen (igual nos 3 idiomas). */
+/**
+ * slug de URL: minúsculas, números e hífen. O nome do arquivo do case é a chave
+ * (igual nos 3 idiomas: `relacionados`, `caseSlug`, `?ref=`); em en/es a URL
+ * pode ter slug próprio (`slugUrl`, auditoria de SEO S01-3).
+ */
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /** Nomes que denunciam depoimento ou autor anônimo/genérico. */
@@ -327,9 +331,11 @@ export const arquivoDeMidia: FabricaDeArquivo = (extensoes) =>
   });
 
 /**
- * cases/<pt|en|es>/<slug>.mdx — um arquivo por idioma, mesmo slug nos 3.
- * O corpo MDX é o detalhe de "O que foi entregue" (português de negócio, com
- * imagens reais). Um case só vai ao ar publicado nos 3 idiomas (features.ts).
+ * cases/<pt|en|es>/<slug>.mdx — um arquivo por idioma, mesmo nome de arquivo
+ * nos 3 (a chave do case). A URL em pt é o nome do arquivo; em en/es,
+ * `slugUrl` quando o idioma tem slug próprio (S01-3). O corpo MDX é o detalhe
+ * de "O que foi entregue" (português de negócio, com imagens reais). Um case
+ * só vai ao ar publicado nos 3 idiomas (features.ts).
  */
 export function caseSchema<Img extends z.ZodType, Ref extends z.ZodType>(
   image: () => Img,
@@ -409,9 +415,25 @@ export function caseSchema<Img extends z.ZodType, Ref extends z.ZodType>(
       semTermo: caseOwnerDecision.optional(),
       /** Só vai ao ar com `true` nos 3 idiomas. */
       publicado: z.boolean().default(false),
-      /** Title sem a marca, até 50 caracteres (a marca entra no template). */
+      /**
+       * Title sem a marca, até 50 caracteres (a marca entra no template). Também
+       * é o nome do case no breadcrumb, no BreadcrumbList e na mensagem do
+       * WhatsApp (sem ele, `tipoDeSistema`; S02-10).
+       */
       seoTitle: text(50).optional(),
       seoDescription: text(155).optional(),
+      /**
+       * Slug da URL NESTE idioma, só em en/es (ex.: "air-quality-widget"); sem
+       * ele, a URL usa o nome do arquivo. A chave do case continua sendo o nome
+       * do arquivo. Único por idioma (features.contentIssues).
+       */
+      slugUrl: slug.optional(),
+      /**
+       * Data (AAAA-MM-DD) da última revisão do texto NESTE idioma: vira o
+       * <lastmod> do sitemap (S01-6). Só data verdadeira, nunca a do build; sem
+       * ela, o sitemap sai sem lastmod.
+       */
+      atualizadoEm: date({ notFuture: true }).optional(),
     })
     .superRefine((data, ctx) => {
       if (!data.autorizacao && !data.semTermo) {

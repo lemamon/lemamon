@@ -13,6 +13,7 @@ import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import CaseArticle from "@/components/gated/CaseArticle.astro";
+import CaseGrid from "@/components/gated/CaseGrid.astro";
 import CasesSection from "@/components/gated/CasesSection.astro";
 import DiscoveryExclusions from "@/components/gated/DiscoveryExclusions.astro";
 import DiscoveryFormat from "@/components/gated/DiscoveryFormat.astro";
@@ -25,6 +26,8 @@ import RelatedCases from "@/components/gated/RelatedCases.astro";
 import SupportFormat from "@/components/gated/SupportFormat.astro";
 import TeamSection from "@/components/gated/TeamSection.astro";
 import TestimonialHighlight from "@/components/gated/TestimonialHighlight.astro";
+import LanguageSelector from "@/components/shell/LanguageSelector.astro";
+import LanguageSuggestion from "@/components/shell/LanguageSuggestion.astro";
 import { POST_MID_CTA_LOCAL } from "@/components/gated/blog";
 import { techIcon, techKey } from "@/components/gated/tech-icon";
 import { ENGINEERING_FIELDS } from "@/config/engenharia";
@@ -58,6 +61,7 @@ const html = (component: any, props: Record<string, unknown>, options: { locals?
 
 const caseItem = (locale: Locale, slug: string): CaseItem => ({
   slug,
+  urlSlug: slug,
   entry: entry("cases", `${locale}/${slug}`, caseFrontmatter(locale, slug)),
 });
 const caseItems = (locale: Locale) => FIXTURE_CASE_SLUGS.map((slug) => caseItem(locale, slug));
@@ -232,7 +236,7 @@ describe("com dado completo (fixtures injetadas), cada seção aparece; parcial 
         fichaTecnica: { stack: fm.fichaTecnica.stack },
         autorizacao: { ...fm.autorizacao, escopo: { ...fm.autorizacao.escopo, nomeDoCliente: false } },
       };
-      return { slug, entry: entry("cases", `${locale}/${slug}`, data) };
+      return { slug, urlSlug: slug, entry: entry("cases", `${locale}/${slug}`, data) };
     };
     for (const locale of LOCALES) {
       const items = FIXTURE_CASE_SLUGS.map((slug) => anonimo(locale, slug));
@@ -407,6 +411,88 @@ describe("página de case e post (corpo)", () => {
     } else {
       expect(out).not.toContain("case-print-colophon");
     }
+  });
+
+  it("CaseArticle (SEO S02-10, S03-15, S03-2): breadcrumb e BreadcrumbList com o nome do projeto, nunca setor · porte", async () => {
+    const fm = caseFrontmatter("pt");
+    const { cliente: _cliente, depoimento: _depoimento, ...rest } = fm;
+    const anonimo = {
+      ...rest,
+      setor: `${FIXTURE_MARK} Indústria`,
+      porte: `${FIXTURE_MARK} Multinacional`,
+      fichaTecnica: { stack: fm.fichaTecnica.stack },
+      autorizacao: { ...fm.autorizacao, escopo: { ...fm.autorizacao.escopo, nomeDoCliente: false } },
+    };
+    const trail = (out: string) => /<nav class="breadcrumb"[\s\S]*?<\/nav>/.exec(out)?.[0] ?? "";
+    const crumbsLd = (out: string) =>
+      [...out.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)]
+        .map((match) => JSON.parse(match[1]!))
+        .find((node) => node["@type"] === "BreadcrumbList");
+    for (const [data, expected] of [
+      [{ ...anonimo, seoTitle: `${FIXTURE_MARK} Painel de fretes` }, `${FIXTURE_MARK} Painel de fretes`],
+      [anonimo, fm.tipoDeSistema],
+    ] as const) {
+      const item = entry("cases", "pt/x", data);
+      const out = await html(CaseArticle, { locale: "pt", slug: "x", entry: item, testimonial: null, related: [] });
+      expect(trail(out)).toMatch(new RegExp(`<span aria-current="page"[^>]*>${expected}</span>`));
+      expect(trail(out)).not.toContain(`${FIXTURE_MARK} Indústria · ${FIXTURE_MARK} Multinacional`);
+      const list = crumbsLd(out);
+      expect(list.itemListElement.at(-1)).toEqual({ "@type": "ListItem", position: 3, name: expected });
+      // Setor e porte continuam no eyebrow (D45).
+      expect(out).toMatch(new RegExp(`<p class="eyebrow"[^>]*>${FIXTURE_MARK} Indústria · ${FIXTURE_MARK} Multinacional</p>`));
+    }
+  });
+
+  it("CaseArticle (SEO S03-4, S06-9): ficha com link para cada serviço e cada etapa; a Descoberta leva à Sprint", async () => {
+    const paths = {
+      pt: { services: ["/servicos/sistemas-web", "/servicos/aplicativos"], how: "/como-trabalhamos", sprint: "/sprint-de-descoberta" },
+      en: { services: ["/en/services/web-systems", "/en/services/mobile-apps"], how: "/en/how-we-work", sprint: "/en/discovery-sprint" },
+      es: { services: ["/es/servicios/sistemas-web", "/es/servicios/aplicaciones"], how: "/es/como-trabajamos", sprint: "/es/sprint-de-descubrimiento" },
+    } as const;
+    for (const locale of LOCALES) {
+      const item = caseItem(locale, FIXTURE_CASE_SLUGS[0]);
+      const out = await html(CaseArticle, { locale, slug: item.slug, entry: item.entry, testimonial: null, related: [] });
+      const sheet = /<div class="case-hero__sheet"[\s\S]*?<\/dl>/.exec(out)?.[0] ?? "";
+      const links = [...sheet.matchAll(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/g)].map((match) => [match[1], match[2]]);
+      expect(links, locale).toEqual([
+        [paths[locale].services[0], t(locale, "cases.hub.filters.web_systems")],
+        [paths[locale].services[1], t(locale, "cases.hub.filters.mobile_apps")],
+        [`${paths[locale].how}#diagnostico`, t(locale, "shared.method_timeline.stages.diagnosis.name")],
+        [paths[locale].sprint, t(locale, "shared.method_timeline.stages.discovery.name")],
+        [`${paths[locale].how}#desenvolvimento`, t(locale, "shared.method_timeline.stages.development.name")],
+      ]);
+      // O separador " · " entre os links é decorativo.
+      expect(sheet).toMatch(/<span class="field-list__sep" aria-hidden="true"[^>]*>\s*·\s*<\/span>/);
+      // Setor e porte continuam texto puro.
+      expect(sheet).toMatch(new RegExp(`<dd class="field-list__value"[^>]*>${FIXTURE_MARK} Logística</dd>`));
+    }
+  });
+
+  it("slug da URL por idioma (SEO S01-3): card, endereço impresso, seletor e aviso de idioma usam o slugUrl; a chave continua no data-case", async () => {
+    const withSlug = (locale: Locale, slugUrl?: string): CaseItem => {
+      const data = { ...caseFrontmatter(locale), ...(slugUrl ? { slugUrl } : {}) };
+      const item = entry("cases", `${locale}/${FIXTURE_CASE_SLUGS[0]}`, data);
+      return { slug: FIXTURE_CASE_SLUGS[0], urlSlug: slugUrl ?? FIXTURE_CASE_SLUGS[0], entry: item };
+    };
+    const en = withSlug("en", "freight-system");
+    const grid = await html(CaseGrid, { locale: "en", items: [en] });
+    expect(grid).toContain('href="/en/cases/freight-system"');
+    expect(grid).not.toContain(`/en/cases/${FIXTURE_CASE_SLUGS[0]}`);
+    const article = await html(CaseArticle, { locale: "en", slug: en.slug, entry: en.entry, testimonial: null, related: [] });
+    expect(article).toContain(`data-case="${FIXTURE_CASE_SLUGS[0]}"`);
+    expect(/<div class="case-print-masthead"[\s\S]*?<\/div>/.exec(article)?.[0]).toContain("lemamon.dev/en/cases/freight-system");
+
+    const paramsByLocale = { pt: { slug: FIXTURE_CASE_SLUGS[0] }, en: { slug: "freight-system" }, es: { slug: "sistema-de-fletes" } };
+    const selector = await html(LanguageSelector, { locale: "en", route: "case", params: { slug: "freight-system" }, paramsByLocale, variant: "full" });
+    expect(selector).toContain(`href="/cases/${FIXTURE_CASE_SLUGS[0]}"`);
+    expect(selector).toContain('href="/en/cases/freight-system"');
+    expect(selector).toContain('href="/es/casos/sistema-de-fletes"');
+    const suggestion = await html(LanguageSuggestion, { locale: "en", route: "case", params: { slug: "freight-system" }, paramsByLocale });
+    expect(suggestion).toContain(`href="/cases/${FIXTURE_CASE_SLUGS[0]}"`);
+    expect(suggestion).toContain('href="/es/casos/sistema-de-fletes"');
+    // Sem paramsByLocale (todas as outras páginas): os mesmos params em todo idioma.
+    const plain = await html(LanguageSelector, { locale: "pt", route: "how_we_work", variant: "full" });
+    expect(plain).toContain('href="/en/how-we-work"');
   });
 
   it("CaseArticle, ficha técnica (B212): cada tecnologia é um Badge mono; logo só com desenho no Icon.astro", async () => {

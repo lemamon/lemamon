@@ -39,7 +39,10 @@ const { locale, data } = Astro.props;
 const features = data?.features ?? (await getFeatures());
 const testimonial = features.hasTestimonials ? (data ? data.testimonial : ((await testimonialItems())[0] ?? null)) : null;
 const caseSlug = testimonial?.data.caseSlug;
-const caseName = caseSlug ? (data?.caseName ?? (await caseItem(locale, caseSlug))?.entry.data.titulo) : undefined;
+const linkedCase = caseSlug && !data?.caseName ? await caseItem(locale, caseSlug) : null;
+const caseName = caseSlug ? (data?.caseName ?? linkedCase?.entry.data.titulo) : undefined;
+/** Slug da URL do case no idioma (S01-3); nos testes, com o nome injetado, a chave. */
+const caseUrl = caseSlug ? urlFor("case", locale, { slug: linkedCase?.urlSlug ?? caseSlug }) : undefined;
 /** Com vídeo, a partir de 1024px o card e o vídeo ficam lado a lado (sem meia tela vazia à direita). */
 const withVideo = Boolean(testimonial?.data.video);
 ---
@@ -57,7 +60,7 @@ const withVideo = Boolean(testimonial?.data.video);
         {caseSlug && caseName && (
           <ArrowLink
             class="highlight__case"
-            href={urlFor("case", locale, { slug: caseSlug })}
+            href={caseUrl}
             aria-label={t(locale, "shared.cta.read_case_aria", { case: caseName })}
             text={t(locale, "shared.cta.read_case")}
           />

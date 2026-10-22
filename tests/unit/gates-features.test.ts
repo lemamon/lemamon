@@ -279,6 +279,29 @@ describe("conteúdo contraditório derruba o build (contentIssues)", () => {
     expect(contentIssues({ ...EMPTY_CONTENT, cases }).join("\n")).toMatch(expected);
   });
 
+  describe("slug da URL por idioma (slugUrl, SEO S01-3)", () => {
+    const comSlug = (slug: string, slugs: Partial<Record<"pt" | "en" | "es", string>>) =>
+      caseVersions(slug, ["mvp"]).map((item) => ({ ...item, slugUrl: slugs[item.id.split("/")[0] as "pt" | "en" | "es"] ?? null }));
+
+    it("en e es com slug próprio, diferentes entre si e do pt, é válido", () => {
+      expect(contentIssues({ ...EMPTY_CONTENT, cases: comSlug(a, { en: "freight-system", es: "sistema-de-fletes" }) })).toEqual([]);
+    });
+
+    it("slugUrl em pt-BR derruba o build (em pt, a URL é o nome do arquivo)", () => {
+      expect(contentIssues({ ...EMPTY_CONTENT, cases: comSlug(a, { pt: "outro-nome" }) }).join("\n")).toMatch(/slugUrl` só vale em en\/es/);
+    });
+
+    it("dois cases com a mesma URL no mesmo idioma derrubam o build", () => {
+      const cases = [...comSlug(a, { en: "freight-system" }), ...comSlug(b, { en: "freight-system" })];
+      expect(contentIssues({ ...EMPTY_CONTENT, cases }).join("\n")).toMatch(/a URL do case \(en\/freight-system\) é a mesma de/);
+      // slugUrl igual à chave de OUTRO case no mesmo idioma também colide.
+      const colide = [...comSlug(a, {}), ...comSlug(b, { es: a })];
+      expect(contentIssues({ ...EMPTY_CONTENT, cases: colide }).join("\n")).toMatch(new RegExp(`a URL do case \\(es/${a}\\)`));
+      // O mesmo slug em idiomas diferentes não colide (URLs diferentes).
+      expect(contentIssues({ ...EMPTY_CONTENT, cases: comSlug(a, { en: "mesmo-slug", es: "mesmo-slug" }) })).toEqual([]);
+    });
+  });
+
   it("publicar um idioma antes dos outros NÃO é erro (é parcial: só não vai ao ar)", () => {
     expect(contentIssues({ ...EMPTY_CONTENT, cases: caseVersions(a, ["mvp"], { locales: ["pt"] }) })).toEqual([]);
   });

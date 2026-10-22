@@ -424,7 +424,7 @@ Netlify Forms `contato`, separado do `briefing` (§7.10). Labels visíveis, `aut
 **Hub** (`hasCases` ≥ 2): `hero` (H1 "Projetos que já estão rodando"; intro: o problema, o que foi combinado, o que foi entregue e o que mudou) → `filters` (chips por serviço, só com ≥ 6 cases e só os que têm resultado; sem JS, todos aparecem) → `grid` (card §5.7) → `cta_final` (título "Quer algo parecido?").
 
 **Case** (por case publicado; schema Zod exige os campos):
-1. `hero`: breadcrumb; cliente ou setor+porte; H1 orientado ao problema resolvido; ficha em `<dl>` só com dados fornecidos (setor, porte, serviço, etapas contratadas, período); imagem real; no case anonimizado sem termo (D45), capa ilustrada do tipo de sistema, sem aviso visível, com alt "Ilustração de…".
+1. `hero`: breadcrumb com o nome do projeto (`seoTitle` ou `tipoDeSistema`; auditoria de SEO S02-10); cliente ou setor+porte no eyebrow; H1 orientado ao problema resolvido; ficha em `<dl>` só com dados fornecidos (setor, porte, serviço, etapas contratadas, período), com cada serviço linkando a página do serviço e cada etapa a sua seção do método (a Descoberta, a página da Sprint; S03-4, S06-9); imagem real; no case anonimizado sem termo (D45), capa ilustrada do tipo de sistema, sem aviso visível, com alt "Ilustração de…".
 2. `problem`: "O problema", 2–3 frases na linguagem do cliente.
 3. `agreed`: "O que foi combinado", com escopo priorizado, o que ficou de fora e prazo e preço do plano (se autorizado).
 4. `built`: "O que construímos", em português de negócio, com imagens reais (alt descritivo) (no case sem termo, D45, não há tela; só a capa ilustrada).
@@ -741,13 +741,13 @@ Antes de "Começar": logo + link "Dúvidas? WhatsApp", sem menu e sem CTA de hea
 - **Rótulos proibidos:** "Saiba mais", "Conheça mais", "Fale conosco", "Comece seu projeto!", "Enviar" solto.
 
 ### 8.7 Breadcrumb
-Em `/servicos/*`, `/sprint-de-descoberta`, `/cases/[slug]` e `/blog/[slug]`, com BreadcrumbList JSON-LD. Trilhas: serviços "Início › Serviços › {serviço}"; Sprint "Início › Como trabalhamos › Sprint de Descoberta" (a Sprint é etapa do método, i18n `_notes.breadcrumb`); case "Início › Cases › {case}"; post "Início › Blog › {post}".
+Em `/servicos/*`, `/sprint-de-descoberta`, `/cases/[slug]` e `/blog/[slug]`, com BreadcrumbList JSON-LD. Trilhas: serviços "Início › Serviços › {serviço}"; Sprint "Início › Como trabalhamos › Sprint de Descoberta" (a Sprint é etapa do método, i18n `_notes.breadcrumb`); case "Início › Cases › {case}", em que {case} é o nome do projeto (`seoTitle` ou `tipoDeSistema`), nunca "setor · porte"; post "Início › Blog › {post}".
 
 ---
 
 ## 9. Idiomas
 
-- pt-BR na raiz; `/en/` e `/es/` com a mesma árvore e slugs localizados (§3.1). Um **mapa central de rotas** (`chave → {pt, en, es}`) alimenta o seletor, que leva à página equivalente, o hreflang recíproco (pt-BR, en, es + `x-default` → pt-BR) e o sitemap. O `astro:i18n` não localiza slugs sozinho.
+- pt-BR na raiz; `/en/` e `/es/` com a mesma árvore e slugs localizados (§3.1). Cases também: o nome do arquivo é a chave, igual nos 3 idiomas, e `slugUrl` dá o slug da URL em en/es (auditoria de SEO S01-3); o seletor, o hreflang e o canonical usam o slug de cada idioma, e o sitemap lista os cases sem `xhtml:link` (o hreflang fica no `<head>`). Um **mapa central de rotas** (`chave → {pt, en, es}`) alimenta o seletor, que leva à página equivalente, o hreflang recíproco (pt-BR, en, es + `x-default` → pt-BR) e o sitemap. O `astro:i18n` não localiza slugs sozinho.
 - **Não há redirecionamento automático** por idioma do navegador; no máximo um aviso discreto ("Also available in English"). Implementado assim: o aviso só aparece quando o idioma da página NÃO está entre os idiomas do navegador e algum dos outros dois está; leva à página equivalente; fechar é persistente (localStorage) em todas as páginas. No wizard, aparece só na entrada do `/orcamento` e some no modo foco; o footer mínimo do wizard tem o seletor de idioma, e a troca de idioma na entrada mantém a query da URL (`?servico=`, `?origem=`, `?ref=`, UTMs), menos o `?etapa=` (auditoria de conversão F31). Com o aviso, o "Começar" pode descer para a 2ª tela no celular de 360×640; o aviso e o H1 continuam na 1ª, a mesma regra da Home (§2.8): quem não lê o idioma da página precisa do aviso antes do botão. Com o navegador no idioma da página (o visitante do anúncio), não há aviso e o F03 vale.
 - **Espanhol:** neutro latino-americano, com "tú" em todo o site, inclusive wizard, validações, WhatsApp e e-mails de formulário.
 - **Blog:** só pt-BR.

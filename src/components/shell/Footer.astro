@@ -25,7 +25,7 @@ import { empresa } from "@/config/empresa";
 import { getFeatures, primaryCtaKey } from "@/config/features";
 import { PROFILE_IDS, perfis } from "@/config/perfis";
 import { privacidade } from "@/config/privacidade";
-import { quoteHref, SITE_URL, urlFor, type QuoteAttribution, type RouteKey, type RouteParams } from "@/config/routes";
+import { quoteHref, SITE_URL, urlFor, type ParamsByLocale, type QuoteAttribution, type RouteKey, type RouteParams } from "@/config/routes";
 import { t, tDynamic, type Locale } from "@/i18n";
 import { whatsappHref } from "@/lib/whatsapp";
 
@@ -39,6 +39,8 @@ interface Props {
   locale: Locale;
   route: RouteKey;
   params?: RouteParams;
+  /** Parâmetros por idioma para o seletor de idioma (slug do case por idioma, S01-3). */
+  paramsByLocale?: ParamsByLocale;
   whatsappMessage: string;
   /** ?origem= do CTA do rodapé ("home-footer"...). */
   ctaOrigin?: string;
@@ -46,7 +48,7 @@ interface Props {
   quoteAttribution?: Omit<QuoteAttribution, "origem">;
 }
 
-const { locale, route, params, whatsappMessage, ctaOrigin = "footer", quoteAttribution } = Astro.props;
+const { locale, route, params, paramsByLocale, whatsappMessage, ctaOrigin = "footer", quoteAttribution } = Astro.props;
 const features = await getFeatures();
 const services = [...serviceLinks(locale), discoveryLink(locale, "footer")];
 const company = companyLinks(locale, features);
@@ -171,7 +173,7 @@ const printLine = `${new URL(SITE_URL).hostname} · ${empresa.email}`;
         }
       </p>
       <div class="site-footer__prefs">
-        <LanguageSelector locale={locale} route={route} params={params} variant="full" as="nav" />
+        <LanguageSelector locale={locale} route={route} params={params} paramsByLocale={paramsByLocale} variant="full" as="nav" />
         <ThemeToggle locale={locale} />
       </div>
     </div>

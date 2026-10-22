@@ -243,7 +243,7 @@ Flags: `hasPricing` (+ `pricingLines`), `hasBudgetTiers`, `hasMonthlyTiers`, `ha
 5. Nenhum valor monetário fora de `dados/dono.json › precos` e `› qualificacao` (o teste `no-money` varre `src/` inteiro, inclusive comentários dos `.ts`, as outras seções do dono.json e os MDX). Faixas do wizard só dentro da ilha (§10).
 6. Testes de gate usam fixtures em `tests/fixtures/` com `computeFeatures()` (puro); nunca conteúdo em `src/content/` nem em `dados/`. `baseSources()` = tudo vazio; `realSources()` = o dono.json de hoje.
 
-Coleções (`src/content.config.ts`, loaders em `src/content/loaders.ts`): `cases` = `src/content/cases/<pt|en|es>/<slug>.mdx` (mesmo slug nos 3 idiomas), `posts` = `src/content/posts/*.mdx` (só pt-BR), `time`/`depoimentos`/`logos` = listas de `dados/dono.json` (cada item com `id`). Consultas prontas em `src/lib/content.ts` (`caseItems(locale)`, `postItems()`).
+Coleções (`src/content.config.ts`, loaders em `src/content/loaders.ts`): `cases` = `src/content/cases/<pt|en|es>/<slug>.mdx` (mesmo nome de arquivo nos 3 idiomas, a chave do case; em en/es, `slugUrl` no frontmatter dá o slug da URL, auditoria de SEO S01-3), `posts` = `src/content/posts/*.mdx` (só pt-BR), `time`/`depoimentos`/`logos` = listas de `dados/dono.json` (cada item com `id`). Consultas prontas em `src/lib/content.ts` (`caseItems(locale)`, `postItems()`).
 
 ### 7.1 Dados do dono — `dados/dono.json` (fonte única) e camada fictícia
 

@@ -238,11 +238,11 @@ Critério de aceite: pelo menos 2 provas concretas na Home, sem nome, logo ou n�
 
 - [ ] Termo assinado e arquivado, com `autorizacao` preenchida (`porEscrito: true` e o `escopo` igual às opções marcadas no termo); ou, no case anonimizado sem termo, `semTermo` preenchido com a decisão do dono registrada (§1 regra 2, D45), sem `cliente`, `resultado`, prazo e preço, link do produto ou depoimento.
 - [ ] Texto e números aprovados por escrito pelo cliente.
-- [ ] Case nos 3 idiomas, mesmo slug, `publicado: true` nos 3.
+- [ ] Case nos 3 idiomas, mesmo nome de arquivo, `publicado: true` nos 3; em en e es, `slugUrl` com o slug traduzido (único no idioma).
 - [ ] `grep -rn "PREENCHER" src/content` vazio.
 - [ ] Diagramas (§9): `grep -c "<text" arquivo.svg` dá `0`, e `grep -oiE '(fill|stroke)="#[0-9a-f]{3,6}"' arquivo.svg | sort -u` só mostra `#9aa4bb`, `#ffffff`, `#cbd2e0`, `#f59e0b` e `#111845` (ou `none`).
 - [ ] `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 yarn build` e `yarn test` passam.
-- [ ] No deploy preview: o case aparece em `/cases/<slug>`, `/en/cases/<slug>` e `/es/casos/<slug>`; `/cases` só aparece com 2 ou mais.
+- [ ] No deploy preview: o case aparece em `/cases/<slug>`, `/en/cases/<slugUrl en>` e `/es/casos/<slugUrl es>`, e o seletor de idioma leva de um ao outro; `/cases` só aparece com 2 ou mais.
 - [ ] Pedir indexação da página nova no Search Console (playbook 08 §1).
 
 ## 15. Indicadores

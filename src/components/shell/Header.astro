@@ -27,7 +27,7 @@
 import Button from "@/components/ui/Button.astro";
 import Icon from "@/components/ui/Icon.astro";
 import { getFeatures } from "@/config/features";
-import { quoteHref, urlFor, type QuoteAttribution, type RouteKey, type RouteParams } from "@/config/routes";
+import { quoteHref, urlFor, type ParamsByLocale, type QuoteAttribution, type RouteKey, type RouteParams } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 import { whatsappHref } from "@/lib/whatsapp";
 
@@ -49,6 +49,8 @@ interface Props {
   locale: Locale;
   route: RouteKey;
   params?: RouteParams;
+  /** Parâmetros por idioma para o seletor de idioma (slug do case por idioma, S01-3). */
+  paramsByLocale?: ParamsByLocale;
   whatsappMessage: string;
   /** ?origem= do CTA do header ("home-header", "metodo-header"...). */
   ctaOrigin: string;
@@ -58,7 +60,7 @@ interface Props {
   quoteAttribution?: Omit<QuoteAttribution, "origem">;
 }
 
-const { locale, route, params, whatsappMessage, ctaOrigin, menuOrigin, quoteAttribution } = Astro.props;
+const { locale, route, params, paramsByLocale, whatsappMessage, ctaOrigin, menuOrigin, quoteAttribution } = Astro.props;
 const features = await getFeatures();
 const services = serviceLinks(locale);
 const servicesExtra: NavLink[] = [discoveryLink(locale), servicesHubLink(locale)];
@@ -128,7 +130,7 @@ const crowded = links.length > 3 ? "true" : undefined;
     </nav>
 
     <div class="site-header__actions">
-      <LanguageSelector locale={locale} route={route} params={params} variant="compact" class="only-desktop" />
+      <LanguageSelector locale={locale} route={route} params={params} paramsByLocale={paramsByLocale} variant="compact" class="only-desktop" />
       {
         wa && (
           <a
@@ -179,6 +181,7 @@ const crowded = links.length > 3 ? "true" : undefined;
   locale={locale}
   route={route}
   params={params}
+  paramsByLocale={paramsByLocale}
   whatsappMessage={whatsappMessage}
   ctaOrigin={menuOrigin}
   quoteAttribution={quoteAttribution}

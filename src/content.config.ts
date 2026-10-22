@@ -9,7 +9,8 @@
  *   dados/dono.json › time[]          foto real, nome, papel, 1 linha da pessoa
  *   dados/dono.json › depoimentos[]   nominal (nome completo, cargo, empresa) + autorização
  *   dados/dono.json › logos[]         ≥ 4, cada um com autorização por escrito
- *   src/content/cases/<pt|en|es>/<slug>.mdx   mesmo slug nos 3 idiomas; vai ao ar com publicado: true nos 3
+ *   src/content/cases/<pt|en|es>/<slug>.mdx   mesmo nome de arquivo nos 3 idiomas (a chave; em en/es a URL usa
+ *                                            slugUrl); vai ao ar com publicado: true nos 3
  *   src/content/posts/<slug>.mdx      só pt-BR; autor real; <CtaMeio /> no meio do texto
  *
  * Camada fictícia (só fora de produção, PUBLIC_DADOS_FICTICIOS=true): listas

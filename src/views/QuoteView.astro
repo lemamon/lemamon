@@ -128,12 +128,12 @@ const servicePages = Object.fromEntries(
  */
 const cases: Record<string, CaseRef> = features.hasCases
   ? Object.fromEntries(
-      (await caseItems(locale)).map(({ slug, entry }) => [
+      (await caseItems(locale)).map(({ slug, urlSlug, entry }) => [
         slug,
         {
           name: entry.data.cliente ?? entry.data.setor,
           services: [...entry.data.servicos],
-          url: urlFor("case", locale, { slug }),
+          url: urlFor("case", locale, { slug: urlSlug }),
           tipoDeSistema: entry.data.tipoDeSistema,
         },
       ]),

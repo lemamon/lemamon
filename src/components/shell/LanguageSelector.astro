@@ -4,8 +4,9 @@
  * Español" (drawer, footer). BLUEPRINT §8.1, §8.5, §9; backlog B076, B084.
  * Dono: shell.
  *
- * - Leva à página EQUIVALENTE no outro idioma (routes.ts, mesmos params); se ela
- *   não existir nele (blog só em pt-BR) ou na 404, leva à Home daquele idioma.
+ * - Leva à página EQUIVALENTE no outro idioma (routes.ts, mesmos params, ou os
+ *   do idioma de destino em `paramsByLocale`: o case com slug por idioma, S01-3);
+ *   se ela não existir nele (blog só em pt-BR) ou na 404, leva à Home daquele idioma.
  * - <a hreflang lang>; o idioma atual leva aria-current="true" e não é link
  *   morto (continua apontando para a própria página).
  * - Compacto: o nome acessível COMEÇA pelo texto visível ("PT, Português",
@@ -18,25 +19,27 @@
  * - as="nav" (footer) cria o landmark; as="group" (header, drawer) não, para não
  *   repetir landmarks com o mesmo nome na página.
  */
-import { hasLocale, urlFor, type RouteKey, type RouteParams } from "@/config/routes";
+import { hasLocale, urlFor, type ParamsByLocale, type RouteKey, type RouteParams } from "@/config/routes";
 import { LOCALE_META, LOCALES, t, type Locale } from "@/i18n";
 
 interface Props {
   locale: Locale;
   route: RouteKey;
   params?: RouteParams;
+  /** Parâmetros por idioma de destino (slug do case por idioma, S01-3). */
+  paramsByLocale?: ParamsByLocale;
   variant?: "compact" | "full";
   as?: "nav" | "group";
   class?: string;
 }
 
-const { locale, route, params, variant = "compact", as = "group", class: className } = Astro.props;
+const { locale, route, params, paramsByLocale, variant = "compact", as = "group", class: className } = Astro.props;
 const isError = route === "not_found";
 const links = LOCALES.map((target) => {
   let href = urlFor("home", target);
   if (!isError && hasLocale(route, target)) {
     try {
-      href = urlFor(route, target, params);
+      href = urlFor(route, target, paramsByLocale?.[target] ?? params);
     } catch {
       href = urlFor("home", target);
     }

@@ -16,22 +16,24 @@
  * nunca quebra no meio ("View" / "in English"): desce inteiro para a linha seguinte.
  */
 import Icon from "@/components/ui/Icon.astro";
-import { hasLocale, urlFor, type RouteKey, type RouteParams } from "@/config/routes";
+import { hasLocale, urlFor, type ParamsByLocale, type RouteKey, type RouteParams } from "@/config/routes";
 import { LOCALE_META, LOCALES, t, type Locale } from "@/i18n";
 
 interface Props {
   locale: Locale;
   route: RouteKey;
   params?: RouteParams;
+  /** Parâmetros por idioma de destino (slug do case por idioma, S01-3). */
+  paramsByLocale?: ParamsByLocale;
 }
 
-const { locale, route, params } = Astro.props;
+const { locale, route, params, paramsByLocale } = Astro.props;
 const targets =
   route === "not_found"
     ? []
     : LOCALES.filter((target) => target !== locale && hasLocale(route, target)).flatMap((target) => {
         try {
-          return [{ target, href: urlFor(route, target, params) }];
+          return [{ target, href: urlFor(route, target, paramsByLocale?.[target] ?? params) }];
         } catch {
           return [];
         }

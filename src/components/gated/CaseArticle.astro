@@ -3,8 +3,13 @@
  * Corpo da página de case /cases/[slug] (BLUEPRINT §6.10), sem o layout.
  * Dono: gated. A CaseView carrega os dados e passa o corpo MDX no <slot />.
  *
- *  1. hero: breadcrumb; cliente (autorizado) ou setor + porte; H1 orientado ao
- *     problema; ficha em <dl> só com dados fornecidos; imagem real.
+ *  1. hero: breadcrumb "Início › Cases › {projeto}" (o nome do projeto,
+ *     caseProjectName: seoTitle ou tipoDeSistema, também no BreadcrumbList;
+ *     auditoria de SEO S02-10); cliente (autorizado) ou setor + porte no
+ *     eyebrow (D45); H1 orientado ao problema; ficha em <dl> só com dados
+ *     fornecidos, com cada serviço linkando a página do serviço e cada etapa a
+ *     sua seção em /como-trabalhamos (a Descoberta, a página da Sprint; S03-4,
+ *     S06-9); imagem real.
  *  2. problem · 3. agreed · 4. built (resumo + MDX + imagens reais com alt)
  *  5. how_it_went (linha do tempo real nas etapas do método)
  *  6. result (até 3 métricas antes → depois, opcional e autorizado)
@@ -48,19 +53,20 @@ import Section from "@/components/ui/Section.astro";
 import SectionHeader from "@/components/ui/SectionHeader.astro";
 import { empresa } from "@/config/empresa";
 import { getFeatures } from "@/config/features";
-import { absoluteUrl, urlFor } from "@/config/routes";
+import { absoluteUrl, anchorFor, ANCHORS, SERVICE_ROUTE, urlFor } from "@/config/routes";
 import { getSection, hasText, t, tDynamic, type Locale } from "@/i18n";
-import { caseDisplayName, caseStages, type CaseItem } from "@/lib/content";
+import { caseDisplayName, caseProjectName, caseStages, caseUrlSlug, type CaseItem } from "@/lib/content";
 import "@/styles/code.css";
 
 import CaseGrid from "./CaseGrid.astro";
-import FieldList from "./FieldList.astro";
+import FieldList, { type FieldItem } from "./FieldList.astro";
 import StageTimeline from "./StageTimeline.astro";
 import { techIcon } from "./tech-icon";
 import TestimonialVideo from "./TestimonialVideo.astro";
 
 interface Props {
   locale: Locale;
+  /** Chave do case (nome do arquivo, igual nos 3 idiomas). A URL usa caseUrlSlug(). */
   slug: string;
   entry: CollectionEntry<"cases">;
   testimonial: CollectionEntry<"depoimentos"> | null;
@@ -70,14 +76,24 @@ interface Props {
 const { locale, slug, entry, testimonial, related } = Astro.props;
 const data = entry.data;
 const name = caseDisplayName(entry);
+const projectName = caseProjectName(entry);
 const sheet = getSection(locale, "cases.case.fact_sheet");
 const serviceLabels = getSection(locale, "cases.hub.filters");
 const stages = getSection(locale, "shared.method_timeline.stages");
-const factSheet = [
+const factSheet: FieldItem[] = [
   { label: sheet.sector, value: data.setor },
   ...(data.porte ? [{ label: sheet.size, value: data.porte }] : []),
-  { label: sheet.service, value: data.servicos.map((key) => serviceLabels[key]).join(" · ") },
-  { label: sheet.stages, value: caseStages(entry).map((stage) => stages[stage].name).join(" · ") },
+  {
+    label: sheet.service,
+    links: data.servicos.map((key) => ({ label: serviceLabels[key], href: urlFor(SERVICE_ROUTE[key], locale) })),
+  },
+  {
+    label: sheet.stages,
+    links: caseStages(entry).map((stage) => ({
+      label: stages[stage].name,
+      href: stage === "discovery" ? urlFor("discovery_sprint", locale) : anchorFor("how_we_work", locale, ANCHORS.stage[stage]),
+    })),
+  },
   ...(data.periodo ? [{ label: sheet.period, value: data.periodo }] : []),
 ];
 const agreed = [
@@ -91,7 +107,7 @@ const agreed = [
 const PRINT_KEY = "cases.case.print.button";
 const printLabel = hasText(locale, PRINT_KEY) ? tDynamic(locale, PRINT_KEY) : null;
 /** Só no papel: endereço do case sem o protocolo (ex.: lemamon.dev/cases/slug) e, com dado real, razão social + CNPJ. */
-const printUrl = absoluteUrl(urlFor("case", locale, { slug })).replace(/^https?:\/\//, "");
+const printUrl = absoluteUrl(urlFor("case", locale, { slug: caseUrlSlug(entry, slug) })).replace(/^https?:\/\//, "");
 const features = await getFeatures();
 const printCompanyId = features.hasCompanyData
   ? t(locale, "shared.footer.company_id", { razao_social: empresa.razaoSocial, cnpj: empresa.cnpj })
@@ -99,7 +115,7 @@ const printCompanyId = features.hasCompanyData
 const crumbs = [
   { label: t(locale, "shared.breadcrumb.home"), href: urlFor("home", locale) },
   { label: t(locale, "shared.breadcrumb.cases"), href: urlFor("cases_hub", locale) },
-  { label: name },
+  { label: projectName },
 ];
 ---
 

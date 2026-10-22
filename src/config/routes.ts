@@ -183,6 +183,12 @@ export const ROUTES = {
 
 export type RouteKey = keyof typeof ROUTES;
 export type RouteParams = Readonly<Record<string, string>>;
+/**
+ * Parâmetros da MESMA página em cada idioma, quando o slug muda por idioma
+ * (case com `slugUrl`, auditoria de SEO S01-3). O seletor de idioma e o aviso
+ * de idioma usam o do idioma de destino; idioma ausente usa `params`.
+ */
+export type ParamsByLocale = Readonly<Partial<Record<Locale, RouteParams>>>;
 
 export const ROUTE_KEYS = Object.keys(ROUTES) as RouteKey[];
 

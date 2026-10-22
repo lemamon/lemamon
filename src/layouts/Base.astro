@@ -2,7 +2,7 @@
 /**
  * Layout base de TODAS as páginas (dono: shell). Ver CONTRACT.md §6.
  *
- *   <Base locale route title description [params] [variant] [noindex]
+ *   <Base locale route title description [params] [paramsByLocale] [variant] [noindex]
  *         [ogTitle] [ogImage] [jsonLd] [alternates] [whatsappMessage] [ctaOrigin]>
  *     …seções…
  *     <Fragment slot="head">…extra no <head>…</Fragment>
@@ -73,6 +73,7 @@ import {
   SERVICE_KEYS,
   SERVICE_ROUTE,
   type Alternate,
+  type ParamsByLocale,
   type QuoteAttribution,
   type RouteKey,
   type RouteParams,
@@ -86,6 +87,11 @@ interface Props {
   locale: Locale;
   route: RouteKey;
   params?: RouteParams;
+  /**
+   * Parâmetros da página em cada idioma, quando o slug muda (case com slugUrl,
+   * S01-3): o seletor e o aviso de idioma levam à URL certa. Padrão: `params`.
+   */
+  paramsByLocale?: ParamsByLocale;
   /** <title> final (as chaves meta.*.title já trazem "| Lemamon"). */
   title: string;
   /**
@@ -150,7 +156,7 @@ function defaultMessage(locale: Locale, route: RouteKey): string {
   return label ? pageMessage(locale, t(locale, label)) : pageMessage(locale);
 }
 
-const { locale, route, params, title, ogTitle, description, noindex, ogImage, jsonLd, alternates } = Astro.props;
+const { locale, route, params, paramsByLocale, title, ogTitle, description, noindex, ogImage, jsonLd, alternates } = Astro.props;
 const whatsappMessage = Astro.props.whatsappMessage ?? defaultMessage(locale, route);
 const ctaOrigin = Astro.props.ctaOrigin ?? `${route.replace(/_/g, "-")}-barra`;
 const originPrefix = ctaOrigin.replace(/-barra$/, "");
@@ -209,7 +215,7 @@ const ESTILO_FAIXA =
         </div>
       )
     }
-    {(!isWizard || route === "quote") && <LanguageSuggestion locale={locale} route={route} params={params} />}
+    {(!isWizard || route === "quote") && <LanguageSuggestion locale={locale} route={route} params={params} paramsByLocale={paramsByLocale} />}
     {
       isWizard ? (
         <WizardHeader locale={locale} whatsappMessage={whatsappMessage} />
@@ -218,6 +224,7 @@ const ESTILO_FAIXA =
           locale={locale}
           route={route}
           params={params}
+          paramsByLocale={paramsByLocale}
           whatsappMessage={whatsappMessage}
           ctaOrigin={`${originPrefix}-header`}
           menuOrigin={`${originPrefix}-menu`}
@@ -237,6 +244,7 @@ const ESTILO_FAIXA =
           locale={locale}
           route={route}
           params={params}
+          paramsByLocale={paramsByLocale}
           whatsappMessage={whatsappMessage}
           ctaOrigin={`${originPrefix}-footer`}
           quoteAttribution={quoteAttribution}

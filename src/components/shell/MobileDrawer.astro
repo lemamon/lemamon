@@ -19,7 +19,7 @@
  */
 import Icon from "@/components/ui/Icon.astro";
 import { getFeatures } from "@/config/features";
-import { quoteHref, urlFor, type QuoteAttribution, type RouteKey, type RouteParams } from "@/config/routes";
+import { quoteHref, urlFor, type ParamsByLocale, type QuoteAttribution, type RouteKey, type RouteParams } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
 import { whatsappHref } from "@/lib/whatsapp";
 
@@ -34,6 +34,8 @@ interface Props {
   locale: Locale;
   route: RouteKey;
   params?: RouteParams;
+  /** Parâmetros por idioma para o seletor de idioma (slug do case por idioma, S01-3). */
+  paramsByLocale?: ParamsByLocale;
   whatsappMessage: string;
   /** ?origem= do CTA do drawer. */
   ctaOrigin?: string;
@@ -41,7 +43,7 @@ interface Props {
   quoteAttribution?: Omit<QuoteAttribution, "origem">;
 }
 
-const { locale, route, params, whatsappMessage, ctaOrigin = "menu", quoteAttribution } = Astro.props;
+const { locale, route, params, paramsByLocale, whatsappMessage, ctaOrigin = "menu", quoteAttribution } = Astro.props;
 const features = await getFeatures();
 const services = serviceLinks(locale);
 const pages = [discoveryLink(locale, "footer"), ...mainLinks(locale, features)];
@@ -101,7 +103,7 @@ const shortLabel = primaryCtaShortLabel(locale, features);
         <div class="drawer__email">
           <CopyEmail locale={locale} source="menu" />
         </div>
-        <LanguageSelector locale={locale} route={route} params={params} variant="full" class="drawer__languages" />
+        <LanguageSelector locale={locale} route={route} params={params} paramsByLocale={paramsByLocale} variant="full" class="drawer__languages" />
         <ThemeToggle locale={locale} />
       </div>
     </div>

@@ -66,7 +66,7 @@ const linkable = features.hasCases;
                 {linkable && (
                   <ArrowLink
                     class="proof-case__link"
-                    href={urlFor("case", locale, { slug: item.slug })}
+                    href={urlFor("case", locale, { slug: item.urlSlug })}
                     aria-label={t(locale, "shared.cta.read_case_aria", { case: item.entry.data.titulo })}
                     text={t(locale, "shared.cta.read_case")}
                   />

@@ -14,11 +14,19 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import { collectionHasFiles, getFeatures, publishedCases } from "../config/features";
 import type { ServiceKey } from "../config/routes";
 import { hasMidCta, POST_MID_CTA_TAG, STAGE_IDS, type StageId } from "../content/schemas";
-import type { Locale } from "../i18n/locales";
+import { LOCALES, type Locale } from "../i18n/locales";
 
 export interface CaseItem {
+  /** Chave do case: o nome do arquivo, igual nos 3 idiomas (`relacionados`, `caseSlug`, `?ref=`). */
   slug: string;
+  /** Slug da URL no idioma da entrada (`slugUrl` em en/es, S01-3; senão, a chave). Todo urlFor("case") usa este. */
+  urlSlug: string;
   entry: CollectionEntry<"cases">;
+}
+
+/** Slug da URL de uma entrada de case: `slugUrl` do idioma ou, sem ele, a chave (nome do arquivo). */
+export function caseUrlSlug(entry: { data: { slugUrl?: string | undefined } }, slug: string): string {
+  return entry.data.slugUrl ?? slug;
 }
 
 const byOrder = <T extends { data: { ordem: number } }>(a: T, b: T, tie: (a: T, b: T) => number) =>
@@ -48,14 +56,31 @@ export async function caseItems(locale: Locale): Promise<CaseItem[]> {
     all.map((entry) => ({ id: entry.id, publicado: entry.data.publicado, servicos: entry.data.servicos })),
   ).map((item) => item.slug);
   return slugs
-    .map((slug) => ({ slug, entry: all.find((entry) => entry.id === `${locale}/${slug}`) }))
-    .filter((item): item is CaseItem => Boolean(item.entry))
+    .flatMap((slug) => {
+      const entry = all.find((item) => item.id === `${locale}/${slug}`);
+      return entry ? [{ slug, urlSlug: caseUrlSlug(entry, slug), entry }] : [];
+    })
     .sort((a, b) => byOrder(a.entry, b.entry, () => a.slug.localeCompare(b.slug)));
 }
 
 /** Um case publicado no idioma pedido (ou null). */
 export async function caseItem(locale: Locale, slug: string): Promise<CaseItem | null> {
   return (await caseItems(locale)).find((item) => item.slug === slug) ?? null;
+}
+
+/**
+ * Slug da URL do case em cada idioma (chave → { pt, en, es }), para o hreflang
+ * e o seletor de idioma da página do case (S01-3). Idioma sem a entrada
+ * publicada fica de fora.
+ */
+export async function caseUrlSlugs(slug: string): Promise<Partial<Record<Locale, string>>> {
+  const entries = await Promise.all(LOCALES.map(async (locale) => [locale, (await caseItem(locale, slug))?.urlSlug] as const));
+  return Object.fromEntries(entries.filter(([, urlSlug]) => Boolean(urlSlug)));
+}
+
+/** Slug da URL de cada case publicado no idioma (chave → slug da URL), para links que só têm a chave (logo, depoimento). */
+export async function caseUrlSlugMap(locale: Locale): Promise<Map<string, string>> {
+  return new Map((await caseItems(locale)).map((item) => [item.slug, item.urlSlug]));
 }
 
 /**
@@ -97,10 +122,20 @@ export function caseStages(entry: CollectionEntry<"cases">): StageId[] {
   return STAGE_IDS.filter((stage) => present.has(stage));
 }
 
-/** Nome do case nas listas e no WhatsApp: cliente (autorizado) ou "setor · porte". */
+/** Quem é o cliente nas listas e no eyebrow do case: cliente (autorizado) ou "setor · porte" (D45). */
 export function caseDisplayName(entry: CollectionEntry<"cases">): string {
   const { cliente, setor, porte } = entry.data;
   return cliente ?? [setor, porte].filter(Boolean).join(" · ");
+}
+
+/**
+ * Nome do PROJETO no breadcrumb, no BreadcrumbList e na mensagem do WhatsApp
+ * (auditoria de SEO S02-10, S03-15, S03-2): `seoTitle` ou, sem ele,
+ * `tipoDeSistema`. Nunca "setor · porte", que se repete entre cases e não diz
+ * qual projeto é (setor e porte ficam no eyebrow, D45).
+ */
+export function caseProjectName(entry: { data: { seoTitle?: string | undefined; tipoDeSistema: string } }): string {
+  return entry.data.seoTitle ?? entry.data.tipoDeSistema;
 }
 
 /** Copia a entrada trocando `caseSlug` por undefined quando o case não está no ar. */

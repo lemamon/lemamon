@@ -44,7 +44,7 @@ import { getCollection } from "astro:content";
 import donoJson from "../../dados/dono.json";
 import { ARQUIVO_FICTICIO, listaDoDono, temMdx } from "../content/loaders";
 import { SLUG_PATTERN } from "../content/schemas";
-import { LOCALES, type Locale } from "../i18n/locales";
+import { DEFAULT_LOCALE, LOCALES, type Locale } from "../i18n/locales";
 import { agenda, agendaReal, type Agenda } from "./agenda";
 import { CNPJ_FICTICIO } from "./camada-ficticia";
 import { confirmacoes, confirmacoesReais, type Confirmacoes } from "./confirmacoes";
@@ -157,6 +157,8 @@ export interface ContentSnapshot {
      * build (contentIssues), e o valor tem de ser igual nos 3 idiomas.
      */
     anonimo?: boolean;
+    /** Slug da URL neste idioma (en/es; S01-3). Sem ele, a URL usa o nome do arquivo. */
+    slugUrl?: string | null;
   }>;
   logos: ReadonlyArray<{ id: string; empresa?: string; caseSlug?: string | null }>;
   depoimentos: ReadonlyArray<{ id: string; caseSlug?: string | null; sobreProcesso?: boolean }>;
@@ -224,6 +226,8 @@ export function contentIssues(content: ContentSnapshot): string[] {
   const issues: string[] = [];
   const depoimentoIds = new Set(content.depoimentos.map((item) => item.id));
   const versions = new Map<string, ContentSnapshot["cases"][number][]>();
+  /** URL de cada case por idioma ("en/air-quality-widget" → id), para recusar duas páginas no mesmo endereço. */
+  const urls = new Map<string, string>();
 
   for (const entry of content.cases) {
     const parsed = parseCaseId(entry.id);
@@ -234,6 +238,13 @@ export function contentIssues(content: ContentSnapshot): string[] {
     if (!SLUG_PATTERN.test(parsed.slug)) {
       issues.push(`content/cases/${entry.id}: slug "${parsed.slug}" fora do padrão (minúsculas, números e hífen)`);
     }
+    if (entry.slugUrl && parsed.locale === DEFAULT_LOCALE) {
+      issues.push(`content/cases/${entry.id}: \`slugUrl\` só vale em en/es (em pt-BR, a URL é o nome do arquivo)`);
+    }
+    const url = `${parsed.locale}/${entry.slugUrl || parsed.slug}`;
+    const taken = urls.get(url);
+    if (taken) issues.push(`content/cases/${entry.id}: a URL do case (${url}) é a mesma de ${taken}; use outro \`slugUrl\``);
+    else urls.set(url, entry.id);
     if (entry.depoimento && !depoimentoIds.has(entry.depoimento)) {
       issues.push(`content/cases/${entry.id}: depoimento "${entry.depoimento}" não existe em dados/dono.json › depoimentos`);
     }
@@ -468,6 +479,7 @@ async function loadContent(): Promise<ContentSnapshot> {
       depoimento: entry.data.depoimento?.id ?? null,
       relacionados: entry.data.relacionados ?? [],
       anonimo: !entry.data.cliente,
+      slugUrl: entry.data.slugUrl ?? null,
     })),
     logos: logos.map((entry) => ({ id: entry.id, empresa: entry.data.empresa, caseSlug: entry.data.caseSlug ?? null })),
     depoimentos: depoimentos.map((entry) => ({

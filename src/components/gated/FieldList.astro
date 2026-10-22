@@ -3,22 +3,67 @@
  * Lista rótulo → texto do dono (interno do gated), em <dl>: formato da
  * Descoberta, formato da sustentação, práticas de engenharia, dados da empresa,
  * ficha do case. Recebe só pares já filtrados (dado parcial nunca chega aqui).
+ *
+ * Item com `links` (ficha do case: serviços e etapas, auditoria de SEO S03-4 e
+ * S06-9): cada parte vira um <a> próprio, separado por " · " decorativo
+ * (aria-hidden), no lugar do texto puro de `value`. Links internos sempre de
+ * urlFor()/anchorFor(). O CSS dos links (./FieldList.links.css) só vai para a
+ * página que renderiza um item com links (<RenderedStyle>, B256), fora do
+ * orçamento de 15 KiB das páginas que importam a FieldList sem link.
  */
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
+
+import linksCss from "./FieldList.links.css?inline";
+
+export interface FieldLink {
+  label: string;
+  /** Caminho interno (urlFor/anchorFor). */
+  href: string;
+}
+
+export interface FieldItem {
+  label: string;
+  /** Texto do valor. Ignorado quando `links` tem itens. */
+  value?: string;
+  /** Valor como lista de links (ex.: "Sistemas web · Integrações", cada um para a página do serviço). */
+  links?: FieldLink[];
+}
+
 interface Props {
-  items: { label: string; value: string }[];
+  items: FieldItem[];
   /** "grid": 2 colunas a partir de 768px; "rows": rótulo à esquerda no desktop. */
   layout?: "grid" | "rows";
 }
 
 const { items, layout = "grid" } = Astro.props;
+const hasLinks = items.some((item) => item.links && item.links.length > 0);
 ---
+
+{hasLinks && <RenderedStyle css={linksCss} name="FieldListLinks" />}
 
 <dl class="field-list" data-layout={layout}>
   {
     items.map((item) => (
       <div class="field-list__item">
         <dt class="field-list__label">{item.label}</dt>
-        <dd class="field-list__value">{item.value}</dd>
+        <dd class="field-list__value">
+          {item.links && item.links.length > 0 ? (
+            <ul role="list" class="field-list__links">
+              {item.links.map((link, index) => (
+                <li>
+                  {index > 0 && (
+                    <span class="field-list__sep" aria-hidden="true">
+                      ·
+                    </span>
+                  )}
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            item.value
+          )}
+        </dd>
       </div>
     ))
   }

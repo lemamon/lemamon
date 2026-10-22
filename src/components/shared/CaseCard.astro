@@ -25,6 +25,7 @@ import Icon from "@/components/ui/Icon.astro";
 import RenderedStyle from "@/components/ui/RenderedStyle.astro";
 import { urlFor } from "@/config/routes";
 import { t, tDynamic, type Locale } from "@/i18n";
+import { caseUrlSlug } from "@/lib/content";
 
 import css from "./CaseCard.css?inline";
 
@@ -32,7 +33,7 @@ interface Props {
   locale: Locale;
   /** Entrada da coleção cases no idioma da página. */
   entry: CollectionEntry<"cases">;
-  /** Slug (igual nos 3 idiomas). */
+  /** Chave do case (nome do arquivo, igual nos 3 idiomas); a URL usa o `slugUrl` do idioma, quando há (S01-3). */
   slug: string;
   headingLevel?: 2 | 3 | 4;
 }
@@ -48,7 +49,7 @@ const whoLabel = cliente ? "shared.proof.case_card.client_label" : "shared.proof
 ---
 
 <RenderedStyle css={css} name="CaseCard" />
-<Card as="a" href={urlFor("case", locale, { slug })} padding="none" interactive class="case-card">
+<Card as="a" href={urlFor("case", locale, { slug: caseUrlSlug(entry, slug) })} padding="none" interactive class="case-card">
   <span class="case-card__media">
     <Image
       src={capa.src}
