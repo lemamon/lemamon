@@ -1834,7 +1834,7 @@
     "whatsapp_messages": {
       "summary_intro": "Olá! Vi o resumo do meu projeto no site da Lemamon.dev e quero pedir o diagnóstico gratuito. Estas são as minhas respostas:",
       "summary_closing": "Podemos marcar a conversa?",
-      "summary_link": "Olá! Vi o resumo do meu projeto no site da Lemamon e quero pedir o diagnóstico gratuito.",
+      "summary_link": "Olá! Vi o resumo do meu projeto no site da Lemamon.dev e quero pedir o diagnóstico gratuito.",
       "failure_intro": "Olá! Tentei enviar meu pedido de diagnóstico pelo site da Lemamon.dev e não consegui. Seguem meus dados e as minhas respostas:",
       "failure_closing": "Podemos marcar o diagnóstico por aqui?",
       "name_line": "*Nome:* {nome}",
@@ -1847,7 +1847,7 @@
       "post_submit_generic": "Olá! Acabei de pedir o diagnóstico gratuito pelo site da Lemamon.dev e queria adiantar a conversa por aqui.",
       "entry_direct": "Olá! Vim pela página de orçamento da Lemamon.dev e prefiro conversar por aqui sobre o meu projeto.",
       "wizard_question": "Olá! Estou preenchendo o pedido de diagnóstico no site da Lemamon.dev e tenho uma dúvida.",
-      "wizard_question_step": "Olá! Estou preenchendo o pedido de diagnóstico no site da Lemamon e tenho uma dúvida na pergunta {n} de {total} ({tema}).",
+      "wizard_question_step": "Olá! Estou preenchendo o pedido de diagnóstico no site da Lemamon.dev e tenho uma dúvida na pergunta {n} de {total} ({tema}).",
       "discovery_start": "Olá! Fiz o diagnóstico e quero combinar o início da Sprint de Descoberta.",
       "wrong_contact": "Olá! O contato do meu pedido {protocolo} saiu errado. O certo é:"
     },
@@ -2122,7 +2122,7 @@
       "copy": "Copiar",
       "copied": "Copiado",
       "copy_email_aria": "Copiar o e-mail {email}",
-      "mailto_subject": "Contato pelo site da Lemamon",
+      "mailto_subject": "Contato pelo site da Lemamon.dev",
       "copied_email": "E-mail copiado"
     },
     "header": {

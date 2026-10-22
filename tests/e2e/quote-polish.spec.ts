@@ -218,7 +218,10 @@ test.describe("contato (F23, F24)", () => {
     await expect(form.locator('[data-error-for="email"]')).toHaveText(c.fields.email.error_invalid);
     await form.getByRole("button", { name: c.submit, exact: true }).click();
     await expect(form.locator('[data-error-for="name"]')).toHaveText(c.fields.name.error_required);
-    await expect(form.locator('input[name="subject"]').first()).toHaveAttribute("aria-describedby", "contato-subject-error");
+    // O rádio do assunto é "topic"; "subject" é o campo oculto do assunto do e-mail (6c560c2).
+    for (const radio of await form.locator('input[name="topic"]').all()) {
+      await expect(radio).toHaveAttribute("aria-describedby", "contato-subject-error");
+    }
   });
 
   test("F24: recarregar a tela de contato mantém o que foi digitado, sem o honeypot", async ({ page }) => {

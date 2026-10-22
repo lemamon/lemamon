@@ -180,7 +180,7 @@ describe("build COM a flag (local): a camada aparece, marcada", () => {
   });
 
   // Mesma varredura do teste "nenhum arquivo nem nome de arquivo…", agora no dist COM a camada: cada frase dos
-  // cases do portfólio (D45) é marcador, e o tempo passa dos 5 s padrão (~7 s com 4,5 mil marcadores).
+  // MDX da camada é marcador, e o tempo pode passar dos 5 s padrão.
   it("o caçador acha os marcadores (controle positivo: a varredura não é cega)", { timeout: 120_000 }, () => {
     const achados = new Set(procurarMarcadores(comFicticio.outDir, marcadores, imagens).map((achado) => achado.marcador));
     for (const esperado of [
@@ -320,7 +320,7 @@ describe("build de PRODUÇÃO com a flag ligada", () => {
     expect(producaoComFlagVazio.saida).toMatch(/dados\/dono\.json › empresa: razão social \+ CNPJ válido, ou responsável/);
   });
 
-  // Varre o dist inteiro contra todos os marcadores da camada (milhares desde a D45): tempo das outras varreduras.
+  // Varre o dist inteiro contra todos os marcadores da camada : tempo das outras varreduras.
   it("com dado real preenchido: passa, ignora a camada e não tem nada fictício", { timeout: 120_000 }, () => {
     expect(producaoComFlag.status, producaoComFlag.saida.slice(-3000)).toBe(0);
     expect(producaoComFlag.saida).toContain(AVISO_PRODUCAO);

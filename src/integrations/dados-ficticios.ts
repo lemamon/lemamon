@@ -850,7 +850,7 @@ async function candidataDe(sharp: FabricaSharp, bytes: Buffer): Promise<Candidat
  * só decide se a candidata passa do limiar, e a resposta é a mesma de buscar o
  * máximo. Sem a parada, a candidata que É a referência (toda webp/jpg que o
  * Astro gera da camada) refinava as 8 escalas, até 75 amostras em resolução
- * cheia cada, e o custo crescia com o número de imagens da camada (D45).
+ * cheia cada, e o custo crescia com o número de imagens da camada (na fase mock dos cases, 206 imagens geradas).
  */
 async function semelhanca(sharp: FabricaSharp, ref: Referencia, cand: Candidata, bastante = LIMIAR_DE_SEMELHANCA): Promise<number> {
   if (cand.desvio < DESVIO_MINIMO || cand.cw < 4 || cand.ch < 4) return 0;

@@ -106,11 +106,11 @@ describe("fatores (até 3; com menos de 2, factor_default completa)", () => {
   });
 
   it("integração + automação contam como uma frente só (F28)", () => {
-    expect(summaryFactors({ stage: "scope_defined", build_type: ["integration", "automation"] }, noPricing)).toEqual([
+    expect(summaryFactors({ stage: "scope_defined", build_type: ["integration", "automation"] })).toEqual([
       "factor_integration",
       "factor_automation",
     ]);
-    expect(summaryFactors({ stage: "scope_defined", build_type: ["ops_system", "integration", "automation"] }, noPricing)).toContain(
+    expect(summaryFactors({ stage: "scope_defined", build_type: ["ops_system", "integration", "automation"] })).toContain(
       "factor_multi",
     );
   });

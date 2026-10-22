@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 
 import { linkAddresses } from "./copy-email";
 
-const markup = `<span data-copy-email><span data-copy-address data-mailto-subject="Contato pelo site da Lemamon">comercial@lemamon.dev</span><button data-copy="comercial@lemamon.dev">Copiar</button></span>`;
+const markup = `<span data-copy-email><span data-copy-address data-mailto-subject="Contato pelo site da Lemamon.dev">comercial@lemamon.dev</span><button data-copy="comercial@lemamon.dev">Copiar</button></span>`;
 
 describe("e-mail clicável só no toque (F49)", () => {
   it("toque: o endereço vira mailto: com o assunto codificado, uma vez só", () => {
@@ -17,7 +17,7 @@ describe("e-mail clicável só no toque (F49)", () => {
     linkAddresses(document, true);
     const links = document.querySelectorAll<HTMLAnchorElement>("[data-copy-address] a");
     expect(links).toHaveLength(1);
-    expect(links[0]?.getAttribute("href")).toBe("mailto:comercial@lemamon.dev?subject=Contato%20pelo%20site%20da%20Lemamon");
+    expect(links[0]?.getAttribute("href")).toBe("mailto:comercial@lemamon.dev?subject=Contato%20pelo%20site%20da%20Lemamon.dev");
     expect(links[0]?.textContent).toBe("comercial@lemamon.dev");
   });
 

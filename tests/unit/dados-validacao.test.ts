@@ -530,7 +530,7 @@ describe("valor COPIADO de dados/dono.ficticio.json ou de dados/ficticio/ derrub
   }
 
   // Varre src/, public/ e dados/ inteiros contra cada imagem da camada (janelas de bytes e semelhança):
-  // o tempo cresce com a camada (31 capas de case desde a D45), como as varreduras de dados-vazamento.test.ts.
+  // o tempo cresce com o número de imagens da camada, como as varreduras de dados-vazamento.test.ts.
   it("src/, public/ e dados/ de hoje não têm cópia (sem falso positivo no projeto real)", { timeout: 120_000 }, async () => {
     expect(await copiasDaCamadaFicticia(ROOT)).toEqual([]);
   });

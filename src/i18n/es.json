@@ -1834,7 +1834,7 @@
     "whatsapp_messages": {
       "summary_intro": "¡Hola! Vi el resumen de mi proyecto en el sitio de Lemamon.dev y quiero pedir el diagnóstico gratuito. Estas son mis respuestas:",
       "summary_closing": "¿Podemos agendar la conversación?",
-      "summary_link": "¡Hola! Vi el resumen de mi proyecto en el sitio de Lemamon y quiero pedir el diagnóstico gratuito.",
+      "summary_link": "¡Hola! Vi el resumen de mi proyecto en el sitio de Lemamon.dev y quiero pedir el diagnóstico gratuito.",
       "failure_intro": "¡Hola! Intenté enviar mi solicitud de diagnóstico desde el sitio de Lemamon.dev y no pude. Aquí van mis datos y mis respuestas:",
       "failure_closing": "¿Podemos agendar el diagnóstico por aquí?",
       "name_line": "*Nombre:* {nome}",
@@ -1847,7 +1847,7 @@
       "post_submit_generic": "¡Hola! Acabo de pedir el diagnóstico gratuito en el sitio de Lemamon.dev y quería adelantar la conversación por aquí.",
       "entry_direct": "¡Hola! Llegué desde la página de cotización de Lemamon.dev y prefiero hablar por aquí sobre mi proyecto.",
       "wizard_question": "¡Hola! Estoy completando la solicitud de diagnóstico en el sitio de Lemamon.dev y tengo una duda.",
-      "wizard_question_step": "¡Hola! Estoy completando la solicitud de diagnóstico en el sitio de Lemamon y tengo una duda en la pregunta {n} de {total} ({tema}).",
+      "wizard_question_step": "¡Hola! Estoy completando la solicitud de diagnóstico en el sitio de Lemamon.dev y tengo una duda en la pregunta {n} de {total} ({tema}).",
       "discovery_start": "¡Hola! Ya hice el diagnóstico y quiero coordinar el inicio del Sprint de Descubrimiento.",
       "wrong_contact": "¡Hola! El contacto de mi solicitud {protocolo} salió mal. El correcto es:"
     },
@@ -2122,7 +2122,7 @@
       "copy": "Copiar",
       "copied": "Copiado",
       "copy_email_aria": "Copiar el correo {email}",
-      "mailto_subject": "Contacto desde el sitio de Lemamon",
+      "mailto_subject": "Contacto desde el sitio de Lemamon.dev",
       "copied_email": "Correo copiado"
     },
     "header": {

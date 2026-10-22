@@ -163,7 +163,7 @@ Grave só com permissão explícita no início ("Posso gravar para não perder n
 | `resultado` | até 3 métricas com antes, depois e `fonte` (a fonte não é publicada); só com `escopo.resultados` autorizado |
 | `fichaTecnica.stack` | a stack real do projeto (o avaliador técnico procura isto) |
 | `fichaTecnica.link` | o produto no ar, só se for público e autorizado |
-| `capa`, `imagens` | telas reais (§9), com `alt` descritivo em cada idioma; `legenda` opcional; até 12 imagens |
+| `capa`, `imagens` | telas reais (§9; no case anonimizado com `semTermo`, só a capa ilustrada da D45), com `alt` descritivo em cada idioma; `legenda` opcional; até 12 imagens |
 | `relacionados` | até 2 slugs de cases parecidos (sem isso, o site usa os do mesmo serviço) |
 
 **Regras de texto:** as do BLUEPRINT §12 e do guia de tom (05 §8): "a gente" e "você", frases curtas, nada de "solução", "inovação", superlativo ou advérbio de reforço. O cliente aprova **por escrito** o texto final e cada número antes da tradução.
@@ -172,10 +172,10 @@ Grave só com permissão explícita no início ("Posso gravar para não perder n
 
 ## 9. Imagens reais (B068, parcial)
 
-- Só telas e artefatos reais, com autorização (item do termo).
+- Só telas e artefatos reais, com autorização (item do termo). Exceção (D45): no case anonimizado com `semTermo`, a capa é a ilustração do tipo de sistema gerada por `scripts/gerar-capas-portfolio.mjs`, nunca tela real, com `alt` que começa por "Ilustração de…" e sem aviso visível.
 - Antes de capturar: use dados fictícios ou borre nomes, e-mails, telefones, valores e qualquer dado de clientes do cliente.
 - Formato: PNG ou JPG em boa resolução; o Astro otimiza. Guarde em `src/content/cases/_imagens/<slug>/`.
-- Sem imagem real, sem imagem: o site não usa foto de banco nem ilustração genérica (BLUEPRINT §6.1).
+- Sem imagem real, sem imagem: o site não usa foto de banco nem ilustração genérica (BLUEPRINT §6.1). A única exceção é a capa ilustrada do case anonimizado sem termo (D45, item acima).
 
 ### Diagramas de arquitetura (B219)
 
@@ -236,7 +236,7 @@ Critério de aceite: pelo menos 2 provas concretas na Home, sem nome, logo ou n�
 
 ## 14. Antes de publicar
 
-- [ ] Termo assinado e arquivado; `autorizacao` preenchida com `porEscrito: true` e o `escopo` igual às opções marcadas no termo.
+- [ ] Termo assinado e arquivado, com `autorizacao` preenchida (`porEscrito: true` e o `escopo` igual às opções marcadas no termo); ou, no case anonimizado sem termo, `semTermo` preenchido com a decisão do dono registrada (§1 regra 2, D45), sem `cliente`, `resultado`, prazo e preço, link do produto ou depoimento.
 - [ ] Texto e números aprovados por escrito pelo cliente.
 - [ ] Case nos 3 idiomas, mesmo slug, `publicado: true` nos 3.
 - [ ] `grep -rn "PREENCHER" src/content` vazio.

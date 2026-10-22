@@ -1834,7 +1834,7 @@
     "whatsapp_messages": {
       "summary_intro": "Hi! I saw my project summary on the Lemamon.dev website and I'd like to request the free assessment. Here are my answers:",
       "summary_closing": "Can we schedule the conversation?",
-      "summary_link": "Hi! I saw my project summary on the Lemamon website and I'd like to request the free assessment.",
+      "summary_link": "Hi! I saw my project summary on the Lemamon.dev website and I'd like to request the free assessment.",
       "failure_intro": "Hi! I tried to send my assessment request on the Lemamon.dev website, but it didn't go through. Here are my details and my answers:",
       "failure_closing": "Can we schedule the assessment here?",
       "name_line": "*Name:* {nome}",
@@ -1847,7 +1847,7 @@
       "post_submit_generic": "Hi! I just requested the free assessment on the Lemamon.dev website and wanted to get the conversation started here.",
       "entry_direct": "Hi! I came from the Lemamon.dev quote page and I'd rather talk about my project here.",
       "wizard_question": "Hi! I'm filling out the assessment request on the Lemamon.dev website and I have a question.",
-      "wizard_question_step": "Hi! I'm filling out the assessment request on the Lemamon website and I have a question about question {n} of {total} ({tema}).",
+      "wizard_question_step": "Hi! I'm filling out the assessment request on the Lemamon.dev website and I have a question about question {n} of {total} ({tema}).",
       "discovery_start": "Hi! I've had the assessment and I'd like to set a start date for the Discovery Sprint.",
       "wrong_contact": "Hi! The contact details on my request {protocolo} are wrong. The correct ones are:"
     },
@@ -2122,7 +2122,7 @@
       "copy": "Copy",
       "copied": "Copied",
       "copy_email_aria": "Copy the email address {email}",
-      "mailto_subject": "Contact through the Lemamon website",
+      "mailto_subject": "Contact through the Lemamon.dev website",
       "copied_email": "Email copied"
     },
     "header": {
