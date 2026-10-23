@@ -3,19 +3,47 @@
  *
  * Só existe com dados/dono.json › privacidade.baseAnuncios = "consentimento"
  * (decisão D05 do dono). Sem isso, o aviso não vai à página e estes testes são
- * PULADOS (aparecem como skipped). As verificações do dataLayer e dos cookies
- * só fazem sentido com as tags de produção (CONTEXT=production): contra um
- * deploy de produção, rode com
+ * PULADOS (aparecem como skipped).
+ *
+ * TAGS DE PRODUÇÃO: o build local NUNCA injeta o gtag (Analytics.astro só com
+ * isProductionDeploy(), que exige CONTEXT=production — e esse build derruba a
+ * trava da Política, pois dados/dono.json tem prazos/atualizadaEm vazios). Para
+ * as verificações do dataLayer rodarem igual à produção, o beforeEach injeta,
+ * ANTES de qualquer script, o MESMO snippet que vai ao <head> em produção
+ * (src/scripts/gtag-inline.ts): window.gtag e window.dataLayer passam a existir
+ * como em produção, sem carregar nada de terceiros (o <script
+ * src=googletagmanager> não é injetado — só o dataLayer local, que é o que os
+ * testes conferem). Isto NÃO afrouxa nada: a escolha do aviso (localStorage)
+ * continua limpa, o aviso aparece, e o consent update vem de consent.ts.
+ * Contra um deploy de produção real também roda:
  *   E2E_NETLIFY_URL=https://lemamon.dev yarn test:e2e shell-consent --project=desktop
  * A lógica também é coberta sem navegador por src/scripts/consent.test.ts,
  * src/scripts/gtag-inline.test.ts e src/components/shell/ConsentBanner.test.ts.
  */
 import { expect, test, type Page } from "@playwright/test";
 
+import { gtagInlineScript } from "../../src/scripts/gtag-inline";
+
+/**
+ * Snippet de produção do gtag, injetado pelo beforeEach. Os IDs do Google Ads
+ * espelham config/site.ts › GOOGLE_ADS (não dá para importar config/site aqui:
+ * o módulo lê import.meta.env, ausente no runner do Playwright). GA4 de teste e
+ * remarketing = false (dados/dono.json): nada vaza do navegador. Os valores não
+ * mudam o que os testes conferem — o consent update vem de consent.ts, não daqui.
+ */
+const PRODUCTION_GTAG = gtagInlineScript({
+  adsId: "AW-16881353870",
+  sendTo: "AW-16881353870/cEi0CLmh9Z8aEI6J1PE-",
+  ga4Id: "G-E2ETEST01",
+  consent: true,
+  personalization: false,
+});
+
 const banner = (page: Page) => page.locator("[data-consent-banner]");
 
 test.describe("aviso de cookies (Consent Mode v2)", () => {
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(PRODUCTION_GTAG);
     await page.goto("/");
     test.skip((await banner(page).count()) === 0, "aviso de cookies desligado (baseAnuncios ≠ 'consentimento')");
   });
