@@ -1,0 +1,77 @@
+---
+/**
+ * Sprint de Descoberta — faixa `cta_final.already_diagnosed`, always, logo
+ * DEPOIS do hero (fora dele, para o hero ficar com 2 ações). Dono: pages.
+ * Esta é a página que o comercial envia junto com a devolutiva
+ * (discovery_sprint._notes.already_diagnosed).
+ *
+ * "responda pelo WhatsApp" vira link (mensagem própria para combinar o início,
+ * quote.whatsapp_messages.discovery_start, via discoveryStartMessage();
+ * whatsapp_click; o data-source "descoberta-proposta" fica, pela série
+ * histórica da medição) e o
+ * e-mail aparece em texto com "Copiar" (CopyEmail do shell, email_copy).
+ * Sem PUBLIC_WHATSAPP_NUMBER, usa a variante sem WhatsApp
+ * (already_diagnosed_no_whatsapp): nenhuma menção a um canal que não está na tela.
+ */
+import CopyEmail from "@/components/shell/CopyEmail.astro";
+import LinkedText from "@/components/services/kit/LinkedText.astro";
+import { t, type Locale } from "@/i18n";
+import { whatsappHref } from "@/lib/whatsapp";
+
+interface Props {
+  locale: Locale;
+  whatsappMessage: string;
+}
+
+const { locale, whatsappMessage } = Astro.props;
+const href = whatsappHref(whatsappMessage);
+const source = "descoberta-proposta";
+---
+
+<div class="already">
+  <div class="container already__inner">
+    <p class="already__text">
+      {
+        href ? (
+          <LinkedText
+            text={t(locale, "discovery_sprint.cta_final.already_diagnosed")}
+            phrase={t(locale, "discovery_sprint.cta_final.already_diagnosed_whatsapp_phrase")}
+            href={href}
+            target="_blank"
+            rel="noopener"
+            srSuffix={t(locale, "shared.a11y.opens_new_tab")}
+            data-track="whatsapp_click"
+            data-source={source}
+          />
+        ) : (
+          t(locale, "discovery_sprint.cta_final.already_diagnosed_no_whatsapp")
+        )
+      }
+    </p>
+    <CopyEmail locale={locale} source={source} />
+  </div>
+</div>
+
+<style>
+  .already {
+    padding-block: var(--space-5);
+    border-block-end: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-subtle);
+  }
+
+  .already__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-6);
+  }
+
+  .already__text {
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-prose);
+  }
+
+  .already__text :global(a) {
+    font-weight: var(--font-weight-bold);
+  }
+</style>

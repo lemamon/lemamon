@@ -1,0 +1,204 @@
+---
+/**
+ * Template de serviço /servicos/[slug] (BLUEPRINT §6.5) — 5 serviços × 3
+ * idiomas. Dono: pages.
+ *
+ * Ordem: hero → commitments (em sustentação, ver abaixo) →
+ * signals → [sustentação: what_it_is] → examples → how_it_works →
+ * [sustentação: how_it_starts] → price_factors (exceto sustentação) →
+ * [sustentação: format*] → investment* → related_cases* → faq →
+ * other_services → cta_final (* = when_data, auto-gated).
+ *
+ * what_it_is (sustentação) sobe para logo depois dos sinais (painel de
+ * design): define "sustentação" e "evolução" antes de exemplos e método usarem
+ * os dois termos, e deixa de vir colada no FAQ. Pede atualizar o BLUEPRINT
+ * §6.5 ("no lugar de price_factors").
+ *
+ * cta_final: os perfis entram como LINHA TERCIÁRIA (Profiles variant="inline",
+ * services._notes.profiles_line), abaixo dos botões e do e-mail. Os cards
+ * grandes empurravam ~750px de links de saída para depois do CTA no mobile e,
+ * na superfície escura, o ícone em --color-brand ficava sem contraste.
+ *
+ * commitments: services._notes.hero_trust manda a faixa logo depois do hero
+ * nas 4 páginas de projeto, com os 4 itens. Em sustentação, hoje só o item
+ * after_launch + o selo (os outros 3 descrevem o método de projeto).
+ * PENDENTE (painel de design, rodada 3; pedido ao home, patch verificado):
+ * em sustentação, o selo + o grupo shared.commitments.support_items
+ * (format_agreed + decide_after_assessment) no lugar de after_launch, via a
+ * nova prop `group` de Commitments.astro. "Após o lançamento, se você quiser"
+ * afasta quem tem sistema feito por outra empresa; as 2 frases repetem o que
+ * esta página já publica (FAQ de preço e how_it_starts), sem fato novo.
+ * Quando a prop entrar, a linha do <Commitments> abaixo vira:
+ *   {isSupport ? <Commitments locale={locale} group="support_items" /> : <Commitments locale={locale} />}
+ * Rodada 4 (painel: rafael, claudia, marcos, comercial, ux_writer, seo): ainda
+ * pendente no home. Fica o conjunto shared.commitments.support_items (5 de 6
+ * revisores); services.support.commitments.* (sem uso) sai do i18n, para os
+ * dois conjuntos não divergirem.
+ *
+ * FAQ por slug (kit/service-faq.ts, services._notes.faq_composition):
+ * perguntas próprias, do banco e condicionais intercaladas; teto de 11
+ * (SERVICE_FAQ_MAX, auditoria SEO S03-10: o de 9 cortava as perguntas
+ * próprias do serviço) com a ordem de remoção de cada página
+ * (SERVICE_FAQ_REMOVAL). wont_stall ("o projeto vai parar no meio?") entra
+ * nas 4 páginas de projeto logo depois do how_long_*. Nenhuma página de serviço
+ * usa faq.items.how_long (cada uma tem how_long_*). A pergunta de preço ganha
+ * o link para as faixas desta página só com a linha do serviço preenchida
+ * (services._notes.pricing_suffix). Nas perguntas de FAQ_DIAGNOSIS_LINK, o
+ * trecho "diagnóstico gratuito" vira link para o wizard com ?servico= e
+ * ?origem={slug}-faq, sem mudar o texto (services._notes.faq_links).
+ */
+import RelatedCases from "@/components/gated/RelatedCases.astro";
+import SupportFormat from "@/components/gated/SupportFormat.astro";
+import ServiceExamples from "@/components/services/ServiceExamples.astro";
+import ServiceHero from "@/components/services/ServiceHero.astro";
+import ServiceHowItStarts from "@/components/services/ServiceHowItStarts.astro";
+import ServiceHowItWorks from "@/components/services/ServiceHowItWorks.astro";
+import ServiceOtherServices from "@/components/services/ServiceOtherServices.astro";
+import ServicePriceFactors from "@/components/services/ServicePriceFactors.astro";
+import ServiceSignals from "@/components/services/ServiceSignals.astro";
+import ServiceWhatItIs from "@/components/services/ServiceWhatItIs.astro";
+import { orderedFaq } from "@/components/services/kit/faq-compose";
+import { SERVICE_FAQ, SERVICE_FAQ_DIAGNOSIS_LINK, SERVICE_FAQ_MAX, SERVICE_FAQ_REMOVAL } from "@/components/services/kit/service-faq";
+import Commitments from "@/components/shared/Commitments.astro";
+import CtaFinal from "@/components/shared/CtaFinal.astro";
+import Faq from "@/components/shared/Faq.astro";
+import Investment from "@/components/shared/Investment.astro";
+import Profiles from "@/components/shared/Profiles.astro";
+import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
+import { getFeatures, hasPriceLine } from "@/config/features";
+import { SERVICE_PRICE_LINE, type PriceLineId } from "@/config/precos";
+import type { FaqInlineLink } from "@/components/shared/faq";
+import { anchorId, ANCHORS, quoteHref, SERVICE_PARAM, SERVICE_ROUTE, type ServiceKey } from "@/config/routes";
+import Base from "@/layouts/Base.astro";
+import { t, tDynamic, type Locale } from "@/i18n";
+import { serviceMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+  service: ServiceKey;
+}
+
+const { locale, service } = Astro.props;
+const isSupport = service === "support";
+const route = SERVICE_ROUTE[service];
+const param = SERVICE_PARAM[service];
+const meta = `meta.services_${service}`;
+const whatsappMessage = serviceMessage(locale, service);
+const features = await getFeatures();
+
+const serviceLine = SERVICE_PRICE_LINE[service];
+const lines: readonly PriceLineId[] = [serviceLine];
+const priceLink = hasPriceLine(features, serviceLine)
+  ? {
+      href: `#${anchorId(ANCHORS.investment, locale)}`,
+      text: isSupport ? t(locale, "services.support.price_answer_link") : t(locale, "services.template.price_answer_link"),
+    }
+  : undefined;
+const faqOrigem = `${param}-faq`;
+const diagnosisLink: FaqInlineLink = {
+  phrase: t(locale, "services.template.faq_diagnosis_link_phrase"),
+  href: quoteHref(locale, { servico: service, origem: faqOrigem }),
+  attrs: { "data-track": "cta_click", "data-cta-id": "diagnosis", "data-origem": faqOrigem },
+};
+const faqItems = orderedFaq(locale, SERVICE_FAQ[service], features, {
+  service,
+  removalOrder: SERVICE_FAQ_REMOVAL[service],
+  max: SERVICE_FAQ_MAX,
+  ownLinks: { price: priceLink },
+  ownInlineLinks: Object.fromEntries((SERVICE_FAQ_DIAGNOSIS_LINK[service] ?? []).map((id) => [id, diagnosisLink])),
+});
+const faqTitle = isSupport
+  ? t(locale, "services.support.faq_title")
+  : t(locale, "services.template.faq_title", { servico_frase: tDynamic(locale, `services.${service}.name_in_sentence`) });
+---
+
+<Base
+  locale={locale}
+  route={route}
+  title={tDynamic(locale, `${meta}.title`)}
+  description={tDynamic(locale, `${meta}.description`)}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin={`${param}-barra`}
+>
+  <ServiceHero locale={locale} service={service} whatsappMessage={whatsappMessage} />
+  <Commitments locale={locale} items={isSupport ? ["after_launch"] : undefined} />
+  <ServiceSignals locale={locale} service={service} />
+  {isSupport && <ServiceWhatItIs locale={locale} />}
+  <ServiceExamples locale={locale} service={service} />
+  <ServiceHowItWorks locale={locale} service={service} />
+  {isSupport && <ServiceHowItStarts locale={locale} />}
+  {service !== "support" && <ServicePriceFactors locale={locale} service={service} />}
+  {isSupport && <SupportFormat locale={locale} />}
+  <Investment
+    locale={locale}
+    lines={lines}
+    origem={param}
+    servico={service}
+    intro={isSupport ? t(locale, "services.support.investment_intro") : undefined}
+    note={isSupport ? t(locale, "services.support.investment_note") : t(locale, "services.template.investment_note")}
+    ctaLead={isSupport ? t(locale, "services.support.investment_cta_lead") : undefined}
+    discoveryLine={!isSupport}
+  />
+  <RelatedCases locale={locale} service={service} />
+  <Faq locale={locale} title={faqTitle} items={faqItems}>
+    {
+      features.hasWhatsapp && (
+        <div class="faq-more">
+          <p>{t(locale, "services.template.faq_cta_lead")}</p>
+          <WhatsAppCta
+            locale={locale}
+            message={whatsappMessage}
+            source={`${param}-faq`}
+            label="whatsapp_questions"
+            variant="outline"
+            size="md"
+            full={false}
+          />
+        </div>
+      )
+    }
+  </Faq>
+  <ServiceOtherServices locale={locale} service={service} />
+  <CtaFinal
+    locale={locale}
+    origem={`${param}-final`}
+    servico={service}
+    title={tDynamic(locale, `services.${service}.cta_final.title`)}
+    text={tDynamic(locale, `services.${service}.cta_final.text`)}
+    whatsappMessage={whatsappMessage}
+  >
+    {
+      features.hasProfiles && (
+        <div class="profiles-line">
+          <p>{t(locale, "services.template.profiles_line")}</p>
+          <Profiles locale={locale} variant="inline" />
+        </div>
+      )
+    }
+  </CtaFinal>
+  <script>
+    // Leitura da página de entrada (auditoria F84): rolagem e FAQ aberto.
+    import { initScrollDepth, observeFaqOpen } from "@/components/shared/section-events";
+    initScrollDepth();
+    observeFaqOpen();
+  </script>
+</Base>
+
+<style>
+  .faq-more {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    margin-block-start: var(--space-8);
+  }
+
+  .faq-more p {
+    color: var(--color-text-secondary);
+  }
+
+  .profiles-line {
+    display: grid;
+    gap: var(--space-3);
+  }
+</style>

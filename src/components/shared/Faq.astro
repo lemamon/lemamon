@@ -1,0 +1,207 @@
+---
+/**
+ * FAQ — BLUEPRINT §5.6. Dono: home. API estável: `locale`, `title`, `items`,
+ * `id` (+ opcionais `intro`, `closingLink`, `surface`; slot padrão depois da lista).
+ *
+ * <details>/<summary> nativo, a primeira pergunta aberta, sem JS, indexável.
+ * Emite o FAQPage JSON-LD SÓ com os itens recebidos, que são os visíveis:
+ * monte `items` com composeFaq()/bankItems()/conditionalItems() de ./faq
+ * (condicionais entram só com a flag do dono em confirmacoes.ts).
+ * Lista vazia: a seção não renderiza (nem título, nem âncora, nem JSON-LD).
+ * `item.inlineLink` troca um trecho da resposta por link, sem mudar o texto.
+ *
+ * Desktop (≥ 1024px): título fixo à esquerda (4 col.) e perguntas à direita
+ * (8 col.) na grade de 12 colunas (.grid-12), 03-ui §3.6 seção 8. Mobile:
+ * empilhado. Número + unidade da resposta não quebra (NoBreakText); o
+ * JSON-LD recebe o texto original.
+ * eyebrow/index (opcionais): rótulo numerado acima do título (Home).
+ * divider: linha de 1px no topo (vizinha de mesma superfície).
+ */
+import JsonLd from "@/components/shell/JsonLd.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { anchorAlias, anchorId, ANCHORS } from "@/config/routes";
+import type { Locale } from "@/i18n";
+
+import { answerText, splitInlineLink, type FaqItem, type FaqLink } from "./faq";
+import NoBreakText from "./NoBreakText.astro";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  items: FaqItem[];
+  id?: string;
+  /** Frase curta sob o título. */
+  intro?: string;
+  /** Link final da seção (ex.: Home → "Mais sobre preço", §6.1 #13). */
+  closingLink?: FaqLink;
+  surface?: "canvas" | "subtle";
+  /** Rótulo curto acima do título (ex.: home.faq.eyebrow). */
+  eyebrow?: string;
+  /** Numeração da seção na eyebrow (só sai com `eyebrow`). */
+  index?: number;
+  divider?: boolean;
+}
+
+const { locale, title, items, id = ANCHORS.faq, intro, closingLink, surface = "canvas", eyebrow, index, divider } = Astro.props;
+const indexLabel = eyebrow && index && index > 0 ? `${String(index).padStart(2, "0")} /` : undefined;
+const titleId = `${id}-title`;
+const rows = items.map((item) => ({ item, parts: splitInlineLink(item) }));
+const jsonLd = items.length
+  ? {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: items.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: answerText(item) },
+      })),
+    }
+  : null;
+---
+
+{
+  items.length > 0 && (
+    <Section id={anchorId(id, locale)} aliasId={anchorAlias(id, locale)} surface={surface} labelledby={titleId} divider={divider} class="faq">
+      <div class="faq__grid grid-12">
+        <div class="faq__head">
+          {eyebrow && (
+            <p class="eyebrow">
+              {indexLabel && <span class="eyebrow__index" aria-hidden="true">{indexLabel}</span>}
+              {eyebrow}
+            </p>
+          )}
+          <h2 id={titleId}>{title}</h2>
+          {intro && <p class="lead">{intro}</p>}
+        </div>
+        <div class="faq__body">
+          <div class="faq__list">
+            {rows.map(({ item, parts }, index) => (
+              <details open={index === 0} data-faq-id={item.id}>
+                <summary>
+                  <span class="faq__question">{item.question}</span>
+                  <span class="faq__icon">
+                    <Icon name="plus" size={18} />
+                  </span>
+                </summary>
+                <div class="faq__answer">
+                  <p>
+                    {parts ? (
+                      <Fragment><NoBreakText text={parts.before} /><a href={item.inlineLink?.href} {...item.inlineLink?.attrs}>{parts.phrase}</a><NoBreakText text={parts.after} /></Fragment>
+                    ) : (
+                      <NoBreakText text={item.answer} />
+                    )}
+                    {item.link && (
+                      <>
+                        {" "}
+                        <a href={item.link.href}>{item.link.text}</a>
+                      </>
+                    )}
+                  </p>
+                </div>
+              </details>
+            ))}
+          </div>
+          {closingLink && (
+            <p class="faq__closing">
+              <ArrowLink href={closingLink.href} text={closingLink.text} />
+            </p>
+          )}
+          <slot />
+        </div>
+      </div>
+    </Section>
+  )
+}
+{jsonLd && <JsonLd data={jsonLd} />}
+
+<style>
+  .faq__grid {
+    row-gap: var(--space-8);
+  }
+  .faq__head {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+  .faq__head h2 {
+    max-inline-size: var(--measure-title);
+  }
+  .faq__body {
+    max-inline-size: var(--measure-prose);
+  }
+  .faq__list {
+    border-block-start: 1px solid var(--color-border-default);
+  }
+  details {
+    border-block-end: 1px solid var(--color-border-default);
+  }
+  summary {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-block-size: var(--target-option);
+    padding-block: var(--space-4);
+    cursor: pointer;
+    list-style: none;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+    color: var(--color-text-primary);
+  }
+  /* Pergunta curta: equilibra as linhas (sem "software?" sozinho no fim). */
+  .faq__question {
+    text-wrap: balance;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  /* Sublinhado de hover só com ponteiro fino (no toque ficaria preso). */
+  @media (hover: hover) and (pointer: fine) {
+    summary:hover .faq__question {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.2em;
+    }
+  }
+  .faq__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    transition: rotate var(--duration-normal) var(--ease-in-out), var(--transition-colors);
+  }
+  details[open] .faq__icon {
+    rotate: 45deg;
+    border-color: var(--color-brand);
+    background-color: var(--color-brand);
+    color: var(--color-text-on-brand);
+  }
+  .faq__answer {
+    padding-block-end: var(--space-5);
+    padding-inline-end: var(--space-10);
+    color: var(--color-text-secondary);
+  }
+  .faq__closing {
+    margin-block-start: var(--space-6);
+  }
+
+  @media (min-width: 1024px) {
+    .faq__head {
+      --span-lg: 4;
+      position: sticky;
+      inset-block-start: calc(var(--header-height) + var(--space-8));
+      align-self: start;
+      padding-inline-end: var(--space-8);
+    }
+    .faq__body {
+      --span-lg: 8;
+    }
+  }
+</style>

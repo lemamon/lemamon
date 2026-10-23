@@ -1,0 +1,85 @@
+# E2E diário contra PRODUÇÃO (dono: shell) — backlog B240, B233, B236.
+#
+# Confere todo dia que o site publicado abre (cada rota com 1 H1 e sem erro de
+# JavaScript), que os redirects e a 404 por idioma do netlify.toml valem, que
+# os headers de segurança e de cache estão nas respostas e que o caminho do
+# dinheiro funciona: o envio do pedido chega a /orcamento/enviado e, com o envio
+# falhando, o WhatsApp de fallback abre o número publicado com o resumo
+# (tests/e2e/shell-money-path-prod.spec.ts). Se falhar, abre (ou comenta) uma
+# issue "E2E em produção falhou" no repositório.
+#
+# Nada vira dado real: smoke.spec.ts e shell-money-path-prod.spec.ts abortam
+# GA4, Google Ads e New Relic (0 sessão, 0 conversão); o POST do Netlify Forms é
+# interceptado no navegador (0 lead) e qualquer outro POST para o site reprova
+# o teste; o WhatsApp nunca abre (window.open capturado). O
+# tests/e2e/quote-money-path.spec.ts (integrador) continua fora daqui: ele
+# exige o número fixo de teste do build de E2E.
+#
+# LIGAR depois do lançamento: em GitHub › Settings › Secrets and variables ›
+# Actions › Variables, criar E2E_PRODUCAO_ATIVO = true. Antes disso, o agendamento
+# não roda (produção ainda é o app antigo e o job falharia todo dia); o disparo
+# manual (workflow_dispatch) roda sempre.
+name: E2E em produção
+
+on:
+  schedule:
+    # 10:00 UTC = 07:00 em Brasília.
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  producao:
+    name: smoke, redirects, headers e caminho do dinheiro em lemamon.dev
+    if: github.event_name == 'workflow_dispatch' || vars.E2E_PRODUCAO_ATIVO == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+      E2E_NETLIFY_URL: https://lemamon.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.22"
+          cache: yarn
+
+      - run: corepack enable
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn playwright install --with-deps chromium
+
+      - name: E2E contra produção
+        run: yarn playwright test tests/e2e/smoke.spec.ts tests/e2e/redirects.spec.ts tests/e2e/shell-headers.spec.ts tests/e2e/shell-money-path-prod.spec.ts --project=desktop
+        env:
+          CI: "1"
+
+      - name: Relatório do Playwright
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-producao
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+      - name: Avisar (issue)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="E2E em produção falhou"
+          body="O E2E diário contra https://lemamon.dev falhou em $(date -u +%F). Execução e relatório: ${RUN_URL}"
+          existing=$(gh issue list --state open --search "\"${title}\" in:title" --json number --jq '.[0].number')
+          if [ -n "${existing}" ]; then
+            gh issue comment "${existing}" --body "${body}"
+          else
+            gh issue create --title "${title}" --body "${body}"
+          fi

@@ -1,0 +1,116 @@
+---
+/**
+ * Rótulo do CTA primário que vira "Continuar meu pedido" quando há rascunho do
+ * wizard (BLUEPRINT §7.1, §8.6). Dono: shell. Sem rascunho: shared.cta.primary
+ * ("Pedir diagnóstico gratuito") ou, com agenda online (hasAgenda),
+ * shared.cta.primary_schedule ("Agendar diagnóstico gratuito").
+ *
+ * Os dois textos ocupam a MESMA célula de grid: o botão já nasce com a largura
+ * do maior, e a troca é só de visibilidade, decidida por CSS a partir de
+ * <html data-draft-step> (gravado pelo script inline do <head> antes da
+ * pintura). Sem flash, sem layout shift. O texto escondido usa
+ * visibility:hidden, que também o tira do nome acessível.
+ *
+ * Uso: dentro de um <a data-resume-cta data-resume-href={urlFor("quote", locale)}>.
+ *
+ * `short` (só a barra fixa e o rodapé do drawer, que dividem a linha com o
+ * ícone de WhatsApp; o header nunca passa `short`: o CTA dele tem sempre o
+ * rótulo completo, B167): quem decide é uma container query no próprio botão
+ * (container "resume-cta", definido no CTA que usa o rótulo), não a largura
+ * da tela. Como manda o i18n _notes.cta, o corpo de fonte menor vem ANTES da
+ * troca de rótulo:
+ *   1. botão largo: rótulo completo, no corpo do botão (16px);
+ *   2. estreito: rótulo completo em 14px (--text-sm);
+ *   3. estreito demais até para isso: o rótulo curto, sempre com verbo
+ *      (shared.cta.primary_short / primary_schedule_short: "Pedir
+ *      diagnóstico" / "Agendar diagnóstico"), também em 14px.
+ * Limites, medidos em Motiva Sans Bold (o maior rótulo é o es) + 8px de folga,
+ * na caixa de conteúdo do botão (sem o padding):
+ *   sem agenda ("Pide tu diagnóstico gratuito"): 217px em 16px → 226px;
+ *     190px em 14px → 199px;
+ *   com agenda ("Agenda tu diagnóstico gratuito"): 244px em 16px → 252px;
+ *     213px em 14px → 222px.
+ * Na barra fixa (caixa ≈ tela − 120px) isso dá: sem agenda, 14px abaixo de
+ * ~346px de tela e o curto só abaixo de ~319px (nunca num celular de 320px);
+ * com agenda, 14px abaixo de ~372px e o curto abaixo de ~342px.
+ * display:none tira o rótulo escondido do nome acessível: o nome é sempre o
+ * texto visível.
+ */
+import { getFeatures, primaryCtaKey } from "@/config/features";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  /** Rótulo padrão: o do CTA primário (shared.cta.primary; com hasAgenda, shared.cta.primary_schedule). */
+  label?: string;
+  /** Rótulo curto, usado quando o botão (container "resume-cta") fica estreito. */
+  short?: string;
+}
+
+const features = await getFeatures();
+const { locale, label = t(locale, primaryCtaKey(features)), short } = Astro.props;
+/** Qual rótulo longo está no botão: decide o limite da container query. */
+const length = short ? (features.hasAgenda ? "schedule" : "request") : undefined;
+---
+
+<span class="resume-label" data-long={length}>
+  {
+    short ? (
+      <span class="resume-label__default">
+        <span class="resume-label__long">{label}</span>
+        <span class="resume-label__short">{short}</span>
+      </span>
+    ) : (
+      <span class="resume-label__default">{label}</span>
+    )
+  }
+  <span class="resume-label__resume">{t(locale, "shared.cta.continue_order")}</span>
+</span>
+
+<style>
+  .resume-label {
+    display: inline-grid;
+    justify-items: center;
+    text-align: center;
+  }
+  .resume-label > span {
+    grid-area: 1 / 1;
+  }
+  :global(html:not([data-draft-step])) .resume-label__resume,
+  :global(html[data-draft-step]) .resume-label__default {
+    visibility: hidden;
+  }
+  .resume-label__short {
+    display: none;
+  }
+  /* Sem agenda. 217px + 8px = 226px (14.125rem): o rótulo completo em 14px. */
+  @container resume-cta (max-width: 14.125rem) {
+    .resume-label[data-long="request"] {
+      font-size: var(--text-sm);
+    }
+  }
+  /* 190px + 8px = 198px → abaixo de 199px (12.4375rem): o rótulo curto. */
+  @container resume-cta (max-width: 12.4375rem) {
+    .resume-label[data-long="request"] .resume-label__long {
+      display: none;
+    }
+    .resume-label[data-long="request"] .resume-label__short {
+      display: inline;
+    }
+  }
+  /* Com agenda. 244px + 8px = 252px (15.75rem): o rótulo completo em 14px. */
+  @container resume-cta (max-width: 15.75rem) {
+    .resume-label[data-long="schedule"] {
+      font-size: var(--text-sm);
+    }
+  }
+  /* 213px + 8px = 221px → abaixo de 222px (13.875rem): o rótulo curto. */
+  @container resume-cta (max-width: 13.875rem) {
+    .resume-label[data-long="schedule"] .resume-label__long {
+      display: none;
+    }
+    .resume-label[data-long="schedule"] .resume-label__short {
+      display: inline;
+    }
+  }
+</style>

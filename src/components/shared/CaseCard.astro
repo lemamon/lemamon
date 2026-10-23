@@ -1,0 +1,94 @@
+---
+/**
+ * Card de case — BLUEPRINT §5.7 (rótulos shared.proof.case_card). Dono: home.
+ * API estável: `locale`, `entry`, `slug` (+ opcional `headingLevel`).
+ *
+ * O card inteiro é um ÚNICO <a> cujo texto inclui o título do case ("Ler o
+ * case" é só a indicação visual; i18n _notes.cta). Faz sentido sem o campo de
+ * resultado (opcional no schema): sem ele, o card mostra o problema.
+ * Imagem real do case (capa, alt escrito no próprio case), com dimensões
+ * intrínsecas e lazy-load (CLS 0). Nenhum número inventado: o resultado só
+ * aparece se o case trouxer métrica antes → depois.
+ * Primitivos: <Card as="a" interactive> (superfície e hover só com ponteiro
+ * fino, B192/B214), <Badge variant="solid"> nos serviços (B212) e
+ * <ArrowLink> sem href como indicação "Ler o case".
+ * CSS em ./CaseCard.css, carregado só na página que renderiza um card
+ * (<RenderedStyle>, B256): sem case no ar, nada dele vai no pacote.
+ */
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Badge from "@/components/ui/Badge.astro";
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
+import { urlFor } from "@/config/routes";
+import { t, tDynamic, type Locale } from "@/i18n";
+import { caseUrlSlug } from "@/lib/content";
+
+import css from "./CaseCard.css?inline";
+
+interface Props {
+  locale: Locale;
+  /** Entrada da coleção cases no idioma da página. */
+  entry: CollectionEntry<"cases">;
+  /** Chave do case (nome do arquivo, igual nos 3 idiomas); a URL usa o `slugUrl` do idioma, quando há (S01-3). */
+  slug: string;
+  headingLevel?: 2 | 3 | 4;
+}
+
+const { locale, entry, slug, headingLevel = 3 } = Astro.props;
+const { titulo, setor, porte, cliente, servicos, problema, resultado, capa } = entry.data;
+const Heading = `h${headingLevel}` as "h2" | "h3" | "h4";
+const services = servicos.map((key) => tDynamic(locale, `shared.header.services_menu.${key}`));
+const metric = resultado?.[0];
+const who = cliente ?? [setor, porte].filter(Boolean).join(" · ");
+// Leitor de tela: "Cliente:" antes do nome autorizado; "Setor:" só antes de setor · porte.
+const whoLabel = cliente ? "shared.proof.case_card.client_label" : "shared.proof.case_card.sector_label";
+---
+
+<RenderedStyle css={css} name="CaseCard" />
+<Card as="a" href={urlFor("case", locale, { slug: caseUrlSlug(entry, slug) })} padding="none" interactive class="case-card">
+  <span class="case-card__media">
+    <Image
+      src={capa.src}
+      alt={capa.alt}
+      widths={[480, 720, 960]}
+      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+      loading="lazy"
+      decoding="async"
+    />
+  </span>
+  <div class="case-card__body">
+    <span class="case-card__meta">
+      <span class="sr-only">{t(locale, whoLabel)}:</span>
+      {who}
+    </span>
+    <Heading class="case-card__title">{titulo}</Heading>
+    {
+      metric ? (
+        <span class="case-card__result">
+          <span class="case-card__label">{t(locale, "shared.proof.case_card.result_label")}</span>
+          <span class="case-card__metric">{metric.metrica}</span>
+          <span class="case-card__delta">
+            <span>{metric.antes}</span>
+            <Icon name="arrow-right" size={16} />
+            <strong>{metric.depois}</strong>
+          </span>
+        </span>
+      ) : (
+        <span class="case-card__problem">
+          <span class="case-card__label">{t(locale, "shared.proof.case_card.problem_label")}</span>
+          {problema}
+        </span>
+      )
+    }
+    <span class="case-card__services">
+      <span class="sr-only">{t(locale, "shared.proof.case_card.service_label")}:</span>
+      {services.map((name) => <Badge variant="solid">{name}</Badge>)}
+    </span>
+    <ArrowLink size="sm" text={t(locale, "shared.cta.read_case")} class="case-card__more" />
+  </div>
+</Card>
+

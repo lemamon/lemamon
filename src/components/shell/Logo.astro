@@ -1,0 +1,73 @@
+---
+/**
+ * Marca da Lemamon: símbolo {L} (o mesmo do favicon e dos cartões de
+ * compartilhamento, gerado por scripts/build-og-image.sh) + nome em texto.
+ * Dono: shell. SVG inline com path (nada de <text>, backlog B198), tamanho
+ * fixo (sem CLS). O nome acessível vem do link que envolve o logo.
+ *
+ * O protótipo do wordmark "lemamon.dev" (decisão D34, backlog B221) fica em
+ * Wordmark.astro, fora daqui: este componente entra em toda página, e o CSS
+ * dele vai para o bundle global (backlog B094).
+ */
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  /** Superfície escura: o nome fica claro. */
+  surface?: "light" | "dark";
+  size?: "md" | "sm";
+}
+
+const { locale, surface = "light", size = "md" } = Astro.props;
+---
+
+<span class="logo" data-surface={surface} data-size={size}>
+  <svg class="logo__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <rect width="64" height="64" rx="14" class="logo__tile"></rect>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path class="logo__brace" d="M21 14c-5 0-6 3-6 7v5c0 3-2 6-5 6 3 0 5 3 5 6v5c0 4 1 7 6 7" stroke-width="3.6"></path>
+      <path class="logo__brace" d="M43 14c5 0 6 3 6 7v5c0 3 2 6 5 6-3 0-5 3-5 6v5c0 4-1 7-6 7" stroke-width="3.6"></path>
+      <path class="logo__letter" d="M27 20v24h11" stroke-width="5.4" stroke-linecap="square" stroke-linejoin="miter"></path>
+    </g>
+  </svg>
+  <span class="logo__name" aria-hidden="true">{t(locale, "meta.site_name")}</span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-primary);
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-xl);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .logo[data-size="sm"] {
+    font-size: var(--text-lg);
+    line-height: 1;
+  }
+  .logo__mark {
+    flex: none;
+    inline-size: 2rem;
+    block-size: 2rem;
+  }
+  .logo[data-size="sm"] .logo__mark {
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+  }
+  .logo__tile {
+    fill: var(--color-brand);
+  }
+  .logo__brace {
+    stroke: var(--color-text-on-brand);
+  }
+  .logo__letter {
+    stroke: var(--color-accent);
+  }
+  .logo[data-surface="dark"] .logo__tile {
+    fill: var(--color-bg-surface);
+  }
+</style>

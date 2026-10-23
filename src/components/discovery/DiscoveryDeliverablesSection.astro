@@ -1,0 +1,56 @@
+---
+/**
+ * Sprint de Descoberta §6.3 #3 `deliverables` — always. Dono: pages.
+ * "O que você recebe": os 3 entregáveis (§5.2) com 1 frase cada, do
+ * componente compartilhado DiscoveryDeliverables (home). Exatamente 3 (sem
+ * protótipo desde a D44, 21/10/2026); nada além disso até o dono confirmar.
+ *
+ * Com hasCases, a seção fecha com o link de texto
+ * discovery_sprint.deliverables.cases_link → /cases (auditoria SEO S03-8): a
+ * página da oferta aponta para a prova, porque todo case publicado tem a etapa
+ * "Antes de construir" na linha do tempo. O texto não diz que a Descoberta
+ * desses projetos foi gratuita. Sem cases no ar, o link não existe.
+ */
+import DiscoveryDeliverables from "@/components/shared/DiscoveryDeliverables.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures } from "@/config/features";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+---
+
+<Section id="entregaveis" labelledby="entregaveis-title" surface="subtle">
+  <SectionHeader
+    id="entregaveis-title"
+    title={t(locale, "discovery_sprint.deliverables.title")}
+    intro={t(locale, "discovery_sprint.deliverables.intro")}
+  />
+  <DiscoveryDeliverables locale={locale} level={3} />
+  {
+    features.hasCases && (
+      <p class="deliverables__cases">
+        <ArrowLink
+          href={urlFor("cases_hub", locale)}
+          text={t(locale, "discovery_sprint.deliverables.cases_link")}
+          data-track="cta_click"
+          data-cta-id="cases_hub"
+          data-origem="descoberta-entregaveis"
+        />
+      </p>
+    )
+  }
+</Section>
+
+<style>
+  .deliverables__cases {
+    margin-block-start: var(--space-6);
+  }
+</style>

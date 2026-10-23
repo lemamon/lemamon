@@ -1,0 +1,51 @@
+---
+/**
+ * Home §6.1 #3 `logos` — when_data hasLogos (≥ 4 empresas com autorização por
+ * escrito). Rótulo sem H2, logo abaixo da faixa de compromissos, sem marquee.
+ * Dono: gated. A grade em si é o LogoWall (home).
+ *
+ * AUTO-GATED: sem a flag não renderiza NADA (nem <section>, nem rótulo, nem âncora).
+ * `data` existe só para os testes (fixtures injetadas); as views passam só `locale`.
+ */
+import type { CollectionEntry } from "astro:content";
+
+import LogoWall from "@/components/shared/LogoWall.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures, THRESHOLDS, type Features } from "@/config/features";
+import { t, type Locale } from "@/i18n";
+import { logoItems } from "@/lib/content";
+
+interface Props {
+  locale: Locale;
+  /** Só testes: flags e logos injetados (tests/fixtures/). */
+  data?: { features: Pick<Features, "hasLogos">; logos: CollectionEntry<"logos">[] };
+}
+
+const { locale, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const logos = features.hasLogos ? (data?.logos ?? (await logoItems())) : [];
+const visible = features.hasLogos && logos.length >= THRESHOLDS.logos;
+---
+
+{
+  visible && (
+    <Section id="logos" spacing="compact" surface="subtle" width="wide" labelledby="logos-label">
+      <p id="logos-label" class="logos-label">
+        {t(locale, "shared.proof.logos_label")}
+      </p>
+      <LogoWall locale={locale} entries={logos} />
+    </Section>
+  )
+}
+
+<style>
+  .logos-label {
+    margin-block-end: var(--space-6);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    letter-spacing: 0.02em;
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+</style>

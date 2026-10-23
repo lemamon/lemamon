@@ -1,0 +1,24 @@
+---
+/**
+ * Os 5 serviços (pt) — slugs de src/config/routes.ts. Conteúdo em
+ * src/views/ServiceView.astro. Dono: pages.
+ */
+import type { GetStaticPaths } from "astro";
+
+import { SERVICE_KEYS, SERVICE_ROUTE, urlFor, type ServiceKey } from "@/config/routes";
+import ServiceView from "@/views/ServiceView.astro";
+
+export const getStaticPaths = (() =>
+  SERVICE_KEYS.map((service) => ({
+    params: { servico: urlFor(SERVICE_ROUTE[service], "pt").split("/").pop() as string },
+    props: { service },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  service: ServiceKey;
+}
+
+const { service } = Astro.props;
+---
+
+<ServiceView locale="pt" service={service} />

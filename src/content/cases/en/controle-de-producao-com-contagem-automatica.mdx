@@ -1,0 +1,53 @@
+---
+titulo: "Manufactured items counted in real time, with line metrics on a dashboard"
+tipoDeSistema: "Production line control system"
+setor: "Manufacturing"
+porte: "Manufacturer"
+servicos: ["web_systems", "integrations"]
+problema: "A manufacturer needed to know in real time how many items its line produced and to track industrial metrics."
+combinado:
+  escopo: "The project covered the production line control system in three parts: detecting and counting manufactured items in real time, done by a small electronic board; a structured back end, the part of the system that runs on the server; and a dashboard where industrial metrics are recorded and viewed."
+entregue: "Items made on the line are detected and counted by a small electronic board, and industrial metrics are recorded and on display in a dashboard, with a back end behind it, for whoever controls production."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "At the start"
+    texto: "An initial conversation to understand the client's request and problem."
+  - etapa: "discovery"
+    quando: "Before building"
+    texto: "The problem was understood and the scope defined."
+  - etapa: "development"
+    quando: "Between 2017 and 2019"
+    texto: "Built in incremental releases throughout the project, not all at the end."
+  - etapa: "support"
+    quando: "After going live"
+    texto: "The system then moved into support and maintenance."
+fichaTecnica:
+  stack: ["React", "Prisma", "GraphQL"]
+capa:
+  src: "../_imagens/controle-de-producao-com-contagem-automatica/capa.png"
+  alt: "Illustration of a production line with an item counter and a metrics dashboard"
+relacionados: ["painel-de-controle-de-producao", "sensores-em-epis-com-app"]
+ordem: 10
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Production control with automatic item counting"
+seoDescription: "A small electronic board counts a manufacturer's items in real time, and a dashboard shows the production line's metrics."
+slugUrl: "production-control-with-automatic-counting"
+---
+
+### Who it's for
+
+The system was built for a manufacturer and for whoever controls its production line.
+
+### How it works
+
+On the line, the small board detects each manufactured item and counts it right away. That count goes to the back end, which sits behind the metrics dashboard.
+
+### The technology, in plain words
+
+- **React**: a JavaScript library for building interfaces from reusable components; in this project, the interface is the metrics dashboard.
+- **Prisma**: a tool for Node.js and TypeScript that bridges server code and the database.
+- **GraphQL**: a query language for APIs, where whoever requests data states exactly what it wants back.

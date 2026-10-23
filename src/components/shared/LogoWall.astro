@@ -1,0 +1,54 @@
+---
+/**
+ * Grade de logos — BLUEPRINT §5.7 / §6.1 #3. Dono: home. API estável:
+ * `locale`, `entries`.
+ *
+ * Logos monocromáticos (cor só no hover com ponteiro fino), alt = nome da
+ * empresa, altura normalizada, sem marquee e sem carrossel (nada escondendo
+ * prova). Quem decide se aparece (≥ 4 com autorização) é features.hasLogos,
+ * na seção gated/LogosStrip.
+ *
+ * Link opcional para o case (§6.1 #3): com `caseSlug`, o logo vira link para
+ * /cases/{slug} (em en/es, o slug da URL do idioma, S01-3). lib/content.logoItems()
+ * já apaga o caseSlug quando o case não está no ar, então o link nunca aponta
+ * para página inexistente.
+ * CSS em ./LogoWall.css, carregado só na página que renderiza a grade
+ * (<RenderedStyle>, B256).
+ */
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+import { caseUrlSlugMap } from "@/lib/content";
+
+import css from "./LogoWall.css?inline";
+
+interface Props {
+  locale: Locale;
+  entries: CollectionEntry<"logos">[];
+}
+
+const { locale, entries } = Astro.props;
+const urlSlugs = entries.some((entry) => entry.data.caseSlug) ? await caseUrlSlugMap(locale) : new Map<string, string>();
+---
+
+<RenderedStyle css={css} name="LogoWall" />
+<ul class="logo-wall" role="list">
+  {
+    entries.map((entry) => {
+      const logo = (
+        <Image
+          src={entry.data.arquivo}
+          alt={t(locale, "shared.proof.logo_alt", { empresa: entry.data.empresa })}
+          height={32}
+          loading="lazy"
+        />
+      );
+      const slug = entry.data.caseSlug;
+      return <li>{slug ? <a href={urlFor("case", locale, { slug: urlSlugs.get(slug) ?? slug })}>{logo}</a> : logo}</li>;
+    })
+  }
+</ul>
+

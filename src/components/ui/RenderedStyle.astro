@@ -1,0 +1,50 @@
+---
+/**
+ * Folha de estilo que só vai para a página que RENDERIZA o componente (B256),
+ * embutida no HTML (B094). Dono: home.
+ *
+ * Por quê (B256): o Astro junta o <style> de todo componente IMPORTADO no
+ * grafo da página, renderize ele ou não. As seções when_data (cases,
+ * depoimento, time, logos, investimento) são importadas pelas views e, sem o
+ * dado do dono, não renderizam nada — mas o CSS delas ia no pacote de toda
+ * página que as posiciona (≈ 1,3 KiB gzip na Home de produção, da meta de
+ * 15 KiB).
+ *
+ * Por que embutido (B094): como <link> para /_astro/, cada folha (0,3 a 0,7
+ * KiB gzip) era comprimida SOZINHA, sem aproveitar o vocabulário repetido
+ * (var(--color-…), var(--space-…)) do resto da página: a Home com cases,
+ * depoimento, logos, time e investimento pagava 2,9 KiB gzip em 6 arquivos.
+ * Embutidas no HTML, elas comprimem junto com os outros <style> da página e
+ * custam ≈ 1,2 KiB. Sem dado do dono, continuam não existindo.
+ *
+ * Como: o CSS do componente mora num .css ao lado dele, importado com ?inline
+ * (o Vite processa e minifica no build e devolve o texto). Este componente
+ * põe o <style> UMA vez por página (registro em Astro.locals, pela chave
+ * `name`), antes da 1ª instância; o navegador aplica a folha antes de pintar
+ * o que vem depois dela. CSP: style-src já aceita 'unsafe-inline' (estilo não
+ * executa código).
+ *
+ *   import css from "./CaseCard.css?inline";
+ *   ---
+ *   <RenderedStyle css={css} name="CaseCard" />
+ *   <Card class="case-card">…
+ *
+ * O .css não tem o escopo automático do Astro: seletores só com as classes
+ * BEM do próprio componente (.case-card__*, .inv__* …).
+ */
+interface Props {
+  /** CSS processado (import "…css?inline"). */
+  css: string;
+  /** Chave da folha na página (nome do componente): sai uma vez só. */
+  name: string;
+}
+
+const { css, name } = Astro.props;
+const locals = (Astro.locals ?? {}) as { lemamonRenderedStyles?: Set<string> };
+const seen = (locals.lemamonRenderedStyles ??= new Set<string>());
+// Sem CSS (ambiente sem o pipeline de CSS do Vite, ex.: Vitest), nada.
+const first = css.trim() !== "" && !seen.has(name);
+seen.add(name);
+---
+
+{first && <style is:inline data-rendered-style={name} set:html={css} />}

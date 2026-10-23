@@ -1,0 +1,170 @@
+---
+/**
+ * Quanto custa §6.6 #6 `how_to_compare` — always. Dono: pages.
+ * "Como comparar propostas": perguntas para fazer a QUALQUER fornecedor, cada
+ * uma com o porquê e, logo abaixo, a resposta da Lemamon (pricing._notes.how_to_compare).
+ * Ordem: out_of_scope · fixed_or_hourly · when_working · scope_change
+ * (condicional: confirmacoes.escopoMudanca, com lemamon_with_scope_change) ·
+ * after_launch · before_paying · code_ownership (condicional: o rascunho
+ * answer_draft de confirmacoes.codigoProprietario, com
+ * lemamon_with_code_ownership; auditoria de conversão F37). Sem as flags, 5
+ * perguntas; com as duas, 7.
+ * A primeira menção de "escopo priorizado" (before_paying) recebe a
+ * explicação de shared.terms (§5.9). "Protótipo" não aparece mais: desde a D44
+ * (21/10/2026) a Descoberta não entrega protótipo.
+ * Fecha com o link "Começar pelo diagnóstico gratuito" → ?origem=preco-comparar.
+ * Cada pergunta é um <Card as="li"> (B214); gutter = --grid-gap (B222). O
+ * índice alinha pela linha de base do título (sem deslocamento literal, B182).
+ * Número e unidade não se separam na quebra ("a cada 2 / semanas"): pergunta,
+ * porquê e resposta passam por NoBreakText (shared/typography.ts).
+ */
+import NoBreakText from "@/components/shared/NoBreakText.astro";
+import Card from "@/components/ui/Card.astro";
+import Term from "@/components/shared/Term.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import TextCta from "@/components/services/kit/TextCta.astro";
+import Section from "@/components/ui/Section.astro";
+import { confirmacoes } from "@/config/confirmacoes";
+import { getFeatures } from "@/config/features";
+import { anchorAlias, anchorId, ANCHORS } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+type TermId = "prioritized_scope";
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+const q = getSection(locale, "pricing.how_to_compare.questions");
+const all: { id: string; question: string; why: string; answer: string; term?: TermId; show: boolean }[] = [
+  { id: "out_of_scope", ...q.out_of_scope, answer: q.out_of_scope.lemamon, show: true },
+  { id: "fixed_or_hourly", ...q.fixed_or_hourly, answer: q.fixed_or_hourly.lemamon, show: true },
+  { id: "when_working", ...q.when_working, answer: q.when_working.lemamon, show: true },
+  {
+    id: "scope_change",
+    question: q.scope_change.question,
+    why: q.scope_change.why,
+    answer: q.scope_change.lemamon_with_scope_change,
+    show: features.confirm.escopoMudanca,
+  },
+  { id: "after_launch", ...q.after_launch, answer: q.after_launch.lemamon, show: true },
+  { id: "before_paying", ...q.before_paying, answer: q.before_paying.lemamon, term: "prioritized_scope", show: true },
+  {
+    id: "code_ownership",
+    question: q.code_ownership.question,
+    why: q.code_ownership.why,
+    answer: q.code_ownership.lemamon_with_code_ownership,
+    show: features.confirm.codigoProprietario && confirmacoes.codigoProprietario === "answer_draft",
+  },
+];
+const questions = all.filter((item) => item.show);
+---
+
+<Section
+  id={anchorId(ANCHORS.howToCompare, locale)}
+  aliasId={anchorAlias(ANCHORS.howToCompare, locale)}
+  labelledby="como-comparar-title"
+  surface="subtle"
+>
+  <SectionHeader id="como-comparar-title" title={t(locale, "pricing.how_to_compare.title")} intro={t(locale, "pricing.how_to_compare.intro")} />
+  <ol role="list" class="compare">
+    {
+      questions.map((item, index) => (
+        <Card as="li" class="compare__item" data-id={item.id}>
+          <span class="compare__index" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <div class="compare__body">
+            <h3 class="compare__question">
+              <NoBreakText text={item.question} />
+            </h3>
+            <p class="compare__why">
+              <NoBreakText text={item.why} />
+            </p>
+            <p class="compare__answer">
+              <NoBreakText text={item.answer} />
+            </p>
+            {item.term && (
+              <p class="compare__term">
+                <Term locale={locale} term={item.term} />
+              </p>
+            )}
+          </div>
+        </Card>
+      ))
+    }
+  </ol>
+  <TextCta locale={locale} origem="preco-comparar" label="method" lead={t(locale, "pricing.how_to_compare.closing")} />
+</Section>
+
+<style>
+  .compare {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+
+  /* Raiz = <Card as="li">: borda, raio, fundo e padding vêm de lá.
+     Abaixo de 640px, uma coluna: o índice fica acima da pergunta e a resposta
+     "Na Lemamon" usa a largura toda do card (com a coluna do índice ao lado,
+     sobravam ~216px e as respostas iam a 8-9 linhas a 375). A partir de 640px,
+     o índice volta para a coluna própria e alinha pela linha de base da 1ª
+     linha do título. */
+  .compare :global(.compare__item) {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .compare__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-tertiary);
+  }
+
+  .compare__body {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .compare__question {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .compare__why {
+    color: var(--color-text-secondary);
+  }
+
+  .compare__answer {
+    padding: var(--space-3);
+    border-inline-start: 4px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    background-color: var(--color-accent-subtle);
+  }
+
+  .compare__term {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 640px) {
+    .compare :global(.compare__item) {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--space-4);
+      align-items: baseline;
+    }
+
+    .compare__answer {
+      padding-inline: var(--space-4);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .compare {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+titulo: "An app that lets the Micro:bit board exchange data with Android devices, by cable or over Bluetooth"
+tipoDeSistema: "Micro:bit Android connection app"
+setor: "Education"
+porte: "Large company"
+servicos: ["integrations", "mobile_apps"]
+problema: "A large education company needed the Micro:bit board and Android devices to communicate and transfer data between them. The link had to work in two ways: over a MicroUSB cable and wirelessly, over Bluetooth Low Energy (BLE), the version of Bluetooth designed to use little power."
+combinado:
+  escopo: "Architecture and development of an Android app that sets up communication and data transfer with the Micro:bit board. The scope covered both connection paths: the MicroUSB cable, which links the board to the device, and Bluetooth Low Energy (BLE), which is wireless."
+entregue: "The Micro:bit board and Android devices can communicate and transfer data between them, by cable or wirelessly, through an Android app designed and developed for this."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "At the start"
+    texto: "An initial conversation to understand the client's request and problem."
+  - etapa: "discovery"
+    quando: "Before building"
+    texto: "The problem was understood and the scope defined."
+  - etapa: "development"
+    quando: "Between 2017 and 2019"
+    texto: "Built in incremental releases throughout the project, not all at the end."
+  - etapa: "support"
+    quando: "After going live"
+    texto: "The app then moved into support and maintenance."
+fichaTecnica:
+  stack: ["Android", "Java", "C++", "Bluetooth Low Energy (BLE)", "Micro:bit"]
+capa:
+  src: "../_imagens/app-android-para-placa-educativa/capa.png"
+  alt: "Illustration of a Micro:bit board linked to an Android device by cable and by Bluetooth signal"
+relacionados: ["sensores-em-epis-com-app", "controle-de-producao-com-contagem-automatica"]
+ordem: 20
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Android app for the Micro:bit board"
+seoDescription: "An Android app that communicates with the Micro:bit board and transfers data over a MicroUSB cable or Bluetooth Low Energy (BLE)."
+slugUrl: "android-app-for-an-educational-board"
+---
+
+### Who it's for
+
+For people who use the Micro:bit board together with an Android device. The project was created for a large education company.
+
+### How it works
+
+On the cable path, the board is physically connected to the device; on the wireless one, the two exchange data with no physical connection.
+
+Besides the app, the project defined the architecture of this communication, that is, how the parts are organized to talk over both paths.
+
+### The technology, in plain words
+
+- **Android**: Google's operating system for phones and tablets. It is the platform of the project's app.
+- **Java**: a general-purpose programming language, for many years the main language for building Android apps. It was used to develop the app.
+- **C++**: a programming language common in software that works close to the hardware, such as that of boards and electronic devices. It was part of the project's development.
+- **Bluetooth Low Energy (BLE)**: a version of Bluetooth designed to exchange small amounts of data while using little power. It is the wireless path between the board and the Android device.
+- **Micro:bit**: a small programmable board created to teach programming, with buttons, LED lights and sensors. It is the board the app connects to Android.

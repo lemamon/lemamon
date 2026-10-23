@@ -1,0 +1,66 @@
+---
+/**
+ * Pessoa do time — BLUEPRINT §5.7 / §6.1 #11. Dono: home. API estável:
+ * `locale`, `entry` (+ opcional `headingLevel`).
+ *
+ * Foto real (o schema exige; nunca banco de imagem), nome, papel, 1 linha
+ * escrita pela pessoa e LinkedIn/GitHub quando existirem (nova aba, rel
+ * noopener, aviso acessível, nome acessível "LinkedIn de {nome}").
+ * CSS em ./TeamCard.css, carregado só na página que renderiza uma pessoa
+ * (<RenderedStyle>, B256).
+ */
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+
+import Icon from "@/components/ui/Icon.astro";
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
+import { t, type Locale } from "@/i18n";
+
+import css from "./TeamCard.css?inline";
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<"time">;
+  headingLevel?: 3 | 4;
+}
+
+const { locale, entry, headingLevel = 3 } = Astro.props;
+const { nome, foto, papel, linha, linkedin, github } = entry.data;
+const Heading = `h${headingLevel}` as "h3" | "h4";
+const newTab = t(locale, "shared.a11y.opens_new_tab");
+const links = [
+  linkedin ? { id: "linkedin" as const, href: linkedin, label: t(locale, "shared.proof.team_card.linkedin", { nome }) } : null,
+  github ? { id: "github" as const, href: github, label: t(locale, "shared.proof.team_card.github", { nome }) } : null,
+].filter((link) => link !== null);
+---
+
+<RenderedStyle css={css} name="TeamCard" />
+<article class="team-card">
+  <Image
+    class="team-card__photo"
+    src={foto}
+    alt={t(locale, "shared.proof.team_card.photo_alt", { nome, papel: papel[locale] })}
+    widths={[240, 480]}
+    sizes="(min-width: 768px) 240px, 50vw"
+    loading="lazy"
+  />
+  <div class="team-card__body">
+    <Heading class="team-card__name">{nome}</Heading>
+    <p class="team-card__role">{papel[locale]}</p>
+    <p class="team-card__line">{linha[locale]}</p>
+    {
+      links.length > 0 && (
+        <ul class="team-card__links" role="list">
+          {links.map((link) => (
+            <li>
+              <a href={link.href} target="_blank" rel="noopener" aria-label={`${link.label} ${newTab}`}>
+                <Icon name={link.id} size={18} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>
+

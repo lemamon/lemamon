@@ -1,0 +1,110 @@
+---
+/**
+ * 404 por idioma (BLUEPRINT §6.14) — dist/404.html, dist/en/404.html,
+ * dist/es/404.html (o netlify.toml serve a de cada idioma com status 404).
+ * Dono: shell. noindex, sem canonical/hreflang (routes.ts: error); o seletor de
+ * idioma leva às Homes. H1 "Esta página não existe", 1 frase, os 4 caminhos,
+ * CTA primário e WhatsApp. Evento page_not_found {path}, para descobrir os
+ * redirects que faltam. O respiro vertical vem do <Section spacing="spacious">
+ * (ui/Section.astro, B211): a view não declara padding próprio.
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { urlFor } from "@/config/routes";
+import Base from "@/layouts/Base.astro";
+import { t, type Locale } from "@/i18n";
+import { pageMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const whatsappMessage = pageMessage(locale);
+const links = [
+  { href: urlFor("home", locale), label: t(locale, "shared.not_found.link_home") },
+  { href: urlFor("how_we_work", locale), label: t(locale, "shared.not_found.link_how_we_work") },
+  { href: urlFor("services_hub", locale), label: t(locale, "shared.not_found.link_services") },
+  { href: urlFor("pricing", locale), label: t(locale, "shared.not_found.link_pricing") },
+];
+---
+
+<Base
+  locale={locale}
+  route="not_found"
+  title={t(locale, "meta.not_found.title")}
+  description={t(locale, "meta.not_found.description")}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="404-barra"
+>
+  <Section labelledby="not-found-title" spacing="spacious">
+    <div class="not-found__inner">
+      <h1 id="not-found-title">{t(locale, "shared.not_found.title")}</h1>
+      <p class="not-found__text">{t(locale, "shared.not_found.text")}</p>
+      <ul role="list" class="not-found__links">
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href}>
+                <span>{link.label}</span>
+                <Icon name="arrow-right" size={18} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="not-found__actions">
+        <CtaDiagnosis locale={locale} origem="404" />
+        <WhatsAppCta locale={locale} message={whatsappMessage} source="404" />
+      </div>
+    </div>
+  </Section>
+</Base>
+
+<script>
+  import { track } from "@/lib/analytics";
+
+  track("page_not_found", { path: window.location.pathname });
+</script>
+
+<style>
+  .not-found__inner {
+    max-inline-size: var(--container-prose);
+  }
+  .not-found__text {
+    margin-block-start: var(--space-4);
+    color: var(--color-text-secondary);
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+  }
+  .not-found__links {
+    display: grid;
+    margin-block-start: var(--space-8);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+  .not-found__links a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-block-size: var(--target-option);
+    border-block-end: 1px solid var(--color-border-subtle);
+    color: var(--color-text-primary);
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-lg);
+    text-decoration: none;
+    transition: var(--transition-colors);
+  }
+  .not-found__links a:hover {
+    color: var(--color-text-link-hover);
+  }
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-10);
+  }
+</style>

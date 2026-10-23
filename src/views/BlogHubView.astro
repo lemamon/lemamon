@@ -1,0 +1,86 @@
+---
+/**
+ * Blog /blog (BLUEPRINT §6.12) — when_data hasPosts (≥ 3 posts com autor real),
+ * só pt-BR. Dono: gated. Só é gerada pelo pages/[gated].astro com a flag (até
+ * lá, o netlify.toml responde /blog com 302 → /).
+ * H1, 1 frase, cards (título, resumo, autor real, data) e shared.cta_final
+ * (title_default/text_default).
+ *
+ * `data` existe só para os testes (posts injetados).
+ */
+import type { CollectionEntry } from "astro:content";
+
+import PostCard from "@/components/gated/PostCard.astro";
+import CtaFinal from "@/components/shared/CtaFinal.astro";
+import Section from "@/components/ui/Section.astro";
+import { t } from "@/i18n";
+import { postItems } from "@/lib/content";
+import { pageMessage } from "@/lib/whatsapp-messages";
+import Base from "@/layouts/Base.astro";
+
+interface Props {
+  /** Só testes: posts injetados (tests/fixtures/). */
+  data?: { posts: CollectionEntry<"posts">[] };
+}
+
+const { data } = Astro.props;
+const locale = "pt" as const;
+const posts = data?.posts ?? (await postItems());
+const whatsappMessage = pageMessage(locale, t(locale, "shared.breadcrumb.blog"));
+---
+
+<Base
+  locale={locale}
+  route="blog_hub"
+  title={t(locale, "meta.blog_hub.title")}
+  description={t(locale, "meta.blog_hub.description")}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="blog-barra"
+>
+  <Section spacing="spacious" labelledby="blog-title">
+    <div class="blog-hero">
+      <h1 id="blog-title">{t(locale, "blog.hub.title")}</h1>
+      <p class="lead">{t(locale, "blog.hub.intro")}</p>
+    </div>
+  </Section>
+
+  <Section id="artigos" spacing="compact" label={t(locale, "shared.breadcrumb.blog")}>
+    <ul role="list" class="post-grid">
+      {
+        posts.map((entry) => (
+          <li>
+            <PostCard entry={entry} />
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <CtaFinal locale={locale} origem="blog-final" whatsappMessage={whatsappMessage} />
+</Base>
+
+<style>
+  .blog-hero {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+  .blog-hero h1 {
+    max-inline-size: 22ch;
+  }
+  .post-grid {
+    display: grid;
+    gap: var(--grid-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 768px) {
+    .post-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .post-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

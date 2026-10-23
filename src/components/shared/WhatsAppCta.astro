@@ -1,0 +1,45 @@
+---
+/**
+ * CTA secundário de WhatsApp (BLUEPRINT §2.2, §7.7). Dono: home. API estável.
+ * Não renderiza NADA sem PUBLIC_WHATSAPP_NUMBER (sem link morto).
+ * A mensagem chega pronta (lib/whatsapp-messages.ts no servidor).
+ */
+import Button from "@/components/ui/Button.astro";
+import Icon from "@/components/ui/Icon.astro";
+import { t, type Locale } from "@/i18n";
+import { whatsappHref } from "@/lib/whatsapp";
+
+interface Props {
+  locale: Locale;
+  /** Mensagem pré-preenchida (§7.7). */
+  message: string;
+  /** Origem do clique para o evento whatsapp_click {source}. */
+  source: string;
+  label?: "whatsapp" | "whatsapp_questions";
+  variant?: "outline" | "ghost" | "whatsapp";
+  size?: "sm" | "md" | "lg";
+  full?: boolean | "mobile";
+}
+
+const { locale, message, source, label = "whatsapp", variant = "outline", size = "lg", full = "mobile" } = Astro.props;
+const href = whatsappHref(message);
+const text = label === "whatsapp_questions" ? t(locale, "shared.cta.whatsapp_questions") : t(locale, "shared.cta.whatsapp");
+---
+
+{
+  href && (
+    <Button
+      href={href}
+      variant={variant}
+      size={size}
+      full={full}
+      target="_blank"
+      rel="noopener"
+      data-track="whatsapp_click"
+      data-source={source}
+    >
+      <Icon name="whatsapp" />
+      {text}
+    </Button>
+  )
+}

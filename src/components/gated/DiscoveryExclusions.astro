@@ -1,0 +1,108 @@
+---
+/**
+ * Sprint de Descoberta — "O que a Descoberta não inclui" (B354; BLUEPRINT §6.3,
+ * logo depois de `deliverables`). Dono: gated. A view (pages) só posiciona
+ * `<DiscoveryExclusions locale={locale} />` logo depois de "O que você recebe".
+ *
+ * when_data hasDiscoveryExclusions: dados/dono.json › descoberta.naoInclui com
+ * ≥ 1 item nos 3 idiomas (até 5). Mesmo destaque de "O que você recebe": H2 do
+ * mesmo nível, mesma superfície e a mesma lista em células com marcador. Como
+ * vem colada em "O que você recebe" (mesma superfície), a seção não repete o
+ * respiro de topo (trim="start"): as duas leem como uma faixa só.
+ *
+ * AUTO-GATED: sem a flag (ou sem o título no i18n) não renderiza NADA — nem
+ * <section>, nem título, nem âncora. `data` existe só para os testes.
+ */
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { descoberta, type Descoberta } from "@/config/descoberta";
+import { getFeatures, type Features } from "@/config/features";
+import { isFilledList } from "@/config/types";
+import { hasText, tDynamic, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  /** Só testes: flag e config injetados (tests/fixtures/). */
+  data?: { features: Pick<Features, "hasDiscoveryExclusions">; descoberta: Descoberta };
+}
+
+/** Âncora da seção (link direto para "o que não inclui" numa proposta ou conversa). */
+const DISCOVERY_EXCLUSIONS_ID = "o-que-nao-inclui";
+const TITLE_KEY = "discovery_sprint.exclusions.title";
+const INTRO_KEY = "discovery_sprint.exclusions.intro";
+
+const { locale, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const source = data?.descoberta ?? descoberta;
+const items = features.hasDiscoveryExclusions && isFilledList(source.naoInclui, 1) ? source.naoInclui[locale].map((item) => item.trim()) : [];
+// Título e intro vêm do i18n (shell/copy). Sem o título, a seção não sai: nunca uma lista sem cabeçalho.
+const title = hasText(locale, TITLE_KEY) ? tDynamic(locale, TITLE_KEY) : null;
+const intro = hasText(locale, INTRO_KEY) ? tDynamic(locale, INTRO_KEY) : undefined;
+const titleId = `${DISCOVERY_EXCLUSIONS_ID}-title`;
+---
+
+{
+  items.length > 0 && title && (
+    <Section id={DISCOVERY_EXCLUSIONS_ID} labelledby={titleId} surface="subtle" trim="start">
+      <SectionHeader id={titleId} title={title} intro={intro} />
+      <ul class="discovery-exclusions" role="list">
+        {items.map((item) => (
+          <li>
+            <span class="dx__mark" aria-hidden="true">
+              <Icon name="close" size={16} strokeWidth={2.5} />
+            </span>
+            <p class="dx__text">{item}</p>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  )
+}
+
+<style>
+  /* Mesma lista de "O que você recebe" (DiscoveryDeliverables): células com borda compartilhada. */
+  .discovery-exclusions {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border-block-start: 1px solid var(--color-border-default);
+  }
+  .discovery-exclusions li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    column-gap: var(--space-3);
+    align-items: start;
+    padding-block: var(--space-5);
+    border-block-end: 1px solid var(--color-border-default);
+  }
+  .dx__mark {
+    display: grid;
+    place-items: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-muted);
+    color: var(--color-text-primary);
+  }
+  .dx__text {
+    padding-block-start: var(--space-1);
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+    color: var(--color-text-primary);
+  }
+  @media (min-width: 768px) {
+    .discovery-exclusions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-inline-start: 1px solid var(--color-border-default);
+    }
+    .discovery-exclusions li {
+      padding: var(--space-6);
+      border-inline-end: 1px solid var(--color-border-default);
+    }
+    /* Número ímpar de itens: o último ocupa a linha inteira (sem célula vazia). */
+    .discovery-exclusions li:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -1,0 +1,124 @@
+---
+/**
+ * Botão de tema escuro (backlog B208; 03-ui §3.3.3). Dono: shell.
+ *
+ * Botão de alternância (aria-pressed="true" = tema escuro ligado) com rótulo
+ * visível ("Tema escuro") e um interruptor desenhado ao lado. Fica no rodapé
+ * (linha de baixo, junto do seletor de idioma) e no menu (< 1024px), como o
+ * seletor de idioma: o header de 1024–1279px já está no limite (BLUEPRINT
+ * §8.1) e o botão de conversão vem antes de preferência de tela.
+ *
+ * O tema da 1ª pintura vem do script inline do <head> (head-inline.ts: escolha
+ * salva ou prefers-color-scheme); src/scripts/theme.ts liga o clique, grava
+ * localStorage["lemamon-theme"] e acerta aria-pressed. Sem JS o botão não
+ * aparece (não faria nada). Sem o rótulo no i18n (shared.header.theme_toggle)
+ * o botão também não sai: nunca há botão sem nome acessível.
+ */
+import { hasText, tDynamic, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  class?: string;
+}
+
+const { locale, class: className } = Astro.props;
+const LABEL_KEY = "shared.header.theme_toggle";
+const label = hasText(locale, LABEL_KEY) ? tDynamic(locale, LABEL_KEY) : undefined;
+---
+
+{
+  label && (
+    <button type="button" class:list={["theme-toggle", className]} data-theme-toggle aria-pressed="false">
+      <svg class="theme-toggle__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+        <path
+          d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span class="theme-toggle__label">{label}</span>
+      <span class="theme-toggle__track" aria-hidden="true">
+        <span class="theme-toggle__knob" />
+      </span>
+    </button>
+  )
+}
+
+<script>
+  import "@/scripts/theme";
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--target-min);
+    padding-inline: var(--space-1);
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: var(--color-text-secondary);
+    font: inherit;
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    cursor: pointer;
+    transition: var(--transition-colors);
+  }
+  .theme-toggle:hover {
+    color: var(--color-text-primary);
+  }
+  .theme-toggle[aria-pressed="true"] {
+    color: var(--color-text-primary);
+  }
+  .theme-toggle__icon {
+    flex: none;
+  }
+  .theme-toggle__track {
+    position: relative;
+    flex: none;
+    inline-size: 2rem;
+    block-size: 1.125rem;
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-full);
+    transition: var(--transition-colors);
+  }
+  .theme-toggle__knob {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 0.125rem;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-text-secondary);
+    transform: translateY(-50%);
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+  .theme-toggle[aria-pressed="true"] .theme-toggle__track {
+    border-color: var(--color-brand);
+    background-color: var(--color-brand);
+  }
+  .theme-toggle[aria-pressed="true"] .theme-toggle__knob {
+    background-color: var(--color-text-on-brand);
+    transform: translate(0.875rem, -50%);
+  }
+
+  :global(html:not(.js)) .theme-toggle {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-toggle__knob {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .theme-toggle {
+      display: none;
+    }
+  }
+</style>

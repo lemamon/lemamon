@@ -1,0 +1,645 @@
+---
+/**
+ * Contato §6.9 #3 `form` — always. Dono: conversion. Netlify Forms `contato`.
+ *
+ * FUNCIONA SEM JS: <form method="POST" data-netlify> com honeypot e validação
+ * nativa (required, type=email); o Netlify grava e redireciona para `action`
+ * (/contato#mensagem-enviada), e o CSS :target mostra a confirmação. A dica do
+ * assunto ("Projeto novo?") também é só CSS (:has).
+ *
+ * COM JS (contact-form.ts, carregado no ocioso ou no 1º toque/foco no form):
+ * validação no blur (só erro de formato de campo preenchido, F23) e no envio
+ * com mensagem por campo (aria-invalid + aria-describedby, também em cada
+ * rádio do Assunto), máscara de telefone, envio por fetch com
+ * timeout/retry (lib/forms), confirmação na mesma página e, no erro, os dados
+ * preservados com "Tentar de novo", WhatsApp e e-mail. Botão sempre habilitado.
+ * data-nr-block: fora do session replay do New Relic.
+ *
+ * Deploy preview (backlog B277): data-preview-submit no form; o script não faz
+ * POST (o Netlify Forms aceitaria o envio no form de produção). Sem JS, o POST
+ * nativo continua (limitação conhecida).
+ *
+ * Cada link para o wizard tem origem própria (backlog B047): contato-sucesso,
+ * contato-dica-projeto e contato-sistema-existente.
+ *
+ * Da auditoria de conversão: o Assunto é o 1º campo (F40), para a dica do
+ * wizard aparecer antes de a pessoa digitar nome e e-mail; o e-mail tem a
+ * região viva da sugestão "Você quis dizer …?" (F07, shared.forms.email_suggestion);
+ * `attribution` e `gclid` são campos ocultos do form (F11): o script os
+ * preenche no envio, e no POST sem JS eles vão vazios. data-ads-consent-required
+ * (baseAnuncios = "consentimento"): o gclid só vai com o aceite do aviso de cookies.
+ *
+ * Logo abaixo do título, por onde vem a resposta (form.reply_line, auditoria F39).
+ *
+ * Ritmo vertical: <Section spacing="compact" trim="start"> (B211), emendada nos canais.
+ *
+ * Links para o wizard (dicas do assunto e confirmação) = <ArrowLink> (B214): o
+ * "texto + seta" é do primitivo, com alvo de 44px e a seta que anda no hover.
+ */
+import CopyEmail from "@/components/shell/CopyEmail.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Button from "@/components/ui/Button.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures, withPrimaryCtaLabel } from "@/config/features";
+import { privacidade } from "@/config/privacidade";
+import { anchorAlias, anchorId, ANCHORS, quoteHref, urlFor } from "@/config/routes";
+import { deployContext } from "@/config/site";
+import { getSection, t, type Locale } from "@/i18n";
+import { contactSubject, FORM_NAMES, HONEYPOT_FIELD, isPreviewSubmitContext } from "@/lib/forms";
+import { whatsappHref } from "@/lib/whatsapp";
+import { contactMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+const form = getSection(locale, "contact.form");
+// Os dois links para o wizard embutem o rótulo do CTA primário (com agenda online: "Agendar…").
+const ctaLabels = { primary: t(locale, "shared.cta.primary"), schedule: t(locale, "shared.cta.primary_schedule") };
+const newProjectTip = withPrimaryCtaLabel(form.new_project_tip, ctaLabels, features);
+const successNewProjectLink = withPrimaryCtaLabel(form.success_new_project_link, ctaLabels, features);
+const fields = form.fields;
+const subjects = ["new_project", "existing_system", "partnership", "other"] as const;
+// Assunto do e-mail de notificação (FORM_FIELDS): rótulo em pt em qualquer idioma da página.
+const subjectOptionsPt = getSection("pt", "contact.form").fields.subject.options;
+const privacyLabel = t(locale, "shared.lgpd.privacy_link_label");
+const [privacyBefore, privacyAfter] = t(locale, "contact.form.privacy_notice", { politica: "{politica}" }).split("{politica}");
+const emailMarker = "{email}";
+const errorText = (features.hasWhatsapp ? form.error_text : form.error_text_no_whatsapp).split(emailMarker);
+// "{email}." terminava com o ponto sozinho numa linha, depois do botão "Copiar"
+// (CopyEmail = endereço + botão). Pontuação final solta depois do e-mail sai;
+// texto de verdade depois do {email} continua.
+const errorTail = /^\s*[.!?。]?\s*$/.test(errorText[1] ?? "") ? "" : (errorText[1] ?? "");
+const wa = features.hasWhatsapp ? whatsappHref(contactMessage(locale)) : null;
+const action = `${urlFor("contact", locale)}#mensagem-enviada`;
+const projectTipLink = quoteHref(locale, { origem: "contato-dica-projeto" });
+const systemTipLink = quoteHref(locale, { origem: "contato-sistema-existente" });
+// Deploy preview / branch deploy (B277): o script não envia ao form de produção.
+const previewSubmit = isPreviewSubmitContext(deployContext());
+const previewNotice = previewSubmit ? t(locale, "shared.preview_submit.notice") : "";
+// Modo consentimento do Google Ads (B342): a mesma regra do wizard (QuoteView).
+const adsConsentRequired = privacidade.baseAnuncios === "consentimento";
+const emailSuggestion = getSection(locale, "shared.forms.email_suggestion");
+---
+
+<Section
+  id={anchorId(ANCHORS.contactForm, locale)}
+  aliasId={anchorAlias(ANCHORS.contactForm, locale)}
+  spacing="compact"
+  trim="start"
+  labelledby="contact-form-title"
+  class="contact-form"
+>
+  <div class="contact-form__inner">
+    <div class="contact-form__head">
+      <h2 id="contact-form-title" class="contact-form__title">{form.title}</h2>
+      <p class="contact-form__reply">{features.hasWhatsapp ? form.reply_line : form.reply_line_no_whatsapp}</p>
+    </div>
+
+    <div id="mensagem-enviada" class="contact-form__success" tabindex="-1" data-contact-success>
+      <h3 class="contact-form__success-title">
+        <Icon name="check" size={22} />
+        {form.success_title}
+      </h3>
+      <p data-contact-success-text data-with-phone={form.success_text_with_phone}>{form.success_text}</p>
+      <div class="contact-form__success-project" data-contact-success-project hidden>
+        <p>{form.success_new_project_text}</p>
+        <p>
+          <ArrowLink
+            href={quoteHref(locale, { origem: "contato-sucesso" })}
+            text={successNewProjectLink}
+            data-track="cta_click"
+            data-cta-id="diagnosis"
+            data-origem="contato-sucesso"
+          />
+        </p>
+      </div>
+    </div>
+
+    <form
+      name={FORM_NAMES.contato}
+      method="POST"
+      action={action}
+      data-netlify="true"
+      netlify-honeypot={HONEYPOT_FIELD}
+      class="contact-form__form"
+      data-nr-block
+      data-contact-form
+      data-sending={form.sending}
+      data-preview-submit={previewSubmit ? "" : undefined}
+      data-ads-consent-required={adsConsentRequired ? "" : undefined}
+    >
+      <input type="hidden" name="form-name" value={FORM_NAMES.contato} />
+      <input type="hidden" name="lang" value={locale} />
+      <input type="hidden" name="origin" value="" data-contact-origin />
+      <input type="hidden" name="attribution" value="" />
+      <input type="hidden" name="gclid" value="" />
+      <input type="hidden" name="subject" value={contactSubject(locale)} data-remove-prefix data-contact-subject />
+      <div class="contact-form__hp" aria-hidden="true">
+        <input type="text" name={HONEYPOT_FIELD} tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="contact-form__error" data-contact-error tabindex="-1" hidden>
+        <h3 class="contact-form__error-title">{form.error_title}</h3>
+        <p>
+          {errorText[0]}
+          <CopyEmail locale={locale} source="contato-erro" />
+          {errorTail}
+        </p>
+        <div class="contact-form__error-actions">
+          <Button type="submit" size="md">{form.retry}</Button>
+          {
+            wa && (
+              <Button
+                href={wa}
+                variant="whatsapp"
+                size="md"
+                target="_blank"
+                rel="noopener"
+                data-track="whatsapp_click"
+                data-source="contato-erro"
+              >
+                <Icon name="whatsapp" />
+                {form.whatsapp}
+                <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
+              </Button>
+            )
+          }
+        </div>
+      </div>
+
+      <fieldset class="field field--group" aria-describedby="contato-subject-error" data-group="subject" data-required={fields.subject.error_required}>
+        <legend>{fields.subject.label}</legend>
+        <div class="choices">
+          {
+            subjects.map((id, index) => (
+              <label class="choice">
+                <input type="radio" name="topic" value={id} required={index === 0} aria-describedby="contato-subject-error" data-subject-line={contactSubject(locale, subjectOptionsPt[id])} />
+                <span>{fields.subject.options[id]}</span>
+              </label>
+            ))
+          }
+        </div>
+        <p id="contato-subject-error" class="field__error" data-error-for="subject"></p>
+        <p class="tip" data-tip="new_project">
+          <span>{form.new_project_tip_lead}</span>
+          <ArrowLink
+            href={projectTipLink}
+            text={newProjectTip}
+            size="sm"
+            data-track="cta_click"
+            data-cta-id="diagnosis"
+            data-origem="contato-dica-projeto"
+          />
+        </p>
+        <p class="tip" data-tip="existing_system">
+          <span>{form.existing_system_tip_lead}</span>
+          <ArrowLink
+            href={systemTipLink}
+            text={form.existing_system_tip}
+            size="sm"
+            data-track="cta_click"
+            data-cta-id="diagnosis"
+            data-origem="contato-sistema-existente"
+          />
+        </p>
+      </fieldset>
+
+      <div class="field">
+        <label for="contato-name">{fields.name.label}</label>
+        <input
+          id="contato-name"
+          name="name"
+          type="text"
+          autocomplete="name"
+          required
+          aria-describedby="contato-name-error"
+          data-required={fields.name.error_required}
+        />
+        <p id="contato-name-error" class="field__error" data-error-for="name"></p>
+      </div>
+
+      <div class="field">
+        <label for="contato-email">{fields.email.label}</label>
+        <input
+          id="contato-email"
+          name="email"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          required
+          aria-describedby="contato-email-error"
+          data-required={fields.email.error_required}
+          data-invalid={fields.email.error_invalid}
+        />
+        <p id="contato-email-error" class="field__error" data-error-for="email"></p>
+        <p
+          class="field__suggestion"
+          aria-live="polite"
+          data-email-suggestion
+          data-template={emailSuggestion.text}
+          data-fix={emailSuggestion.fix}></p>
+      </div>
+
+      <div class="field">
+        <label for="contato-phone">{fields.phone.label}</label>
+        <input
+          id="contato-phone"
+          name="phone"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          aria-describedby="contato-phone-error"
+          data-invalid={fields.phone.error_invalid}
+        />
+        <p id="contato-phone-error" class="field__error" data-error-for="phone"></p>
+      </div>
+
+      <div class="field">
+        <label for="contato-message">{fields.message.label}</label>
+        <textarea
+          id="contato-message"
+          name="message"
+          rows="5"
+          maxlength="4000"
+          required
+          placeholder={fields.message.placeholder}
+          aria-describedby="contato-message-error"
+          data-required={fields.message.error_required}></textarea>
+        <p id="contato-message-error" class="field__error" data-error-for="message"></p>
+      </div>
+
+      <p class="contact-form__privacy">
+        {privacyBefore}<a href={urlFor("privacy", locale)}>{privacyLabel}</a>{privacyAfter}
+      </p>
+
+      {previewNotice && <p class="contact-form__preview" role="note">{previewNotice}</p>}
+
+      <div class="contact-form__submit">
+        <Button type="submit" size="lg" full="mobile">{form.submit}</Button>
+        <p class="contact-form__status" role="status" data-contact-status></p>
+      </div>
+    </form>
+  </div>
+</Section>
+
+<script>
+  // O aprimoramento (contact-form.ts: validação, sugestão de e-mail, atribuição,
+  // envio por fetch) sai do JS inicial da página: carrega no ocioso ou no 1º
+  // toque/foco no formulário. Envio antes disso espera o módulo e segue por ele;
+  // se o módulo não carregar, o POST nativo do Netlify (o caminho sem JS) vale.
+  const forms = [...document.querySelectorAll<HTMLFormElement>("form[data-contact-form]")];
+  const openedAt = Date.now();
+  let loading: Promise<void> | undefined;
+  let failed = false;
+  const enhance = (): Promise<void> =>
+    (loading ??= import("@/components/contact/contact-form").then(({ initContactForm }) => {
+      for (const form of forms) initContactForm(form, openedAt);
+    }));
+  // Carga antecipada: se falhar, o envio tenta de novo e, sem módulo, cai no POST nativo.
+  const warm = () => void enhance().catch(() => undefined);
+
+  for (const form of forms) {
+    // Sem isto, a validação nativa barraria o envio antes do evento submit (e o
+    // script não veria o clique); se o módulo falhar, ela volta e o POST nativo segue.
+    form.noValidate = true;
+    form.addEventListener("focusin", warm, { once: true });
+    form.addEventListener("pointerdown", warm, { once: true });
+    form.addEventListener("submit", (event) => {
+      if (failed || form.dataset.enhanced !== undefined) return;
+      event.preventDefault();
+      enhance().then(
+        () => form.requestSubmit(),
+        () => {
+          failed = true;
+          form.noValidate = false;
+          form.requestSubmit();
+        },
+      );
+    });
+  }
+  if (forms.length > 0) {
+    if ("requestIdleCallback" in window) requestIdleCallback(warm, { timeout: 2000 });
+    else setTimeout(warm, 1000);
+  }
+</script>
+
+<style>
+  .contact-form__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .contact-form__form,
+  .contact-form__success {
+    max-inline-size: var(--measure-prose);
+  }
+
+  .contact-form__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  .contact-form__head {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .contact-form__reply {
+    color: var(--color-text-secondary);
+  }
+
+  .contact-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .field--group {
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  /* Só o rótulo do campo (filho direto) e a legend: os cartões de opção do
+     Assunto (.choice, dentro de .choices) têm padding e peso próprios. Antes,
+     ".field label" ganhava de ".choice" por especificidade, zerava o padding (o
+     rádio encostava na borda) e deixava toda opção em negrito. */
+  .field > label,
+  .field legend {
+    padding: 0;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .field input:not([type="radio"]),
+  .field textarea {
+    inline-size: 100%;
+    min-block-size: var(--target-min);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    line-height: var(--leading-sm);
+  }
+
+  .field textarea {
+    min-block-size: 8rem;
+    resize: vertical;
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--color-text-tertiary);
+  }
+
+  .field [aria-invalid="true"] {
+    border-color: var(--color-danger);
+    box-shadow: var(--ring-inset) var(--color-danger);
+  }
+
+  .field__error {
+    color: var(--color-danger);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .field__error:empty {
+    display: none;
+  }
+
+  /* Sugestão de e-mail (F07): região viva sempre no DOM (para o leitor de tela
+     anunciar quando ela ganha texto); vazia, a margem negativa anula o gap do
+     .field e nada se move. O botão é criado pelo script (por isso :global). */
+  .field__suggestion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-2);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .field__suggestion:empty {
+    margin-block-start: calc(-1 * var(--space-2));
+  }
+
+  .field__suggestion :global(button) {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-min);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-text-link);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
+  .choices {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  @media (min-width: 640px) {
+    .choices {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Cartão de opção, no padrão das opções do wizard: respiro interno, rádio
+     dentro do cartão, peso regular (negrito = marcado). */
+  .field .choice {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-block-size: var(--target-option);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    font-size: var(--text-base);
+    line-height: var(--leading-sm);
+    font-weight: var(--font-weight-regular);
+    cursor: pointer;
+    transition: var(--transition-colors), var(--transition-shadow);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .field .choice:hover {
+      background-color: var(--color-bg-surface-hover);
+      border-color: var(--color-border-strong);
+    }
+  }
+
+  .choice input {
+    flex: none;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    margin: 0;
+    accent-color: var(--color-brand);
+  }
+
+  /* O anel de foco vai para o cartão inteiro (como no wizard). */
+  .field .choice:has(input:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--color-focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Seleção: borda dupla + negrito (não só cor). */
+  .field .choice:has(input:checked) {
+    border-color: var(--color-brand);
+    box-shadow: var(--ring-inset) var(--color-brand);
+    background-color: var(--color-brand-subtle);
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* O link (<ArrowLink size="sm">) tem alvo de 44px; o rótulo "Projeto novo?"
+     fica centrado na mesma linha. */
+  .tip {
+    display: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-inline-start: 3px solid var(--color-border-accent);
+    background-color: var(--color-accent-subtle);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .field--group:has(input[value="new_project"]:checked) [data-tip="new_project"],
+  .field--group:has(input[value="existing_system"]:checked) [data-tip="existing_system"] {
+    display: flex;
+  }
+
+  .contact-form__hp {
+    position: absolute;
+    inset-inline-start: -10000px;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+  }
+
+  .contact-form__privacy {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .contact-form__submit {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .contact-form__status {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .contact-form__error {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--color-danger);
+    border-inline-start-width: 4px;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-danger-bg);
+  }
+
+  .contact-form__error[hidden] {
+    display: none;
+  }
+
+  .contact-form__error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .contact-form__error-title,
+  .contact-form__success-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  /* Confirmação: sem JS, aparece pelo :target (#mensagem-enviada, action do form);
+     com JS, pelo data-visible. O formulário sai de cena nos dois casos. */
+  .contact-form__success {
+    display: none;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--color-success);
+    border-inline-start-width: 4px;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-success-bg);
+  }
+
+  .contact-form__success:target,
+  .contact-form__success[data-visible="true"] {
+    display: flex;
+  }
+
+  .contact-form__success:target + .contact-form__form,
+  .contact-form__success[data-visible="true"] + .contact-form__form {
+    display: none;
+  }
+
+  .contact-form__success-title :global(svg) {
+    color: var(--color-success);
+  }
+
+  /* Confirmação e painel de erro recebem foco por script (tabindex=-1) para o
+     leitor de tela anunciar; não são controles: sem anel. */
+  .contact-form__success:focus,
+  .contact-form__success:focus-visible,
+  .contact-form__error:focus,
+  .contact-form__error:focus-visible {
+    outline: none;
+  }
+
+  .contact-form__success-project {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .contact-form__success-project[hidden] {
+    display: none;
+  }
+
+  .contact-form__preview {
+    padding: var(--space-3) var(--space-4);
+    border-inline-start: 3px solid var(--color-border-accent);
+    background-color: var(--color-accent-subtle);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+</style>

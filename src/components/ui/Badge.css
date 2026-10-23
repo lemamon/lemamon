@@ -1,0 +1,34 @@
+/**
+ * Badge (Badge.astro). Dono: home. Carregado só na página que renderiza um
+ * badge (ui/RenderedStyle.astro, B256): hoje só cards e ficha técnica de
+ * case, que são when_data. Sem escopo automático: só classes .badge*.
+ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-0-5) var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  white-space: nowrap;
+}
+.badge[data-variant="solid"] {
+  background-color: var(--color-brand-subtle);
+  color: var(--color-brand-on-subtle);
+}
+.badge[data-variant="outline"],
+.badge[data-variant="mono"] {
+  border-color: var(--color-border-default);
+  color: var(--color-text-secondary);
+}
+.badge[data-variant="mono"] {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: var(--leading-2xs);
+  letter-spacing: var(--tracking-2xs);
+}
+.badge .badge__icon {
+  flex: none;
+}

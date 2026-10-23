@@ -1,0 +1,35 @@
+---
+/**
+ * Declaração estática dos formulários para a detecção do Netlify Forms
+ * (BLUEPRINT §7.10). Dono: conversion. O Netlify só "vê" formulários no HTML
+ * publicado; o `briefing` é desenhado pela ilha no cliente, então precisa deste
+ * gêmeo estático. Os campos saem de lib/forms.ts (fonte única) e não variam
+ * por idioma. Basta aparecer numa página publicada: fica no /orcamento (×3).
+ * O `contato` real (HTML, sem JS) está em /contato; aqui fica o gêmeo também,
+ * para a detecção não depender do markup daquela página.
+ * O `subject` do briefing leva data-remove-prefix: a ilha manda "[score]
+ * protocolo" e o Netlify usa esse valor, sem prefixo, como assunto do e-mail
+ * de notificação ao comercial. O `subject` do contato ("[Contato] Projeto novo",
+ * lib/forms contactSubject) leva o mesmo atributo.
+ */
+import { FORM_FIELDS, FORM_NAMES, HONEYPOT_FIELD } from "@/lib/forms";
+
+const LONG_FIELDS = new Set<string>(["details", "answers", "summary", "attribution", "message"]);
+---
+
+{
+  (Object.keys(FORM_NAMES) as (keyof typeof FORM_NAMES)[]).map((form) => (
+    <form name={FORM_NAMES[form]} method="POST" data-netlify="true" netlify-honeypot={HONEYPOT_FIELD} hidden aria-hidden="true">
+      <input type="hidden" name="form-name" value={FORM_NAMES[form]} />
+      {FORM_FIELDS[form].map((name) =>
+        LONG_FIELDS.has(name) ? (
+          <textarea name={name} />
+        ) : name === "subject" ? (
+          <input type="hidden" name={name} data-remove-prefix />
+        ) : (
+          <input type="text" name={name} />
+        ),
+      )}
+    </form>
+  ))
+}

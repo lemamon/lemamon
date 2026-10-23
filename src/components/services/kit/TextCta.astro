@@ -1,0 +1,57 @@
+---
+/**
+ * CTA de diagnóstico em LINK DE TEXTO (não botão), para fechar uma seção sem
+ * somar um segundo CTA primário (BLUEPRINT §8.6; services._notes.mid_page_ctas).
+ * Dono: pages. Leva a atribuição (?origem=, ?servico=, ?entrada=) e os mesmos
+ * atributos de medição do CtaDiagnosis (cta_click {cta_id, origem}).
+ */
+import { diagnosisCtaKey } from "@/components/shared/cta-label";
+import { getFeatures } from "@/config/features";
+import { quoteHref, type QuoteAttribution } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+
+interface Props extends QuoteAttribution {
+  locale: Locale;
+  origem: string;
+  /** Frase antes do link ("Reconheceu o seu caso?"). */
+  lead?: string;
+  /**
+   * "primary" = Pedir diagnóstico gratuito (com hasAgenda: Agendar diagnóstico gratuito);
+   * "method" = Começar pelo diagnóstico gratuito (só em seção de método); com
+   * hasAgenda também vira "Agendar diagnóstico gratuito" (B167): a página nunca
+   * mostra dois rótulos primários diferentes (diagnosisCtaKey, cta-label.ts).
+   */
+  label?: "primary" | "method";
+}
+
+const { locale, origem, servico, entrada, ref, lead, label = "primary" } = Astro.props;
+const features = await getFeatures();
+const text = t(locale, diagnosisCtaKey(features, label));
+---
+
+<p class="text-cta">
+  {lead && <span class="text-cta__lead">{lead}</span>}
+  <ArrowLink
+    href={quoteHref(locale, { origem, servico, entrada, ref })}
+    text={text}
+    data-track="cta_click"
+    data-cta-id="diagnosis"
+    data-origem={origem}
+  />
+</p>
+
+<style>
+  .text-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--space-2);
+    margin-block-start: var(--space-8);
+  }
+
+  .text-cta__lead {
+    color: var(--color-text-secondary);
+  }
+</style>

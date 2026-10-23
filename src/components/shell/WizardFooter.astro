@@ -1,0 +1,42 @@
+---
+/**
+ * Footer mínimo do wizard — BLUEPRINT §6.7 / §8.4: Política de Privacidade ·
+ * e-mail (texto + "Copiar") e, com hasCompanyData, razão social · CNPJ numa
+ * linha própria (o FAQ rápido do /orcamento diz que o CNPJ está no rodapé) e
+ * o seletor de idioma "Português · English · Español" (auditoria F31: na
+ * entrada do wizard não havia como trocar de idioma; na troca, o script do
+ * LanguageSuggestion mantém a query da URL, menos o ?etapa=).
+ * Dono: shell. Sem menu, sem CTA, sem perfis.
+ * Estilo em ./wizard-chrome.css (o Base.astro o embute só nas páginas do
+ * wizard; fora do bundle global, backlog B094).
+ */
+import { empresa } from "@/config/empresa";
+import { getFeatures } from "@/config/features";
+import { urlFor, type RouteKey } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+import CopyEmail from "./CopyEmail.astro";
+import LanguageSelector from "./LanguageSelector.astro";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+}
+
+const { locale, route } = Astro.props;
+const features = await getFeatures();
+---
+
+<footer class="wizard-footer" data-wizard-footer>
+  <div class="container wizard-footer__inner">
+    <a class="wizard-footer__link" href={urlFor("privacy", locale)}>{t(locale, "shared.footer.links.privacy")}</a>
+    <span class="wizard-footer__sep" aria-hidden="true">·</span>
+    <CopyEmail locale={locale} source="wizard_footer" />
+    {
+      features.hasCompanyData && (
+        <p class="wizard-footer__company">{t(locale, "shared.footer.company_id", { razao_social: empresa.razaoSocial, cnpj: empresa.cnpj })}</p>
+      )
+    }
+    <LanguageSelector locale={locale} route={route} variant="full" as="nav" class="wizard-footer__languages" />
+  </div>
+</footer>

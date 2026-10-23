@@ -1,0 +1,242 @@
+---
+/**
+ * Depoimento em VÍDEO (B287) — logo abaixo do TestimonialCard, onde o
+ * depoimento aparece (Home e página do case). Dono: gated.
+ *
+ * Só existe com `video` no depoimento, e o schema só aceita o campo com
+ * autorizacao.video (imagem e voz autorizadas por escrito), nome completo e
+ * empresa. Sem `video`, não renderiza NADA.
+ *
+ * Peso ZERO no carregamento inicial (fachada):
+ *  - na tela vai um <button> do tamanho do vídeo (aspect-ratio do quadro: sem
+ *    salto de layout) com o ícone de play e um <img> do quadro (pôster). O
+ *    <img> sai SEM src: srcset (webp 480/800/1280w do astro:assets, nunca maior
+ *    que o original), sizes e src ficam em data-*, e o script abaixo os liga
+ *    quando o botão chega a ~300px da tela (IntersectionObserver). O
+ *    loading="lazy" nativo sozinho não basta: o Chrome baixa imagem lazy até
+ *    ~3000px abaixo da dobra, e o case tem o vídeo bem mais perto que isso. O
+ *    celular recebe o quadro do tamanho dele (sizes), não o de 1280px;
+ *  - o <video controls preload="none" playsinline> mora num <template> (inerte:
+ *    nada é baixado). No clique, o vídeo entra no lugar do botão, com o quadro
+ *    que a pessoa já está vendo (img.currentSrc) como poster, recebe o foco e
+ *    toca. Só aí o .mp4/.webm é pedido;
+ *  - sem JavaScript, o <noscript> traz o mesmo <video> com poster (e o botão
+ *    some por CSS, @media (scripting: none)).
+ * Nada de player de terceiros (sem iframe, sem script de fora).
+ *
+ * Legendas: <track kind="captions"> por idioma (pt obrigatória). A do idioma da
+ * página liga no PRIMEIRO play (data-legenda-padrao + o script abaixo), e não
+ * com <track default>: com `default`, o navegador baixa o .vtt antes de a
+ * pessoa precisar. Sem JavaScript, as legendas continuam no menu do player.
+ *
+ * CSS em ./TestimonialVideo.css, só na página que renderiza o vídeo
+ * (<RenderedStyle>, B256): fora do orçamento de CSS da Home sem dado do dono.
+ * Vídeo e legendas saem em /_midia/ (src/content/midia.ts).
+ * `data` existe só para os testes (URLs já resolvidas, sem ler o disco).
+ */
+import type { CollectionEntry } from "astro:content";
+import { getImage } from "astro:assets";
+
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
+import { urlDaMidia } from "@/content/midia";
+import { hasText, LOCALE_META, LOCALES, t, tDynamic, type Locale } from "@/i18n";
+
+import css from "./TestimonialVideo.css?inline";
+
+interface Props {
+  locale: Locale;
+  entry: CollectionEntry<"depoimentos">;
+  /**
+   * Largura em que o vídeo aparece (atributo `sizes` do pôster). O padrão é o
+   * da Home: ao lado do card a partir de 1024px. O case passa o dele (coluna
+   * de texto).
+   */
+  sizes?: string;
+  /** Só testes: URLs do vídeo e das legendas já resolvidas (sem ler dados/). */
+  data?: { src: string; legendas: Partial<Record<Locale, string>> };
+}
+
+/** Larguras do pôster no srcset (o astro:assets corta as maiores que o original). */
+const POSTER_WIDTHS = [480, 800, 1280];
+/** Largura do `src` de reserva (navegador sem srcset, <noscript>). */
+const POSTER_FALLBACK_WIDTH = 800;
+/**
+ * Home (medido): até 1024px, a coluna de texto (68ch ≈ 667px) ou a tela menos
+ * o gutter; dali em diante, meia grade (gutter 40px, gap 24px) até 588px.
+ */
+const HOME_POSTER_SIZES = "(min-width: 1024px) min(calc(50vw - 52px), 588px), min(calc(100vw - 40px), 667px)";
+
+const { locale, entry, data, sizes = HOME_POSTER_SIZES } = Astro.props;
+const { nome, empresa, video } = entry.data;
+const LABEL_KEY = "shared.proof.testimonial_video.label";
+const PLAY_KEY = "shared.proof.testimonial_video.play";
+
+const resolved = video
+  ? await (async () => {
+      const poster = await getImage({
+        src: video.poster,
+        width: Math.min(POSTER_FALLBACK_WIDTH, video.poster.width),
+        widths: POSTER_WIDTHS,
+        format: "webp",
+      });
+      return {
+        src: data?.src ?? urlDaMidia(video.src),
+        type: video.src.toLowerCase().endsWith(".webm") ? "video/webm" : "video/mp4",
+        poster: { src: poster.src, srcset: poster.srcSet.attribute },
+        width: video.poster.width,
+        height: video.poster.height,
+        tracks: LOCALES.flatMap((lang) => {
+          const file = video.legendas[lang];
+          const src = data ? data.legendas[lang] : file ? urlDaMidia(file) : undefined;
+          return file && src ? [{ lang, src, srclang: LOCALE_META[lang].htmlLang, label: t(lang, `shared.language.${lang}`) }] : [];
+        }),
+      };
+    })()
+  : null;
+// Nome acessível do vídeo: "Depoimento em vídeo de {nome}, {empresa}" (i18n); antes da chave existir, nome e empresa.
+const label = hasText(locale, LABEL_KEY) ? tDynamic(locale, LABEL_KEY, { nome, empresa }) : `${nome}, ${empresa}`;
+// Nome acessível do botão: "Assistir ao depoimento em vídeo de …"; antes da chave existir, o do vídeo.
+const playLabel = hasText(locale, PLAY_KEY) ? tDynamic(locale, PLAY_KEY, { nome, empresa }) : label;
+/** Legenda que liga no primeiro play: a do idioma da página, quando existe. */
+const defaultTrack = resolved?.tracks.find((track) => track.lang === locale)?.srclang;
+---
+
+{
+  resolved && (
+    <>
+      <RenderedStyle css={css} name="TestimonialVideo" />
+      <div class="testimonial-video" data-testimonial-video={entry.id}>
+        <button
+          type="button"
+          class="testimonial-video__facade"
+          aria-label={playLabel}
+          style={`aspect-ratio: ${resolved.width} / ${resolved.height}`}
+          data-testimonial-video-play
+        >
+          <img
+            class="testimonial-video__poster"
+            data-src={resolved.poster.src}
+            data-srcset={resolved.poster.srcset}
+            sizes={sizes}
+            width={resolved.width}
+            height={resolved.height}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="testimonial-video__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" fill="currentColor" />
+            </svg>
+          </span>
+        </button>
+        <template data-testimonial-video-template>
+          <video
+            controls
+            preload="none"
+            playsinline
+            width={resolved.width}
+            height={resolved.height}
+            aria-label={label}
+            data-legenda-padrao={defaultTrack}
+          >
+            <source src={resolved.src} type={resolved.type} />
+            {resolved.tracks.map((track) => (
+              <track kind="captions" src={track.src} srclang={track.srclang} label={track.label} />
+            ))}
+          </video>
+        </template>
+        <noscript>
+          <video
+            controls
+            preload="none"
+            playsinline
+            poster={resolved.poster.src}
+            width={resolved.width}
+            height={resolved.height}
+            aria-label={label}
+          >
+            <source src={resolved.src} type={resolved.type} />
+            {resolved.tracks.map((track) => (
+              <track kind="captions" src={track.src} srclang={track.srclang} label={track.label} />
+            ))}
+          </video>
+        </noscript>
+      </div>
+    </>
+  )
+}
+
+<script>
+  /** Distância da tela em que o pôster começa a ser baixado. */
+  const MARGEM_DO_POSTER = "300px 0px";
+
+  /** Liga srcset/src do pôster (guardados em data-*). Uma vez só. */
+  function carregarPoster(img: HTMLImageElement) {
+    const { srcset, src } = img.dataset;
+    if (!src || img.getAttribute("src")) return;
+    if (srcset) img.srcset = srcset;
+    img.src = src;
+  }
+
+  /**
+   * Liga a legenda do idioma da página no primeiro play (o .vtt só é baixado aí).
+   * Se a pessoa já escolheu outra legenda no menu do player, vale a escolha dela.
+   */
+  function legendaNoPrimeiroPlay(video: HTMLVideoElement) {
+    const padrao = video.dataset.legendaPadrao;
+    if (!padrao) return;
+    video.addEventListener(
+      "play",
+      () => {
+        const tracks = Array.from(video.textTracks).filter((track) => track.kind === "captions");
+        if (tracks.some((track) => track.mode === "showing")) return;
+        const escolhida = tracks.find((track) => track.language === padrao);
+        if (escolhida) escolhida.mode = "showing";
+      },
+      { once: true },
+    );
+  }
+
+  /** Fachada → vídeo: o <video> do <template> entra no lugar do botão, recebe o foco e toca. */
+  function trocarPeloVideo(button: HTMLButtonElement) {
+    const wrapper = button.closest<HTMLElement>("[data-testimonial-video]");
+    const template = wrapper?.querySelector<HTMLTemplateElement>("template[data-testimonial-video-template]");
+    const video = template?.content.querySelector("video")?.cloneNode(true);
+    if (!(video instanceof HTMLVideoElement)) return;
+    const img = button.querySelector<HTMLImageElement>("img");
+    // O quadro que já está na tela (mesma URL: vem do cache, sem baixar de novo).
+    const poster = img?.currentSrc || img?.dataset.src;
+    if (poster) video.poster = poster;
+    legendaNoPrimeiroPlay(video);
+    button.replaceWith(video);
+    video.focus({ preventScroll: true });
+    // Tocar pode falhar (economia de dados, política do navegador): os controles continuam ali.
+    video.play()?.catch(() => {});
+  }
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-testimonial-video-play]");
+  const observer =
+    "IntersectionObserver" in window
+      ? new IntersectionObserver(
+          (entries, self) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              self.unobserve(entry.target);
+              const img = entry.target.querySelector<HTMLImageElement>("img[data-src]");
+              if (img) carregarPoster(img);
+            }
+          },
+          { rootMargin: MARGEM_DO_POSTER },
+        )
+      : null;
+
+  for (const button of buttons) {
+    const img = button.querySelector<HTMLImageElement>("img[data-src]");
+    if (img) {
+      if (observer) observer.observe(button);
+      else carregarPoster(img);
+    }
+    button.addEventListener("click", () => trocarPeloVideo(button), { once: true });
+  }
+</script>

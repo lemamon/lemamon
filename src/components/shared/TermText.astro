@@ -1,0 +1,56 @@
+---
+/**
+ * Texto do i18n com a 1ª menção de cada termo virando toggletip (<Term
+ * mode="tip">) — BLUEPRINT §5.9. Dono: home.
+ *
+ *   <p><TermText locale={locale} text={t(locale, "home.hero.subtitle")} terms={["mvp"]} /></p>
+ *
+ * O rótulo do termo vem da própria explicação (shared.terms.*, antes do ":"),
+ * então funciona nos 3 idiomas sem chave nova. Se o termo não aparecer no
+ * texto daquele idioma, o texto sai inteiro, sem toggletip (nunca quebra).
+ * Cabe à página escolher em que texto fica a 1ª menção de cada termo.
+ * Número + unidade ("2 semanas", "45-minute") não quebra (NoBreakText).
+ * A pontuação colada no termo ("MVPs.", "(MVP)") vai junto com ele num span
+ * .no-break (glueTermPunctuation, B001): o botão do toggletip é uma caixa
+ * atômica e o ponto cairia sozinho no começo da linha seguinte.
+ * `separator` (microcopy "Sem compromisso · 45 minutos · devolutiva por
+ * escrito", auditoria F41): como no NoBreakText, a quebra cai ANTES do "·" e
+ * cada trecho seguinte não quebra por dentro (o popover do termo volta a
+ * white-space: normal no Term.astro).
+ */
+import { t, type Locale } from "@/i18n";
+
+import NoBreakText from "./NoBreakText.astro";
+import Term from "./Term.astro";
+import { glueTermPunctuation, splitTerms, termLabel, type TermId } from "./terms";
+
+interface Props {
+  locale: Locale;
+  text: string;
+  terms: readonly TermId[];
+  /** Quebra antes do "·" de " · ", nunca depois (NoBreakText separator). */
+  separator?: boolean;
+}
+
+const { locale, text, terms, separator = false } = Astro.props;
+const labels = terms.map((term) => ({ term, label: termLabel(t(locale, `shared.terms.${term}`)) }));
+const parts = separator ? text.split(/\s+·\s+/u) : [text];
+const segmentsOf = (part: string) => glueTermPunctuation(splitTerms(part, labels));
+---
+
+{
+  parts.map((part, index) => {
+    const body = segmentsOf(part).map((segment) =>
+      segment.kind === "text" ? (
+        <NoBreakText text={segment.value} />
+      ) : segment.before || segment.after ? (
+        <span class="no-break term-tip__glue">{segment.before}<Term locale={locale} term={segment.term} mode="tip">{segment.value}</Term>{segment.after}</span>
+      ) : (
+        <Term locale={locale} term={segment.term} mode="tip">
+          {segment.value}
+        </Term>
+      ),
+    );
+    return index === 0 ? body : <Fragment>{" "}<span class="no-break">· {body}</span></Fragment>;
+  })
+}

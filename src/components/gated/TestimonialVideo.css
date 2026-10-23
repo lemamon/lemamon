@@ -1,0 +1,77 @@
+/**
+ * Depoimento em vídeo (TestimonialVideo.astro, B287). Dono: gated. Carregado
+ * só na página que renderiza um depoimento COM vídeo (ui/RenderedStyle.astro,
+ * B256): sem vídeo autorizado, nada disto vai ao ar nem pesa no orçamento de
+ * CSS da Home. Sem escopo automático: só classes .testimonial-video*.
+ */
+.testimonial-video video,
+.testimonial-video__facade {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-muted);
+}
+/* Fachada: o tamanho vem do aspect-ratio do quadro (atributo style): sem salto. */
+.testimonial-video__facade {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  color: var(--color-text-on-accent);
+  cursor: pointer;
+}
+/* O quadro cobre o botão; até o src ser ligado, fica só o fundo e o play. */
+.testimonial-video__poster {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+.testimonial-video__poster:not([src]) {
+  visibility: hidden;
+}
+.testimonial-video__icon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  display: grid;
+  place-items: center;
+  inline-size: 4rem;
+  block-size: 4rem;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  transform: translate(-50%, -50%);
+  transition: var(--transition-colors);
+}
+.testimonial-video__icon svg {
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+}
+.testimonial-video__facade:hover .testimonial-video__icon {
+  background-color: var(--color-accent-hover);
+}
+.testimonial-video__facade:active .testimonial-video__icon {
+  background-color: var(--color-accent-active);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .testimonial-video__icon {
+    transition: var(--transition-colors), var(--transition-transform);
+  }
+  .testimonial-video__facade:hover .testimonial-video__icon {
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+/* Sem JavaScript, quem aparece é o <video> do <noscript>. */
+@media (scripting: none) {
+  .testimonial-video__facade {
+    display: none;
+  }
+}
+@media print {
+  .testimonial-video {
+    display: none;
+  }
+}

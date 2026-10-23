@@ -1,0 +1,80 @@
+---
+/**
+ * Cabeçalho de seção — eyebrow opcional, título (h2 por padrão) e introdução.
+ * Dono: home. Usado na Home e livre para as outras páginas.
+ *
+ *   <Section id="servicos" labelledby="servicos-title">
+ *     <SectionHeader id="servicos-title" index={4} eyebrow={…} title={…} intro={…} layout="split" />
+ *   </Section>
+ *
+ * layout="stack" (padrão): tudo empilhado, alinhado à esquerda.
+ * layout="split": título à esquerda (7 col.) e introdução à direita (5 col.) a
+ * partir de 1024px, na grade de 12 colunas (.grid-12, 03-ui §3.6).
+ * index: numeração mono da seção na eyebrow ("02 / Serviços", 03-ui §3.5.2),
+ * decorativa (aria-hidden). Só sai junto com a eyebrow. Os textos chegam
+ * prontos (i18n na página).
+ */
+interface Props {
+  /** id do título, para o aria-labelledby da <Section>. */
+  id?: string;
+  eyebrow?: string;
+  /** Posição da seção na página (1 → "01 /"). */
+  index?: number;
+  title: string;
+  intro?: string;
+  level?: 2 | 3;
+  layout?: "stack" | "split";
+  class?: string;
+}
+
+const { id, eyebrow, index, title, intro, level = 2, layout = "stack", class: className } = Astro.props;
+const Heading = `h${level}` as "h2" | "h3";
+const indexLabel = index && index > 0 ? `${String(index).padStart(2, "0")} /` : undefined;
+---
+
+<header class:list={["section-header", { "grid-12": layout === "split" }, className]} data-layout={layout}>
+  <div class="section-header__main">
+    {
+      eyebrow && (
+        <p class="eyebrow">
+          {indexLabel && <span class="eyebrow__index" aria-hidden="true">{indexLabel}</span>}
+          {eyebrow}
+        </p>
+      )
+    }
+    <Heading id={id} class="section-header__title">{title}</Heading>
+  </div>
+  {intro && <p class="lead section-header__intro">{intro}</p>}
+  <slot />
+</header>
+
+<style>
+  .section-header {
+    display: grid;
+    row-gap: var(--space-4);
+    margin-block-end: var(--space-10);
+  }
+  .section-header__main {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+  }
+  .section-header__title {
+    max-inline-size: var(--measure-title);
+  }
+  @media (min-width: 1024px) {
+    .section-header {
+      margin-block-end: var(--space-12);
+    }
+    .section-header[data-layout="split"] {
+      align-items: end;
+    }
+    .section-header[data-layout="split"] .section-header__main {
+      --span-lg: 7;
+    }
+    .section-header[data-layout="split"] .section-header__intro {
+      --span-lg: 5;
+      justify-self: end;
+    }
+  }
+</style>

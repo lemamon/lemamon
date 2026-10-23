@@ -1,0 +1,67 @@
+---
+/**
+ * Medição no <head> — BLUEPRINT §10.2–10.3, CONTRACT §8 e §11. Dono: shell.
+ *
+ * Só no build de PRODUÇÃO do Netlify (isProductionDeploy(): CONTEXT=production).
+ * Deploy preview, branch deploy e local não carregam nada de terceiros, então
+ * nunca geram conversão no Ads nem sessão no GA4 (backlog B277).
+ *
+ *  - gtag.js do Google Ads (AW-16881353870) + a função global
+ *    gtag_report_conversion(url?) da conversão "Solicitar cotação" (send_to de
+ *    GOOGLE_ADS em config/site.ts), chamada pela ilha no sucesso do envio
+ *    (lib/analytics reportAdsConversion() também funciona: as duas usam window.gtag).
+ *    Personalização de anúncios e Google Signals DESLIGADOS, a não ser com
+ *    remarketing E consentimento: é o que a Política descreve
+ *    (navigation_data.items.google_ads, sem remarketing — i18n
+ *    _notes.launch_blockers (4)). Ligar remarketing exige trocar a Política antes.
+ *  - GA4 pela mesma gtag.js, só com PUBLIC_GA4_ID (vazio = nenhum evento).
+ *  - New Relic Browser: public/scripts/newrelic.js (nunca o blob inline de
+ *    69 kB no caminho crítico), sem gravação de sessão (B274). Injetado DEPOIS
+ *    do `load`, no ocioso (requestIdleCallback; setTimeout sem ele), por um
+ *    script inline curto (auditoria F56: com defer no <head>, ele segurava os
+ *    módulos da página, +70 ms no DOMContentLoaded em 4G lento e +147 ms em
+ *    3G). O teto do arquivo em dist continua no verify-build
+ *    (OWN_BUDGET_FILES, 30 KiB gzip).
+ *  - Com privacidade.baseAnuncios = "consentimento" (B344): o snippet emite o
+ *    consent default denied ANTES de gtag("js") e dos config, aplica a escolha
+ *    salva na mesma ordem síncrona, e o New Relic só carrega depois do aceite
+ *    (src/scripts/consent.ts, pelo ConsentBanner). Snippet em
+ *    src/scripts/gtag-inline.ts (compacto, ≤ 1 KiB).
+ *  - Em todas as builds: o listener delegado de [data-track] → track(), que é
+ *    no-op sem GA4.
+ */
+import { privacidade } from "@/config/privacidade";
+import { GA4_ID, GOOGLE_ADS, isProductionDeploy, NEW_RELIC_SCRIPT } from "@/config/site";
+import { gtagInlineScript } from "@/scripts/gtag-inline";
+
+const production = isProductionDeploy();
+/** Consent Mode v2 + aviso de cookies (B344): só com baseAnuncios = "consentimento". */
+const consent = privacidade.baseAnuncios === "consentimento";
+/** Carrega o agente do New Relic depois do load, no ocioso (F56). Compacto: inline clássico, teto de 1 KiB. */
+const newRelicLoader =
+  'addEventListener("load",function(){(window.requestIdleCallback||setTimeout)(function(){' +
+  `var s=document.createElement("script");s.src=${JSON.stringify(NEW_RELIC_SCRIPT)};document.head.appendChild(s)})});`;
+const gtag = gtagInlineScript({
+  adsId: GOOGLE_ADS.id,
+  sendTo: GOOGLE_ADS.conversionSendTo,
+  ga4Id: GA4_ID,
+  consent,
+  personalization: privacidade.remarketing,
+});
+---
+
+{
+  production && (
+    <>
+      <link rel="preconnect" href="https://www.googletagmanager.com" />
+      <link rel="dns-prefetch" href="https://bam.nr-data.net" />
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS.id}`} />
+      <script is:inline set:html={gtag} />
+      {!consent && <script is:inline set:html={newRelicLoader} />}
+    </>
+  )
+}
+
+<script>
+  import "@/scripts/analytics-delegate";
+</script>

@@ -1,0 +1,115 @@
+---
+/**
+ * Serviço §6.5 #9 `other_services` — always. Dono: pages.
+ * Links para os outros 4 serviços, cada um com 1 linha (other_services_line).
+ * O nome do serviço é o próprio link, com âncora descritiva para o SEO interno
+ * (services._notes.internal_links); a linha inteira é área de toque (≥ 56px).
+ * Cada linha é um <Card as="li" interactive> (B214: borda, raio, fundo e hover
+ * vêm de lá); gutter = --grid-gap (B222).
+ */
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { SERVICE_KEYS, SERVICE_ROUTE, urlFor, type ServiceKey } from "@/config/routes";
+import { t, tDynamic, type Locale } from "@/i18n";
+
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+
+interface Props {
+  locale: Locale;
+  service: ServiceKey;
+}
+
+const { locale, service } = Astro.props;
+const others = SERVICE_KEYS.filter((key) => key !== service);
+---
+
+<Section id="outros-servicos" labelledby="outros-servicos-title" spacing="compact" surface="subtle">
+  <SectionHeader id="outros-servicos-title" title={t(locale, "services.template.other_services_title")} />
+  <ul role="list" class="others">
+    {
+      others.map((key) => (
+        <Card as="li" interactive padding="sm" class="others__item">
+          <a href={urlFor(SERVICE_ROUTE[key], locale)} class="others__link">
+            {tDynamic(locale, `services.${key}.name`)}
+          </a>
+          <p class="others__line">{tDynamic(locale, `services.${key}.other_services_line`)}</p>
+          <Icon name="arrow-right" size={20} class="others__icon" />
+        </Card>
+      ))
+    }
+  </ul>
+</Section>
+
+<style>
+  .others {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+
+  /* Raiz = <Card as="li" interactive>: borda, raio, fundo, padding e hover vêm de lá. */
+  .others :global(.others__item) {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-4);
+    row-gap: var(--space-1);
+    align-items: center;
+    min-block-size: var(--target-option);
+  }
+
+  .others__link {
+    grid-column: 1;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+
+  /* A linha inteira é o alvo do link. */
+  .others__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  /* Foco: o anel vai para o card inteiro onde há :has(); sem suporte, fica o
+     anel padrão no próprio link (nunca some). */
+  @supports selector(:has(*)) {
+    .others__link:focus-visible {
+      outline: none;
+    }
+
+    .others :global(.others__item:has(.others__link:focus-visible)) {
+      outline: var(--focus-ring-width) solid var(--color-focus-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
+  }
+
+  .others__line {
+    grid-column: 1;
+    color: var(--color-text-secondary);
+  }
+
+  .others :global(.others__icon) {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    color: var(--color-text-tertiary);
+    transition: var(--transition-transform);
+  }
+
+  /* O hover do card é do <Card interactive>; aqui só a seta acompanha. */
+  @media (hover: hover) and (pointer: fine) {
+    .others :global(.others__item:hover .others__icon) {
+      transform: translateX(var(--space-1));
+      color: var(--color-text-primary);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .others {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,167 @@
+---
+/**
+ * Barra de ação fixa — mobile < 768px (BLUEPRINT §8.2; backlog B213). Dono: shell.
+ *
+ * "Pedir diagnóstico gratuito" (primário, ~70%) + ícone de WhatsApp
+ * (aria-label "Falar no WhatsApp"). No mobile ela SUBSTITUI o WhatsApp
+ * flutuante. Aparece quando o CTA do hero sai da tela (src/scripts/sticky-bar.ts);
+ * fica oculta com o teclado aberto e quando outro CTA de diagnóstico, um
+ * formulário ou o rodapé está na tela. Respeita a safe-area; o <body> ganha
+ * padding-bottom para nada ficar escondido atrás dela. Com rascunho do wizard,
+ * o rótulo vira "Continuar meu pedido". Não existe em /orcamento* (Base.astro).
+ * As @media são em `em` (47.999em/48em), como as do header e NAV_QUERIES: com a
+ * fonte do navegador em 24px, uma janela de 1024px tem o header mobile (sem CTA)
+ * e precisa da barra (F13).
+ */
+import Icon from "@/components/ui/Icon.astro";
+import { getFeatures } from "@/config/features";
+import { quoteHref, urlFor, type QuoteAttribution } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+import { whatsappHref } from "@/lib/whatsapp";
+
+import { primaryCtaShortLabel } from "./nav";
+
+import ResumeLabel from "./ResumeLabel.astro";
+
+interface Props {
+  locale: Locale;
+  /** ?origem= do CTA da barra. */
+  origem: string;
+  /** Atribuição além do ?origem= (servico, ref, entrada; Base.astro, B166). */
+  quoteAttribution?: Omit<QuoteAttribution, "origem">;
+  whatsappMessage: string;
+}
+
+const { locale, origem, quoteAttribution, whatsappMessage } = Astro.props;
+const wa = whatsappHref(whatsappMessage);
+/** Botão estreito: o rótulo completo em 14px e, só se nem assim couber, o curto com verbo (nav.ts, ResumeLabel). Nunca 2 linhas. */
+const shortLabel = primaryCtaShortLabel(locale, await getFeatures());
+---
+
+<div class="sticky-bar" role="region" aria-label={t(locale, "shared.sticky_bar.aria_label")} data-sticky-bar data-state="hidden">
+  <a
+    class="sticky-bar__cta"
+    href={quoteHref(locale, { ...quoteAttribution, origem })}
+    data-track="cta_click"
+    data-cta-id="diagnosis"
+    data-origem={origem}
+    data-resume-cta=""
+    data-resume-href={urlFor("quote", locale)}
+  >
+    <ResumeLabel locale={locale} short={shortLabel} />
+  </a>
+  {
+    wa && (
+      <a
+        class="sticky-bar__whatsapp"
+        href={wa}
+        target="_blank"
+        rel="noopener"
+        aria-label={t(locale, "shared.sticky_bar.whatsapp_label")}
+        data-track="whatsapp_click"
+        data-source="sticky_bar"
+      >
+        <Icon name="whatsapp" size={26} />
+      </a>
+    )
+  }
+</div>
+
+<script>
+  import "@/scripts/sticky-bar";
+</script>
+
+<style>
+  .sticky-bar {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--z-floating);
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4) calc(var(--space-2) + env(safe-area-inset-bottom));
+    border-block-start: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-canvas);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition:
+      transform var(--duration-slow) var(--ease-out),
+      visibility 0s linear var(--duration-slow);
+  }
+  .sticky-bar[data-state="visible"] {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform var(--duration-slow) var(--ease-out),
+      visibility 0s;
+  }
+
+  .sticky-bar__cta {
+    /* Botão estreito: rótulo completo em 14px, depois o curto (ResumeLabel). */
+    container: resume-cta / inline-size;
+    display: inline-flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--target-cta);
+    padding-inline: var(--space-4);
+    border-radius: var(--radius-md);
+    background-color: var(--color-accent);
+    color: var(--color-text-on-accent);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+  }
+  .sticky-bar__cta:hover,
+  .sticky-bar__cta:active {
+    background-color: var(--color-accent-hover);
+    color: var(--color-text-on-accent);
+  }
+
+  .sticky-bar__whatsapp {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--target-cta);
+    block-size: var(--target-cta);
+    border-radius: var(--radius-md);
+    background-color: var(--color-whatsapp);
+    color: var(--color-text-on-whatsapp);
+  }
+  .sticky-bar__whatsapp:hover {
+    background-color: var(--color-whatsapp-hover);
+    color: var(--color-text-on-whatsapp);
+  }
+
+  @media (max-width: 47.999em) {
+    :global(body:has([data-sticky-bar])) {
+      padding-block-end: calc(var(--sticky-bar-height) + env(safe-area-inset-bottom));
+    }
+    /* Foco por teclado nunca fica embaixo da barra (WCAG 2.2 2.4.11; B213,
+       B075): o scroll que traz o elemento focado para a tela para acima dela.
+       Convive com o scroll-padding-block-start do header (global.css). */
+    :global(html:has([data-sticky-bar])) {
+      scroll-padding-block-end: calc(var(--sticky-bar-height) + env(safe-area-inset-bottom) + var(--space-4));
+    }
+  }
+
+  @media (min-width: 48em) {
+    .sticky-bar {
+      display: none;
+    }
+  }
+
+  /* Impressão / PDF (B114): a barra some e o <body> perde a reserva de espaço
+     dela (a página impressa pode ter menos de 768px de largura). */
+  @media print {
+    .sticky-bar {
+      display: none !important;
+    }
+    :global(body:has([data-sticky-bar])) {
+      padding-block-end: 0 !important;
+    }
+  }
+</style>

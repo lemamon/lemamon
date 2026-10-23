@@ -1,0 +1,146 @@
+---
+/**
+ * "Onde você decide" — os 2 pontos de decisão (BLUEPRINT §6.1 #6, §6.2 #9,
+ * §12). Dono: home. API estável: `locale`, `level`; `markers` opcional.
+ *
+ * Não renderiza em /servicos/sustentacao (i18n shared._notes.decision_points):
+ * quem decide isso é a página. O intro é obrigatório (services._notes).
+ *
+ * markers: losangos numerados que casam com os da <MethodTimeline
+ * decisionMarkers /> (o mesmo desenho no trilho e na legenda).
+ *
+ * Superfície: <Card surface="subtle"> (em data-surface="inverse" os mesmos
+ * tokens viram os do fundo escuro). Desktop: o painel ocupa a largura do
+ * contêiner e usa a grade de 12 colunas (4 + 8), então a 2ª coluna cai na
+ * mesma linha do FAQ e do bloco de investimento (B222).
+ */
+import Card from "@/components/ui/Card.astro";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  level?: 2 | 3;
+  /** id do título (aria-labelledby de quem envolve). */
+  id?: string;
+  markers?: boolean;
+  class?: string;
+}
+
+const { locale, level = 3, id, markers = false, class: className } = Astro.props;
+const Heading = `h${level}` as "h2" | "h3";
+const points = [t(locale, "shared.decision_points.after_feedback"), t(locale, "shared.decision_points.after_plan")];
+---
+
+<Card
+  surface="subtle"
+  padding="none"
+  class={["decision-points", "grid-12", className].filter(Boolean).join(" ")}
+  data-markers={markers ? "true" : undefined}
+>
+  <div class="decision-points__head">
+    <Heading id={id} class="decision-points__title">{t(locale, "shared.decision_points.title")}</Heading>
+    <p class="decision-points__intro">{t(locale, "shared.decision_points.intro")}</p>
+  </div>
+  <ol class="decision-points__list">
+    {
+      points.map((text, index) => (
+        <li>
+          <span class="decision-points__marker" aria-hidden="true">
+            <span>{index + 1}</span>
+          </span>
+          <p>{text}</p>
+        </li>
+      ))
+    }
+  </ol>
+</Card>
+
+<style>
+  /* Raiz = <Card surface="subtle" padding="none"> + .grid-12. */
+  :global(div.card.decision-points) {
+    display: grid;
+    row-gap: var(--space-6);
+    padding: var(--space-6);
+  }
+  .decision-points__head {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .decision-points__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+  /* Textos curtos (≤ 4 linhas): balance em vez do pretty global, que no
+     Chromium deixa "go-ahead." / "Descubrimiento." sozinhas na última linha. */
+  .decision-points__intro,
+  .decision-points__list p {
+    text-wrap: balance;
+  }
+  .decision-points__intro {
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-lead);
+  }
+  .decision-points__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .decision-points__list li {
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+  }
+  .decision-points__marker {
+    display: grid;
+    place-items: center;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    margin: var(--space-1);
+    rotate: 45deg;
+    border: var(--track-width) solid var(--color-brand);
+    background-color: var(--color-bg-canvas);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    color: var(--color-text-primary);
+  }
+  .decision-points__marker > span {
+    rotate: -45deg;
+  }
+  /* Sem losangos: o número vira um círculo discreto. */
+  :global(.decision-points:not([data-markers])) .decision-points__marker {
+    rotate: none;
+    border-radius: var(--radius-full);
+  }
+  :global(.decision-points:not([data-markers])) .decision-points__marker > span {
+    rotate: none;
+  }
+  .decision-points__list p {
+    color: var(--color-text-primary);
+  }
+  :global([data-surface="inverse"]) .decision-points__marker {
+    border-color: var(--color-accent);
+  }
+
+  @media (min-width: 1024px) {
+    /* Sem padding lateral no painel: as trilhas da grade são as da página;
+       o respiro lateral fica dentro de cada coluna. */
+    :global(div.card.decision-points) {
+      padding: var(--space-8) 0;
+    }
+    .decision-points__head {
+      --span-lg: 4;
+      padding-inline: var(--space-8) var(--space-4);
+    }
+    .decision-points__list {
+      --span-lg: 8;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-8);
+      padding-inline-end: var(--space-8);
+    }
+  }
+</style>

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "America/Sao_Paulo",
+  "schedule": ["before 6am on monday"],
+  "rangeStrategy": "bump",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "groupName": "astro",
+      "matchPackageNames": ["astro", "/^@astrojs\\//"]
+    },
+    {
+      "groupName": "react",
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"]
+    },
+    {
+      "groupName": "testes",
+      "matchPackageNames": ["vitest", "@vitest/coverage-v8", "jsdom", "@playwright/test"]
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    }
+  ]
+}

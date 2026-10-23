@@ -1,0 +1,81 @@
+---
+/**
+ * Sprint de Descoberta §6.3 #4 `who_for` — always. Dono: pages.
+ * 4 perfis (título + 1 frase), 2×2 a partir de 768px, e o fechamento com o
+ * link "Começar pelo diagnóstico gratuito" →
+ * /orcamento?entrada=descoberta&origem=descoberta-perfis
+ * (discovery_sprint._notes.who_for_closing).
+ * Cada perfil é um <Card as="li"> (B214); gutter = --grid-gap (B222).
+ */
+import Card from "@/components/ui/Card.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import TextCta from "@/components/services/kit/TextCta.astro";
+import Section from "@/components/ui/Section.astro";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const profiles = Object.entries(getSection(locale, "discovery_sprint.who_for.profiles"));
+---
+
+<Section id="para-quem" labelledby="para-quem-title">
+  <SectionHeader id="para-quem-title" title={t(locale, "discovery_sprint.who_for.title")} />
+  <ul role="list" class="who">
+    {
+      profiles.map(([id, profile], index) => (
+        <Card as="li" class="who__item" data-id={id}>
+          <span class="who__index" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <h3 class="who__title">{profile.title}</h3>
+          <p class="who__text">{profile.text}</p>
+        </Card>
+      ))
+    }
+  </ul>
+  <TextCta
+    locale={locale}
+    origem="descoberta-perfis"
+    entrada="descoberta"
+    label="method"
+    lead={t(locale, "discovery_sprint.who_for.closing")}
+  />
+</Section>
+
+<style>
+  .who {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+
+  /* Raiz = <Card as="li">: borda, raio, fundo e padding vêm de lá. */
+  .who :global(.who__item) {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .who__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .who__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .who__text {
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 768px) {
+    .who {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

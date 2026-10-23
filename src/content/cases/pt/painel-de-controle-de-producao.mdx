@@ -1,0 +1,52 @@
+---
+titulo: "Controle da produção com os dados dos produtos fabricados registrados e exibidos em um painel"
+tipoDeSistema: "Sistema de controle de produção"
+setor: "Indústria"
+porte: "Fabricante"
+servicos: ["web_systems"]
+problema: "Uma fabricante precisava controlar a sua produção a partir dos dados dos produtos fabricados. Para isso, era preciso registrar esses dados e exibi-los para quem administra a produção."
+combinado:
+  escopo: "O projeto cobriu as duas partes do sistema de controle de produção: um back-end dedicado, a parte que roda no servidor e atende só a esse sistema, e um painel administrativo (dashboard), onde os dados sobre os produtos fabricados são registrados e exibidos."
+entregue: "A base para a fabricante controlar a produção: os dados dos produtos fabricados, registrados e à vista num só painel."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "No início"
+    texto: "Conversa inicial para entender o pedido e o problema do cliente."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "O problema foi entendido e o escopo, definido."
+  - etapa: "development"
+    quando: "Entre 2017 e 2019"
+    texto: "Construção com entregas parciais ao longo do projeto, e não tudo só no fim."
+  - etapa: "support"
+    quando: "Depois de entrar no ar"
+    texto: "O sistema seguiu em sustentação."
+fichaTecnica:
+  stack: ["AngularJS", "JavaScript", "LoopBack"]
+capa:
+  src: "../_imagens/painel-de-controle-de-producao/capa.png"
+  alt: "Ilustração de um painel administrativo com gráficos e uma tabela de produtos fabricados"
+relacionados: ["painel-de-testes-automatizados", "controle-de-producao-com-contagem-automatica"]
+ordem: 17
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Painel de controle de produção"
+seoDescription: "Sistema de controle de produção de uma fabricante, com back-end dedicado e painel administrativo para registrar e exibir dados dos produtos fabricados."
+---
+
+### Para quem
+
+O sistema foi feito para uma fabricante e para quem administra a sua produção.
+
+### Como funciona
+
+Quem administra a produção trabalha no painel. O back-end dedicado fica por trás dele e dá suporte ao registro e à exibição dos dados.
+
+### Tecnologia, em linguagem simples
+
+- **AngularJS**: framework JavaScript para construir interfaces web que rodam no navegador; no projeto, é a base do painel administrativo.
+- **JavaScript**: linguagem de programação da web, que dá comportamento às páginas no navegador e também roda em servidores; no projeto, está no painel e no back-end.
+- **LoopBack**: framework de Node.js para criar APIs, as portas pelas quais o painel pede e recebe dados do servidor; no projeto, é a base do back-end dedicado.

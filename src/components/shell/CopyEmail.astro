@@ -1,0 +1,101 @@
+---
+/**
+ * E-mail em texto selecionável + botão "Copiar" (BLUEPRINT §5.5, §8.1, §8.5;
+ * backlog B145). Dono: shell. API estável: { locale, source }. Em fundo escuro
+ * ([data-surface="inverse"], CTA final) as cores seguem os tokens semânticos.
+ *
+ * Nunca mailto como ação principal. O botão confirma com "Copiado" (mesma
+ * largura) e a região aria-live anuncia "E-mail copiado"; evento
+ * email_copy {source}. {email} vem de config/empresa.ts. Lógica em
+ * src/scripts/copy-email.ts (um listener para a página inteira).
+ * No toque (pointer: coarse), o script transforma o endereço num link
+ * mailto: com assunto (data-mailto-subject, shared.clipboard.mailto_subject;
+ * auditoria F49): no celular, copiar e colar é mais lento que abrir o app de
+ * e-mail. Com mouse, o endereço continua texto selecionável, e o HTML
+ * publicado não tem mailto (B145). "Copiar" segue sendo a ação principal.
+ */
+import Icon from "@/components/ui/Icon.astro";
+import { empresa } from "@/config/empresa";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  /** Origem para o evento email_copy {source}. */
+  source: string;
+}
+
+const { locale, source } = Astro.props;
+const email = empresa.email;
+---
+
+<span class="copy-email" data-copy-email>
+  <span class="copy-email__address" data-copy-address data-mailto-subject={t(locale, "shared.clipboard.mailto_subject")}>{email}</span>
+  <button
+    type="button"
+    class="copy-email__button"
+    data-copy={email}
+    data-copied-label={t(locale, "shared.clipboard.copied_email")}
+    data-failed-label={t(locale, "shared.a11y.shell.copy_failed")}
+    data-source={source}
+    aria-label={t(locale, "shared.clipboard.copy_email_aria", { email })}
+  >
+    <Icon name="copy" size={16} />
+    <span class="copy-email__labels">
+      <span class="copy-email__idle">{t(locale, "shared.clipboard.copy")}</span>
+      <span class="copy-email__done" aria-hidden="true">{t(locale, "shared.clipboard.copied")}</span>
+    </span>
+  </button>
+  <span class="sr-only" role="status" aria-live="polite" data-copy-status></span>
+</span>
+
+<script>
+  import "@/scripts/copy-email";
+</script>
+
+<style>
+  .copy-email {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    max-inline-size: 100%;
+  }
+  .copy-email__address {
+    overflow-wrap: anywhere;
+    user-select: all;
+    -webkit-user-select: all;
+  }
+  .copy-email__button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-block-size: var(--target-min);
+    padding-inline: var(--space-3);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-sm);
+    transition: var(--transition-colors);
+  }
+  .copy-email__button:hover {
+    background-color: var(--color-bg-surface-hover);
+  }
+  .copy-email__labels {
+    display: inline-grid;
+  }
+  .copy-email__labels > span {
+    grid-area: 1 / 1;
+  }
+  .copy-email__done {
+    visibility: hidden;
+  }
+  .copy-email[data-copied="true"] .copy-email__idle {
+    visibility: hidden;
+  }
+  .copy-email[data-copied="true"] .copy-email__done {
+    visibility: visible;
+  }
+</style>

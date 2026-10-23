@@ -1,0 +1,61 @@
+---
+/**
+ * Home §6.1 #9 `cases` — when_data hasCases (≥ 2 cases publicados nos 3 idiomas).
+ * Eyebrow, H2, intro, até 3 cards (§5.7) e "Ver todos os cases" → /cases.
+ * Cards empilhados no mobile, sem carrossel. Dono: gated.
+ *
+ * Capítulo da Home (B216): `index` numera a eyebrow ("05 /") e `divider` liga a
+ * linha de 1px no topo; os dois vêm do homeSectionPlan() da HomeView, que usa a
+ * MESMA flag (hasCases) que esconde esta seção, então a numeração não pula.
+ *
+ * AUTO-GATED: sem a flag não renderiza NADA. `data` existe só para os testes.
+ */
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { getFeatures, LIMITS, type Features } from "@/config/features";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+import { caseItems, type CaseItem } from "@/lib/content";
+
+import CaseGrid from "./CaseGrid.astro";
+
+interface Props {
+  locale: Locale;
+  /** Posição do capítulo na Home (1 → "01 /"), na eyebrow. */
+  index?: number;
+  /** Linha de 1px no topo (vizinha de mesma superfície). */
+  divider?: boolean;
+  /** Só testes: flags e cases injetados (tests/fixtures/). */
+  data?: { features: Pick<Features, "hasCases">; items: CaseItem[] };
+}
+
+const { locale, index, divider = false, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const items = features.hasCases ? (data?.items ?? (await caseItems(locale))).slice(0, LIMITS.homeCases) : [];
+---
+
+{
+  features.hasCases && items.length > 0 && (
+    <Section id="cases" labelledby="cases-title" divider={divider}>
+      <SectionHeader
+        id="cases-title"
+        eyebrow={t(locale, "home.cases.eyebrow")}
+        index={index}
+        title={t(locale, "home.cases.title")}
+        intro={t(locale, "home.cases.intro")}
+        layout="split"
+      />
+      <CaseGrid locale={locale} items={items} />
+      <p class="cases-more">
+        <ArrowLink href={urlFor("cases_hub", locale)} text={t(locale, "shared.cta.see_all_cases")} />
+      </p>
+    </Section>
+  )
+}
+
+<style>
+  .cases-more {
+    margin-block-start: var(--space-8);
+  }
+</style>

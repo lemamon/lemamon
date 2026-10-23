@@ -1,0 +1,82 @@
+---
+/**
+ * Card de post do blog (interno do gated): título, resumo, autor real e data.
+ * O card inteiro é um único <a> cujo texto inclui o título do post
+ * (i18n _notes.cta); "Ler artigo" fica como indicação visual dentro do link.
+ * Só pt-BR (BLUEPRINT §6.12).
+ * Primitivos (B214): raiz = <Card as="a" interactive padding="md"> (borda,
+ * raio, fundo, respiro e hover só com ponteiro fino, B192) e <ArrowLink> sem
+ * href como indicação "Ler artigo", igual ao CaseCard. Aqui fica só o layout
+ * interno.
+ */
+import type { CollectionEntry } from "astro:content";
+
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Card from "@/components/ui/Card.astro";
+import { urlFor } from "@/config/routes";
+import { t } from "@/i18n";
+
+import { formatPostDate, isoDate } from "./blog";
+
+interface Props {
+  entry: CollectionEntry<"posts">;
+  /** Nível do título (h2 no hub, h3 em "Leia também"). */
+  level?: 2 | 3;
+}
+
+const { entry, level = 2 } = Astro.props;
+const locale = "pt" as const;
+const Heading = `h${level}` as "h2" | "h3";
+---
+
+<Card as="a" href={urlFor("blog_post", locale, { slug: entry.id })} interactive padding="md" class="post-card">
+  <Heading class="post-card__title">{entry.data.titulo}</Heading>
+  <p class="post-card__summary">{entry.data.resumo}</p>
+  <p class="post-card__meta">
+    <span>{t(locale, "blog.hub.card_by", { autor: entry.data.autor.nome })}</span>
+    <span aria-hidden="true">·</span>
+    <time datetime={isoDate(entry.data.publicadoEm)}>
+      {t(locale, "blog.hub.card_date", { data: formatPostDate(entry.data.publicadoEm) })}
+    </time>
+  </p>
+  <ArrowLink size="sm" text={t(locale, "blog.hub.read_post")} class="post-card__more" />
+</Card>
+
+<style>
+  /* Raiz = <Card>: só o layout interno. O escopo do Astro não atravessa a raiz
+     de outro componente, daí o :global; "a.card" vence o display:block do Card. */
+  :global(a.card.post-card) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    block-size: 100%;
+  }
+  .post-card__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+  .post-card__summary {
+    color: var(--color-text-secondary);
+  }
+  .post-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+  /* "Ler artigo" no pé do card, mesmo nos cards mais altos da linha. */
+  :global(a.card.post-card) > :global(.post-card__more) {
+    align-self: flex-start;
+    margin-block-start: auto;
+  }
+  /* Hover só com ponteiro fino (no toque ficaria preso, B192), igual ao CaseCard. */
+  @media (hover: hover) and (pointer: fine) {
+    :global(a.card.post-card:hover) > :global(.post-card__more) {
+      color: var(--color-text-link-hover);
+    }
+    :global(a.card.post-card:hover .arrow-link__icon) {
+      transform: translateX(var(--space-1));
+    }
+  }
+</style>

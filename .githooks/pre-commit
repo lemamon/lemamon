@@ -1,0 +1,8 @@
+#!/bin/sh
+# Pre-commit do projeto (backlog B251; dono: shell).
+# Ativado no `yarn install` por scripts/git-hooks.mjs (git config core.hooksPath .githooks).
+# Roda o lint de código (scripts/lint.mjs) só nos arquivos em stage: um
+# console.log em src/, um debugger ou uma asserção de tipo desnecessária
+# bloqueiam o commit. Emergência: git commit --no-verify (a CI roda `yarn lint`
+# de novo no PR).
+exec node scripts/lint.mjs --staged

@@ -1,0 +1,45 @@
+---
+/**
+ * Como trabalhamos §6.2 #6 `stage_discovery` (#descoberta) — always. Dono: pages.
+ * Etapa 2, gratuita e só quando o diagnóstico mostra que é necessária (D44,
+ * 21/10/2026): "é aqui que o seu problema vira um plano"; os 3 entregáveis
+ * (§5.2, componente do home); custo ("Gratuita…"); depois (você decide se
+ * segue). Link "Entender por que a Sprint de Descoberta vem antes" →
+ * /sprint-de-descoberta.
+ */
+import DiscoveryDeliverables from "@/components/shared/DiscoveryDeliverables.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+import HwwFacts from "./HwwFacts.astro";
+import HwwStageBlock from "./HwwStageBlock.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const cost = t(locale, "how_we_work.stage_discovery.cost");
+---
+
+<HwwStageBlock locale={locale} stage="discovery" title={t(locale, "how_we_work.stage_discovery.title")}>
+  <p slot="intro" class="stage-text">{t(locale, "how_we_work.stage_discovery.text")}</p>
+  <DiscoveryDeliverables locale={locale} level={3} />
+  <HwwFacts
+    items={[
+      { label: t(locale, "how_we_work.stage_discovery.cost_label"), text: cost, emphasis: true },
+      { label: t(locale, "how_we_work.stage_discovery.after_label"), text: t(locale, "how_we_work.stage_discovery.after") },
+    ]}
+  />
+  <div>
+    <ArrowLink href={urlFor("discovery_sprint", locale)} text={t(locale, "how_we_work.stage_discovery.link")} />
+  </div>
+</HwwStageBlock>
+
+<style>
+  .stage-text {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+  }
+</style>

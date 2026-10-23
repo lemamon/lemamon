@@ -1,0 +1,215 @@
+---
+/**
+ * Home §6.1 #5 `risks` — always. Dono: home. Objeção de risco.
+ *
+ * Os medos de quem contrata software, tratados como "o que costuma dar
+ * errado" (nunca "você já passou por isso"), cada um respondido por uma etapa
+ * confirmada do método. Lado do risco em tom neutro; lado da Lemamon em
+ * destaque (fundo, ícone e rótulo, não só cor). 2×2 no desktop; pares
+ * empilhados no mobile. Semântica: <dl> (risco → como a gente evita).
+ * Nunca nomeia concorrente.
+ *
+ * Termos de §5.9 com 1ª menção aqui (ex.: "escopo priorizado", "MVP")
+ * viram toggletip; a HomeView decide onde fica cada 1ª menção.
+ *
+ * A frase-ponte fecha a seção colada no método: um traço desce dela até a
+ * seção escura logo abaixo (#como-trabalhamos). Por isso a <Section> não tem
+ * respiro embaixo (trim="end") e abre com a linha de 1px (divider).
+ * index: numeração da eyebrow (a HomeView calcula, B216).
+ *
+ * Garantias à vista (auditoria de conversão F01 e F37): com o código do
+ * cliente aprovado, a resposta de "O fornecedor que some" cita o código
+ * (./home-risks.ts); o par dos orçamentos impossíveis de comparar termina com
+ * um link para a régua "Como comparar orçamentos" de /quanto-custa.
+ */
+import TermText from "@/components/shared/TermText.astro";
+import type { TermId } from "@/components/shared/terms";
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { getFeatures } from "@/config/features";
+import { anchorFor, ANCHORS } from "@/config/routes";
+import { getSection, hasText, t, tDynamic, type Locale } from "@/i18n";
+
+import { riskAnswers } from "./home-risks";
+import { optionalText } from "./home-sections";
+
+interface Props {
+  locale: Locale;
+  /** Termos (§5.9) cuja 1ª menção na página está na resposta do par `id`. */
+  terms?: Partial<Record<string, readonly TermId[]>>;
+  /** Posição do capítulo na Home (eyebrow "02 /"). */
+  index?: number;
+}
+
+const { locale, terms = {}, index } = Astro.props;
+const features = await getFeatures();
+const pairs = getSection(locale, "home.risks.pairs");
+const answers = riskAnswers(locale, features);
+/** Link no fim da resposta (par com `link_text`): a régua de comparação de /quanto-custa. */
+const linkOf = (id: string) =>
+  hasText(locale, `home.risks.pairs.${id}.link_text`) ? tDynamic(locale, `home.risks.pairs.${id}.link_text`) : undefined;
+const compareHref = anchorFor("pricing", locale, ANCHORS.howToCompare);
+const fearLabel = t(locale, "home.risks.fear_label");
+const answerLabel = t(locale, "home.risks.answer_label");
+---
+
+<Section id="riscos" surface="subtle" trim="end" divider labelledby="riscos-title">
+  <SectionHeader
+    id="riscos-title"
+    eyebrow={optionalText(locale, "home.risks.eyebrow")}
+    index={index}
+    title={t(locale, "home.risks.title")}
+    intro={t(locale, "home.risks.intro")}
+    layout="split"
+  />
+
+  <dl class="risks">
+    {
+      Object.entries(pairs).map(([id, pair]) => (
+        <Card class="risk" padding="none" data-id={id}>
+          <dt class="risk__fear">
+            <span class="risk__label">
+              <Icon name="close" size={14} strokeWidth={2.5} />
+              {fearLabel}
+            </span>
+            <span class="risk__fear-text">{pair.fear}</span>
+          </dt>
+          <dd class="risk__answer">
+            <span class="risk__label">
+              <Icon name="check" size={14} strokeWidth={2.5} />
+              {answerLabel}
+            </span>
+            <span class="risk__answer-text">
+              <TermText locale={locale} text={answers[id] ?? pair.answer} terms={terms[id] ?? []} />
+            </span>
+            {linkOf(id) && <ArrowLink href={compareHref} text={linkOf(id)} size="sm" class="risk__link" />}
+          </dd>
+        </Card>
+      ))
+    }
+  </dl>
+
+  <div class="bridge">
+    <p class="bridge__text">{t(locale, "home.risks.bridge")}</p>
+    <span class="bridge__line" aria-hidden="true"></span>
+  </div>
+</Section>
+
+<style>
+  .risks {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+  }
+  /* Raiz = <Card padding="none">: borda, raio e fundo vêm de lá. */
+  .risks :global(.risk) {
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+  .risk__fear,
+  .risk__answer {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    margin: 0;
+    padding: var(--space-5);
+  }
+  .risk__fear {
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-secondary);
+  }
+  /* <span> fora de <p>: a regra global p { text-wrap: pretty } não chega
+     aqui; sem ela, "retorno." / "escopo." ficavam sozinhas na última linha.
+     O medo é frase curta de 2 linhas, em que o pretty do Chromium não age
+     ("nada / funcionando"): balance divide as linhas por igual. */
+  .risk__fear-text {
+    text-wrap: balance;
+  }
+  .risk__answer-text {
+    text-wrap: pretty;
+  }
+  .risk__fear-text {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+  }
+  .risk__answer {
+    border-block-start: 1px dashed var(--color-border-strong);
+    background-color: var(--color-brand-subtle);
+    color: var(--color-brand-on-subtle);
+  }
+  .risk__answer-text {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+  .risk__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+  }
+  .risk__answer .risk__label {
+    color: var(--color-brand-on-subtle);
+  }
+  .risk__label :global(svg) {
+    flex: none;
+  }
+  .risk__answer :global(.risk__link) {
+    justify-self: start;
+  }
+
+  /* Frase-ponte: o traço desce até encostar na seção do método. */
+  .bridge {
+    display: grid;
+    justify-items: start;
+    margin-block-start: var(--space-12);
+    padding-inline-start: var(--space-5);
+    border-inline-start: var(--track-width) solid var(--color-accent);
+  }
+  .bridge__text {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    max-inline-size: 40ch;
+    text-wrap: balance;
+  }
+  .bridge__line {
+    display: block;
+    inline-size: 0;
+    block-size: var(--space-16);
+  }
+
+  @media (min-width: 768px) {
+    .risks {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--grid-gap);
+    }
+    /* Subgrid: a linha tracejada risco/resposta alinha entre os cards da mesma fileira. */
+    @supports (grid-template-rows: subgrid) {
+      .risks :global(.risk) {
+        grid-row: span 2;
+        grid-template-rows: subgrid;
+        row-gap: 0;
+      }
+    }
+    .risk__fear,
+    .risk__answer {
+      padding: var(--space-6);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .bridge {
+      margin-block-start: var(--space-16);
+    }
+    .bridge__line {
+      block-size: var(--space-20);
+    }
+  }
+</style>

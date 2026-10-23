@@ -1,0 +1,41 @@
+---
+/**
+ * Sprint de Descoberta §6.3 #2 `why_start_here` — always. Dono: pages.
+ * Sem entender o problema, preço é chute; tabela "Sem entender o problema ×
+ * Com Descoberta" (price · scope · deadline · decision —
+ * discovery_sprint._notes.why_start_here_table; deadline entrou no lugar de
+ * first_screen, o protótipo, na D44), acessível e sem scroll horizontal no mobile.
+ */
+import ComparisonTable from "@/components/services/kit/ComparisonTable.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import Section from "@/components/ui/Section.astro";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const rows = Object.entries(getSection(locale, "discovery_sprint.why_start_here.rows")).map(([id, row]) => ({
+  id,
+  dimension: row.dimension,
+  without: row.without,
+  with: row.with,
+}));
+---
+
+<Section id="por-que-comecar-aqui" labelledby="por-que-comecar-aqui-title">
+  <SectionHeader
+    id="por-que-comecar-aqui-title"
+    title={t(locale, "discovery_sprint.why_start_here.title")}
+    intro={t(locale, "discovery_sprint.why_start_here.text")}
+  />
+  <ComparisonTable
+    id="sem-com-descoberta"
+    caption={t(locale, "discovery_sprint.why_start_here.table_caption")}
+    colDimension={t(locale, "discovery_sprint.why_start_here.col_dimension")}
+    colWithout={t(locale, "discovery_sprint.why_start_here.col_without")}
+    colWith={t(locale, "discovery_sprint.why_start_here.col_with")}
+    rows={rows}
+  />
+</Section>

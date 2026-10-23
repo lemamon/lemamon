@@ -1,0 +1,206 @@
+---
+/**
+ * Contato §6.9 #2 `channels` — always. Dono: conversion.
+ * Cards: Diagnóstico gratuito (selo "recomendado para projetos"; o ÚNICO botão
+ * cheio da seção, §8.6) · WhatsApp (botão contornado, o mesmo peso do WhatsApp
+ * do hero; sem número; some sem PUBLIC_WHATSAPP_NUMBER) · E-mail em texto com
+ * "Copiar" (com NDA confirmado, a variante que cita NDA) · LinkedIn, GitHub,
+ * Medium numa linha só, depois dos cards (auditoria de conversão F14: perfil
+ * ainda sem conteúdo não ganha card antes do formulário) · "São Paulo, SP, Brasil"
+ * (com hasCompanyData, razão social · CNPJ · cidade, logo antes do formulário:
+ * auditoria F39). Os perfis ficam numa linha só também no celular (F39).
+ *
+ * Perfis: BLUEPRINT §6.9 e §4 tratam os três como canais confirmados e os
+ * listam sempre (como o footer, CONTRACT §15.1); a nota contact._notes.profiles
+ * pede condicionar a perfis.ts.publicar. Vale o BLUEPRINT até o dono decidir.
+ *
+ * Ritmo vertical: <Section spacing="compact" trim="start"> (B211), emendada no hero.
+ *
+ * Primitivos (B214): cada canal é um <Card as="li" padding="sm"> (o destaque do
+ * diagnóstico só troca a cor da borda). Os perfis são links em linha (ícone +
+ * nome), o mesmo desenho do Profiles variant="inline" dos serviços.
+ * Aqui não há borda, raio, respiro nem fundo de cartão próprios.
+ * Grade (B222): calha var(--grid-gap) e 1 coluna abaixo de 1024px; a partir
+ * de 1024px, 4+4+4 com os três canais e 6+6 sem o WhatsApp (data-count).
+ */
+import CopyEmail from "@/components/shell/CopyEmail.astro";
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { empresa } from "@/config/empresa";
+import { getFeatures } from "@/config/features";
+import { PROFILE_IDS, perfis } from "@/config/perfis";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  whatsappMessage: string;
+}
+
+const { locale, whatsappMessage } = Astro.props;
+const features = await getFeatures();
+const channels = getSection(locale, "contact.channels");
+const profiles = getSection(locale, "shared.profiles");
+const profileOrder = ["linkedin", "github", "medium"] as const satisfies readonly (typeof PROFILE_IDS)[number][];
+// Diagnóstico + e-mail sempre; WhatsApp só com número configurado.
+const channelCount = features.hasWhatsapp ? 3 : 2;
+const location = features.hasCompanyData
+  ? t(locale, "contact.channels.location_with_company", { razao_social: empresa.razaoSocial, cnpj: empresa.cnpj })
+  : channels.location;
+---
+
+<Section id="canais" spacing="compact" trim="start" labelledby="contact-channels-title" class="contact-channels">
+  <div class="contact-channels__inner">
+    <h2 id="contact-channels-title" class="contact-channels__title">{channels.title}</h2>
+    <ul class="contact-channels__grid" role="list" data-count={String(channelCount)}>
+      <Card as="li" padding="sm" class="channel channel--featured">
+        <p class="channel__badge">{channels.diagnosis.badge}</p>
+        <h3 class="channel__title">{channels.diagnosis.title}</h3>
+        <p class="channel__text">{channels.diagnosis.text}</p>
+        <CtaDiagnosis locale={locale} origem="contato-canais" size="md" full={true} />
+      </Card>
+      {
+        features.hasWhatsapp && (
+          <Card as="li" padding="sm" class="channel">
+            <h3 class="channel__title">{channels.whatsapp.title}</h3>
+            <p class="channel__text">{channels.whatsapp.text}</p>
+            <WhatsAppCta locale={locale} message={whatsappMessage} source="contato-canais" variant="outline" size="md" full={true} />
+          </Card>
+        )
+      }
+      <Card as="li" padding="sm" class="channel">
+        <h3 class="channel__title">{channels.email.title}</h3>
+        <p class="channel__text">{features.confirm.nda ? channels.email.text_with_nda : channels.email.text}</p>
+        <CopyEmail locale={locale} source="contato-canais" />
+      </Card>
+    </ul>
+
+    <div class="contact-channels__profiles">
+      <p>{channels.profiles_line}</p>
+      <ul role="list">
+        {
+          profileOrder.map((id) => (
+            <li>
+              <a href={perfis[id].url} target="_blank" rel="noopener" data-track="profile_click" data-profile={id}>
+                <Icon name={id} size={16} />
+                {profiles[id].name}
+                <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <p class="contact-channels__location">
+      <Icon name="map-pin" size={18} />
+      {location}
+    </p>
+  </div>
+</Section>
+
+<style>
+  .contact-channels__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .contact-channels__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  /* Grade de seção (B222): calha do token; 1 coluna abaixo de 1024px. */
+  .contact-channels__grid {
+    display: grid;
+    gap: var(--grid-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 1024px) {
+    .contact-channels__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .contact-channels__grid[data-count="2"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Raiz = <Card as="li" padding="sm"> (borda, raio, respiro, fundo): aqui só
+     o arranjo interno. */
+  .contact-channels__grid :global(.channel) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  /* Destaque do diagnóstico: só a cor da borda (dupla, pelo anel interno). */
+  .contact-channels__grid :global(.channel--featured) {
+    border-color: var(--color-border-accent);
+    box-shadow: var(--ring-inset) var(--color-border-accent);
+  }
+
+  .channel__badge {
+    padding: var(--space-0-5) var(--space-2);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-accent-subtle);
+    color: var(--color-accent-on-subtle);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .channel__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .channel__text {
+    flex: 1 1 auto;
+    color: var(--color-text-secondary);
+  }
+
+  /* Perfis em linha (F14): frase de apoio + links com ícone, como o
+     Profiles variant="inline" (alvo de toque ≥ 44px). */
+  .contact-channels__profiles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .contact-channels__profiles p {
+    color: var(--color-text-secondary);
+  }
+
+  /* Os 3 perfis numa linha só, também a 320px (F39). */
+  .contact-channels__profiles ul {
+    display: flex;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact-channels__profiles a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--target-min);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .contact-channels__location {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-secondary);
+  }
+</style>

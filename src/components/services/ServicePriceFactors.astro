@@ -1,0 +1,169 @@
+---
+/**
+ * Serviço §6.5 #5 `price_factors` — always, EXCETO sustentação (lá entra
+ * ServiceWhatItIs). Dono: pages. "O que pesa no preço de {um sistema…}":
+ * fatores com 1 linha cada, SEM nenhum valor; fecho ("o preço fica fechado na
+ * Sprint de Descoberta…"); link → /quanto-custa (degrau 0); e por último
+ * "Você não precisa ter essas respostas para conversar: Pedir diagnóstico
+ * gratuito" → ?servico={slug}&origem={slug}-preco, para a seção terminar na ação
+ * (services._notes.mid_page_ctas).
+ *
+ * Um destaque só por seção (§8.6, painel de design): o diagnóstico é o único
+ * link com seta e peso da marca; o link para /quanto-custa é um link de saída
+ * TERCIÁRIO (texto simples, cor secundária, peso regular, sem seta), colado no
+ * fecho como nota dele.
+ *
+ * Superfície da grade pelo <Card padding="none"> (B214); o gap de 1px dentro
+ * dele É a divisória entre as células, não um gutter.
+ *
+ * Rótulo do link para /quanto-custa: price_factors_link sem faixas;
+ * price_factors_link_with_pricing só quando /quanto-custa mostra pelo menos uma
+ * linha desenvolvimento.* de precos.ts (não promete valor que o destino não tem).
+ */
+import Section from "@/components/ui/Section.astro";
+import { getFeatures } from "@/config/features";
+import { SERVICE_PARAM, urlFor, type ServiceKey } from "@/config/routes";
+import { getSection, t, tDynamic, type Locale } from "@/i18n";
+
+import Card from "@/components/ui/Card.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import TextCta from "./kit/TextCta.astro";
+
+interface Props {
+  locale: Locale;
+  service: Exclude<ServiceKey, "support">;
+}
+
+const { locale, service } = Astro.props;
+const features = await getFeatures();
+const factors: readonly { title: string; text: string }[] = getSection(locale, `services.${service}.price_factors` as const);
+const hasDevelopmentRanges = features.pricingLines.some((id) => id.startsWith("desenvolvimento."));
+const pricingLabel = hasDevelopmentRanges
+  ? t(locale, "services.template.price_factors_link_with_pricing")
+  : t(locale, "services.template.price_factors_link");
+---
+
+<Section id="o-que-pesa-no-preco" labelledby="o-que-pesa-no-preco-title">
+  <SectionHeader id="o-que-pesa-no-preco-title" title={tDynamic(locale, `services.${service}.price_factors_title`)} />
+  <Card surface="subtle" padding="none">
+    <ul role="list" class="factors">
+      {
+        factors.map((factor, index) => (
+          <li class="factors__item">
+            <span class="factors__index" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h3 class="factors__title">{factor.title}</h3>
+            <p class="factors__text">{factor.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Card>
+  <p class="closing">{t(locale, "services.template.price_factors_closing")}</p>
+  <p class="pricing-link">
+    <a href={urlFor("pricing", locale)}>{pricingLabel}</a>
+  </p>
+  <TextCta
+    locale={locale}
+    origem={`${SERVICE_PARAM[service]}-preco`}
+    servico={service}
+    lead={t(locale, "services.template.price_factors_cta_lead")}
+  />
+</Section>
+
+<style>
+  /* Dentro do <Card padding="none">: o fundo da lista é a cor da linha e o
+     gap de 1px desenha as divisórias entre as células. */
+  .factors {
+    display: grid;
+    gap: var(--space-px);
+    background-color: var(--color-border-subtle);
+  }
+
+  .factors__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-6);
+    background-color: var(--color-bg-surface);
+  }
+
+  .factors__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .factors__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .factors__text {
+    color: var(--color-text-secondary);
+  }
+
+  .closing {
+    margin-block-start: var(--space-8);
+    padding-inline-start: var(--space-5);
+    border-inline-start: 4px solid var(--color-accent);
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    max-inline-size: var(--measure-prose);
+  }
+
+  /* Link de saída terciário: texto simples (estilo global de <a>), cor
+     secundária, peso regular, sem seta; alvo de toque de 44px. Alinhado ao
+     texto do fecho (mesmo recuo da borda de destaque). */
+  .pricing-link {
+    margin-block-start: var(--space-1);
+    padding-inline-start: calc(var(--space-5) + var(--space-1));
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .pricing-link a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-min);
+    color: var(--color-text-secondary);
+  }
+
+  .pricing-link a:hover {
+    color: var(--color-text-primary);
+  }
+
+  .pricing-link + :global(.text-cta) {
+    margin-block-start: var(--space-6);
+  }
+
+  /* Grade com "linhas de 1px"; o último item completa a linha. */
+  @media (min-width: 640px) {
+    .factors {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .factors__item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .factors {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .factors__item:last-child:nth-child(odd) {
+      grid-column: auto;
+    }
+
+    .factors__item:last-child:nth-child(3n + 1) {
+      grid-column: 1 / -1;
+    }
+
+    .factors__item:last-child:nth-child(3n + 2) {
+      grid-column: span 2;
+    }
+  }
+</style>

@@ -1,0 +1,52 @@
+---
+titulo: "Itens fabricados contados em tempo real, com as métricas da linha num painel"
+tipoDeSistema: "Sistema de controle de linha de produção"
+setor: "Indústria"
+porte: "Fabricante"
+servicos: ["web_systems", "integrations"]
+problema: "Uma fabricante precisava saber em tempo real quantos itens a linha fabricava e acompanhar as métricas industriais."
+combinado:
+  escopo: "O projeto cobriu o sistema de controle da linha de produção em três partes: a detecção e a contagem dos itens fabricados em tempo real, feitas por uma microplaca (uma pequena placa eletrônica); um back-end estruturado, a parte do sistema que roda no servidor; e um painel (dashboard) onde as métricas industriais são registradas e visualizadas."
+entregue: "Os itens fabricados na linha são detectados e contados por uma microplaca, e as métricas industriais ficam registradas e à vista num painel, com um back-end por trás, para quem controla a produção."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "No início"
+    texto: "Conversa inicial para entender o pedido e o problema do cliente."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "O problema foi entendido e o escopo, definido."
+  - etapa: "development"
+    quando: "Entre 2017 e 2019"
+    texto: "Construção com entregas parciais ao longo do projeto, e não tudo só no fim."
+  - etapa: "support"
+    quando: "Depois de entrar no ar"
+    texto: "O sistema seguiu em sustentação."
+fichaTecnica:
+  stack: ["React", "Prisma", "GraphQL"]
+capa:
+  src: "../_imagens/controle-de-producao-com-contagem-automatica/capa.png"
+  alt: "Ilustração de uma linha de produção com contador de itens e painel de métricas"
+relacionados: ["painel-de-controle-de-producao", "sensores-em-epis-com-app"]
+ordem: 10
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Controle de produção com contagem automática"
+seoDescription: "Uma microplaca conta em tempo real os itens fabricados por uma fabricante, e um painel mostra as métricas da linha de produção."
+---
+
+### Para quem
+
+O sistema foi feito para uma fabricante e para quem controla a sua linha de produção.
+
+### Como funciona
+
+Na linha, a microplaca detecta cada item fabricado e o contabiliza na hora. Essa contagem segue para o back-end, que fica por trás do painel de métricas.
+
+### Tecnologia, em linguagem simples
+
+- **React**: biblioteca JavaScript para montar interfaces a partir de componentes reutilizáveis; no projeto, a interface é o painel de métricas.
+- **Prisma**: ferramenta para Node.js e TypeScript que faz a ponte entre o código do servidor e o banco de dados.
+- **GraphQL**: linguagem de consulta para APIs, em que quem pede os dados diz exatamente quais quer receber.

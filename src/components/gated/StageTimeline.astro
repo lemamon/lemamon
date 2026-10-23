@@ -1,0 +1,91 @@
+---
+/**
+ * Linha do tempo REAL de um case nas etapas do método (interno do gated):
+ * "Como foi" no case (§6.10 #5) e "O método na prática" (§6.2 #11). Cada etapa
+ * mostra o nome do método (shared.method_timeline), a data desse projeto e o
+ * que aconteceu. <ol> na ordem do método; o número é texto, nunca só cor.
+ */
+import type { CollectionEntry } from "astro:content";
+
+import { getSection, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  steps: CollectionEntry<"cases">["data"]["comoFoi"];
+  /** Nível do nome da etapa (h3 no case, h4 dentro de um card). */
+  level?: 3 | 4;
+}
+
+const { locale, steps, level = 3 } = Astro.props;
+const stages = getSection(locale, "shared.method_timeline.stages");
+const Heading = `h${level}` as "h3" | "h4";
+---
+
+<ol role="list" class="stage-timeline">
+  {
+    steps.map((step, index) => (
+      <li class="stage-timeline__step">
+        <span class="stage-timeline__index" aria-hidden="true">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <div class="stage-timeline__body">
+          <Heading class="stage-timeline__name">{stages[step.etapa].name}</Heading>
+          <p class="stage-timeline__when">{step.quando}</p>
+          <p class="stage-timeline__text">{step.texto}</p>
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .stage-timeline {
+    display: grid;
+    gap: var(--space-6);
+    position: relative;
+  }
+  .stage-timeline__step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-4);
+    position: relative;
+  }
+  /* Conector vertical entre as etapas (decorativo). */
+  .stage-timeline__step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    inset-block: calc(var(--space-8) + var(--space-1)) calc(-1 * var(--space-6));
+    inset-inline-start: calc(var(--space-4) - 0.5px);
+    border-inline-start: 1px solid var(--color-border-default);
+  }
+  .stage-timeline__index {
+    display: grid;
+    place-items: center;
+    inline-size: var(--space-8);
+    block-size: var(--space-8);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-surface);
+  }
+  .stage-timeline__body {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .stage-timeline__name {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+  .stage-timeline__when {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-secondary);
+  }
+  .stage-timeline__text {
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-prose);
+  }
+</style>

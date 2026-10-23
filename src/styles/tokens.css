@@ -1,0 +1,511 @@
+/**
+ * tokens.css — design tokens do lemamon.dev (03-ui §3.3, "Engenharia visível").
+ * Dono: home. Fonte ÚNICA de cor, tipo, espaço, raio, sombra, motion e camada.
+ *
+ * Regras:
+ *  - Componente consome SÓ os semânticos (--color-*, --text-*, --space-*...).
+ *    Os primitivos (--ink-*, --amber-*, --neutral-*) existem para compor os
+ *    semânticos; não use direto em componente.
+ *  - Nenhum hex/rgb/px literal de cor, raio ou sombra fora deste arquivo.
+ *  - Só fica token que algum componente usa (B256: este arquivo vai no CSS de
+ *    TODA página). Precisa de um degrau novo? Adicione aqui. O teste
+ *    tests/unit/home-tokens.test.ts confere que todo var(--x) do src/ existe e
+ *    que nenhum token daqui ficou sem uso.
+ *  - Seção escura (método, CTA final): data-surface="inverse" no elemento.
+ *    Os mesmos nomes semânticos passam a valer para fundo escuro.
+ *
+ * Contraste verificado (WCAG 2.2, fórmula de luminância relativa):
+ *   texto primário ink-900 / canvas ............ 16.93:1
+ *   texto secundário neutral-600 / muted ........ 6.57:1
+ *   texto terciário #5f6a84 / muted (n100) ...... 4.88:1  (03-ui previa
+ *     neutral-500, que dá 4.32:1 sobre subtle e 4.10:1 sobre muted: reprovado)
+ *   link ink-600 / canvas ....................... 9.57:1
+ *   link hover amber-800 / canvas ............... 7.09:1
+ *   texto ink-950 / botão amber-500 ............. 8.76:1 (hover amber-400 11.27, active amber-600 5.91)
+ *   texto branco / brand ink-800 ................ 14.22:1
+ *   danger-700 / canvas 6.47:1 · success-700 / canvas 5.48:1
+ *   anel de foco ink-600 / canvas 9.57:1, / botão âmbar 4.46:1  (≥ 3:1)
+ *   borda de campo neutral-500 / canvas ......... 4.55:1  (≥ 3:1, WCAG 1.4.11;
+ *     neutral-400 dá 2.50:1: não use em borda de input)
+ *   inverse: branco / ink-900 16.93 · neutral-300 11.15 · neutral-400 6.77 ·
+ *     amber-400 10.14 · foco amber-400 10.14
+ *   WhatsApp: branco / #0f7a41 5.41:1 (o verde oficial #25d366 reprova com texto branco)
+ *   PROIBIDO: âmbar como texto ou anel de foco sobre fundo claro (2.15:1 / 1.67:1).
+ *
+ * Breakpoints (mobile-first; CSS custom property não funciona em @media, então
+ * os valores são literais e espelhados em src/styles/breakpoints.ts):
+ *   xs 380 · sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536
+ *   Navegação (BLUEPRINT §8.1): mobile < 768 · tablet 768–1023 · desktop ≥ 1024
+ */
+
+/* ------------------------------------------------------------------ *
+ * 1. PRIMITIVOS
+ * ------------------------------------------------------------------ */
+:root {
+  /* Azul-marinho da marca; ink-800 = #18216d, herdado do site antigo. */
+  --ink-50: #eef1fa;
+  --ink-100: #d6dcf2;
+  --ink-200: #adb9e5;
+  --ink-300: #8095d6;
+  --ink-400: #5470c4;
+  --ink-500: #3352ab;
+  --ink-600: #26408c;
+  --ink-700: #1d3071;
+  --ink-800: #18216d;
+  --ink-900: #111845;
+  --ink-950: #0a0f2b;
+
+  /* Âmbar: ação, destaque. Nunca texto sobre fundo claro. */
+  --amber-50: #fffbeb;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-800: #92400e;
+
+  /* Neutros frios (matiz ~220°). */
+  --neutral-0: #ffffff;
+  --neutral-50: #f8f9fc;
+  --neutral-100: #f1f3f9;
+  --neutral-200: #e3e7f0;
+  --neutral-300: #cbd2e0;
+  --neutral-400: #9aa4bb;
+  --neutral-500: #6b7690;
+  --neutral-550: #5f6a84; /* ajuste AA para texto terciário */
+  --neutral-600: #4d5670;
+
+  --success-50: #ecfdf5;
+  --success-300: #6ee7b7; /* texto de sucesso no tema escuro */
+  --success-700: #047857;
+  --danger-50: #fef2f2;
+  --danger-300: #fca5a5; /* texto de erro no tema escuro */
+  --danger-700: #b91c1c;
+
+  --whatsapp-700: #0f7a41;
+  --whatsapp-800: #0c6636;
+
+  /* rgb do ink-800 para sombras tintadas */
+  --ink-shadow-rgb: 24 33 109;
+}
+
+/* ------------------------------------------------------------------ *
+ * 2. SEMÂNTICOS — superfície clara (padrão do site; o tema escuro global é
+ *    opt-in, §2b)
+ * ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+
+  /* Fundos */
+  --color-bg-canvas: var(--neutral-0);
+  --color-bg-subtle: var(--neutral-50);
+  --color-bg-muted: var(--neutral-100);
+  --color-bg-surface: var(--neutral-0);
+  --color-bg-surface-hover: var(--neutral-50);
+  --color-bg-overlay: rgb(11 15 28 / 0.6);
+
+  /* Texto */
+  --color-text-primary: var(--ink-900);
+  --color-text-secondary: var(--neutral-600);
+  --color-text-tertiary: var(--neutral-550);
+  --color-text-disabled: var(--neutral-550);
+  --color-text-link: var(--ink-600);
+  --color-text-link-hover: var(--amber-800);
+  --color-text-on-accent: var(--ink-950);
+  --color-text-on-brand: var(--neutral-0);
+
+  /* Bordas */
+  --color-border-subtle: var(--neutral-200);
+  --color-border-default: var(--neutral-300);
+  --color-border-strong: var(--neutral-400);
+  --color-border-control: var(--neutral-500);
+  --color-border-accent: var(--amber-500);
+
+  /* Ação primária (CTA "Pedir diagnóstico gratuito") */
+  --color-accent: var(--amber-500);
+  --color-accent-hover: var(--amber-400);
+  --color-accent-active: var(--amber-600);
+  --color-accent-subtle: var(--amber-50);
+  --color-accent-on-subtle: var(--amber-800);
+
+  /* Marca */
+  --color-brand: var(--ink-800);
+  --color-brand-hover: var(--ink-700);
+  --color-brand-active: var(--ink-900);
+  --color-brand-subtle: var(--ink-50);
+  --color-brand-on-subtle: var(--ink-800);
+
+  /* Feedback (texto e fundo) */
+  --color-success: var(--success-700);
+  --color-success-bg: var(--success-50);
+  --color-danger: var(--danger-700);
+  --color-danger-bg: var(--danger-50);
+
+  /* WhatsApp (botão com texto branco) */
+  --color-whatsapp: var(--whatsapp-700);
+  --color-whatsapp-hover: var(--whatsapp-800);
+  --color-text-on-whatsapp: var(--neutral-0);
+
+  /* Foco: sempre visível, ≥ 3:1 sobre a superfície */
+  --color-focus-ring: var(--ink-600);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+}
+
+/* Superfície escura: os mesmos nomes, valores para fundo ink-900. */
+[data-surface="inverse"] {
+  color-scheme: dark;
+
+  --color-bg-canvas: var(--ink-900);
+  --color-bg-subtle: var(--ink-950);
+  --color-bg-muted: var(--ink-800);
+  --color-bg-surface: var(--ink-800);
+  --color-bg-surface-hover: var(--ink-700);
+
+  --color-text-primary: var(--neutral-0);
+  --color-text-secondary: var(--neutral-300);
+  --color-text-tertiary: var(--neutral-400);
+  --color-text-disabled: var(--neutral-400);
+  --color-text-link: var(--amber-300);
+  --color-text-link-hover: var(--amber-200);
+
+  --color-border-subtle: rgb(255 255 255 / 0.12);
+  --color-border-default: rgb(255 255 255 / 0.2);
+  --color-border-strong: rgb(255 255 255 / 0.32);
+  --color-border-control: var(--neutral-500);
+
+  --color-accent-subtle: rgb(245 158 11 / 0.14);
+  --color-accent-on-subtle: var(--amber-200);
+  --color-brand-subtle: rgb(84 112 196 / 0.18);
+  --color-brand-on-subtle: var(--ink-100);
+
+  --color-focus-ring: var(--amber-400);
+}
+
+/* ------------------------------------------------------------------ *
+ * 2b. TEMA ESCURO GLOBAL — opt-in (03-ui §3.3.3, B208)
+ *     Só vale com <html data-theme="dark">: nada no site liga isso hoje. Quem
+ *     liga é o shell (script no <head> antes do 1º paint, lendo
+ *     localStorage["lemamon-theme"] e prefers-color-scheme, + botão de tema).
+ *     Os componentes não mudam: os mesmos semânticos, outros valores.
+ *     Contraste (WCAG 2.2) sobre canvas ink-950 / subtle ink-900 / muted ink-800:
+ *       texto neutral-50 17.87 / 16.08 / 13.50 · neutral-300 12.40 / 11.15 / 9.37
+ *       neutral-400 7.53 / 6.77 / 5.69 · link amber-300 13.05 / 11.74 / 9.86
+ *       borda de campo neutral-500 4.14 / 3.72 / 3.13 (≥ 3:1)
+ *       marca ink-400: branco sobre ela 4.68 · ela sobre ink-950 4.02 (≥ 3:1)
+ *       success-300 12.34 · danger-300 9.91 (sobre ink-950)
+ *       foco amber-400 11.27 · texto ink-950 / botão amber-500 8.76
+ *     Seção inverse (método, CTA final) no escuro: canvas ink-800, para não
+ *     sumir no fundo da página (texto neutral-300 9.37, neutral-400 5.69).
+ * ------------------------------------------------------------------ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink-shadow-rgb: 0 0 0;
+
+  --color-bg-canvas: var(--ink-950);
+  --color-bg-subtle: var(--ink-900);
+  --color-bg-muted: var(--ink-800);
+  --color-bg-surface: var(--ink-900);
+  --color-bg-surface-hover: var(--ink-800);
+  --color-bg-overlay: rgb(0 0 0 / 0.7);
+
+  --color-text-primary: var(--neutral-50);
+  --color-text-secondary: var(--neutral-300);
+  --color-text-tertiary: var(--neutral-400);
+  --color-text-disabled: var(--neutral-400);
+  --color-text-link: var(--amber-300);
+  --color-text-link-hover: var(--amber-200);
+
+  --color-border-subtle: rgb(255 255 255 / 0.12);
+  --color-border-default: rgb(255 255 255 / 0.2);
+  --color-border-strong: rgb(255 255 255 / 0.32);
+  --color-border-control: var(--neutral-500);
+
+  --color-accent-subtle: rgb(245 158 11 / 0.14);
+  --color-accent-on-subtle: var(--amber-200);
+
+  --color-brand: var(--ink-400);
+  --color-brand-hover: var(--ink-500);
+  --color-brand-active: var(--ink-600);
+  --color-brand-subtle: rgb(84 112 196 / 0.18);
+  --color-brand-on-subtle: var(--ink-100);
+
+  --color-success: var(--success-300);
+  --color-success-bg: rgb(16 185 129 / 0.14);
+  --color-danger: var(--danger-300);
+  --color-danger-bg: rgb(239 68 68 / 0.14);
+
+  --color-focus-ring: var(--amber-400);
+  --pattern-dot-color: rgb(255 255 255 / 0.1);
+}
+
+:root[data-theme="dark"] [data-surface="inverse"] {
+  --color-bg-canvas: var(--ink-800);
+  --color-bg-subtle: var(--ink-900);
+  --color-bg-muted: var(--ink-700);
+  --color-bg-surface: var(--ink-700);
+  --color-bg-surface-hover: var(--ink-600);
+}
+
+/* ------------------------------------------------------------------ *
+ * 3. TIPOGRAFIA — decisão B385 (CONTRACT §9). Escala 1.250 base 16px.
+ *    - sans e display = Motiva Sans, a fonte herdada da marca. Só existem os
+ *      pesos 300 e 700 (≤ 500 renderiza a Light; ≥ 600, a Bold): 2 woff2
+ *      latin + latin-ext gerados por scripts/build-fonts.sh, font-display:
+ *      swap, preload dos 2 no Base.astro. Limite: no máximo 3 woff2 no site.
+ *    - display = sans: a Motiva já tem personalidade; uma 2ª família custaria
+ *      mais um arquivo no caminho do LCP (o H1) sem ganho de leitura.
+ *    - mono = pilha do sistema (0 KB): ui-monospace/SF Mono/Menlo/Consolas.
+ *      É só rótulo técnico (.eyebrow, numeração do método, legendas, código)
+ *      e valores de métrica (antes → depois, com tabular-nums), nunca texto
+ *      corrido, então a variação entre sistemas não pesa.
+ *    03-ui §typography.family (Geist, Bricolage, Geist Mono) foi substituído
+ *    por esta decisão.
+ *
+ *    Papéis (o que o componente usa) caem estritamente em todas as larguras
+ *    (360 → 1440): hero > h1 > display > h2 > h3 > h4 > lead > body.
+ *    Todo font-size vem com o line-height do mesmo papel/tamanho.
+ * ------------------------------------------------------------------ */
+:root {
+  --font-sans: "Motiva Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --font-weight-regular: 300;
+  --font-weight-bold: 700;
+
+  /* Escala fixa (só os degraus em uso; os papéis fluidos abaixo cobrem h1–h3):
+     tamanho / altura de linha / tracking */
+  --text-2xs: 0.6875rem; /* 11px overline, badge */
+  --leading-2xs: 1rem;
+  --tracking-2xs: 0.04em;
+  --text-xs: 0.75rem; /* 12px legenda */
+  --leading-xs: 1.125rem;
+  --text-sm: 0.875rem; /* 14px apoio, label */
+  --leading-sm: 1.375rem;
+  --text-base: 1rem; /* 16px corpo */
+  --leading-base: 1.625rem;
+  --text-lg: 1.125rem; /* 18px lead */
+  --leading-lg: 1.75rem;
+  --text-xl: 1.375rem; /* 22px h4 */
+  --leading-xl: 1.875rem;
+
+  /* Papéis fluidos (o que o componente usa). Mínimos pensados para
+     H1 + subtítulo + CTA acima da dobra em 360×640 (BLUEPRINT §2.8). */
+  /* H1 da Home: até 4 linhas em 360px e ~3 linhas no 7/12 do desktop (o H1
+     é uma frase longa; 72px o quebraria em 6+ linhas). */
+  --text-hero: clamp(2rem, 1.2rem + 3vw, 3.75rem);
+  --leading-hero: 1.06;
+  --tracking-hero: -0.03em;
+  --text-h1: clamp(1.875rem, 1.35rem + 2.1vw, 3rem);
+  --leading-h1: 1.12;
+  /* Título de fechamento (H2 do CTA final): maior que o h2 e sempre menor que
+     o h1 da página, para nenhum H2 empatar com o H1 (28 → 42px). */
+  --text-display: clamp(1.75rem, 1.4rem + 1.5vw, 2.625rem);
+  --leading-display: 1.12;
+  --tracking-display: -0.025em;
+  --text-h2: clamp(1.625rem, 1.3rem + 1.4vw, 2.25rem);
+  --leading-h2: 1.18;
+  --text-h3: clamp(1.25rem, 1.1rem + 0.7vw, 1.75rem);
+  --leading-h3: 1.25;
+  /* Fluido (18 → 22px): fixo em 22px ele passava o h3 (20px) abaixo de ~630px. */
+  --text-h4: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --leading-h4: 1.3;
+  --text-lead: var(--text-lg);
+  --leading-lead: var(--leading-lg);
+  --text-body: var(--text-base);
+  --leading-body: var(--leading-base);
+  --tracking-overline: 0.08em;
+  /* Código (B181): bloco ``` de MDX no degrau 14px da escala, com a altura de
+     linha do mesmo degrau; código em linha acompanha o texto em volta (0.95em
+     é só o ajuste óptico da mono, que desenha maior que a Motiva). */
+  --text-code: var(--text-sm);
+  --leading-code: var(--leading-sm);
+  --text-code-inline: 0.95em;
+
+  --measure-prose: 68ch;
+  --measure-lead: 52ch;
+  --measure-title: 22ch; /* títulos de seção quebram cedo, como em publicação técnica */
+}
+
+/* ------------------------------------------------------------------ *
+ * 4. ESPAÇO — grid de 4px
+ * ------------------------------------------------------------------ */
+:root {
+  --space-px: 1px;
+  --space-0-5: 0.125rem; /* 2 */
+  --space-1: 0.25rem; /* 4 */
+  --space-2: 0.5rem; /* 8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem; /* 16 */
+  --space-5: 1.25rem; /* 20 */
+  --space-6: 1.5rem; /* 24 */
+  --space-8: 2rem; /* 32 */
+  --space-10: 2.5rem; /* 40 */
+  --space-12: 3rem; /* 48 */
+  --space-16: 4rem; /* 64 */
+  --space-20: 5rem; /* 80 */
+  --space-24: 6rem; /* 96 */
+  --space-32: 8rem; /* 128 */
+
+  /* Ritmo vertical de seção: use SÓ estes (variam por breakpoint abaixo), via
+     <Section spacing="…">. "strip" é a faixa fina (compromissos); "hero" é o
+     respiro de topo dos heroes (o fundo usa --section-default/-compact). */
+  --section-compact: var(--space-12);
+  --section-default: var(--space-16);
+  --section-spacious: var(--space-20);
+  --section-strip: var(--space-6);
+  --section-hero-start: var(--space-8);
+  --section-hero-compact-start: var(--space-6);
+
+  /* Deslocamento óptico: ícone/marcador alinhado à 1ª linha de um texto. */
+  --offset-first-line: 0.3em;
+
+  /* Layout */
+  --container-prose: 68ch;
+  --container-default: 75rem; /* 1200px */
+  --container-wide: 90rem; /* 1440px */
+  --gutter: var(--space-5); /* 20 → 32 → 40 */
+  --grid-gap: var(--space-4); /* 16 → 24 */
+  --grid-columns: 12;
+
+  /* Alturas e alvos de toque (BLUEPRINT §8.1, §11) */
+  --header-height: 4rem; /* 64 mobile → 72 desktop */
+  --sticky-bar-height: 4.5rem;
+  --target-min: 2.75rem; /* 44px */
+  --target-option: 3.5rem; /* 56px: opções do wizard, linhas de serviço */
+  --target-cta: 3rem; /* 48px: CTA largura total no mobile */
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-compact: var(--space-16);
+    --section-default: var(--space-20);
+    --section-spacious: var(--space-24);
+    --section-hero-start: var(--space-16);
+    --section-hero-compact-start: var(--space-8);
+    --gutter: var(--space-8);
+    --grid-gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --section-compact: var(--space-20);
+    --section-default: var(--space-24);
+    --section-spacious: var(--space-32);
+    --section-strip: var(--space-8);
+    --section-hero-start: var(--space-20);
+    --gutter: var(--space-10);
+    --header-height: 4.5rem;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * 5. RAIOS
+ * ------------------------------------------------------------------ */
+:root {
+  --radius-sm: 4px; /* badge, tag */
+  --radius-md: 8px; /* input, botão */
+  --radius-lg: 12px; /* card */
+  --radius-xl: 16px; /* card de destaque, drawer */
+  --radius-full: 9999px; /* pill, avatar */
+}
+
+/* ------------------------------------------------------------------ *
+ * 6. SOMBRAS — tintadas com o ink, nunca preto puro
+ * ------------------------------------------------------------------ */
+:root {
+  --shadow-sm: 0 1px 3px 0 rgb(var(--ink-shadow-rgb) / 0.08), 0 1px 2px -1px rgb(var(--ink-shadow-rgb) / 0.06);
+  --shadow-md: 0 4px 12px -2px rgb(var(--ink-shadow-rgb) / 0.1), 0 2px 4px -2px rgb(var(--ink-shadow-rgb) / 0.06);
+  --shadow-lg: 0 12px 24px -6px rgb(var(--ink-shadow-rgb) / 0.12), 0 4px 8px -4px rgb(var(--ink-shadow-rgb) / 0.06);
+  --shadow-xl: 0 24px 48px -12px rgb(var(--ink-shadow-rgb) / 0.18), 0 8px 16px -8px rgb(var(--ink-shadow-rgb) / 0.08);
+  --shadow-glow-accent: 0 8px 24px -8px rgb(245 158 11 / 0.5);
+
+  /* Anéis (03-ui §3.3.2 ring.*): só a GEOMETRIA; a cor vem no uso, para
+     acompanhar a superfície (data-surface="inverse"):
+       box-shadow: var(--ring-inset) var(--color-brand);        borda dupla do selecionado/erro
+       box-shadow: var(--ring-halo) var(--color-brand-subtle);  halo do nó realçado */
+  --ring-inset: inset 0 0 0 1px;
+  --ring-halo: 0 0 0 var(--space-1);
+}
+
+/* ------------------------------------------------------------------ *
+ * 6b. PADRÕES GRÁFICOS — "Engenharia visível" (03-ui §3.5.2): grade de
+ *     pontos de 1px e réguas. Zero KB de imagem; só gradientes com tokens.
+ * ------------------------------------------------------------------ */
+:root {
+  --pattern-dot-color: var(--neutral-300);
+  --pattern-dot-size: 1px;
+  --pattern-gap: var(--space-6); /* 24px entre pontos */
+  /* Uso: background-image: radial-gradient(circle, var(--pattern-dot-color)
+     var(--pattern-dot-size), transparent calc(var(--pattern-dot-size) + 0.5px));
+     background-size: var(--pattern-gap) var(--pattern-gap). Monte o gradiente
+     no componente: var() dentro de um token composto é resolvido no :root e
+     não acompanharia a troca de cor em data-surface="inverse". */
+  /* Máscara (só o alfa importa): opaco → transparente. */
+  --mask-opaque: #000;
+  /* Linha do método: espessuras do trilho e do nó */
+  --track-width: 2px;
+  --node-size: 0.875rem; /* 14px */
+}
+
+[data-surface="inverse"] {
+  --pattern-dot-color: rgb(255 255 255 / 0.14);
+}
+
+/* ------------------------------------------------------------------ *
+ * 6c. CÓDIGO — tema "css-variables" do Shiki (blocos ``` em MDX de blog e
+ *     cases; astro.config › markdown.shikiConfig.theme = "css-variables").
+ *     Painel sempre escuro (ink-950), com a paleta da marca. Contraste sobre
+ *     ink-950 (#0a0f2b): neutral-200 15.19 · amber-400 11.27 · amber-200 15.11 ·
+ *     amber-300 13.05 · ink-100 13.78 · ink-200 9.72 · neutral-400 7.53 ·
+ *     ink-300 6.44 (todos ≥ 4.5).
+ * ------------------------------------------------------------------ */
+:root {
+  --astro-code-background: var(--ink-950);
+  --astro-code-foreground: var(--neutral-200);
+  --astro-code-token-keyword: var(--amber-400);
+  --astro-code-token-string: var(--ink-300);
+  --astro-code-token-string-expression: var(--ink-300);
+  --astro-code-token-comment: var(--neutral-400);
+  --astro-code-token-function: var(--ink-200);
+  --astro-code-token-constant: var(--amber-200);
+  --astro-code-token-parameter: var(--ink-100);
+  --astro-code-token-punctuation: var(--neutral-400);
+  --astro-code-token-link: var(--amber-300);
+  --code-chrome-border: rgb(255 255 255 / 0.08);
+  --code-chrome-dot: rgb(255 255 255 / 0.18);
+  --code-focus-ring: var(--amber-400); /* 11.27:1 sobre o painel */
+}
+
+/* ------------------------------------------------------------------ *
+ * 7. MOTION — nada acima de 600ms; transição sempre com propriedade explícita
+ * ------------------------------------------------------------------ */
+:root {
+  --duration-fast: 150ms;
+  --duration-normal: 240ms;
+  --duration-slow: 360ms;
+  --duration-slower: 600ms;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --transition-colors: color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+  --transition-transform: transform var(--duration-normal) var(--ease-out);
+  --transition-opacity: opacity var(--duration-fast) var(--ease-out);
+  --transition-shadow: box-shadow var(--duration-normal) var(--ease-out);
+}
+
+/* ------------------------------------------------------------------ *
+ * 8. CAMADAS
+ * ------------------------------------------------------------------ */
+:root {
+  --z-raised: 10;
+  --z-header: 200;
+  --z-floating: 300; /* WhatsApp flutuante, barra fixa mobile */
+  --z-overlay: 900;
+  --z-skip-link: 1400;
+}

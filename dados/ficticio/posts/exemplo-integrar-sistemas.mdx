@@ -1,0 +1,42 @@
+---
+titulo: "Exemplo: o que muda quando os sistemas da empresa conversam entre si"
+resumo: "Post de exemplo sobre integração entre sistemas: por onde começar, o que costuma dar errado e como medir se valeu a pena."
+capa:
+  src: "../imagens/capa-exemplo-integrar-sistemas.png"
+  alt: "Capa de exemplo: dois sistemas ligados por uma ponte, com a faixa EXEMPLO"
+autor:
+  nome: "Bruno Exemplo Lima"
+  foto: "../imagens/pessoa-bruno-exemplo.svg"
+  link: "https://www.linkedin.com/in/exemplo-bruno-lima-ficticio"
+  papelTecnico: "Gestão de projetos (exemplo)"
+publicadoEm: "2026-08-25"
+atualizadoEm: "2026-09-02"
+servico: "integrations"
+---
+
+**Conteúdo de exemplo.** Este post é fictício e só aparece com a camada de dados fictícios ligada.
+
+Quando o mesmo dado é digitado em dois lugares, alguém vai digitar errado. Integrar é tirar essa pessoa do meio, mas só funciona se a regra de quem manda em cada dado estiver clara.
+
+O começo mais seguro é uma integração pequena, que já tira trabalho manual de alguém na primeira semana.
+
+Antes da primeira linha de integração, vale escrever quem é a fonte de cada dado. Um exemplo simples:
+
+```ts
+// Exemplo: cada dado tem um único sistema que manda nele.
+type Sistema = "erp" | "loja" | "crm";
+
+const fonteDoDado: Record<string, Sistema> = {
+  cliente: "crm",
+  pedido: "loja",
+  estoque: "erp",
+};
+
+export function quemManda(dado: string): Sistema | undefined {
+  return fonteDoDado[dado];
+}
+```
+
+<CtaMeio />
+
+Depois disso, cada nova conexão entra com o mesmo cuidado: quem é a fonte, o que acontece quando um lado fica fora do ar e como saber que a informação chegou.

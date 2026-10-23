@@ -1,0 +1,111 @@
+---
+/**
+ * Lista rótulo → texto do dono (interno do gated), em <dl>: formato da
+ * Descoberta, formato da sustentação, práticas de engenharia, dados da empresa,
+ * ficha do case. Recebe só pares já filtrados (dado parcial nunca chega aqui).
+ *
+ * Item com `links` (ficha do case: serviços e etapas, auditoria de SEO S03-4 e
+ * S06-9): cada parte vira um <a> próprio, separado por " · " decorativo
+ * (aria-hidden), no lugar do texto puro de `value`. O separador fica DEPOIS do
+ * link, dentro do mesmo <li>: quando a lista quebra linha, o ponto termina a
+ * linha de cima em vez de abrir a de baixo. Links internos sempre de
+ * urlFor()/anchorFor(). O CSS dos links (./FieldList.links.css) só vai para a
+ * página que renderiza um item com links (<RenderedStyle>, B256), fora do
+ * orçamento de 15 KiB das páginas que importam a FieldList sem link.
+ */
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
+
+import linksCss from "./FieldList.links.css?inline";
+
+export interface FieldLink {
+  label: string;
+  /** Caminho interno (urlFor/anchorFor). */
+  href: string;
+}
+
+export interface FieldItem {
+  label: string;
+  /** Texto do valor. Ignorado quando `links` tem itens. */
+  value?: string;
+  /** Valor como lista de links (ex.: "Sistemas web · Integrações", cada um para a página do serviço). */
+  links?: FieldLink[];
+}
+
+interface Props {
+  items: FieldItem[];
+  /** "grid": 2 colunas a partir de 768px; "rows": rótulo à esquerda no desktop. */
+  layout?: "grid" | "rows";
+}
+
+const { items, layout = "grid" } = Astro.props;
+const hasLinks = items.some((item) => item.links && item.links.length > 0);
+---
+
+{hasLinks && <RenderedStyle css={linksCss} name="FieldListLinks" />}
+
+<dl class="field-list" data-layout={layout}>
+  {
+    items.map((item) => (
+      <div class="field-list__item">
+        <dt class="field-list__label">{item.label}</dt>
+        <dd class="field-list__value">
+          {item.links && item.links.length > 0 ? (
+            <ul role="list" class="field-list__links">
+              {item.links.map((link, index, all) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                  {index < all.length - 1 && (
+                    <span class="field-list__sep" aria-hidden="true">
+                      ·
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            item.value
+          )}
+        </dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .field-list {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .field-list__item {
+    display: grid;
+    /* Sem isso, no grid de 2 colunas o item estica as linhas implícitas para a
+       altura do vizinho (ex.: etapas em 2 linhas) e o valor desce. */
+    align-content: start;
+    gap: var(--space-1);
+    padding-block-start: var(--space-4);
+    border-block-start: 1px solid var(--color-border-default);
+  }
+  .field-list__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    letter-spacing: 0.02em;
+    color: var(--color-text-secondary);
+  }
+  .field-list__value {
+    margin: 0;
+    color: var(--color-text-primary);
+    max-inline-size: var(--measure-prose);
+  }
+  @media (min-width: 768px) {
+    .field-list[data-layout="grid"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--grid-gap);
+      row-gap: var(--space-6);
+    }
+    .field-list[data-layout="rows"] .field-list__item {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      column-gap: var(--grid-gap);
+    }
+  }
+</style>

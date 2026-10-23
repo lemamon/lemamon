@@ -1,0 +1,177 @@
+---
+/**
+ * Como trabalhamos §6.2 #7 `stage_development` (#desenvolvimento) — always.
+ * Dono: pages. Etapa 3, entregas a cada 2 semanas; mini-ciclo em 4 passos
+ * (a gente constrói → você recebe funcionando → você usa e comenta → próximo
+ * ciclo); "Você recebe"; por que importa.
+ *
+ * O ciclo é um SVG aria-hidden (só números) com o MESMO texto numa lista
+ * ordenada ao lado (notas de UI do §6.2). Sem reuniões, rituais ou relatórios
+ * não confirmados.
+ *
+ * A superfície do ciclo é um <Card surface="subtle"> (B214); o layout interno
+ * fica em .cycle, dentro dele.
+ */
+import Card from "@/components/ui/Card.astro";
+import { getSection, t, type Locale } from "@/i18n";
+
+import HwwFacts from "./HwwFacts.astro";
+import HwwStageBlock from "./HwwStageBlock.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const steps = getSection(locale, "how_we_work.stage_development.cycle_steps");
+const order = ["build", "deliver", "use", "next"] as const;
+const nodes = [
+  { x: 100, y: 30 },
+  { x: 170, y: 100 },
+  { x: 100, y: 170 },
+  { x: 30, y: 100 },
+];
+const arcs = [
+  "M123.9 34.2 A70 70 0 0 1 165.8 76.1",
+  "M165.8 123.9 A70 70 0 0 1 123.9 165.8",
+  "M76.1 165.8 A70 70 0 0 1 34.2 123.9",
+  "M34.2 76.1 A70 70 0 0 1 76.1 34.2",
+];
+---
+
+<HwwStageBlock locale={locale} stage="development" title={t(locale, "how_we_work.stage_development.title")}>
+  <p slot="intro" class="stage-text">{t(locale, "how_we_work.stage_development.text")}</p>
+  <Card surface="subtle" padding="sm">
+    <div class="cycle">
+      <svg class="cycle__art" viewBox="0 0 200 200" width="200" height="200" aria-hidden="true" focusable="false">
+        <defs>
+          <marker id="hww-cycle-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" class="cycle__arrowhead"></path>
+          </marker>
+        </defs>
+        <circle cx="100" cy="100" r="70" class="cycle__ring"></circle>
+        {arcs.map((d) => <path d={d} class="cycle__arc" marker-end="url(#hww-cycle-arrow)" />)}
+        {
+          nodes.map((node, index) => (
+            <g class:list={["cycle__node", { "cycle__node--accent": index === 1 }]}>
+              <circle cx={node.x} cy={node.y} r="17" />
+              <text x={node.x} y={node.y} dy="0.35em" text-anchor="middle">
+                {index + 1}
+              </text>
+            </g>
+          ))
+        }
+      </svg>
+      <ol role="list" class="cycle__list" aria-label={t(locale, "how_we_work.stage_development.cycle_aria_label")}>
+        {
+          order.map((id, index) => (
+            <li class:list={["cycle__step", { "cycle__step--accent": index === 1 }]}>
+              <span class="cycle__step-number" aria-hidden="true">
+                {index + 1}
+              </span>
+              <span>{steps[id]}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </Card>
+  <HwwFacts items={[{ label: t(locale, "how_we_work.stage_development.why_label"), text: t(locale, "how_we_work.stage_development.why") }]} />
+</HwwStageBlock>
+
+<style>
+  .stage-text {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+  }
+
+  .cycle {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  .cycle__art {
+    inline-size: 10rem;
+    block-size: auto;
+    justify-self: center;
+  }
+
+  .cycle__ring {
+    fill: none;
+    stroke: var(--color-border-subtle);
+    stroke-width: 1;
+  }
+
+  .cycle__arc {
+    fill: none;
+    stroke: var(--color-border-strong);
+    stroke-width: 1.5;
+  }
+
+  .cycle__arrowhead {
+    fill: var(--color-border-strong);
+  }
+
+  .cycle__node circle {
+    fill: var(--color-brand);
+  }
+
+  .cycle__node text {
+    fill: var(--color-text-on-brand);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .cycle__node--accent circle {
+    fill: var(--color-accent);
+  }
+
+  .cycle__node--accent text {
+    fill: var(--color-text-on-accent);
+  }
+
+  .cycle__list {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .cycle__step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .cycle__step-number {
+    flex: none;
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-brand);
+    color: var(--color-text-on-brand);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .cycle__step--accent .cycle__step-number {
+    background-color: var(--color-accent);
+    color: var(--color-text-on-accent);
+  }
+
+  .cycle__step--accent {
+    font-weight: var(--font-weight-bold);
+  }
+
+  @media (min-width: 640px) {
+    .cycle {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--space-8);
+    }
+  }
+</style>

@@ -1,0 +1,26 @@
+---
+/**
+ * Serviços (hub) §6.4 #1 `hero` — always. Dono: pages. ÚNICO H1.
+ * Curto, para a lista aparecer na primeira rolagem do mobile.
+ * CTA → /orcamento?origem=servicos-hero; secundário: WhatsApp (§2.2).
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
+import { t, type Locale } from "@/i18n";
+
+import PageHero from "./kit/PageHero.astro";
+
+interface Props {
+  locale: Locale;
+  whatsappMessage: string;
+}
+
+const { locale, whatsappMessage } = Astro.props;
+---
+
+<PageHero title={t(locale, "services.hub.hero.title")} subtitle={t(locale, "services.hub.hero.subtitle")}>
+  <Fragment slot="actions">
+    <CtaDiagnosis locale={locale} origem="servicos-hero" />
+    <WhatsAppCta locale={locale} message={whatsappMessage} source="servicos-hero" />
+  </Fragment>
+</PageHero>
