@@ -111,7 +111,12 @@ describe("dados/dono.json — o arquivo do dono", () => {
     expect(isValidCnpj(real.empresa.cnpj)).toBe(true);
     expect([real.time, real.depoimentos, real.logos]).toEqual([[], [], []]);
     expect(real.agenda.url).toBe("");
-    expect(real.privacidade.baseAnuncios).toBeNull();
+    // D05/encarregado: o dono decidiu base de medição por consentimento e
+    // encarregado de pequeno porte (23/10/2026); o resto da privacidade segue
+    // vazio e trava a produção (prazos, data, mecanismo e as duas confirmações).
+    expect(real.privacidade.baseAnuncios).toBe("consentimento");
+    expect(real.privacidade.encarregado).toBe("pequeno_porte");
+    expect(real.privacidade.atualizadaEm).toBe("");
   });
 });
 
@@ -293,10 +298,14 @@ describe("mensagens de validação em pt-BR, com o campo a corrigir", () => {
 });
 
 describe("trava da Política: dado fictício nunca libera", () => {
-  it("o dono.json de hoje bloqueia o build de produção (privacidade vazia; a empresa o dono já preencheu)", () => {
+  it("o dono.json de hoje bloqueia o build de produção (prazos e data pendentes; empresa e base de medição o dono já decidiu)", () => {
     const blockers = privacyLaunchBlockers().join("\n");
     expect(blockers).not.toMatch(/empresa: razão social/);
-    expect(blockers).toMatch(/privacidade\.baseAnuncios/);
+    // baseAnuncios e encarregado decididos (23/10/2026); ainda faltam os prazos e a data.
+    expect(blockers).not.toMatch(/privacidade\.baseAnuncios/);
+    expect(blockers).not.toMatch(/privacidade\.encarregado/);
+    expect(blockers).toMatch(/privacidade\.prazos\.ga4/);
+    expect(blockers).toMatch(/privacidade\.atualizadaEm/);
   });
 
   it("com TODOS os campos da camada fictícia, continua bloqueado", () => {
@@ -305,7 +314,8 @@ describe("trava da Política: dado fictício nunca libera", () => {
     const empresa = { ...doc.empresa, razaoSocial: ficticio.empresa.razaoSocial, cnpj: ficticio.empresa.cnpj, responsavel: ficticio.empresa.responsavel };
     const blockers = privacyLaunchBlockers(doc.privacidade as Privacidade, { hasAgenda: true }, empresa as Empresa).join("\n");
     expect(blockers).toMatch(/empresa: razão social \+ CNPJ válido, ou responsável \(dado real, não fictício\)/);
-    expect(blockers).toMatch(/encarregado com nome e e-mail reais/);
+    // encarregado "pequeno_porte" do dono vence a mescla (campo preenchido), então
+    // não é mais bloqueador; prazos e agenda fictícios continuam barrando.
     expect(blockers).toMatch(/prazos\.ga4/);
     expect(blockers).toMatch(/ferramentas\.agenda\.fornecedor/);
   });

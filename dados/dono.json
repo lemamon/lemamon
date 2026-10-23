@@ -10,8 +10,8 @@
     "historia": null
   },
   "privacidade": {
-    "baseAnuncios": null,
-    "encarregado": null,
+    "baseAnuncios": "consentimento",
+    "encarregado": "pequeno_porte",
     "mecanismoTransferencia": null,
     "prazos": {
       "retencaoPedidos": null,

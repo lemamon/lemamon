@@ -31,7 +31,7 @@
  *         when_data (Home); produção com o aviso de cookies: Home 15,3 KiB
  *         com ele;
  *       JS (scripts /_astro + ilha + imports estáticos seguidos + inline)
- *         ≤ 12 KiB em toda página e ≤ 103 KiB SÓ nas rotas da ilha do wizard
+ *         ≤ 12 KiB em toda página e ≤ 104 KiB SÓ nas rotas da ilha do wizard
  *         (ISLAND_ROUTES: "quote" de src/config/routes.ts, /orcamento,
  *         /en/quote, /es/cotizacion). O limite vem da ROTA, não da presença de
  *         <astro-island>: uma ilha nova na Home ficaria com 12 KiB (B097).
@@ -58,11 +58,15 @@
  *         as respostas (F27), nova P3 no "Alterar" (F29), campo da data na
  *         tela (F30), motivo para enviar (F45): 101,3 → 102,0 KiB; contato no
  *         sessionStorage (F24) e erro só de formato no blur (F23/F83): 102,3
- *         KiB. O caminho para descer de novo é o F53 (Preact). Nas
+ *         KiB. 104 KiB desde 23/out/2026 (D05: baseAnuncios = "consentimento"):
+ *         o aviso de cookies com Consent Mode v2 passa a carregar o script de
+ *         consentimento (ConsentBanner, consent.ts, gtag-inline) em toda
+ *         página, inclusive na do wizard: dist-ficticio 103,8 KiB. O caminho
+ *         para descer de novo é o F53 (Preact). Nas
  *         outras páginas, +1,0 KiB (Home 7,5 → 8,5); o /contato ficou MAIS
  *         leve (9,6 → 8,8 KiB): o aprimoramento do formulário carrega no
  *         ocioso ou no 1º toque (ContactForm.astro);
- *       HTML ≤ 25 KiB;
+ *       HTML ≤ 26 KiB (era 25; +1 pelo aviso de cookies do consentimento, D05);
  *     O que conta (B097, rodada do revisor cético): TODO CSS e TODO JS do
  *     mesmo site que a página baixa, de qualquer pasta (não só /_astro: um
  *     <script src="/scripts/x.js"> de public/ conta igual), resolvidos contra
@@ -201,8 +205,11 @@ export const WEIGHT_BUDGET = {
   /** CSS da página com as folhas when_data e a do aviso de cookies. Temporário: baixar para cssGz (pedido a home/gated). */
   cssGzOwnerData: 17 * KIB,
   jsGz: 12 * KIB,
-  jsGzIsland: 103 * KIB,
-  htmlGz: 25 * KIB,
+  jsGzIsland: 104 * KIB,
+  // 26 KiB desde 23/out/2026 (D05: baseAnuncios = "consentimento"): o aviso de
+  // cookies (ConsentBanner) acrescenta markup em toda página; a Home cheia da
+  // camada fictícia em es passou de 25,0 para 25,4 KiB.
+  htmlGz: 26 * KIB,
   jsFileRaw: 250 * KIB,
   font: 30 * KIB,
 } as const;

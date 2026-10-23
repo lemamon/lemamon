@@ -61,7 +61,9 @@ describe("verify-build: orçamento de peso (B097)", () => {
     );
     // A mesma carga cabe numa página do wizard (limite jsGzIsland, só nas rotas da ilha).
     expect(weightProblems(page("", '<astro-island component-url="/_astro/entry.js"></astro-island>'), read, true)).toEqual([]);
-    expect(weightProblems(page("", `<p>${noise(WEIGHT_BUDGET.htmlGz + 2048).toString()}</p>`), read).join()).toMatch(/HTML .* > 25\.0 KiB/);
+    expect(weightProblems(page("", `<p>${noise(WEIGHT_BUDGET.htmlGz + 2048).toString()}</p>`), read).join()).toMatch(
+      new RegExp(`HTML .* > ${(WEIGHT_BUDGET.htmlGz / 1024).toFixed(1).replace(".", "\\.")} KiB`),
+    );
   });
 
   it("folhas de dado do dono (when_data e aviso de cookies) ficam fora dos 15 KiB, mas contam no teto temporário", async () => {
