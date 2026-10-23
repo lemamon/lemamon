@@ -140,6 +140,13 @@ const label = termLabel(text);
       position-area: block-end span-inline-end;
       position-try-fallbacks: flip-block, flip-inline;
     }
+    /* No celular, termo no fim da linha empurrava o balão até a borda da tela
+       (borda e canto direitos cortados): a margem lateral é o gutter. */
+    @media (max-width: 767.98px) {
+      .term-tip__bubble {
+        margin-inline: var(--gutter);
+      }
+    }
     .term-tip__bubble::backdrop {
       background-color: transparent;
     }

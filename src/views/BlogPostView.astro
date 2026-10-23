@@ -17,11 +17,11 @@ import { POST_MID_CTA_LOCAL, isoDate, type PostMidCtaContext } from "@/component
 import PostArticle from "@/components/gated/PostArticle.astro";
 import PostMidCta from "@/components/gated/PostMidCta.astro";
 import CtaFinal from "@/components/shared/CtaFinal.astro";
-import { organizationRef, WEBSITE_ID } from "@/components/shell/seo";
-import { LIMITS } from "@/config/features";
+import { articleAuthorNode, organizationRef, WEBSITE_ID } from "@/components/shell/seo";
+import { getFeatures, LIMITS } from "@/config/features";
 import { absoluteUrl, urlFor } from "@/config/routes";
 import { t } from "@/i18n";
-import { relatedPosts, truncateAtWord } from "@/lib/content";
+import { relatedPosts, teamItems, truncateAtWord } from "@/lib/content";
 import { pageMessage } from "@/lib/whatsapp-messages";
 import Base from "@/layouts/Base.astro";
 
@@ -39,10 +39,13 @@ const title = data.seoTitle
 const description =
   data.seoDescription ?? truncateAtWord(t(locale, "meta.blog_post_template.description", { resumo: data.resumo }), 155);
 
-const [{ Content }, related, cover] = await Promise.all([
+const features = await getFeatures();
+const [{ Content }, related, cover, team] = await Promise.all([
   render(entry),
   relatedPosts(entry, LIMITS.relatedPosts),
   getImage({ src: data.capa.src, width: 1200, height: 630, fit: "cover", format: "jpg" }),
+  // Autor que é pessoa do time: o author do Article aponta o Person de /sobre (só com hasTeam, quando /sobre existe).
+  features.hasTeam ? teamItems() : Promise.resolve([]),
 ]);
 
 (Astro.locals as Record<string, unknown>)[POST_MID_CTA_LOCAL] = {
@@ -61,7 +64,10 @@ const article = {
   dateModified: isoDate(data.atualizadoEm ?? data.publicadoEm),
   mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
   url: canonical,
-  author: { "@type": "Person", name: data.autor.nome, url: data.autor.link, jobTitle: data.autor.papelTecnico },
+  author: articleAuthorNode(
+    data.autor,
+    team.map((person) => ({ id: person.id, nome: person.data.nome, linkedin: person.data.linkedin, github: person.data.github })),
+  ),
   publisher: organizationRef(),
   isPartOf: { "@id": WEBSITE_ID },
   image: absoluteUrl(cover.src),

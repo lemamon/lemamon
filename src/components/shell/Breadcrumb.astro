@@ -6,9 +6,13 @@
  * O último item é a página atual (sem link, aria-current="page"); o separador
  * "›" é decorativo (aria-hidden). Links internos sempre de urlFor().
  * Links com alvo de 44×44 mesmo quando o texto é curto ("Início", "Blog"; B084).
- * Abaixo de 768px o item atual some (é o H1, logo abaixo): o título longo de
- * um post não ocupa duas linhas da primeira dobra com o "›" sozinho. O
- * BreadcrumbList do JSON-LD continua completo.
+ * Abaixo de 768px o item atual some quando repete o H1 logo abaixo
+ * (`hideCurrentOnMobile`, padrão true): o título longo de um post não ocupa
+ * duas linhas da primeira dobra com o "›" sozinho. No case, o item atual é o
+ * nome do projeto (caseProjectName, S02-10), diferente do H1 orientado ao
+ * problema, e é o nome que a mensagem do WhatsApp cita: o CaseArticle passa
+ * false e ele continua visível no celular. O BreadcrumbList do JSON-LD
+ * continua completo nos dois casos.
  */
 import { absoluteUrl } from "@/config/routes";
 import { t, type Locale } from "@/i18n";
@@ -24,9 +28,11 @@ export interface Crumb {
 interface Props {
   locale: Locale;
   items: Crumb[];
+  /** Esconde o item atual abaixo de 768px (só quando ele repete o H1). Padrão: true. */
+  hideCurrentOnMobile?: boolean;
 }
 
-const { locale, items } = Astro.props;
+const { locale, items, hideCurrentOnMobile = true } = Astro.props;
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -39,7 +45,7 @@ const jsonLd = {
 };
 ---
 
-<nav class="breadcrumb" aria-label={t(locale, "shared.breadcrumb.aria_label")}>
+<nav class="breadcrumb" data-hide-current={hideCurrentOnMobile ? "" : undefined} aria-label={t(locale, "shared.breadcrumb.aria_label")}>
   <ol role="list">
     {
       items.map((item, index) => (
@@ -97,7 +103,7 @@ const jsonLd = {
   }
 
   @media (max-width: 767.98px) {
-    .breadcrumb li:has(> [aria-current="page"]):not(:first-child) {
+    .breadcrumb[data-hide-current] li:has(> [aria-current="page"]):not(:first-child) {
       display: none;
     }
   }

@@ -6,7 +6,18 @@ import { describe, expect, it } from "vitest";
 import { ROUTE_KEYS, routeLocales, SERVICE_KEYS, SERVICE_ROUTE, urlFor } from "@/config/routes";
 import { LOCALES } from "@/i18n";
 
-import { OG_PAGE_HEADLINE, ogImageFile, ogImageFor, personId, ROBOTS_INDEX, routeJsonLd, WEBSITE_ID, type PersonInput } from "./seo";
+import {
+  articleAuthorNode,
+  OG_PAGE_HEADLINE,
+  ogImageFile,
+  ogImageFor,
+  personId,
+  ROBOTS_INDEX,
+  routeJsonLd,
+  sameAs,
+  WEBSITE_ID,
+  type PersonInput,
+} from "./seo";
 
 const ROOT = process.cwd();
 
@@ -63,6 +74,16 @@ describe("JSON-LD por rota (BLUEPRINT §10.3)", () => {
     expect(org).not.toHaveProperty("legalName");
     expect(org).not.toHaveProperty("taxID");
     expect(org.address).toMatchObject({ addressLocality: "São Paulo", addressRegion: "SP", addressCountry: "BR" });
+  });
+
+  it("sameAs só leva os perfis com publicar: true (S02-1)", () => {
+    const perfis = {
+      github: { url: "https://github.com/teste", publicar: true },
+      linkedin: { url: "https://www.linkedin.com/company/teste", publicar: true },
+      medium: { url: "https://medium.com/@teste", publicar: false },
+    };
+    expect(sameAs(perfis)).toEqual(["https://github.com/teste", "https://www.linkedin.com/company/teste"]);
+    expect(sameAs({ ...perfis, github: { ...perfis.github, publicar: false }, linkedin: { ...perfis.linkedin, publicar: false } })).toEqual([]);
   });
 
   it("razão social e CNPJ só com hasCompanyData", () => {
@@ -143,6 +164,26 @@ describe("JSON-LD por rota (BLUEPRINT §10.3)", () => {
     expect(personId("pessoa-a")).toBe(`https://lemamon.dev${urlFor("about", "pt")}#pessoa-a`);
     // Person só em Sobre: na Home a lista é ignorada.
     expect(routeJsonLd("home", "pt", "desc", flags, people).map((node) => node["@type"])).toEqual(["WebSite", ["Organization", "ProfessionalService"]]);
+  });
+
+  it("author do Article: pessoa do time leva o @id do Person de /sobre; autor de fora fica sem @id", () => {
+    const autor = { nome: "Pessoa de Teste A", link: "https://www.linkedin.com/in/teste-a", papelTecnico: "Desenvolvedora" };
+    const team = [
+      { id: "pessoa-a", nome: "Pessoa de Teste A", linkedin: "https://www.linkedin.com/in/teste-a" },
+      { id: "pessoa-b", nome: "Pessoa de Teste B", github: "https://github.com/teste-b" },
+    ];
+    expect(articleAuthorNode(autor, team)).toEqual({
+      "@type": "Person",
+      "@id": personId("pessoa-a"),
+      name: "Pessoa de Teste A",
+      url: "https://www.linkedin.com/in/teste-a",
+      jobTitle: "Desenvolvedora",
+    });
+    // Casa também pelo perfil (o nome do post pode vir sem acento ou abreviado).
+    expect(articleAuthorNode({ ...autor, nome: "P. Teste B", link: "https://github.com/teste-b" }, team)["@id"]).toBe(personId("pessoa-b"));
+    // Sem time (sem /sobre) ou autor de fora: Person solto, sem @id.
+    expect(articleAuthorNode(autor)).not.toHaveProperty("@id");
+    expect(articleAuthorNode({ ...autor, nome: "Convidada", link: "https://www.linkedin.com/in/convidada" }, team)).not.toHaveProperty("@id");
   });
 
   it("Service nos 5 serviços e na Sprint de Descoberta; nada nas demais", () => {

@@ -192,29 +192,12 @@
   status = 301
   force = true
 
-# /index.html por idioma (S01-5): o arquivo existe e respondia 200; o canonical
-# já apontava a raiz, o 301 tira a URL duplicada. force porque o arquivo existe.
-# A regra casa com o caminho PEDIDO: "/" continua servindo o index.html com 200.
-# Conferir no deploy preview antes do merge (tests/e2e/redirects.spec.ts):
+# /index.html por idioma (S01-5, opcional): SEM regra de propósito. O arquivo
+# responde 200, mas o canonical já aponta a raiz de cada idioma. Um 301 forçado
+# de /index.html para / arrisca loop na Home se o Netlify casar a regra com o
+# arquivo servido em "/", e o ganho é quase nulo. Para tentar de novo, só com
+# o teste em um deploy preview que já tenha a regra:
 #   curl -sI <preview>/ → 200 e curl -sI <preview>/index.html → 301 para /.
-# Se "/" entrar em loop, apague as 3 regras: o canonical resolve sozinho.
-[[redirects]]
-  from = "/index.html"
-  to = "/"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/en/index.html"
-  to = "/en/"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/es/index.html"
-  to = "/es/"
-  status = 301
-  force = true
 
 # 404 por idioma. Sem force: só vale quando nenhum arquivo casa. Fora de
 # /en/ e /es/, o Netlify serve /404.html automaticamente.
@@ -271,6 +254,14 @@
   for = "/_midia/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# /llms.txt (auditoria SEO S05-10): texto para ferramentas de IA, que repete os
+# titles e as descriptions do site. noindex tira o arquivo do índice da busca
+# (seria uma página fina) sem impedir que quem o pede o leia.
+[[headers]]
+  for = "/llms.txt"
+  [headers.values]
+    X-Robots-Tag = "noindex"
 
 # HTML e arquivos de public/ (sem hash) ficam no padrão do Netlify
 # (public, max-age=0, must-revalidate): deploy novo vale na hora.

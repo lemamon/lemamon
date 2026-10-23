@@ -1,0 +1,69 @@
+/**
+ * Perfis em cards (Profiles.astro, variant="cards"; hoje só /sobre). Dono:
+ * home. Carregado só na página que renderiza os cards (ui/RenderedStyle.astro,
+ * B256): a Home e as páginas de serviço usam a linha de links (variant
+ * "inline") e não pagam estes bytes no orçamento de 15 KiB (B094). Sem escopo
+ * automático: só classes .profiles e .profile*.
+ *
+ * Raiz de cada card = <Card as="a" interactive> (borda, raio, padding, hover):
+ * `a.card.profile` vence o display do .card.
+ */
+.profiles {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+}
+a.card.profile {
+  display: grid;
+  gap: var(--space-2);
+  block-size: 100%;
+}
+.profile__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: var(--space-3);
+}
+.profile__logo {
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--radius-md);
+  background-color: var(--color-brand-subtle);
+  color: var(--color-brand);
+}
+.profiles .profile__arrow {
+  color: var(--color-text-tertiary);
+  transition: var(--transition-transform), var(--transition-colors);
+}
+.profile__name {
+  font-size: var(--text-lg);
+  line-height: var(--leading-h4); /* título curto: 1.3, não o 1.56 do texto */
+  font-weight: var(--font-weight-bold);
+}
+.profile__text {
+  color: var(--color-text-secondary);
+  text-wrap: pretty; /* <span>, fora do p { text-wrap: pretty } global */
+}
+.profile__url {
+  margin-block-start: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-tertiary);
+  overflow-wrap: anywhere;
+}
+@media (hover: hover) and (pointer: fine) {
+  .profiles .profile:hover .profile__arrow {
+    color: var(--color-brand);
+    transform: translate(var(--space-0-5), calc(-1 * var(--space-0-5)));
+  }
+}
+@media (min-width: 768px) {
+  .profiles {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--grid-gap);
+  }
+}

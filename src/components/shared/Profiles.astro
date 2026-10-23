@@ -13,12 +13,18 @@
  * variant="cards" (Home "Confira antes de conversar", /contato, /sobre)
  * variant="inline" (linha terciária dentro do CTA final dos serviços)
  * Card = <Card as="a" interactive>: hover só com ponteiro fino (B192).
+ * O CSS dos cards (./Profiles.cards.css) só vai para a página que renderiza os
+ * cards (<RenderedStyle>, B256): quem usa a linha "inline" (Home, serviços)
+ * não paga esses bytes no orçamento de 15 KiB (B094).
  */
 import Card from "@/components/ui/Card.astro";
 import Icon from "@/components/ui/Icon.astro";
+import RenderedStyle from "@/components/ui/RenderedStyle.astro";
 import { getFeatures } from "@/config/features";
 import { PROFILE_IDS, perfis } from "@/config/perfis";
 import { getSection, t, type Locale } from "@/i18n";
+
+import cardsCss from "./Profiles.cards.css?inline";
 
 interface Props {
   locale: Locale;
@@ -50,98 +56,40 @@ const NameTag = headingLevel ? (`h${headingLevel}` as "h3" | "h4") : "p";
         ))}
       </ul>
     ) : (
-      <ul class="profiles" role="list">
-        {visible.map((id) => (
-          <li>
-            <Card
-              as="a"
-              interactive
-              class="profile"
-              href={perfis[id].url}
-              rel="noopener"
-              target="_blank"
-              data-track="profile_click"
-              data-profile={id}
-            >
-              <span class="profile__top">
-                <span class="profile__logo">
-                  <Icon name={id} size={22} />
+      <Fragment>
+        <RenderedStyle css={cardsCss} name="ProfileCards" />
+        <ul class="profiles" role="list">
+          {visible.map((id) => (
+            <li>
+              <Card
+                as="a"
+                interactive
+                class="profile"
+                href={perfis[id].url}
+                rel="noopener"
+                target="_blank"
+                data-track="profile_click"
+                data-profile={id}
+              >
+                <span class="profile__top">
+                  <span class="profile__logo">
+                    <Icon name={id} size={22} />
+                  </span>
+                  <Icon name="arrow-up-right" size={18} class="profile__arrow" />
                 </span>
-                <Icon name="arrow-up-right" size={18} class="profile__arrow" />
-              </span>
-              <NameTag class="profile__name">{copy[id].name}</NameTag>
-              <span class="profile__text">{copy[id].text}</span>
-              <span class="profile__url">{perfis[id].url.replace(/^https:\/\/(www\.)?/, "")}</span>
-              <span class="sr-only">{newTab}</span>
-            </Card>
-          </li>
-        ))}
-      </ul>
+                <NameTag class="profile__name">{copy[id].name}</NameTag>
+                <span class="profile__text">{copy[id].text}</span>
+                <span class="profile__url">{perfis[id].url.replace(/^https:\/\/(www\.)?/, "")}</span>
+                <span class="sr-only">{newTab}</span>
+              </Card>
+            </li>
+          ))}
+        </ul>
+      </Fragment>
     ))
 }
 
 <style>
-  .profiles {
-    display: grid;
-    gap: var(--space-4);
-    margin: 0;
-    padding: 0;
-  }
-  /* Raiz = <Card as="a" interactive> (borda, raio, padding, hover). */
-  .profiles :global(.profile) {
-    display: grid;
-    gap: var(--space-2);
-    block-size: 100%;
-  }
-  .profile__top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-block-end: var(--space-3);
-  }
-  .profile__logo {
-    display: grid;
-    place-items: center;
-    inline-size: 2.75rem;
-    block-size: 2.75rem;
-    border-radius: var(--radius-md);
-    background-color: var(--color-brand-subtle);
-    color: var(--color-brand);
-  }
-  .profiles :global(.profile__arrow) {
-    color: var(--color-text-tertiary);
-    transition: var(--transition-transform), var(--transition-colors);
-  }
-  .profile__name {
-    font-size: var(--text-lg);
-    line-height: var(--leading-h4); /* título curto: 1.3, não o 1.56 do texto */
-    font-weight: var(--font-weight-bold);
-  }
-  .profile__text {
-    color: var(--color-text-secondary);
-    text-wrap: pretty; /* <span>, fora do p { text-wrap: pretty } global */
-  }
-  .profile__url {
-    margin-block-start: var(--space-2);
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    line-height: var(--leading-xs);
-    color: var(--color-text-tertiary);
-    overflow-wrap: anywhere;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .profiles :global(.profile:hover .profile__arrow) {
-      color: var(--color-brand);
-      transform: translate(var(--space-0-5), calc(-1 * var(--space-0-5)));
-    }
-  }
-  @media (min-width: 768px) {
-    .profiles {
-      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-      gap: var(--grid-gap);
-    }
-  }
-
   .profiles-inline {
     display: flex;
     flex-wrap: wrap;

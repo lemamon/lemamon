@@ -66,7 +66,9 @@ test.describe("página de case: slug por idioma, breadcrumb e ficha (auditoria d
       const data = frontmatter(locale);
       await page.goto(urlFor("case", locale, { slug: data.slugUrl ?? key }));
       const name = data.seoTitle as string;
-      if (!isMobile) await expect(page.locator('nav.breadcrumb [aria-current="page"]')).toHaveText(name);
+      // Visível também no celular: no case, o item atual é o nome do projeto, não o H1.
+      await expect(page.locator('nav.breadcrumb [aria-current="page"]')).toHaveText(name);
+      await expect(page.locator('nav.breadcrumb [aria-current="page"]')).toBeVisible();
       const crumbs = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
         nodes.map((node) => JSON.parse(node.textContent ?? "{}")).find((node) => node["@type"] === "BreadcrumbList"),
       );

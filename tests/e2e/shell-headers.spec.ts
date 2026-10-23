@@ -58,6 +58,17 @@ test.describe("headers de segurança (B233)", () => {
   }
 });
 
+test.describe("/llms.txt fora do índice (auditoria SEO S05-10)", () => {
+  test.skip(!NETLIFY, "precisa de E2E_NETLIFY_URL (deploy); o astro preview não executa o netlify.toml");
+
+  test("/llms.txt responde 200 em text/plain com X-Robots-Tag noindex", async ({ request }) => {
+    const response = await request.get("/llms.txt", { maxRedirects: 0 });
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"] ?? "").toContain("text/plain");
+    expect(response.headers()["x-robots-tag"] ?? "").toContain("noindex");
+  });
+});
+
 test.describe("cache dos assets (B236)", () => {
   test.skip(!NETLIFY, "precisa de E2E_NETLIFY_URL (deploy); o astro preview não executa o netlify.toml");
 

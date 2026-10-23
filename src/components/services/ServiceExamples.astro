@@ -11,12 +11,17 @@
  * Integrações: o 1º exemplo que cita "API" (services._notes.integrations_examples,
  * auditoria SEO S07-10) é a 1ª menção do termo na página, e ela vira o
  * toggletip shared.terms.api (§5.9: jargão só com explicação curta).
+ * O exemplo de sensores cita um case publicado: o trecho
+ * services.integrations.examples_case_phrase vira link para o case (no idioma
+ * da página, só com o case no ar; sem ele, o texto sai sem link).
  */
 import TermText from "@/components/shared/TermText.astro";
 import Card from "@/components/ui/Card.astro";
 import Section from "@/components/ui/Section.astro";
-import { SERVICE_PARAM, type ServiceKey } from "@/config/routes";
+import { getFeatures } from "@/config/features";
+import { SERVICE_PARAM, urlFor, type ServiceKey } from "@/config/routes";
 import { getSection, t, type Locale } from "@/i18n";
+import { caseItem } from "@/lib/content";
 
 import SectionHeader from "@/components/ui/SectionHeader.astro";
 import TextCta from "./kit/TextCta.astro";
@@ -31,6 +36,19 @@ const title = service === "support" ? t(locale, "services.support.examples_title
 const examples: readonly { title: string; text: string }[] = getSection(locale, `services.${service}.examples` as const);
 /** Índice do exemplo com a 1ª menção de "API" (só integrações; -1 = nenhum). */
 const apiExample = service === "integrations" ? examples.findIndex((example) => /\bAPI\b/.test(example.text)) : -1;
+/** Case citado no texto de um exemplo (chave do case → trecho que vira link). */
+const EXAMPLE_CASE: Partial<Record<ServiceKey, { slug: string; phrase: () => string }>> = {
+  integrations: { slug: "controle-de-producao-com-contagem-automatica", phrase: () => t(locale, "services.integrations.examples_case_phrase") },
+};
+const features = await getFeatures();
+const exampleCase = EXAMPLE_CASE[service];
+const linkedCase = exampleCase && features.hasCases ? await caseItem(locale, exampleCase.slug) : null;
+const casePhrase = linkedCase && exampleCase ? exampleCase.phrase() : "";
+const caseHref = linkedCase ? urlFor("case", locale, { slug: linkedCase.urlSlug }) : "";
+const caseExample = casePhrase ? examples.findIndex((example, index) => index !== apiExample && example.text.includes(casePhrase)) : -1;
+const caseText = examples[caseExample]?.text ?? "";
+const caseBefore = caseText.slice(0, caseText.indexOf(casePhrase));
+const caseAfter = caseText.slice(caseBefore.length + casePhrase.length);
 const common =
   service === "mobile_apps"
     ? {
@@ -51,7 +69,13 @@ const common =
           </span>
           <h3 class="examples__title">{example.title}</h3>
           <p class="examples__text">
-            {index === apiExample ? <TermText locale={locale} text={example.text} terms={["api"]} /> : example.text}
+            {index === apiExample ? (
+              <TermText locale={locale} text={example.text} terms={["api"]} />
+            ) : index === caseExample ? (
+              <Fragment>{caseBefore}<a href={caseHref}>{casePhrase}</a>{caseAfter}</Fragment>
+            ) : (
+              example.text
+            )}
           </p>
         </Card>
       ))

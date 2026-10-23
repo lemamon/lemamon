@@ -97,7 +97,8 @@ const box = isSupport
   {
     isSupport ? (
       <div class="links">
-        <ArrowLink href={urlFor("how_we_work", locale)} text={t(locale, "shared.cta.see_how_we_work")} />
+        {/* Sustentação não tem preço fechado de desenvolvimento: rótulo curto (shared.cta.see_how_we_work_short). */}
+        <ArrowLink href={urlFor("how_we_work", locale)} text={t(locale, "shared.cta.see_how_we_work_short")} />
         {features.hasEngineering && (
           <ArrowLink href={anchorFor("how_we_work", locale, ANCHORS.engineering)} text={t(locale, "services.template.engineering_link")} />
         )}

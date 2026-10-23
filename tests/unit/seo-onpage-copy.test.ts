@@ -203,6 +203,8 @@ describe("Termos da SERP em inglês (S07-8, S03-8)", () => {
       expect(deliverables, locale).toContain(`href="${urlFor("cases_hub", locale)}"`);
       expect(textOf(deliverables), locale).toContain(label);
       expect(label, locale).not.toMatch(/gratuit|free/i);
+      // D45 §4: os cases não tiveram o plano com prazo e preço do método atual; o rótulo diz só o escopo definido antes.
+      expect(label, locale).not.toMatch(/prazo|preço|price|timeline|plazo|precio|Descoberta|Discovery|Descubrimiento/i);
     }
   });
 });
@@ -218,6 +220,20 @@ describe("Integrações: API, webhook, sistema sem API e IoT (S07-10)", () => {
       expect(examples.length, locale).toBeLessThanOrEqual(7);
       const all = examples.map((example) => `${example.title} ${example.text}`).join(" ");
       expect(all, locale).not.toMatch(/Shopify|SAP|TOTVS|Bling|Tiny|Mercado Livre|Salesforce|HubSpot|VTEX|Omie|Stripe/);
+    }
+  });
+
+  it("o exemplo de sensores linka o case de contagem de produção, no slug do idioma", () => {
+    const slugs = {
+      pt: "controle-de-producao-com-contagem-automatica",
+      en: "production-control-with-automatic-counting",
+      es: "control-de-produccion-con-conteo-automatico",
+    } as const;
+    for (const locale of LOCALES) {
+      const phrase = t(locale, "services.integrations.examples_case_phrase");
+      expect(getSection(locale, "services.integrations.examples")[6]?.text, locale).toContain(phrase);
+      const examples = section(main(built("service_integrations", locale)), "exemplos", locale);
+      expect(examples, locale).toMatch(new RegExp(`<a href="${urlFor("case", locale, { slug: slugs[locale] })}"[^>]*>${phrase}</a>`));
     }
   });
 
@@ -240,6 +256,17 @@ describe("Âncoras internas (S06-10)", () => {
     }
     expect(t("pt", "shared.cta.see_how_we_work")).toBe("Ver como funciona o desenvolvimento com preço fechado");
     expect(t("pt", "services.template.price_factors_link")).toMatch(/^Quanto custa um software sob medida/);
+  });
+
+  it("sustentação e hub /servicos: o link para /como-trabalhamos usa o rótulo curto, sem 'preço fechado'", () => {
+    for (const locale of LOCALES) {
+      for (const route of ["service_support", "services_hub"] as const) {
+        const html = main(built(route, locale));
+        const links = [...html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)].map((match) => [match[1], textOf(match[2] ?? "")]);
+        expect(links, `${route} ${locale}`).toContainEqual([urlFor("how_we_work", locale), t(locale, "shared.cta.see_how_we_work_short")]);
+        expect(textOf(html), `${route} ${locale}`).not.toContain(t(locale, "shared.cta.see_how_we_work"));
+      }
+    }
   });
 
   it("o link do cartão do plano, na própria Home, fica com o rótulo curto", () => {

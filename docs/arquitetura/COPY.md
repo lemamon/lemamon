@@ -189,7 +189,7 @@ Ordem das seções conforme o BLUEPRINT §6.1. Hoje vão ao ar 8 seções; as co
     - **Título-benefício**: Seu caso ouvido antes de qualquer gasto
     - **Texto**: Você conta o problema na língua do seu negócio e tira as suas dúvidas. A gente faz as perguntas que importam.
   - **Sprint de Descoberta**
-    - **Título-benefício**: Escopo, prazo e preço fechados, sem custo
+    - **Título-benefício**: Escopo, prazo e preço fechados por escrito
     - **Texto**: O problema vira um escopo priorizado e validado por você. Assim, prazo e preço deixam de ser chute.
   - **Desenvolvimento**
     - **Título-benefício**: Você acompanha usando o próprio software
@@ -363,7 +363,7 @@ Página-pilar do método. Ordem conforme o BLUEPRINT §6.2.
   2. Separe exemplos do que existe hoje: planilhas, telas, mensagens ou rascunhos da ideia.
   3. Liste os sistemas e as ferramentas que vocês já usam.
 - **Rótulo 'depois'**: Depois
-- **Depois**: Se fizer sentido seguir, vem a Sprint de Descoberta, gratuita, quando o diagnóstico mostrou que ela é necessária, com a duração combinada nele. Quando não é, vem a proposta de desenvolvimento.
+- **Depois**: Se fizer sentido seguir e o diagnóstico mostrar que a Sprint de Descoberta é necessária, ela vem a seguir, gratuita, com a duração combinada com você. Se não for, vem direto a proposta de desenvolvimento.
 
 #### 6. Etapa 2: Sprint de Descoberta · `how_we_work.stage_discovery`
 
@@ -534,7 +534,7 @@ Página da etapa 2, gratuita e só quando o diagnóstico mostra que é necessár
 
 - **Título**: O que você recebe
 - **Introdução**: A Descoberta termina com três entregas:
-- **`cases_link`** _(só com cases no ar, `hasCases`; auditoria SEO S03-8)_: Veja nos cases como a Descoberta entrou em projetos reais
+- **`cases_link`** _(só com cases no ar, `hasCases`; auditoria SEO S03-8; não atribui aos cases o plano com prazo e preço do método atual, D45 §4)_: Ver cases em que o escopo foi definido antes de construir
 
 #### 3a. Os 3 entregáveis · `shared.discovery_deliverables`
 > Componente compartilhado.
@@ -805,7 +805,7 @@ As perguntas usadas em mais de uma página e todas as condicionais. Cada página
 - **`reference_before_talking`**
   - **Pergunta**: Consigo ter uma ideia de valor antes de conversar?
   - **`answer_with_pricing`** _(só com faixas de preço preenchidas)_: Sim. As faixas de referência de investimento ajudam a se planejar. O preço do desenvolvimento é fechado antes de ele começar.
-  - **`answer_without_pricing`**: Um número para o seu caso sai depois de entender o escopo. O que dá para saber já: os 7 fatores desta página mostram o que encarece ou barateia o projeto. E você não paga nada antes de aprovar o desenvolvimento, já com o preço fechado por escrito. Tem um valor em mente? Indique a faixa no pedido.
+  - **`answer_without_pricing`**: Um número para o seu caso sai depois de entender o escopo. O que dá para saber já: os 7 fatores desta página mostram o que encarece ou barateia o projeto. Tem um valor em mente? Indique a faixa no pedido.
 
 #### Perguntas condicionais · `faq.conditional`
 > **Condicional:** cada pergunta tem a sua flag em config/confirmacoes.ts (ex.: `escopoMudanca`, `codigoProprietario`, `notaFiscal`, `outrasCidades`, `nda`, `sistemaTerceiros`, `semDescoberta`, `duracaoDescoberta`, `planoDoCliente`, `migracaoDados`, `formatoDiagnostico`, `pagamento`). Sem a flag, a pergunta não aparece. `descobertaAbatida` e `descobertaUnicoCusto` saíram em 21/10/2026 (D44: a Descoberta é gratuita).
@@ -924,7 +924,7 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
 - **`engineering_link`**: Ver como a gente constrói
 - **`price_factors_closing`**: A gente pesa cada ponto no seu caso e fecha prazo e preço antes do desenvolvimento, sem cobrar nada até lá.
 - **`price_factors_cta_lead`**: Você não precisa ter essas respostas para conversar:
-- **`price_factors_link`** _(âncora com a keyword de /quanto-custa, auditoria SEO S06-10)_: Quanto custa um software sob medida: o que define o preço
+- **`price_factors_link`** _(âncora com a keyword de /quanto-custa, auditoria SEO S06-10)_: Quanto custa um software sob medida e o que define o preço
 - **`price_factors_link_with_pricing`** _(só com faixas de preço preenchidas)_: Ver quanto custa um projeto de software
 - **`investment_note`**: Referência, não proposta.
 - **`price_answer_link`**: Ver as faixas de referência deste serviço
@@ -1277,7 +1277,7 @@ Rótulos e frases que o template usa em todas as páginas de serviço. `{servico
     - **Resposta**: O prazo sai fechado antes do desenvolvimento, junto com o preço, e depende do que a primeira versão precisa provar. Tem data de captação ou de piloto? Conte no diagnóstico: o plano mostra o que cabe até lá. No desenvolvimento, você recebe software funcionando a cada 2 semanas.
   - **`what_goes_in`**
     - **Pergunta**: O que entra na primeira versão?
-    - **Resposta** _(abre pela definição de MVP, auditoria SEO S03-7: what_is_mvp é o 2º da ordem de remoção do teto)_: MVP (produto mínimo viável) é a menor versão do produto que já resolve o problema principal para usuários reais: o mínimo para provar a ideia. O que entra e o que fica para depois é decidido com você antes do desenvolvimento: é o escopo priorizado.
+    - **Resposta** _(responde à pergunta e, logo em seguida, define MVP, auditoria SEO S03-7: what_is_mvp é o 2º da ordem de remoção do teto)_: O mínimo para provar a ideia: um MVP (produto mínimo viável) é a menor versão do produto que já resolve o problema principal para usuários reais. O que entra e o que fica para depois é decidido com você antes do desenvolvimento: é o escopo priorizado.
   - **`what_is_mvp`**
     - **Pergunta**: O que é um MVP, na prática?
     - **Resposta** _(sem repetir a definição, que está em what_goes_in)_: Não é protótipo nem demonstração: é software funcionando, usado por usuários reais, com o resto deixado para depois de propósito.
@@ -2197,7 +2197,8 @@ Textos que aparecem em várias páginas: cabeçalho, rodapé, botões, WhatsApp,
 - **`continue_order`**: Continuar meu pedido
 - **WhatsApp**: Falar no WhatsApp
 - **`whatsapp_questions`**: Tirar dúvidas no WhatsApp
-- **`see_how_we_work`** _(âncora com a keyword de /como-trabalhamos, auditoria SEO S06-10; o cartão do plano no hero da Home usa `home.hero.plan_link`)_: Ver como funciona o desenvolvimento com preço fechado
+- **`see_how_we_work`** _(âncora com a keyword de /como-trabalhamos, auditoria SEO S06-10; o cartão do plano no hero da Home usa `home.hero.plan_link`; nas 4 páginas de projeto e nos posts)_: Ver como funciona o desenvolvimento com preço fechado
+- **`see_how_we_work_short`** _(em /servicos/sustentacao, que não tem preço fechado de desenvolvimento, e no hub /servicos, ao lado de "Ver como o preço é fechado")_: Ver como trabalhamos
 - **`see_method_detail`**: Ver cada etapa em detalhe
 - **`see_service`**: Ver como funciona
 - **`see_service_aria`**: Ver como funciona: {servico}

@@ -37,16 +37,12 @@ test.describe("(g) redirects do Netlify", () => {
     ["/en/projects", "/en/quote", 301],
     ["/es/projects", "/es/cotizacion", 301],
     ["/sitemap.xml", "/sitemap-index.xml", 301],
-    // S01-5: /index.html por idioma vai para a raiz (a raiz continua 200, ver abaixo).
-    ["/index.html", "/", 301],
-    ["/en/index.html", "/en/", 301],
-    ["/es/index.html", "/es/", 301],
   ];
 
-  // S01-5: a regra de /index.html casa com o caminho pedido; a raiz de cada
-  // idioma continua servindo o arquivo com 200, sem loop de redirect.
+  // A raiz de cada idioma responde 200 direto: nenhuma regra (a de ?lng= casa
+  // só pela query) pode redirecioná-la. S01-5 ficou sem regra (netlify.toml).
   for (const root of ["/", "/en/", "/es/"]) {
-    test(`${root} responde 200 sem redirect (sem loop com o 301 de index.html)`, async ({ request }) => {
+    test(`${root} responde 200 sem redirect`, async ({ request }) => {
       const response = await request.get(root, { maxRedirects: 0 });
       expect(response.status()).toBe(200);
     });

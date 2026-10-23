@@ -2,7 +2,7 @@
 
 **Decisão:** D45 em [15](15-registro-de-decisoes.md). **Regras de prova:** [09](09-prova-cases-depoimentos.md) (§1 e §10, exceção `semTermo`).
 
-29 projetos do portfólio estão publicados como case **sem o nome do cliente** (setor + porte), em `src/content/cases/<pt|en|es>/<slug>.mdx`,
+29 projetos do portfólio viraram case **sem o nome do cliente** (setor + porte), em `src/content/cases/<pt|en|es>/<slug>.mdx`; **28 estão no ar** (o 33 espera setor e porte do dono),
 com capa ilustrada em `src/content/cases/_imagens/<slug>/capa.png` (ilustração gerada por `scripts/gerar-capas-portfolio.mjs`, não tela real).
 Nenhum tem termo do cliente: todos levam `semTermo` (decisão registrada do dono), que o schema só aceita em case sem `cliente`, sem `resultado`,
 sem prazo e preço, sem link do produto e sem depoimento. A linha do tempo "Como foi" usa as 4 etapas que o dono declarou para todos (D45).
@@ -44,7 +44,7 @@ das URLs e das capas. A lista original com os nomes, as pendências e as pergunt
 | 30 | [Site oficial com gerenciamento de conteúdo para uma marca de alimentos exibir informações institucionais e de produtos](https://lemamon.dev/cases/site-institucional-com-cms) | Alimentos e bebidas · Marca de alimentos | Sistemas web | 2/5 |
 | 31 | [Página inicial de um tribunal reformulada para modernizar o portal e facilitar a publicação de notícias](https://lemamon.dev/cases/portal-de-noticias-de-tribunal) | Setor público · Órgão público | Sistemas web | 2/5 |
 | 32 | [A base de um sistema para evitar que descargas de energia estática danifiquem placas eletrônicas na produção](https://lemamon.dev/cases/deteccao-de-descarga-estatica) | Indústria · Multinacional | Integrações | 2/5 |
-| 33 | [Um painel interativo com visual aprimorado e interatividade mais evidente desde a página inicial](https://lemamon.dev/cases/painel-interativo-com-animacoes) | A confirmar · A confirmar | Sistemas web | 2/5 |
+| 33 | Um painel interativo com visual aprimorado e interatividade mais evidente desde a página inicial (`painel-interativo-com-animacoes`, **fora do ar**: `publicado: false` nos 3 idiomas até o dono informar setor e porte; o schema recusa "A confirmar" em case publicado, auditoria SEO S02-2) | [PREENCHER: setor · porte] | Sistemas web | 2/5 |
 | 34 | [Um site que apresenta de forma marcante o estudo de caso de uma IA que processa mensagens de bullying](https://lemamon.dev/cases/site-de-estudo-de-caso-de-ia) | Publicidade · Multinacional | Sistemas web | 2/5 |
 | 35 | [Um app que guia e auxilia turistas e visitantes em uma cidade](https://lemamon.dev/cases/app-guia-turistico) | Setor público · Multinacional | Aplicativos | 2/5 |
 | 36 | [Batalhas de gladiadores em uma arena, com salas locais para jogar com quem está na mesma rede](https://lemamon.dev/cases/jogo-multiplayer-de-arena) | Jogos · Multinacional | Aplicativos | 2/5 |

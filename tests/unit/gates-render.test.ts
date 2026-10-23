@@ -437,6 +437,8 @@ describe("página de case e post (corpo)", () => {
       const item = entry("cases", "pt/x", data);
       const out = await html(CaseArticle, { locale: "pt", slug: "x", entry: item, testimonial: null, related: [] });
       expect(trail(out)).toMatch(new RegExp(`<span aria-current="page"[^>]*>${expected}</span>`));
+      // O nome do projeto não é o H1: o item atual não some no celular.
+      expect(trail(out)).not.toContain("data-hide-current");
       expect(trail(out)).not.toContain(`${FIXTURE_MARK} Indústria · ${FIXTURE_MARK} Multinacional`);
       const list = crumbsLd(out);
       expect(list.itemListElement.at(-1)).toEqual({ "@type": "ListItem", position: 3, name: expected });
@@ -567,6 +569,8 @@ describe("página de case e post (corpo)", () => {
     expect(out).toContain('href="/servicos/sistemas-web"');
     expect(out).toContain(t("pt", "blog.post.related_title"));
     expect(out).toContain('href="/blog/fixture-lemamon-post-2"');
+    // No post, o item atual do breadcrumb é o título (o H1 logo abaixo): some no celular.
+    expect(out).toMatch(/<nav class="breadcrumb" data-hide-current/);
   });
 
   it("<CtaMeio />: texto do post (Astro.locals) e botão do diagnóstico com origem", async () => {

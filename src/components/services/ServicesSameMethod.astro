@@ -27,7 +27,8 @@ const { locale } = Astro.props;
   <SectionHeader id="mesmo-metodo-title" title={t(locale, "services.hub.same_method.title")} />
   <MethodTimeline locale={locale} variant="compact" stageHref={{ discovery: urlFor("discovery_sprint", locale) }} />
   <div class="same-method__links">
-    <ArrowLink href={urlFor("how_we_work", locale)} text={t(locale, "shared.cta.see_how_we_work")} />
+    {/* Rótulo curto: o vizinho (price_link → /quanto-custa) já fala de preço fechado. */}
+    <ArrowLink href={urlFor("how_we_work", locale)} text={t(locale, "shared.cta.see_how_we_work_short")} />
     <ArrowLink href={urlFor("pricing", locale)} text={t(locale, "services.hub.same_method.price_link")} />
   </div>
 </Section>

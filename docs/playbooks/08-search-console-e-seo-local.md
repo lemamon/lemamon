@@ -19,18 +19,18 @@
 
 - [ ] `curl -sI https://lemamon.dev/` sem `x-robots-tag`; na Home, `<meta name="robots" content="index, follow, max-image-preview:large">`; `https://lemamon.dev/robots.txt` com a linha do sitemap.
 - [ ] `curl -sI https://boring-shockley-7c50b2.netlify.app/servicos/mvp` → **301** para `https://lemamon.dev/servicos/mvp` (o host do Netlify não fica como cópia rastreável; S01-1). O deploy preview continua 200, com o noindex do Netlify.
-- [ ] `curl -sI https://lemamon.dev/index.html` → 301 para `/`, e `curl -sI https://lemamon.dev/` → **200** (sem loop; S01-5). Se `/` entrar em loop, apague as 3 regras de `/index.html` do `netlify.toml`: o canonical resolve sozinho.
+- [ ] `curl -sI https://lemamon.dev/`, `/en/` e `/es/` → **200**, sem redirect. `/index.html` também responde 200, com o canonical em `/`: o 301 dele (S01-5) ficou de fora de propósito, porque arriscava loop na Home e o canonical já resolve.
 - [ ] `curl -sI https://lemamon.dev/sitemap.xml` e `/contact` → 301 (S01-4).
-- [ ] `https://lemamon.dev/llms.txt` → 200, `text/plain`, com as páginas nos 3 idiomas (S05-10).
-- [ ] Tudo isso roda sozinho: `E2E_NETLIFY_URL=https://lemamon.dev yarn playwright test tests/e2e/redirects.spec.ts --project=desktop` (e no E2E diário, depois de `E2E_PRODUCAO_ATIVO = true`). Antes do merge, o mesmo comando contra o deploy preview confere os 301 e a raiz com 200.
+- [ ] `https://lemamon.dev/llms.txt` → 200, `text/plain`, com `x-robots-tag: noindex` (legível, mas fora do índice) e as páginas nos 3 idiomas (S05-10).
+- [ ] Tudo isso roda sozinho: `E2E_NETLIFY_URL=https://lemamon.dev yarn playwright test tests/e2e/redirects.spec.ts --project=desktop` (e no E2E diário, depois de `E2E_PRODUCAO_ATIVO = true`). Antes do merge, o mesmo comando contra o deploy preview do PR confere os 301, a raiz com 200 e o preview com 200 em `/servicos/mvp` (a regra do host `netlify.app` não pega o preview).
 
 **O que é normal aparecer como "não indexada"** (não é erro):
 
 | Situação no relatório "Páginas" | URL | Motivo |
 |---|---|---|
 | Excluída pela tag "noindex" | `/orcamento/enviado`, `/en/quote/sent`, `/es/cotizacion/enviada`, páginas 404 | de propósito (BLUEPRINT §3.1) |
-| Página com redirecionamento | `/projects`, `/diagnostico`, `/lemamon`, `/home`, `/post/*`, `/?lng=…`, `/contact`, `/quote`, `/Diagnostico`, `/servicos/sistema-web`, `/en/projects`, `/es/projects`, `/sitemap.xml`, `/index.html` (e `/en/`, `/es/`), qualquer URL de `boring-shockley-7c50b2.netlify.app` | 301 do `netlify.toml` (BLUEPRINT §10.1) |
-| Página alternativa com tag canônica adequada | `/orcamento?servico=…&origem=…`, `/orcamento?ref=…`, `/en/quote?…`, `/es/cotizacion?…` e variantes: cerca de **780 URLs** do wizard com query, porque cada CTA do site leva `?origem=` (e o de serviço, `?servico=`) | **esperado** (auditoria SEO S01-7): o canonical aponta para a URL limpa e o Google indexa só ela. Não é erro e não pede ação; só preocupa se a URL limpa (`/orcamento`) sair de "Válida" |
+| Página com redirecionamento | `/projects`, `/diagnostico`, `/lemamon`, `/home`, `/post/*`, `/?lng=…`, `/contact`, `/quote`, `/Diagnostico`, `/servicos/sistema-web`, `/en/projects`, `/es/projects`, `/sitemap.xml`, qualquer URL de `boring-shockley-7c50b2.netlify.app` | 301 do `netlify.toml` (BLUEPRINT §10.1) |
+| Página alternativa com tag canônica adequada | `/index.html`, `/en/index.html`, `/es/index.html` (canonical na raiz do idioma); `/orcamento?servico=…&origem=…`, `/orcamento?ref=…`, `/en/quote?…`, `/es/cotizacion?…` e variantes: cerca de **780 URLs** do wizard com query, porque cada CTA do site leva `?origem=` (e o de serviço, `?servico=`) | **esperado** (auditoria SEO S01-7): o canonical aponta para a URL limpa e o Google indexa só ela. Não é erro e não pede ação; só preocupa se a URL limpa (`/orcamento`) sair de "Válida" |
 
 **Critério de aceite:** propriedade de domínio verificada, sitemap com "Sucesso" e, no fim da Onda 2, pelo menos 8 rotas indexadas (README §7).
 
@@ -128,11 +128,12 @@ Critério de aceite: planilha com volume e lance reais de cada termo das duas li
 
 ## 3. Perfil da Empresa no Google (B029)
 
+0. **Elegibilidade, antes de tudo (auditoria SEO S04-1):** o Google só aceita empresa com contato presencial com clientes no horário informado, na sede ou indo até o cliente. Responda `confirmacoes.formatoDiagnostico` ([00](00-DADOS-DO-DONO.md) §B5) ou confirme reuniões na sede do cliente em São Paulo. Se todo o atendimento for por vídeo ou telefone, **não crie o perfil**: empresa só on-line fica fora das diretrizes e o perfil pode ser suspenso.
 1. https://business.google.com › **Adicionar empresa** › nome **"Lemamon.dev"**, exatamente (sem palavra-chave no nome: isso viola as diretrizes do Google).
-2. **Categoria principal:** a mais próxima de "empresa de software" ou "desenvolvedor de software" na lista em português. Secundárias: no máximo [PREENCHER], só se coerentes com os 5 serviços.
+2. **Categoria principal:** **Empresa de software** (*Software company*). Não existe "desenvolvedor de software" na lista do Google. Secundárias: no máximo [PREENCHER], só se coerentes com os 5 serviços.
 3. **Local:**
    - Se não há atendimento presencial no endereço, configure como **empresa de área de serviço** e oculte o endereço. O Google pede o endereço para verificar, mesmo oculto: use um endereço real da Lemamon.dev em São Paulo, SP (caixa postal e escritório virtual sem equipe no local não são aceitos pelas diretrizes do Google).
-   - Área de serviço: São Paulo, SP (desde 20/10/2026, D38; antes, Florianópolis). Outras cidades só com `confirmacoes.outrasCidades`.
+   - Área de serviço: São Paulo, SP (desde 20/10/2026, D38; antes, Florianópolis) e, se você atende presencialmente lá, municípios da Grande SP (até 20 áreas, a no máximo ~2 h de carro). Mesmo com `confirmacoes.outrasCidades` e `atendeExterior` = `true` (D31), **não inclua outros estados, "Brasil" nem países**: a área de serviço do perfil é onde você vai até o cliente, não onde atende a distância, e área grande demais é motivo de suspensão.
    - **Perfil já criado com Florianópolis:** edite o endereço (continua oculto) e troque a área de serviço para São Paulo. O Google pode pedir nova verificação; até ela sair, as edições ficam pendentes. Não crie um segundo perfil para a cidade nova: as diretrizes do Google proíbem perfil duplicado da mesma empresa.
 4. **Contato:**
    - Telefone: [PREENCHER: decidir se o número do WhatsApp fica público no perfil].

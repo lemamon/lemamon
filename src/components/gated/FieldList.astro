@@ -6,7 +6,9 @@
  *
  * Item com `links` (ficha do case: serviços e etapas, auditoria de SEO S03-4 e
  * S06-9): cada parte vira um <a> próprio, separado por " · " decorativo
- * (aria-hidden), no lugar do texto puro de `value`. Links internos sempre de
+ * (aria-hidden), no lugar do texto puro de `value`. O separador fica DEPOIS do
+ * link, dentro do mesmo <li>: quando a lista quebra linha, o ponto termina a
+ * linha de cima em vez de abrir a de baixo. Links internos sempre de
  * urlFor()/anchorFor(). O CSS dos links (./FieldList.links.css) só vai para a
  * página que renderiza um item com links (<RenderedStyle>, B256), fora do
  * orçamento de 15 KiB das páginas que importam a FieldList sem link.
@@ -49,14 +51,14 @@ const hasLinks = items.some((item) => item.links && item.links.length > 0);
         <dd class="field-list__value">
           {item.links && item.links.length > 0 ? (
             <ul role="list" class="field-list__links">
-              {item.links.map((link, index) => (
+              {item.links.map((link, index, all) => (
                 <li>
-                  {index > 0 && (
+                  <a href={link.href}>{link.label}</a>
+                  {index < all.length - 1 && (
                     <span class="field-list__sep" aria-hidden="true">
                       ·
                     </span>
                   )}
-                  <a href={link.href}>{link.label}</a>
                 </li>
               ))}
             </ul>
@@ -76,6 +78,9 @@ const hasLinks = items.some((item) => item.links && item.links.length > 0);
   }
   .field-list__item {
     display: grid;
+    /* Sem isso, no grid de 2 colunas o item estica as linhas implícitas para a
+       altura do vizinho (ex.: etapas em 2 linhas) e o valor desce. */
+    align-content: start;
     gap: var(--space-1);
     padding-block-start: var(--space-4);
     border-block-start: 1px solid var(--color-border-default);

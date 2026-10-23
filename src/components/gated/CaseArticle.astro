@@ -127,7 +127,8 @@ const crumbs = [
     </div>
   </div>
   <Section spacing="default" labelledby="case-title">
-    <Breadcrumb locale={locale} items={crumbs} />
+    {/* O item atual é o nome do projeto, não o H1: continua visível no celular. */}
+    <Breadcrumb locale={locale} items={crumbs} hideCurrentOnMobile={false} />
     <header class="case-hero">
       <p class="eyebrow">{name}</p>
       <h1 id="case-title">{data.titulo}</h1>

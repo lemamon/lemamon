@@ -113,9 +113,6 @@ describe("netlify.toml (BLUEPRINT §10.1)", () => {
       "/en/projects → /en/quote 301",
       "/es/projects → /es/cotizacion 301",
       "/sitemap.xml → /sitemap-index.xml 301",
-      "/index.html → / 301",
-      "/en/index.html → /en/ 301",
-      "/es/index.html → /es/ 301",
       "/en/* → /en/404.html 404",
       "/es/* → /es/404.html 404",
     ]);
@@ -132,7 +129,7 @@ describe("netlify.toml (BLUEPRINT §10.1)", () => {
     expect(toml).not.toMatch(/from\s*=\s*"https?:\/\/[^"]*--/);
   });
 
-  it("404 prováveis e /index.html (S01-4, S01-5): 301 forçados para páginas que existem, antes do 404 por idioma", () => {
+  it("404 prováveis (S01-4): 301 forçados para páginas que existem, antes do 404 por idioma", () => {
     const targets: Record<string, string> = {
       "/contact": urlFor("contact", "pt"),
       "/quote": urlFor("quote", "pt"),
@@ -140,9 +137,6 @@ describe("netlify.toml (BLUEPRINT §10.1)", () => {
       "/servicos/sistema-web": urlFor("service_web_systems", "pt"),
       "/en/projects": urlFor("quote", "en"),
       "/es/projects": urlFor("quote", "es"),
-      "/index.html": urlFor("home", "pt"),
-      "/en/index.html": urlFor("home", "en"),
-      "/es/index.html": urlFor("home", "es"),
     };
     const firstNotFound = rules.findIndex((rule) => field(rule, "status") === "404");
     for (const [from, to] of Object.entries(targets)) {
@@ -188,6 +182,12 @@ describe("netlify.toml (BLUEPRINT §10.1)", () => {
     // Nenhuma outra regra com immutable (HTML e public/ sem hash ficam no padrão).
     const immutableRules = [...toml.matchAll(/for = "([^"]+)"\s*\n\s*\[headers\.values\][^[]*?immutable/g)].map((m) => m[1]);
     expect(immutableRules).toEqual(["/_astro/*", "/_midia/*"]);
+  });
+
+  it("/llms.txt com X-Robots-Tag noindex, e só ele (o site continua indexável)", () => {
+    expect(toml).toMatch(/for = "\/llms\.txt"\s*\n\s*\[headers\.values\]\s*\n\s*X-Robots-Tag = "noindex"/);
+    const noindexRules = [...toml.matchAll(/for = "([^"]+)"\s*\n\s*\[headers\.values\][^[]*?X-Robots-Tag/g)].map((m) => m[1]);
+    expect(noindexRules).toEqual(["/llms.txt"]);
   });
 });
 

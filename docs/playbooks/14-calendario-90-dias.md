@@ -44,7 +44,7 @@ Legenda: **D** = dono · **C** = comercial · **I** = integrador/agentes de cód
 - [ ] **D** Processo de entrega lido e adotado (kickoff, ciclo de 2 semanas, go-live, subcontratado) — [16](16-processo-de-entrega.md)
 - [ ] **D** Modelos de proposta (desenvolvimento e sustentação de sistema já no ar) e o combinado da Descoberta, gratuita, prontos — [02](02-proposta-e-politica-comercial.md) §7, §8 e §8b
 - [ ] **D** Palavras-chave validadas no Keyword Planner — [08](08-search-console-e-seo-local.md) §2
-- [ ] **D** Perfil da Empresa no Google criado e em verificação, com área de serviço em São Paulo, SP (D38); Rich Results Test da Home sem erros — [08](08-search-console-e-seo-local.md) §3
+- [ ] **D** Perfil da Empresa no Google, **só se a empresa for elegível** (atendimento presencial na sede ou no cliente; [08](08-search-console-e-seo-local.md) §3, passo 0): criado e em verificação, com área de serviço em São Paulo, SP (D38), sem outros estados nem países. Rich Results Test da Home sem erros, com ou sem o perfil — [08](08-search-console-e-seo-local.md) §3
 - [ ] **D** Lista de 30–50 contatos e início das mensagens de indicação — [12](12-canais-indicacao-linkedin-conteudo.md) §2
 - [ ] **D** Uma pessoa real em `dados/dono.json › time` + razão social e CNPJ → `/sobre` no ar — [00](00-DADOS-DO-DONO.md) §B2
 - [ ] **D** Confirmações de FAQ: nota fiscal, outras cidades (define a segmentação do Ads), propriedade do código, `confirmacoes.nda` (só com o NDA e o documento de segurança prontos, [02](02-proposta-e-politica-comercial.md) §11) — [00](00-DADOS-DO-DONO.md) §B5

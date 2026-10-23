@@ -17,7 +17,7 @@
  */
 
 import { empresa, formatCnpj } from "@/config/empresa";
-import { PROFILE_IDS, perfis } from "@/config/perfis";
+import { PROFILE_IDS, perfis, type Perfil, type ProfileId } from "@/config/perfis";
 import { absoluteUrl, canonicalUrl, SERVICE_KEYS, SERVICE_ROUTE, SITE_URL, urlFor, type RouteKey, type ServiceKey } from "@/config/routes";
 import { ADDRESS, SITE_NAME } from "@/config/site";
 import { LOCALE_META, LOCALES, t, tDynamic, type Locale, type TextKey } from "@/i18n";
@@ -90,9 +90,13 @@ export const WEBSITE_ID = `${SITE_URL}/#website`;
 /** Ícone quadrado da marca (public/icon-512.png), usado como logo da Organization. */
 export const LOGO_PATH = "/icon-512.png";
 
-/** sameAs: os 3 perfis confirmados (BLUEPRINT §1.5 e §6.1; decisão aberta no CONTRACT §15.1). */
-export function sameAs(): string[] {
-  return PROFILE_IDS.map((id) => perfis[id].url);
+/**
+ * sameAs: só os perfis com `publicar: true` em dados/dono.json › perfis
+ * (BLUEPRINT §1.5 e §6.1; auditoria SEO S02-1). Perfil que o dono despublica
+ * sai também do JSON-LD, não só da Home.
+ */
+export function sameAs(source: Record<ProfileId, Perfil> = perfis): string[] {
+  return PROFILE_IDS.filter((id) => source[id].publicar).map((id) => source[id].url);
 }
 
 /** Flags de features.ts que o JSON-LD consulta (when_data: dado parcial não entra). */
@@ -166,7 +170,8 @@ export function organizationNode(locale: Locale, flags: SeoFlags, people: readon
   } else if (flags.outrasCidades) {
     node.areaServed = { "@type": "Country", name: "BR" };
   }
-  node.sameAs = sameAs();
+  const profiles = sameAs();
+  if (profiles.length) node.sameAs = profiles;
   if (flags.hasCompanyData) {
     node.legalName = empresa.razaoSocial.trim();
     node.taxID = formatCnpj(empresa.cnpj);
@@ -175,6 +180,41 @@ export function organizationNode(locale: Locale, flags: SeoFlags, people: readon
   // Sem founder: nenhum campo de dados/dono.json diz quem fundou a empresa.
   if (people.length) node.employee = people.map((person) => ({ "@id": personId(person.id) }));
   return node;
+}
+
+/** Autor do post (posts/<slug>.mdx › autor). */
+export interface ArticleAuthorInput {
+  nome: string;
+  /** Perfil público do autor (LinkedIn, GitHub...). */
+  link: string;
+  papelTecnico: string;
+}
+
+/** Pessoa de /sobre que pode assinar um post (dados/dono.json › time, só com hasTeam). */
+export interface TeamAuthorCandidate {
+  id: string;
+  nome: string;
+  linkedin?: string | undefined;
+  github?: string | undefined;
+}
+
+const sameName = (a: string, b: string) => a.trim().toLocaleLowerCase("pt-BR") === b.trim().toLocaleLowerCase("pt-BR");
+
+/**
+ * author do Article (auditoria SEO): quando o autor é uma pessoa do time (mesmo
+ * nome, ou o link do post é o LinkedIn/GitHub dela), leva o @id do Person de
+ * /sobre, para o grafo ter uma entidade só por pessoa. Sem time (sem /sobre),
+ * fica o Person solto.
+ */
+export function articleAuthorNode(autor: ArticleAuthorInput, team: readonly TeamAuthorCandidate[] = []): JsonLdNode {
+  const member = team.find((person) => sameName(person.nome, autor.nome) || [person.linkedin, person.github].includes(autor.link));
+  return {
+    "@type": "Person",
+    ...(member ? { "@id": personId(member.id) } : {}),
+    name: autor.nome,
+    url: autor.link,
+    jobTitle: autor.papelTecnico,
+  };
 }
 
 /** Person de /sobre, ligada à Organization por @id. */

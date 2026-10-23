@@ -3,9 +3,11 @@
  * passa; dado parcial, anônimo, sem autorização por escrito, com valor em
  * dinheiro ou com marca de rascunho QUEBRA (o build falha, nada vai ao ar pela metade).
  */
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
-import { hasMidCta, MONEY_PATTERN } from "@/content/schemas";
+import { CASE_PLACEHOLDER, hasMidCta, MONEY_PATTERN } from "@/content/schemas";
 
 import {
   caseFrontmatter,
@@ -132,12 +134,66 @@ describe("schema de case (cases/<idioma>/<slug>.mdx)", () => {
     expect(issuesOf(schemas.cases.safeParse(data)).join("\n")).toMatch(expected);
   });
 
+  it.each([
+    ["setor", "A confirmar"],
+    ["porte", "To be confirmed"],
+    ["setor", "Por confirmar"],
+    ["porte", "a confirmar"],
+  ] as const)("S02-2: %s %j em case publicado quebra; com publicado: false passa", (field, value) => {
+    const publicado = variant(semTermo, (d) => void (d[field] = value));
+    expect(issuesOf(schemas.cases.safeParse(publicado)).join("\n")).toMatch(new RegExp(`${field}: "${value}" é placeholder`));
+    const fora = variant(semTermo, (d) => void ((d[field] = value), (d.publicado = false)));
+    expect(issuesOf(schemas.cases.safeParse(fora))).toEqual([]);
+  });
+
   it("resultado é opcional (o case faz sentido sem ele)", () => {
     const without = variant(caseFrontmatter, (d) => {
       Reflect.deleteProperty(d, "resultado");
       d.autorizacao.escopo.resultados = false;
     });
     expect(issuesOf(schemas.cases.safeParse(without))).toEqual([]);
+  });
+});
+
+/** Frontmatter dos cases reais (src/content/cases), lido do disco: campo de uma linha. */
+function realCases(locale: "pt" | "en" | "es") {
+  const dir = `src/content/cases/${locale}`;
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((name) => name.endsWith(".mdx"))
+    .map((name) => {
+      const text = readFileSync(`${dir}/${name}`, "utf8");
+      const field = (key: string) => new RegExp(`^${key}: (.*)$`, "m").exec(text)?.[1] ?? "";
+      return {
+        slug: name.replace(/\.mdx$/, ""),
+        publicado: field("publicado") === "true",
+        setor: JSON.parse(field("setor") || '""') as string,
+        porte: JSON.parse(field("porte") || '""') as string,
+        relacionados: JSON.parse(field("relacionados") || "[]") as string[],
+      };
+    });
+}
+
+describe("cases reais de src/content/cases", () => {
+  it("S02-2: nenhum case publicado tem setor ou porte placeholder (A confirmar / To be confirmed / Por confirmar)", () => {
+    for (const locale of ["pt", "en", "es"] as const) {
+      for (const item of realCases(locale).filter((entry) => entry.publicado)) {
+        expect(CASE_PLACEHOLDER.test(item.setor), `${locale}/${item.slug} setor`).toBe(false);
+        expect(CASE_PLACEHOLDER.test(item.porte), `${locale}/${item.slug} porte`).toBe(false);
+      }
+    }
+  });
+
+  it("S03-4: todo case publicado recebe link de outro case publicado (relacionados)", () => {
+    for (const locale of ["pt", "en", "es"] as const) {
+      const live = realCases(locale).filter((entry) => entry.publicado);
+      const slugs = new Set(live.map((entry) => entry.slug));
+      const linked = new Set(live.flatMap((entry) => entry.relacionados.filter((slug) => slug !== entry.slug && slugs.has(slug))));
+      expect(
+        live.map((entry) => entry.slug).filter((slug) => !linked.has(slug)),
+        `${locale}: case sem link de outro case (acrescente-o aos relacionados de um case parecido)`,
+      ).toEqual([]);
+    }
   });
 });
 

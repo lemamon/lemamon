@@ -330,6 +330,9 @@ export const arquivoDeMidia: FabricaDeArquivo = (extensoes) =>
     if (!new RegExp(`\\.(${extensoes.join("|")})$`, "i").test(value)) return issue(`formato: ${extensoes.join(" ou ")}`);
   });
 
+/** Setor ou porte ainda não informado pelo dono (D45, S02-2): nunca em case publicado. */
+export const CASE_PLACEHOLDER = /\b(?:a confirmar|to be confirmed|por confirmar)\b/i;
+
 /**
  * cases/<pt|en|es>/<slug>.mdx — um arquivo por idioma, mesmo nome de arquivo
  * nos 3 (a chave do case). A URL em pt é o nome do arquivo; em en/es,
@@ -450,6 +453,20 @@ export function caseSchema<Img extends z.ZodType, Ref extends z.ZodType>(
       const escopo = data.autorizacao?.escopo;
       if (!data.cliente && !data.porte) {
         ctx.addIssue({ code: "custom", path: ["porte"], message: "sem `cliente`, setor + porte são obrigatórios" });
+      }
+      // Setor e porte "A confirmar" (auditoria SEO S02-2): placeholder do dono
+      // nunca vai ao ar (eyebrow, ficha, cards, wizard). Ou o dono informa, ou o
+      // case fica com `publicado: false`.
+      if (data.publicado) {
+        for (const field of ["setor", "porte"] as const) {
+          if (data[field] && CASE_PLACEHOLDER.test(data[field])) {
+            ctx.addIssue({
+              code: "custom",
+              path: [field],
+              message: `"${data[field]}" é placeholder: informe o ${field} real ou deixe o case com publicado: false`,
+            });
+          }
+        }
       }
       if (data.cliente && !escopo?.nomeDoCliente) {
         ctx.addIssue({
