@@ -3,7 +3,7 @@
  * O caminho do dinheiro (wizard → envio → pós-envio, falha → WhatsApp) é do
  * agente conversion (04-tecnico §8, specs 1–4).
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import { isRouteLive, routeDef, staticRouteEntries } from "../../src/config/routes";
 

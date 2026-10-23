@@ -16,7 +16,7 @@
  * WhatsApp depois de clique pago (F34), aba nova que adota o toque de campanha
  * de outra aba aberta (F26) e o modo ?debug_analytics=1 (F82).
  */
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./support/consent";
 
 import { quoteHref, SERVICE_KEYS, SERVICE_PARAM, SERVICE_ROUTE, urlFor, type QuoteAttribution } from "../../src/config/routes";
 import { LOCALES, type Locale } from "../../src/i18n/locales";

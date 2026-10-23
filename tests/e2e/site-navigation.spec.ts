@@ -6,7 +6,7 @@
  *  (f) Seletor de idioma leva à página EQUIVALENTE (slug localizado, mesmo H1
  *      do i18n) e, na 404, à Home do idioma.
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import { SERVICE_KEYS, SERVICE_ROUTE, urlFor } from "../../src/config/routes";
 

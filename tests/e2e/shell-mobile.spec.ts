@@ -3,7 +3,7 @@
  * painel de design (barra fixa ancorada no hero, CTA fixo no drawer).
  * Roda contra o build (playwright.config.ts) ou um deploy (E2E_NETLIFY_URL).
  */
-import { expect, test, type Page } from "@playwright/test";
+import { dismissConsent, expect, test, type Page } from "./support/consent";
 
 const DRAWER_SIZES = [
   [375, 667],
@@ -120,6 +120,7 @@ test.describe("alvos de toque ≥ 44×44 no chrome (B084)", () => {
     let measured = 0;
     for (const width of [1024, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 800 }, hasTouch: true });
+      await dismissConsent(context);
       const page = await context.newPage();
       await page.goto("/como-trabalhamos");
       // Com Cases e Sobre no menu, 1024–1279px tira o seletor do header (fica no rodapé).
@@ -152,6 +153,7 @@ test.describe("idioma: nome acessível e evento (B076, B329)", () => {
 
   test("o aviso de idioma emite language_change como o seletor", async ({ browser }) => {
     const context = await browser.newContext({ locale: "en-US" });
+    await dismissConsent(context);
     const page = await context.newPage();
     await page.goto("/");
     const link = page.locator('.lang-suggest[data-lang-target="en"] a');

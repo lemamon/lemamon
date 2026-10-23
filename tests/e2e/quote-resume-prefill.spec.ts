@@ -7,7 +7,7 @@
  *  (d) ?servico= pré-marca a P2 (e sustentacao a P1 = maintain_live_system),
  *      com a linha de contexto; ?entrada=descoberta não pré-marca nada.
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import { COPY, DRAFT_KEY, continueStep, expectStep, start, wizardRoot } from "./support/wizard";
 

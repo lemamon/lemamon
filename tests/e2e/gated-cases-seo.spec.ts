@@ -9,7 +9,7 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import { anchorFor, ANCHORS, SERVICE_ROUTE, urlFor, type ServiceKey } from "../../src/config/routes";
 import type { Locale } from "../../src/i18n/locales";

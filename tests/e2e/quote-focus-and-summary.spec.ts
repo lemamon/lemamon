@@ -37,7 +37,7 @@
  */
 import { existsSync, readdirSync } from "node:fs";
 
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./support/consent";
 
 import { COPY, DRAFT_KEY, stubNetlify, waitMinFill, wizardRoot } from "./support/wizard";
 

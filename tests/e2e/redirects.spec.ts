@@ -11,7 +11,7 @@
  * Sem a variável, todos os testes deste arquivo são pulados (e listados como
  * skipped no relatório, para ninguém achar que passaram).
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 const NETLIFY = process.env.E2E_NETLIFY_URL;
 

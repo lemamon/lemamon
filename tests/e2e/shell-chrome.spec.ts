@@ -2,7 +2,7 @@
  * E2E do chrome do site (dono: shell) — BLUEPRINT §7.1, §8.1–8.5, §11.
  * Roda contra o build (playwright.config.ts). Projetos: desktop e mobile.
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 const DRAFT_KEY = "lemamon:orcamento:v2";
 

@@ -24,7 +24,7 @@
  */
 import { readdirSync } from "node:fs";
 
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./support/consent";
 
 import dono from "../../dados/dono.json" with { type: "json" };
 import { COPY, DRAFT_KEY, expectStep, stubNetlify, waitEntryLock, wizardRoot } from "./support/wizard";

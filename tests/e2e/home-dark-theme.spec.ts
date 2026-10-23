@@ -7,7 +7,7 @@
  * cartões), nos 3 idiomas. Mesmo teste no claro, como linha de base.
  * Roda contra o build (playwright.config.ts) ou um deploy (E2E_NETLIFY_URL).
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 interface Low {
   text: string;

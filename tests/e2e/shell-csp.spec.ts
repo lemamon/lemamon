@@ -19,7 +19,7 @@
  * Não envia nada: abre as páginas, começa o wizard e para antes do envio.
  * Sem E2E_NETLIFY_URL, é pulado (o astro preview não manda os headers).
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 const NETLIFY = process.env.E2E_NETLIFY_URL;
 

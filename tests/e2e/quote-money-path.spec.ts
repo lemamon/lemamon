@@ -13,7 +13,7 @@
  *
  * O build de E2E liga o WhatsApp com número de teste (playwright.config.ts).
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import { FORM_FIELDS } from "../../src/lib/forms";
 

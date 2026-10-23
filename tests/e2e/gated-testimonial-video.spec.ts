@@ -22,7 +22,7 @@
  * Os tamanhos de tela são do próprio teste (375×812 e 1280×800, densidade 1):
  * roda só no projeto "desktop".
  */
-import { expect, test, type Browser, type Page } from "@playwright/test";
+import { dismissConsent, expect, test, type Browser, type Page } from "./support/consent";
 
 const HOMES = ["/", "/en/", "/es/"] as const;
 const VIEWPORTS = [
@@ -65,6 +65,7 @@ async function urlsDoPoster(page: Page): Promise<Map<string, number>> {
  */
 async function conferir(browser: Browser, baseURL: string, path: string, viewport: { width: number; height: number }, exigir: boolean) {
   const context = await browser.newContext({ baseURL, viewport, deviceScaleFactor: 1 });
+  await dismissConsent(context);
   const page = await context.newPage();
   const pedidos: string[] = [];
   page.on("request", (request) => pedidos.push(request.url()));

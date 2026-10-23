@@ -6,7 +6,7 @@
  */
 import { readFileSync } from "node:fs";
 
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import { quoteHref, SERVICE_KEYS, SERVICE_PARAM, SERVICE_ROUTE, urlFor, type RouteKey } from "../../src/config/routes";
 import type { Locale } from "../../src/i18n/locales";

@@ -5,7 +5,7 @@
  * cola a pontuação no termo (glueTermPunctuation + .no-break).
  * Roda contra o build (playwright.config.ts) ou um deploy (E2E_NETLIFY_URL).
  */
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./support/consent";
 
 const WIDTHS = [320, 360, 375, 390, 414];
 const HOMES = ["/", "/en/", "/es/"];

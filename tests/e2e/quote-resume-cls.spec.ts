@@ -12,7 +12,7 @@
  * Mede a soma dos layout-shift sem input recente, do carregamento até a ilha
  * pronta (+ uma folga), com um rascunho válido gravado antes da página.
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import { DRAFT_KEY } from "./support/wizard";
 

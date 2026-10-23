@@ -10,7 +10,7 @@
  *  - 360×640: H1, CTA primário e WhatsApp do hero da Home acima da dobra com o
  *    navegador no idioma da página; com o aviso de idioma, H1 e CTA primário.
  */
-import { devices, expect, test, type Page } from "@playwright/test";
+import { devices, dismissConsent, expect, test, type Page } from "./support/consent";
 
 import { isRouteLive, routeDef, staticRouteEntries } from "../../src/config/routes";
 import { FORM_FIELDS } from "../../src/lib/forms";
@@ -200,6 +200,7 @@ test.describe("tela pequena", () => {
     for (const [path, browserLocale] of [["/", "pt-BR"], ["/en/", "en-US"], ["/es/", "es-419"]] as const) {
       // Navegador no idioma da página: sem o aviso de idioma, cabem as duas portas (§6.1 #1).
       const context = await browser.newContext({ ...devices["Pixel 7"], viewport: { width: 360, height: fold }, locale: browserLocale, baseURL });
+      await dismissConsent(context);
       const page = await context.newPage();
       await page.goto(path);
       expect(await bottom(page, "h1"), `${path} H1`).toBeLessThanOrEqual(fold);
@@ -209,6 +210,7 @@ test.describe("tela pequena", () => {
     }
     // Com o aviso "também disponível em…" (navegador em outro idioma), o mínimo do §2.8 continua: H1 e CTA primário.
     const other = await browser.newContext({ ...devices["Pixel 7"], viewport: { width: 360, height: fold }, locale: "en-US", baseURL });
+    await dismissConsent(other);
     const page = await other.newPage();
     await page.goto("/es/");
     await expect(page.locator("html")).toHaveAttribute("data-lang-suggest", "en");

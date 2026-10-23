@@ -19,7 +19,7 @@
  * O número do WhatsApp é LIDO da página (link do header do wizard), não fixo:
  * em produção ele é o real, no build de E2E é o de teste.
  */
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./support/consent";
 
 import {
   answerAll,

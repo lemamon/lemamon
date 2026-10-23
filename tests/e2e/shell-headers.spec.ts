@@ -17,7 +17,7 @@
  *
  * Sem a variável, todos os testes são pulados (aparecem como skipped).
  */
-import { expect, test, type APIRequestContext } from "@playwright/test";
+import { expect, test, type APIRequestContext } from "./support/consent";
 
 const NETLIFY = process.env.E2E_NETLIFY_URL;
 

@@ -7,7 +7,7 @@
  *  - F47: em /como-trabalhamos a partir de 1024px, o índice das 4 etapas ocupa
  *    a coluna da direita do hero, na 1ª tela.
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import { COPY } from "./support/wizard";
 

@@ -8,7 +8,7 @@
  * chips e, em cada um, o retângulo do chip inflado em 5px fica dentro do
  * retângulo do <ol> que rola.
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import { urlFor } from "../../src/config/routes";
 import type { Locale } from "../../src/i18n/locales";

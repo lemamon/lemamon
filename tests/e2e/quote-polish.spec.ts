@@ -22,7 +22,7 @@
  *  - F51: tela baixa (notebook com zoom de 200%, ~640×350): header e barra de
  *    ação no fluxo; com o header estreito, o progresso usa o rótulo curto.
  */
-import { expect, test, type Page } from "@playwright/test";
+import { dismissConsent, expect, test, type Page } from "./support/consent";
 
 import { captureWindowOpen, COPY, DRAFT_KEY, expectStep, start, waitEntryLock, wizardRoot } from "./support/wizard";
 
@@ -82,6 +82,7 @@ test.describe("entrada (F25, F31)", () => {
 
   test("F31: aviso de idioma na entrada, fora do modo foco; a troca mantém a query", async ({ browser, baseURL }) => {
     const context = await browser.newContext({ locale: "en-US", baseURL });
+    await dismissConsent(context);
     const page = await context.newPage();
     await page.goto("/orcamento?servico=aplicativos&origem=e2e-f31&utm_source=teste");
     const suggestion = page.locator('.lang-suggest[data-lang-target="en"]');

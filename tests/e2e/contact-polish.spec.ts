@@ -7,7 +7,7 @@
  *  - F49: no toque, o e-mail vira mailto: com assunto; com mouse, continua só
  *    texto. O "·" do rodapé do wizard some abaixo de 640px.
  */
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/consent";
 
 import dono from "../../dados/dono.json" with { type: "json" };
 import { COPY } from "./support/wizard";

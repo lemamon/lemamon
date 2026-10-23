@@ -4,7 +4,7 @@
  * destaque sem palavra sozinha na última linha (painel de design).
  * Roda contra o build (playwright.config.ts) ou um deploy (E2E_NETLIFY_URL).
  */
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./support/consent";
 
 /** Rotas com a linha do método linkada (variantes compact e full), nos 3 idiomas. */
 const METHOD_ROUTES = [

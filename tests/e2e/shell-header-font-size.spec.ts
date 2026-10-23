@@ -18,7 +18,7 @@
  * larguras de notebook (1280, 1366, 1440) que o shell-header-cta.spec.ts não
  * cobre. Roda contra o build (playwright.config.ts) ou um deploy (E2E_NETLIFY_URL).
  */
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./support/consent";
 
 const HOMES = [
   ["pt", "/"],
