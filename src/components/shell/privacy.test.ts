@@ -152,13 +152,9 @@ describe("Política de Privacidade: montagem", () => {
 });
 
 describe("trava de lançamento da Política", () => {
-  it("o config do repositório lista o que falta", () => {
-    const blockers = privacyLaunchBlockers(privacidade);
-    expect(blockers.length).toBeGreaterThan(0);
-    // baseAnuncios, encarregado e os prazos o dono já decidiu (D05/memo jurídico, 27/10/2026); só a data da Política segue pendente.
-    expect(blockers.join(" ")).not.toMatch(/baseAnuncios/);
-    expect(blockers.join(" ")).not.toMatch(/prazos/);
-    expect(blockers.join(" ")).toMatch(/atualizadaEm/);
+  it("o config do repositório já passa na trava (privacidade completa: base, encarregado, prazos e data)", () => {
+    // D05/D06 + prazos + atualizadaEm = 2026-10-27 (memo jurídico): nada de privacidade barra mais.
+    expect(privacyLaunchBlockers(privacidade)).toEqual([]);
   });
 
   it("consentimento não trava mais (o aviso de cookies com Consent Mode existe, B344); remarketing ainda exige consentimento", () => {

@@ -111,12 +111,13 @@ describe("dados/dono.json — o arquivo do dono", () => {
     expect(isValidCnpj(real.empresa.cnpj)).toBe(true);
     expect([real.time, real.depoimentos, real.logos]).toEqual([[], [], []]);
     expect(real.agenda.url).toBe("");
-    // D05/encarregado: o dono decidiu base de medição por consentimento e
-    // encarregado de pequeno porte (23/10/2026); o resto da privacidade segue
-    // vazio e trava a produção (prazos, data, mecanismo e as duas confirmações).
+    // Memo jurídico (27/10/2026): a privacidade está decidida — base de medição por
+    // consentimento, encarregado de pequeno porte, prazos preenchidos e a data da Política;
+    // mecanismoTransferencia segue null (frase padrão até a conferência dos DPAs).
     expect(real.privacidade.baseAnuncios).toBe("consentimento");
     expect(real.privacidade.encarregado).toBe("pequeno_porte");
-    expect(real.privacidade.atualizadaEm).toBe("");
+    expect(real.privacidade.atualizadaEm).toBe("2026-10-27");
+    expect(real.privacidade.mecanismoTransferencia).toBeNull();
   });
 });
 
@@ -298,14 +299,11 @@ describe("mensagens de validação em pt-BR, com o campo a corrigir", () => {
 });
 
 describe("trava da Política: dado fictício nunca libera", () => {
-  it("o dono.json de hoje bloqueia o build de produção (só a data da Política pendente; empresa, base de medição e prazos o dono já decidiu)", () => {
-    const blockers = privacyLaunchBlockers().join("\n");
-    expect(blockers).not.toMatch(/empresa: razão social/);
-    // baseAnuncios, encarregado e os prazos decididos (D05/memo jurídico, 27/10/2026); falta só a data.
-    expect(blockers).not.toMatch(/privacidade\.baseAnuncios/);
-    expect(blockers).not.toMatch(/privacidade\.encarregado/);
-    expect(blockers).not.toMatch(/privacidade\.prazos/);
-    expect(blockers).toMatch(/privacidade\.atualizadaEm/);
+  it("o dono.json de hoje já passa na trava de privacidade (empresa, base de medição, prazos e data decididos)", () => {
+    // Com as decisões do memo jurídico aplicadas (D05/D06, prazos, naoVendemosConfirmado,
+    // atualizadaEm = 2026-10-27), a trava de PRIVACIDADE não barra mais a produção.
+    // Lançar ainda depende de ações fora desta trava (número real do WhatsApp, confirmação do advogado, merge/deploy).
+    expect(privacyLaunchBlockers()).toEqual([]);
   });
 
   it("com TODOS os campos da camada fictícia, continua bloqueado", () => {
