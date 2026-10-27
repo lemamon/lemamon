@@ -298,13 +298,13 @@ describe("mensagens de validação em pt-BR, com o campo a corrigir", () => {
 });
 
 describe("trava da Política: dado fictício nunca libera", () => {
-  it("o dono.json de hoje bloqueia o build de produção (prazos e data pendentes; empresa e base de medição o dono já decidiu)", () => {
+  it("o dono.json de hoje bloqueia o build de produção (só a data da Política pendente; empresa, base de medição e prazos o dono já decidiu)", () => {
     const blockers = privacyLaunchBlockers().join("\n");
     expect(blockers).not.toMatch(/empresa: razão social/);
-    // baseAnuncios e encarregado decididos (23/10/2026); ainda faltam os prazos e a data.
+    // baseAnuncios, encarregado e os prazos decididos (D05/memo jurídico, 27/10/2026); falta só a data.
     expect(blockers).not.toMatch(/privacidade\.baseAnuncios/);
     expect(blockers).not.toMatch(/privacidade\.encarregado/);
-    expect(blockers).toMatch(/privacidade\.prazos\.ga4/);
+    expect(blockers).not.toMatch(/privacidade\.prazos/);
     expect(blockers).toMatch(/privacidade\.atualizadaEm/);
   });
 
@@ -314,9 +314,8 @@ describe("trava da Política: dado fictício nunca libera", () => {
     const empresa = { ...doc.empresa, razaoSocial: ficticio.empresa.razaoSocial, cnpj: ficticio.empresa.cnpj, responsavel: ficticio.empresa.responsavel };
     const blockers = privacyLaunchBlockers(doc.privacidade as Privacidade, { hasAgenda: true }, empresa as Empresa).join("\n");
     expect(blockers).toMatch(/empresa: razão social \+ CNPJ válido, ou responsável \(dado real, não fictício\)/);
-    // encarregado "pequeno_porte" do dono vence a mescla (campo preenchido), então
-    // não é mais bloqueador; prazos e agenda fictícios continuam barrando.
-    expect(blockers).toMatch(/prazos\.ga4/);
+    // encarregado "pequeno_porte" e os prazos do dono vencem a mescla (campos
+    // preenchidos), então não são mais bloqueadores; empresa e agenda fictícios continuam barrando.
     expect(blockers).toMatch(/ferramentas\.agenda\.fornecedor/);
   });
 

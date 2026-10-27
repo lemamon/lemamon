@@ -155,9 +155,10 @@ describe("trava de lançamento da Política", () => {
   it("o config do repositório lista o que falta", () => {
     const blockers = privacyLaunchBlockers(privacidade);
     expect(blockers.length).toBeGreaterThan(0);
-    // baseAnuncios e encarregado o dono já decidiu (D05, 23/10/2026); os prazos e a data seguem pendentes.
+    // baseAnuncios, encarregado e os prazos o dono já decidiu (D05/memo jurídico, 27/10/2026); só a data da Política segue pendente.
     expect(blockers.join(" ")).not.toMatch(/baseAnuncios/);
-    expect(blockers.join(" ")).toMatch(/prazos/);
+    expect(blockers.join(" ")).not.toMatch(/prazos/);
+    expect(blockers.join(" ")).toMatch(/atualizadaEm/);
   });
 
   it("consentimento não trava mais (o aviso de cookies com Consent Mode existe, B344); remarketing ainda exige consentimento", () => {

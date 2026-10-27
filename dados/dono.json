@@ -14,18 +14,18 @@
     "encarregado": "pequeno_porte",
     "mecanismoTransferencia": null,
     "prazos": {
-      "retencaoPedidos": null,
-      "ga4": null,
-      "googleAds": null,
-      "conversoesGoogleAds": null,
-      "newRelic": null,
-      "logsHospedagem": null
+      "retencaoPedidos": { "pt": "por até 24 meses após o último contato", "en": "for up to 24 months after the last contact", "es": "hasta 24 meses después del último contacto" },
+      "ga4": { "pt": "14 meses", "en": "14 months", "es": "14 meses" },
+      "googleAds": { "pt": "até 90 dias", "en": "up to 90 days", "es": "hasta 90 días" },
+      "conversoesGoogleAds": { "pt": "conforme a política de retenção de dados do Google", "en": "per Google's data-retention policy", "es": "según la política de retención de datos de Google" },
+      "newRelic": { "pt": "8 dias", "en": "8 days", "es": "8 días" },
+      "logsHospedagem": { "pt": "cerca de 7 dias", "en": "about 7 days", "es": "unos 7 días" }
     },
     "atualizadaEm": "",
     "remarketing": false,
     "provedorEmail": "microsoft_365",
     "classificacaoDefineAtendimento": false,
-    "naoVendemosConfirmado": false,
+    "naoVendemosConfirmado": true,
     "ferramentas": {
       "agenda": null,
       "crm": null,
