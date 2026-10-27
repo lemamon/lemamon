@@ -44,7 +44,7 @@ import Section from "@/components/ui/Section.astro";
 import { getFeatures, withPrimaryCtaLabel } from "@/config/features";
 import { privacidade } from "@/config/privacidade";
 import { anchorAlias, anchorId, ANCHORS, quoteHref, urlFor } from "@/config/routes";
-import { deployContext } from "@/config/site";
+import { deployContext, GOOGLE_ADS } from "@/config/site";
 import { getSection, t, type Locale } from "@/i18n";
 import { contactSubject, FORM_NAMES, HONEYPOT_FIELD, isPreviewSubmitContext } from "@/lib/forms";
 import { whatsappHref } from "@/lib/whatsapp";
@@ -66,7 +66,10 @@ const subjects = ["new_project", "existing_system", "partnership", "other"] as c
 // Assunto do e-mail de notificação (FORM_FIELDS): rótulo em pt em qualquer idioma da página.
 const subjectOptionsPt = getSection("pt", "contact.form").fields.subject.options;
 const privacyLabel = t(locale, "shared.lgpd.privacy_link_label");
-const [privacyBefore, privacyAfter] = t(locale, "contact.form.privacy_notice", { politica: "{politica}" }).split("{politica}");
+// Aviso cita o retorno ao Google Ads (legal_review o) quando a tag do Google Ads
+// está ativa (premissa do lançamento): o gclid viaja junto com o envio.
+const privacyNoticeKey = GOOGLE_ADS.id.trim() !== "" ? "contact.form.privacy_notice_with_ads" : "contact.form.privacy_notice";
+const [privacyBefore, privacyAfter] = t(locale, privacyNoticeKey, { politica: "{politica}" }).split("{politica}");
 const emailMarker = "{email}";
 const errorText = (features.hasWhatsapp ? form.error_text : form.error_text_no_whatsapp).split(emailMarker);
 // "{email}." terminava com o ponto sozinho numa linha, depois do botão "Copiar"

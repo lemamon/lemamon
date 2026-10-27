@@ -60,16 +60,17 @@ Se uma ferramenta sair do site, o item dela sai da Política e a data muda: a li
 - [ ] **(d)** Base legal no B2B (art. 7º): quem preenche costuma falar em nome de uma empresa.
 - [ ] **(e)** Classificação automática dos pedidos (arts. 9º e 20): se ela também definir a forma de atendimento (retomada para C, resposta própria para D), ligar `privacidade.classificacaoDefineAtendimento` (usa as variantes `*_with_routing`).
 - [ ] **(f)** Fornecedor do e-mail (`privacidade.provedorEmail`, playbook 11). Hoje é Microsoft 365 contratado pela GoDaddy (D41): confirmar se o termo de tratamento de dados da Microsoft cobre a conta contratada pela GoDaddy e se a GoDaddy, que administra a conta, entra como suboperador à parte.
-- [ ] **(g)** Akismet como suboperador.
-- [ ] **(h)** Prazos de retenção e se a exclusão alcança os backups (lixeira e backups do e-mail, inclusive do Gmail antigo enquanto ele existir; backup do WhatsApp).
+- [ ] **(g)** Akismet como suboperador. _Rascunho aplicado pelo `shell`: `processors.items.netlify` cita o Akismet (Automattic, EUA) como filtro de spam dos formulários._
+- [ ] **(h)** Prazos de retenção e se a exclusão alcança os backups (lixeira e backups do e-mail, inclusive do Gmail antigo enquanto ele existir; backup do WhatsApp). _Rascunho aplicado: `retention.items.requests` termina dizendo que a exclusão alcança a lixeira e as cópias de segurança (backups), concluída no ciclo de backup seguinte._
 - [ ] **(i)** Papel do Google no Ads e no GA4 (operador ou controlador independente) e o prazo das conversões enviadas.
 - [ ] **(j)** Efeito da oposição por e-mail (a Lemamon.dev deixa de informar ao Ads como o pedido evoluiu).
 - [ ] **(k)** Base e texto do remarketing, se for ativado.
 - [ ] **(l)** Marco Civil, art. 15: guarda de registros de acesso e o prazo dos logs da Netlify.
 - [ ] **(m)** "Não vendemos dados pessoais": confirmar que o envio de conversões ao Ads não é venda nem compartilhamento comercial. A frase só vai ao ar com `privacidade.naoVendemosConfirmado = true` (sua confirmação e a do advogado).
-- [ ] **(n)** Redação do direito de anonimização e exclusão (art. 18, IV).
-- [ ] **(o)** Se os avisos dos formulários precisam citar o retorno ao Google Ads (variante pronta no i18n).
+- [ ] **(n)** Redação do direito de anonimização e exclusão (art. 18, IV). _Rascunho aplicado: enumeração do art. 18 completa (I–IX); `rights.items.portability` passou a citar o art. 18, V com a ressalva da regulamentação da ANPD._
+- [ ] **(o)** Se os avisos dos formulários precisam citar o retorno ao Google Ads (variante pronta no i18n). _Rascunho aplicado: variantes `*_with_ads` criadas nos 3 idiomas (`quote.contact_form`, `contact.form`, `shared.lgpd`) e ligadas quando a tag do Google Ads está ativa (`GOOGLE_ADS.id`); a importação offline do `gclid` fica só sob consentimento e `legal_basis.items.service_order` marca a atribuição por legítimo interesse como só para uso interno._
 - [ ] **(p)** Identificação do fornecedor (Decreto 7.962/2013, art. 2º, I e II): se a oferta for relação de consumo, publicar endereço físico (do cartão CNPJ ou comercial) e eletrônico em local de destaque, inclusive no rodapé do `/orcamento`; hoje o site mostra só cidade, razão social, CNPJ e e-mail.
+- [ ] **Lacunas de governança com copy já rascunhada (DECISOES-JURIDICAS.md §5):** base legal do New Relic (G2, `legal_basis.items.new_relic`: legítimo interesse em segurança e desempenho do site); declaração de que o site é B2B e não se dirige a menores (G8, `data_collected.minors`); dados sensíveis não coletados de propósito (G9, `data_collected.closing`, já existente); capítulo de cookies distinguindo os necessários ao funcionamento dos de medição e de anúncio, estes só após o aceite (G13, nova seção `cookies`). Confirmar na revisão jurídica; documentos internos (LIA, ROPA, RIPD) seguem pendentes com o dono.
 - [ ] Retomada de contato e sequência de mensagens 1:1 (playbook 04 §5) dentro da finalidade "retomar o contato"; e-mail automático e newsletter só com Política atualizada e, no caso da newsletter, consentimento.
 
 ## 5. Retenção: prazo, onde vale e como cumprir

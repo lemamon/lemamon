@@ -147,12 +147,27 @@ function chooser(flags: PrivacyFlags): Record<string, (key: string) => string | 
     },
     legal_basis: (key) => {
       switch (key) {
+        case "new_relic":
+          return flags.newRelic ? key : null;
         case "ads_measurement":
           return flags.googleAds ? pick(flags.consent, "ads_measurement_with_consent", "ads_measurement") : null;
         case "ads_measurement_with_consent":
           return null;
         case "remarketing":
           return anyRemarketing ? key : null;
+        default:
+          return key;
+      }
+    },
+    // Capítulo de cookies (G13): com o aviso de cookies (consent), os cookies de
+    // medição e de anúncio só rodam depois do aceite (measurement_with_consent
+    // substitui measurement). Sem o aviso, o texto base só fala em bloquear no navegador.
+    cookies: (key) => {
+      switch (key) {
+        case "measurement":
+          return flags.consent ? "measurement_with_consent" : "measurement";
+        case "measurement_with_consent":
+          return null;
         default:
           return key;
       }

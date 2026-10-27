@@ -32,7 +32,7 @@ import { empresa } from "@/config/empresa";
 import { getFeatures } from "@/config/features";
 import { privacidade } from "@/config/privacidade";
 import { SERVICE_KEYS, urlFor, type ServiceKey } from "@/config/routes";
-import { deployContext } from "@/config/site";
+import { deployContext, GOOGLE_ADS } from "@/config/site";
 import type { WizardCopy } from "@/islands/wizard/copy";
 import Wizard, { type CaseRef } from "@/islands/wizard/Wizard";
 import Base from "@/layouts/Base.astro";
@@ -73,7 +73,11 @@ const copy: WizardCopy = {
   validation: quote.validation,
   steps: quote.steps,
   summary: quote.summary,
-  contactForm: quote.contact_form,
+  contactForm: {
+    ...quote.contact_form,
+    // Aviso cita o retorno ao Google Ads (legal_review o) quando a tag do Google Ads está ativa.
+    privacy_notice: GOOGLE_ADS.id.trim() !== "" ? quote.contact_form.privacy_notice_with_ads : quote.contact_form.privacy_notice,
+  },
   error: quote.error,
   whatsapp: quote.whatsapp_messages,
   resumeBanner: quote.entry.resume_banner,
