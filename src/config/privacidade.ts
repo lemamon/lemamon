@@ -132,6 +132,15 @@ export interface Privacidade {
   classificacaoDefineAtendimento: boolean;
   /** "Não vendemos dados pessoais." (purposes.closing) só com a confirmação do dono E do advogado (legal_review m). */
   naoVendemosConfirmado: boolean;
+  /**
+   * A exclusão dos pedidos alcança a lixeira e os backups
+   * (retention.items.requests_with_backups): true troca retention.items.requests
+   * por requests_with_backups. Só com a confirmação do dono (memo 3.22 /
+   * legal_review h): ele confirma o período de Itens Recuperáveis do M365, o
+   * ciclo de backup e se o backup do WhatsApp está ligado. VAZIO/false por
+   * padrão — sem a confirmação, a Política não afirma o alcance aos backups.
+   */
+  exclusaoAlcancaBackups: boolean;
   /** Ferramentas opcionais ativas (ver FerramentaOpcional). */
   ferramentas: Record<OptionalTool, FerramentaOpcional | null>;
   /** Pixels de anúncio opcionais (ver PixelDeAnuncio). Ausente = nenhum. */

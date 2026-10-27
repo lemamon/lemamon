@@ -47,6 +47,7 @@
     "provedorEmail": "gmail",
     "classificacaoDefineAtendimento": false,
     "naoVendemosConfirmado": false,
+    "exclusaoAlcancaBackups": false,
     "ferramentas": {
       "agenda": {
         "fornecedor": "Agenda Exemplo",

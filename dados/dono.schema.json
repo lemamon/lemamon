@@ -245,6 +245,10 @@
           "type": "boolean",
           "description": "\"Não vendemos dados pessoais.\" só com a confirmação do dono E do advogado."
         },
+        "exclusaoAlcancaBackups": {
+          "type": "boolean",
+          "description": "A exclusão dos pedidos alcança a lixeira e os backups (retention.items.requests_with_backups), só com a confirmação do dono (período de Itens Recuperáveis do M365, ciclo de backup, backup do WhatsApp). false por padrão."
+        },
         "ferramentas": {
           "type": "object",
           "description": "Ferramentas opcionais que tratam dados dos pedidos (precisam estar na Política antes de entrar no ar).",
@@ -314,6 +318,7 @@
         "provedorEmail",
         "classificacaoDefineAtendimento",
         "naoVendemosConfirmado",
+        "exclusaoAlcancaBackups",
         "ferramentas"
       ],
       "additionalProperties": false

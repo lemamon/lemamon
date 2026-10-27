@@ -46,6 +46,15 @@ export interface PrivacyFlags {
   /** "Não vendemos dados pessoais." confirmado pelo dono e pelo advogado. */
   noSale: boolean;
   /**
+   * A exclusão dos pedidos alcança a lixeira e os backups
+   * (retention.items.requests_with_backups). Só true com a confirmação do dono
+   * (memo DECISOES-JURIDICAS 3.22 / _notes.legal_review h): ele confirma o
+   * período de Itens Recuperáveis do M365, o ciclo de backup e se o backup do
+   * WhatsApp está ligado. Sem a confirmação, a Política não afirma o alcance aos
+   * backups (nunca inventa fato do dono): renderiza retention.items.requests.
+   */
+  backups: boolean;
+  /**
    * Pixels opcionais publicados (B346/B347; config/privacidade.ts activePixels):
    * LinkedIn Insight Tag e Meta Pixel. Desligados (o padrão), os itens deles
    * (navigation_data.items.linkedin_insight / meta_pixel, processors.items.linkedin /
@@ -147,8 +156,22 @@ function chooser(flags: PrivacyFlags): Record<string, (key: string) => string | 
     },
     legal_basis: (key) => {
       switch (key) {
+        // Base do New Relic Browser (memo G2): com o aviso de cookies (consent), o
+        // agente só carrega depois do aceite (consent.ts loadAccepted) e a sessão
+        // é apagada na recusa — é consentimento (art. 7º, I), new_relic_with_consent.
+        // Sem o aviso, legítimo interesse (new_relic). O server-side segue legítimo
+        // interesse, mas a Política só descreve o agente de navegador.
         case "new_relic":
-          return flags.newRelic ? key : null;
+          return flags.newRelic ? pick(flags.consent, "new_relic_with_consent", "new_relic") : null;
+        case "new_relic_with_consent":
+          return null;
+        // Cookies de analítica do GA4: analytics_storage nasce denied e só é
+        // liberado no aceite (consent.ts), logo a base é consentimento (art. 7º, I),
+        // renderizada só com GA4 ativo E o aviso de cookies. site_measurement
+        // (legítimo interesse) cobre a operação do site pelos registros da
+        // hospedagem, não os cookies do GA4 que dependem do aceite.
+        case "analytics_with_consent":
+          return flags.ga4 && flags.consent ? key : null;
         case "ads_measurement":
           return flags.googleAds ? pick(flags.consent, "ads_measurement_with_consent", "ads_measurement") : null;
         case "ads_measurement_with_consent":
@@ -159,14 +182,23 @@ function chooser(flags: PrivacyFlags): Record<string, (key: string) => string | 
           return key;
       }
     },
-    // Capítulo de cookies (G13): com o aviso de cookies (consent), os cookies de
-    // medição e de anúncio só rodam depois do aceite (measurement_with_consent
-    // substitui measurement). Sem o aviso, o texto base só fala em bloquear no navegador.
+    // Capítulo de cookies (G13): duas categorias separadas — medição (GA4 e New
+    // Relic) e anúncio (Google Ads e pixels) — cada uma só aparece com ao menos
+    // uma ferramenta ATIVA, para nunca citar ferramenta inativa
+    // (_notes.privacy_conditionals) nem rotular o New Relic como cookie de anúncio.
+    // Com o aviso de cookies (consent), a categoria só roda depois do aceite
+    // (_with_consent); sem o aviso, o texto base fala em bloquear no navegador.
     cookies: (key) => {
+      const hasMeasurement = flags.ga4 || flags.newRelic;
+      const hasAdvertising = flags.googleAds || Boolean(flags.linkedinInsight) || Boolean(flags.metaPixel);
       switch (key) {
         case "measurement":
-          return flags.consent ? "measurement_with_consent" : "measurement";
+          return hasMeasurement ? pick(flags.consent, "measurement_with_consent", "measurement") : null;
         case "measurement_with_consent":
+          return null;
+        case "advertising":
+          return hasAdvertising ? pick(flags.consent, "advertising_with_consent", "advertising") : null;
+        case "advertising_with_consent":
           return null;
         default:
           return key;
@@ -199,6 +231,12 @@ function chooser(flags: PrivacyFlags): Record<string, (key: string) => string | 
     },
     retention: (key) => {
       switch (key) {
+        // A frase de backups só entra com a confirmação do dono (memo 3.22;
+        // _notes.legal_review h). Sem ela, requests não afirma o alcance aos backups.
+        case "requests":
+          return flags.backups ? "requests_with_backups" : "requests";
+        case "requests_with_backups":
+          return null;
         case "navigation_ga4":
           return flags.ga4 ? key : null;
         case "navigation_google_ads":

@@ -33,6 +33,7 @@ const BASE: PrivacyFlags = {
   emailProvider: "gmail",
   routing: false,
   noSale: false,
+  backups: false,
 };
 
 const textOf = (sections: PrivacySection[]) =>
@@ -88,7 +89,12 @@ describe("Política de Privacidade: montagem", () => {
       .flatMap((section) => section.blocks)
       .flatMap((block) => (block.kind === "p" ? block.segments : block.items.flat()))
       .filter((segment) => segment.href === "#preferencias-de-cookies");
-    expect(links).toEqual([{ text: sections.navigation_data.cookie_preferences_link_label, href: "#preferencias-de-cookies", external: false }]);
+    // O link que reabre o aviso aparece no capítulo Dados de navegação e em cada
+    // item de base legal por consentimento (anúncios, New Relic, GA4): todos com o rótulo.
+    expect(links.length).toBeGreaterThanOrEqual(2);
+    expect(links.every((segment) => segment.external === false)).toBe(true);
+    expect(links).toContainEqual({ text: sections.navigation_data.cookie_preferences_link_label, href: "#preferencias-de-cookies", external: false });
+    expect(links).toContainEqual({ text: sections.legal_basis.cookie_preferences_link_label, href: "#preferencias-de-cookies", external: false });
 
     // Microsoft 365 pela GoDaddy (playbook 11): uma linha de e-mail só, a dele.
     const microsoft = textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, emailProvider: "microsoft_365" }));
@@ -148,6 +154,55 @@ describe("Política de Privacidade: montagem", () => {
       // Variante substitui a base: nunca as duas.
       expect(contact(true).split(FULL_VARS.email ?? "").length - 1, locale).toBe(1);
     }
+  });
+});
+
+describe("revisão jurídica: consentimento (New Relic, GA4), cookies e backups", () => {
+  const sections = getSection("pt", "privacy.sections");
+
+  it("New Relic (G2): com o aviso de cookies a base é consentimento; sem o aviso, legítimo interesse", () => {
+    const noConsent = textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, consent: false }));
+    expect(noConsent).toContain(sections.legal_basis.items.new_relic);
+    expect(noConsent).not.toContain(sections.legal_basis.items.new_relic_with_consent.split("{")[0]);
+    const consent = textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, consent: true }));
+    expect(consent).toContain(sections.legal_basis.items.new_relic_with_consent.split("{")[0]);
+    expect(consent).not.toContain(sections.legal_basis.items.new_relic);
+  });
+
+  it("GA4: a base dos cookies de analítica é consentimento (analytics_with_consent), só com GA4 ativo E aviso", () => {
+    const text = (flags: Partial<PrivacyFlags>) => textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, ...flags }));
+    const analytics = sections.legal_basis.items.analytics_with_consent.split("{")[0];
+    expect(text({ ga4: true, consent: true })).toContain(analytics);
+    expect(text({ ga4: false, consent: true })).not.toContain(analytics);
+    expect(text({ ga4: true, consent: false })).not.toContain(analytics);
+    // site_measurement (legítimo interesse) não declara os cookies do GA4, só a operação pela hospedagem.
+    expect(sections.legal_basis.items.site_measurement).not.toMatch(/Google Analytics/);
+  });
+
+  it("ads_measurement_with_consent renderiza no modo consentimento (antes caía por falta de rótulo do link)", () => {
+    const consent = textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, consent: true }));
+    expect(consent).toContain(sections.legal_basis.items.ads_measurement_with_consent.split("{")[0]);
+    expect(consent).not.toContain(sections.legal_basis.items.ads_measurement);
+  });
+
+  it("cookies: categorias separadas (medição/anúncio), montadas só com ferramenta ativa", () => {
+    // GA4 desligado: o capítulo de cookies não cita o Google Analytics.
+    expect(textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, ga4: false }))).not.toContain("Google Analytics");
+    // Sem ferramenta de medição, a categoria de medição some; a de anúncio fica (Google Ads ativo).
+    const noMeasure = textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, ga4: false, newRelic: false }));
+    expect(noMeasure).not.toContain(sections.cookies.items.measurement);
+    expect(noMeasure).toContain(sections.cookies.items.advertising);
+    // O New Relic (desempenho) não é rotulado como cookie de anúncio.
+    expect(sections.cookies.items.advertising).not.toMatch(/New Relic/);
+  });
+
+  it("backups: a frase só entra com a confirmação do dono (flag backups)", () => {
+    const backupSentence = "cópias de segurança (backups)";
+    // requests_with_backups contém requests como prefixo; o discriminante é a frase de backups.
+    expect(sections.retention.items.requests).not.toContain(backupSentence);
+    expect(sections.retention.items.requests_with_backups).toContain(backupSentence);
+    expect(textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, backups: false }))).not.toContain(backupSentence);
+    expect(textOf(buildPrivacy(sections, FULL_VARS, { ...BASE, backups: true }))).toContain(backupSentence);
   });
 });
 

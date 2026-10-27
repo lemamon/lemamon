@@ -26,6 +26,7 @@
     "provedorEmail": "microsoft_365",
     "classificacaoDefineAtendimento": false,
     "naoVendemosConfirmado": true,
+    "exclusaoAlcancaBackups": false,
     "ferramentas": {
       "agenda": null,
       "crm": null,

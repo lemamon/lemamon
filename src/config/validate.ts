@@ -369,6 +369,7 @@ const privacidadeSchema = z.strictObject({
   provedorEmail: z.enum(["gmail", "google_workspace", "microsoft_365"]),
   classificacaoDefineAtendimento: z.boolean(),
   naoVendemosConfirmado: z.boolean(),
+  exclusaoAlcancaBackups: z.boolean(),
   ferramentas: z.strictObject({
     agenda: ferramenta,
     crm: ferramenta,
