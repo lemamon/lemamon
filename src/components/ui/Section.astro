@@ -1,0 +1,124 @@
+---
+/**
+ * Section — wrapper de ritmo vertical (03-ui §3.4.2). Dono: home.
+ * API estável: outros agentes usam; mudança de props é pedido ao dono.
+ *
+ *   <Section id="metodo" surface="inverse" spacing="default">…</Section>
+ *
+ * É o ÚNICO lugar que dá padding vertical a uma seção (B211): a raiz de uma
+ * seção não declara padding-block próprio, escolhe um ritmo:
+ *   compact · default · spacious — seções de conteúdo (--section-*)
+ *   strip        — faixa fina (compromissos): --section-strip (24 → 32px)
+ *   hero         — hero da Home: respiro de topo + --section-default embaixo
+ *   hero-compact — hero das páginas internas: topo curto + --section-compact
+ * trim="start" | "end" zera um dos lados (ex.: seção que emenda na seguinte).
+ *
+ * surface="inverse" aplica data-surface="inverse" (tokens de fundo escuro).
+ * width="full" não envolve o conteúdo em .container.
+ * divider: linha de 1px no topo (--color-border-subtle), para separar duas
+ * seções vizinhas da mesma superfície (03-ui §3.5.2, B216).
+ * aliasId: segundo id da seção, num <span> vazio fora do fluxo (.sr-only do
+ * global.css: position absolute, não ocupa espaço nem célula de grid, e sem
+ * CSS novo no orçamento de peso). É o id pt de uma âncora localizada em en/es
+ * (routes.ts anchorAlias, auditoria SEO S01-8): "/en/…#desenvolvimento" cai
+ * na mesma seção que "#development".
+ */
+interface Props {
+  id?: string;
+  /** Id de compatibilidade (o pt de uma âncora localizada). Igual a `id` ou vazio: nada é emitido. */
+  aliasId?: string;
+  spacing?: "compact" | "default" | "spacious" | "strip" | "hero" | "hero-compact";
+  surface?: "canvas" | "subtle" | "inverse";
+  width?: "default" | "prose" | "wide" | "full";
+  /** Zera o padding de um dos lados. */
+  trim?: "start" | "end";
+  /** Divisória de 1px no topo. */
+  divider?: boolean;
+  /** id do título que nomeia a seção (aria-labelledby). */
+  labelledby?: string;
+  /** aria-label, para seção sem título visível. */
+  label?: string;
+  as?: "section" | "div" | "aside";
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+
+const {
+  id,
+  aliasId,
+  spacing = "default",
+  surface = "canvas",
+  width = "default",
+  trim,
+  divider = false,
+  labelledby,
+  label,
+  as: Tag = "section",
+  class: className,
+  ...data
+} = Astro.props;
+---
+
+<Tag
+  id={id}
+  class:list={["section", className]}
+  data-spacing={spacing}
+  data-bg={surface}
+  data-trim={trim}
+  data-divider={divider ? "true" : undefined}
+  data-surface={surface === "inverse" ? "inverse" : undefined}
+  aria-labelledby={labelledby}
+  aria-label={label}
+  {...data}
+>
+  {aliasId && aliasId !== id && <span id={aliasId} class="section__alias sr-only" aria-hidden="true" />}
+  {
+    width === "full" ? (
+      <slot />
+    ) : (
+      <div class="container" data-width={width === "default" ? undefined : width}>
+        <slot />
+      </div>
+    )
+  }
+</Tag>
+
+<style>
+  .section {
+    --section-pad-start: var(--section-default);
+    --section-pad-end: var(--section-default);
+    padding-block: var(--section-pad-start) var(--section-pad-end);
+  }
+  .section[data-spacing="compact"] {
+    --section-pad-start: var(--section-compact);
+    --section-pad-end: var(--section-compact);
+  }
+  .section[data-spacing="spacious"] {
+    --section-pad-start: var(--section-spacious);
+    --section-pad-end: var(--section-spacious);
+  }
+  .section[data-spacing="strip"] {
+    --section-pad-start: var(--section-strip);
+    --section-pad-end: var(--section-strip);
+  }
+  .section[data-spacing="hero"] {
+    --section-pad-start: var(--section-hero-start);
+    --section-pad-end: var(--section-default);
+  }
+  .section[data-spacing="hero-compact"] {
+    --section-pad-start: var(--section-hero-compact-start);
+    --section-pad-end: var(--section-compact);
+  }
+  .section[data-trim="start"] {
+    padding-block-start: 0;
+  }
+  .section[data-trim="end"] {
+    padding-block-end: 0;
+  }
+  .section[data-divider] {
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+  .section[data-bg="subtle"] {
+    background-color: var(--color-bg-subtle);
+  }
+</style>

@@ -1,0 +1,42 @@
+/**
+ * Valor da FieldList como lista de links (ficha do case: serviços e etapas;
+ * auditoria de SEO S03-4, S06-9). Dono: gated. Carregado só na página que
+ * renderiza um item com links (ui/RenderedStyle.astro, B256): as páginas que
+ * importam a FieldList sem link (formatos, engenharia, dados da empresa) não
+ * pagam estes bytes. Sem escopo automático: só classes .field-list__*.
+ *
+ * Alvo de toque de 44px na altura sem mudar a linha: faixa de padding com
+ * margem negativa, como o nome da etapa na linha do método.
+ */
+.field-list__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+}
+.field-list__links li {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+.field-list__links a {
+  --field-hit: max(0px, calc((var(--target-min) - 1lh) / 2));
+  display: inline-block;
+  padding-block: var(--field-hit);
+  margin-block: calc(-1 * var(--field-hit));
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: var(--color-border-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+/* Hover só com ponteiro fino (no toque a cor ficaria presa, B192). */
+@media (hover: hover) and (pointer: fine) {
+  .field-list__links a:hover {
+    color: var(--color-text-link-hover);
+    text-decoration-color: currentColor;
+  }
+}
+.field-list__sep {
+  color: var(--color-text-tertiary);
+}

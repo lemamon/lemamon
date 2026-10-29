@@ -1,0 +1,72 @@
+---
+/**
+ * Serviço sustentação §6.5 `what_it_is` — logo depois dos sinais (define os
+ * dois termos antes de exemplos e método usarem; painel de design). Dono: pages.
+ * Fica entre sinais (canvas) e exemplos (subtle): superfície canvas com a
+ * divisória de 1px no topo para separar dos sinais (03-ui §3.5.2, B216).
+ * "Sustentação e evolução, o que é cada uma": sustentação = cuidar do que está
+ * no ar; evolução = continuar melhorando conforme o negócio muda. Sem SLA,
+ * horas ou valores (sustentacao.ts pendente).
+ * Cada definição é um <Card as="li"> (B214); gutter = --grid-gap (B222).
+ */
+import Card from "@/components/ui/Card.astro";
+import Section from "@/components/ui/Section.astro";
+import { t, type Locale } from "@/i18n";
+
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const pairs = [
+  { id: "sustentacao", label: t(locale, "services.support.what_it_is.support_label"), text: t(locale, "services.support.what_it_is.support_text") },
+  { id: "evolucao", label: t(locale, "services.support.what_it_is.evolution_label"), text: t(locale, "services.support.what_it_is.evolution_text") },
+];
+---
+
+<Section id="o-que-e" labelledby="o-que-e-title" divider>
+  <SectionHeader id="o-que-e-title" title={t(locale, "services.support.what_it_is.title")} />
+  <ul role="list" class="what">
+    {
+      pairs.map((pair) => (
+        <Card as="li" class="what__item" data-id={pair.id}>
+          <h3 class="what__label">{pair.label}</h3>
+          <p class="what__text">{pair.text}</p>
+        </Card>
+      ))
+    }
+  </ul>
+</Section>
+
+<style>
+  .what {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+
+  /* Raiz = <Card as="li">: borda, raio, fundo e padding vêm de lá. */
+  .what :global(.what__item) {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .what__label {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  .what__text {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 768px) {
+    .what {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

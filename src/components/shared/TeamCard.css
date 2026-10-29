@@ -1,0 +1,62 @@
+/**
+ * Pessoa do time (TeamCard.astro). Dono: home. Carregado só na página que
+ * renderiza uma pessoa (ui/RenderedStyle.astro, B256): sem time completo no
+ * dono.json, nada disto vai ao ar. Sem escopo automático: só classes
+ * .team-card*.
+ */
+.team-card {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+/* Raio da FOTO (não é superfície de cartão; B214). */
+.team-card .team-card__photo {
+  inline-size: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-muted);
+}
+.team-card__body {
+  display: grid;
+  gap: var(--space-1);
+}
+.team-card__name {
+  font-size: var(--text-lg);
+  line-height: var(--leading-h4); /* título curto: 1.3, não o 1.56 do texto */
+}
+.team-card__role {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-tertiary);
+}
+.team-card__line {
+  margin-block-start: var(--space-2);
+  color: var(--color-text-secondary);
+}
+.team-card__links {
+  display: flex;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+}
+/* .team-card na frente: vence o a:hover global (cor presa no toque). */
+.team-card .team-card__links a {
+  display: grid;
+  place-items: center;
+  inline-size: var(--target-min);
+  block-size: var(--target-min);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+.team-card .team-card__links a:focus-visible {
+  color: var(--color-brand);
+}
+/* Hover só com ponteiro fino (no toque ficaria preso, B192). */
+@media (hover: hover) and (pointer: fine) {
+  .team-card .team-card__links a:hover {
+    background-color: var(--color-bg-subtle);
+    color: var(--color-brand);
+  }
+}

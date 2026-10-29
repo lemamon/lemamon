@@ -1,0 +1,278 @@
+---
+/**
+ * Política de Privacidade /privacidade (BLUEPRINT §6.13) — view dos 3 idiomas.
+ * Dono: shell. REVISÃO JURÍDICA antes de publicar (i18n _notes.legal_review).
+ *
+ * Conteúdo: privacy.* do i18n, montado por src/components/shell/privacy.ts
+ * conforme _notes.privacy_structure e privacy_conditionals; as escolhas vêm de
+ * dados/dono.json › privacidade e › empresa (config/privacidade.ts e
+ * config/empresa.ts) e das ferramentas ativas. Frase com dado faltando não renderiza.
+ * O respiro vertical vem do <Section spacing="spacious"> (ui/Section.astro,
+ * B211): o <article> não declara padding próprio.
+ *
+ * TRAVA DE LANÇAMENTO: no build de produção (CONTEXT=production) com
+ * privacyLaunchBlockers() não vazio, o build FALHA aqui com a lista do que falta
+ * (i18n _notes.launch_blockers). A trava lê o dado REAL do dono.json (nunca a
+ * camada fictícia, que nem existe em produção) e recusa valor com cara de
+ * fictício. Preview e local buildam normalmente.
+ */
+import { buildPrivacy, missingPixelCopy, type PrivacyVars } from "@/components/shell/privacy";
+import { agendaReal } from "@/config/agenda";
+import { empresa, empresaReal } from "@/config/empresa";
+import { getFeatures } from "@/config/features";
+import {
+  activePixels,
+  OPTIONAL_TOOL_VARS,
+  OPTIONAL_TOOLS,
+  PIXEL_PRAZO_VAR,
+  PIXELS,
+  privacidade,
+  privacidadeReal,
+  privacyLaunchBlockers,
+} from "@/config/privacidade";
+import { isProductionDeploy } from "@/config/site";
+import Section from "@/components/ui/Section.astro";
+import { isFilledText } from "@/config/types";
+import Base from "@/layouts/Base.astro";
+import { getSection, LOCALE_META, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const features = await getFeatures();
+
+if (isProductionDeploy()) {
+  const blockers = privacyLaunchBlockers(privacidadeReal, { hasAgenda: agendaReal.url.trim() !== "" }, empresaReal);
+  if (blockers.length) {
+    throw new Error(
+      `Política de Privacidade incompleta: o build de produção não publica sem\n - ${blockers.join("\n - ")}\n(i18n _notes.launch_blockers; preencha com dado REAL dados/dono.json › privacidade e › empresa — docs/playbooks/00-DADOS-DO-DONO.md)`,
+    );
+  }
+}
+
+const localized = (value: { pt: string; en: string; es: string } | null) => (isFilledText(value) ? value[locale] : undefined);
+const encarregado = typeof privacidade.encarregado === "object" ? privacidade.encarregado : null;
+const vars: PrivacyVars = {
+  email: empresa.email,
+  razao_social: features.hasCompanyData ? empresa.razaoSocial : undefined,
+  cnpj: features.hasCompanyData ? empresa.cnpj : undefined,
+  nome_do_responsavel: empresa.responsavel || undefined,
+  nome_do_encarregado: encarregado?.nome,
+  email_do_encarregado: encarregado?.email,
+  mecanismo_transferencia: localized(privacidade.mecanismoTransferencia),
+  prazo_retencao_pedidos: localized(privacidade.prazos.retencaoPedidos),
+  prazo_ga4: localized(privacidade.prazos.ga4),
+  prazo_google_ads: localized(privacidade.prazos.googleAds),
+  prazo_conversoes_google_ads: localized(privacidade.prazos.conversoesGoogleAds),
+  prazo_new_relic: localized(privacidade.prazos.newRelic),
+  prazo_logs_hospedagem: localized(privacidade.prazos.logsHospedagem),
+  // Ferramentas opcionais: sem fornecedor E prazo, o item da ferramenta não renderiza.
+  ...Object.fromEntries(
+    OPTIONAL_TOOLS.flatMap((tool) => {
+      const declared = privacidade.ferramentas[tool];
+      const prazo = declared ? localized(declared.prazo) : undefined;
+      if (!declared?.fornecedor.trim() || !prazo) return [];
+      const names = OPTIONAL_TOOL_VARS[tool];
+      return [
+        [names.fornecedor, declared.fornecedor.trim()],
+        [names.prazo, prazo],
+      ];
+    }),
+  ),
+};
+// Pixels opcionais (B346/B347): os itens deles só com o ID publicado (produção,
+// consentimento, ID válido) e o prazo preenchido; senão nenhum item aparece.
+const pixels = activePixels(privacidade);
+const pixelOn = Object.fromEntries(
+  PIXELS.map((pixel) => [pixel, isProductionDeploy() && pixels[pixel] !== "" && localized(privacidade.pixels?.[pixel]?.prazo ?? null) !== undefined]),
+) as Record<(typeof PIXELS)[number], boolean>;
+const privacySections = getSection(locale, "privacy.sections");
+for (const pixel of PIXELS) {
+  if (!pixelOn[pixel]) continue;
+  vars[PIXEL_PRAZO_VAR[pixel]] = localized(privacidade.pixels?.[pixel]?.prazo ?? null);
+  const missing = missingPixelCopy(privacySections, pixel);
+  if (missing.length) {
+    throw new Error(`Pixel "${pixel}" publicado sem os itens da Política (${locale}): ${missing.join(", ")}. Peça ao redator antes de preencher o ID.`);
+  }
+}
+// Data no topo: só com privacidade.atualizadaEm (AAAA-MM-DD). Sem ela, a seção de contato
+// não cita "a data no topo" (contact.body; com a data, body_with_date: auditoria SEO S03-14).
+const updated = /^\d{4}-\d{2}-\d{2}$/.test(privacidade.atualizadaEm)
+  ? {
+      iso: privacidade.atualizadaEm,
+      text: t(locale, "privacy.updated", {
+        data: new Intl.DateTimeFormat(LOCALE_META[locale].htmlLang, { dateStyle: "long", timeZone: "UTC" }).format(
+          new Date(`${privacidade.atualizadaEm}T00:00:00Z`),
+        ),
+      }),
+    }
+  : null;
+const sections = buildPrivacy(privacySections, vars, {
+  ga4: features.hasGa4,
+  googleAds: true,
+  newRelic: true,
+  consent: privacidade.baseAnuncios === "consentimento",
+  remarketing: privacidade.remarketing,
+  dpo: encarregado !== null,
+  companyData: features.hasCompanyData,
+  mechanism: isFilledText(privacidade.mecanismoTransferencia),
+  emailProvider: privacidade.provedorEmail,
+  routing: privacidade.classificacaoDefineAtendimento,
+  noSale: privacidade.naoVendemosConfirmado,
+  backups: privacidade.exclusaoAlcancaBackups,
+  linkedinInsight: pixelOn.linkedin,
+  metaPixel: pixelOn.meta,
+  dated: updated !== null,
+});
+
+const opensNewTab = t(locale, "shared.a11y.opens_new_tab");
+---
+
+<Base locale={locale} route="privacy" title={t(locale, "meta.privacy.title")} description={t(locale, "meta.privacy.description")}>
+  <article class="privacy">
+    <Section as="div" spacing="spacious">
+      <div class="privacy__inner">
+        <header class="privacy__header">
+          <h1>{t(locale, "privacy.title")}</h1>
+          {updated && <p class="privacy__updated"><time datetime={updated.iso}>{updated.text}</time></p>}
+        </header>
+
+        <nav class="privacy__toc" aria-labelledby="privacy-toc-title">
+          <h2 class="privacy__toc-title" id="privacy-toc-title">{t(locale, "privacy.toc_label")}</h2>
+          <ol>
+            {sections.map((section) => <li><a href={`#${section.id}`}>{section.title}</a></li>)}
+          </ol>
+        </nav>
+
+        <div class="privacy__body">
+          {
+            sections.map((section) => (
+              <section id={section.id} class="privacy__section" aria-labelledby={`${section.id}-title`}>
+                <h2 id={`${section.id}-title`}>{section.title}</h2>
+                {section.blocks.map((block) =>
+                  block.kind === "p" ? (
+                    <p>
+                      {block.segments.map((segment) =>
+                        segment.href ? (
+                          segment.external ? (
+                            <a href={segment.href} target="_blank" rel="noopener">
+                              {segment.text}
+                              <span class="sr-only">{opensNewTab}</span>
+                            </a>
+                          ) : (
+                            <a href={segment.href}>{segment.text}</a>
+                          )
+                        ) : (
+                          segment.text
+                        ),
+                      )}
+                    </p>
+                  ) : (
+                    <ul>
+                      {block.items.map((item) => (
+                        <li>
+                          {item.map((segment) =>
+                            segment.href ? (
+                              <a href={segment.href} target={segment.external ? "_blank" : undefined} rel={segment.external ? "noopener" : undefined}>
+                                {segment.text}
+                              </a>
+                            ) : (
+                              segment.text
+                            ),
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ),
+                )}
+              </section>
+            ))
+          }
+        </div>
+      </div>
+    </Section>
+  </article>
+</Base>
+
+<style>
+  .privacy__inner {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .privacy__header,
+  .privacy__body,
+  .privacy__toc {
+    max-inline-size: var(--measure-prose);
+  }
+  .privacy__updated {
+    margin-block-start: var(--space-3);
+    color: var(--color-text-secondary);
+  }
+  .privacy__toc {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-subtle);
+  }
+  .privacy__toc-title {
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--tracking-overline);
+    line-height: var(--leading-xs);
+    text-transform: uppercase;
+  }
+  .privacy__toc ol {
+    display: grid;
+    margin-block-start: var(--space-2);
+    padding-inline-start: var(--space-5);
+  }
+  .privacy__toc a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--target-min);
+  }
+  .privacy__section + .privacy__section {
+    margin-block-start: var(--space-10);
+  }
+  .privacy__section h2 {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+  .privacy__section > * + * {
+    margin-block-start: var(--space-4);
+  }
+  .privacy__section ul {
+    display: grid;
+    gap: var(--space-3);
+    padding-inline-start: var(--space-5);
+  }
+  .privacy__section a {
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 1024px) {
+    .privacy__inner {
+      grid-template-columns: minmax(0, var(--measure-prose)) minmax(14rem, 18rem);
+      column-gap: var(--space-16);
+      align-items: start;
+    }
+    .privacy__header {
+      grid-column: 1 / -1;
+    }
+    .privacy__toc {
+      position: sticky;
+      inset-block-start: calc(var(--header-height) + var(--space-6));
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .privacy__body {
+      grid-column: 1;
+      grid-row: 2;
+    }
+  }
+</style>

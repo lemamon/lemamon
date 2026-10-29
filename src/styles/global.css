@@ -1,0 +1,366 @@
+/**
+ * global.css — base do site (dono: home). Importado UMA vez, pelo Base.astro.
+ * Contém: @font-face, reset moderno, tipografia base, foco visível, reduced
+ * motion, superfície invertida e utilitários mínimos (.container, .prose,
+ * .eyebrow, .grid-12, .lead, .no-break, .sr-only, .skip-link). Só utilitário
+ * em uso: este arquivo vai no CSS de toda página (B256; o .stack saiu).
+ * Estilo de componente fica no <style> escopado do próprio .astro (ou CSS
+ * module na ilha), consumindo tokens.css; componente when_data usa um .css
+ * próprio carregado só quando renderiza (components/ui/RenderedStyle.astro).
+ */
+
+@import "./tokens.css";
+
+/* ------------------------------------------------------------------ *
+ * Fontes — Motiva Sans, subset latin + latin-ext (scripts/build-fonts.sh).
+ * A Bold é arquivo próprio, declarada como peso 700 da MESMA família.
+ * ------------------------------------------------------------------ */
+@font-face {
+  font-family: "Motiva Sans";
+  src: url("../assets/fonts/motiva-sans-light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Motiva Sans";
+  src: url("../assets/fonts/motiva-sans-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ------------------------------------------------------------------ *
+ * Reset moderno
+ * ------------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* âncoras não ficam escondidas sob o header sticky */
+  scroll-padding-block-start: calc(var(--header-height) + var(--space-4));
+}
+
+body {
+  min-block-size: 100svh;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-inline-size: 100%;
+}
+
+img,
+video {
+  block-size: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+dd,
+blockquote,
+figcaption {
+  overflow-wrap: break-word;
+}
+
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  padding: 0;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------------ *
+ * Tipografia base
+ * ------------------------------------------------------------------ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-h1);
+  line-height: var(--leading-h1);
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: var(--text-h2);
+  line-height: var(--leading-h2);
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-size: var(--text-h3);
+  line-height: var(--leading-h3);
+}
+
+h4 {
+  font-size: var(--text-h4);
+  line-height: var(--leading-h4);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+strong,
+b {
+  font-weight: var(--font-weight-bold);
+}
+
+a {
+  color: var(--color-text-link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: var(--transition-colors);
+}
+
+a:hover {
+  color: var(--color-text-link-hover);
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-code-inline);
+  line-height: inherit;
+}
+
+/*
+ * Bloco de código em MDX (blog, cases): as regras do painel moram em
+ * src/styles/code.css, importado só pelas páginas que renderizam MDX (não vão
+ * no pacote de toda página, B256). As cores (tema "css-variables" do Shiki)
+ * ficam em tokens.css §6c.
+ */
+
+::selection {
+  background-color: var(--amber-200);
+  color: var(--ink-950);
+}
+
+/* ------------------------------------------------------------------ *
+ * Foco — sempre visível (BLUEPRINT §11). Nunca outline: none sem substituto.
+ * ------------------------------------------------------------------ */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* ------------------------------------------------------------------ *
+ * Superfície escura (método, CTA final): <section data-surface="inverse">
+ * ------------------------------------------------------------------ */
+[data-surface="inverse"] {
+  background-color: var(--color-bg-canvas);
+  color: var(--color-text-primary);
+}
+
+/* ------------------------------------------------------------------ *
+ * Movimento
+ * ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Utilitários mínimos
+ * ------------------------------------------------------------------ */
+
+/* Container: largura padrão 1200px com gutter do token. */
+.container {
+  inline-size: 100%;
+  max-inline-size: calc(var(--container-default) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.container[data-width="prose"] {
+  max-inline-size: calc(var(--container-prose) + 2 * var(--gutter));
+}
+
+.container[data-width="wide"] {
+  max-inline-size: calc(var(--container-wide) + 2 * var(--gutter));
+}
+
+/* Medida de leitura */
+.prose {
+  max-inline-size: var(--measure-prose);
+}
+
+/*
+ * Eyebrow: rótulo curto acima do título de seção (03-ui §3.6). Mono, em caixa
+ * normal (caixa-alta em pt-BR com acento pesa e lê pior), com um marcador
+ * quadrado em âmbar. O marcador é decoração; a cor do texto segue AA.
+ */
+.eyebrow {
+  display: inline-flex;
+  align-items: flex-start; /* com 2 linhas, o marcador fica na 1ª */
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  letter-spacing: 0.02em;
+  color: var(--color-text-secondary);
+}
+
+.eyebrow::before {
+  content: "";
+  flex: none;
+  inline-size: var(--space-2);
+  block-size: var(--space-2);
+  margin-block-start: calc((var(--leading-xs) - var(--space-2)) / 2); /* centro da 1ª linha */
+  background-color: var(--color-accent);
+}
+
+/* Numeração de seção na eyebrow ("02 / Serviços", 03-ui §3.5.2): decorativa. */
+.eyebrow__index {
+  color: var(--color-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Número + unidade juntos no fim da linha ("2 semanas", "45-minute"). A
+ * Motiva não tem U+2011 nem U+2060, então o par vai num span sem quebra
+ * (components/shared/NoBreakText.astro aplica sozinho).
+ */
+.no-break {
+  white-space: nowrap;
+}
+
+/*
+ * Grade de 12 colunas com o gutter do token (03-ui §3.6): as colunas de
+ * seções vizinhas caem nas mesmas linhas. Filhos ocupam 12 colunas no mobile;
+ * a partir de 1024px, --span-lg (ex.: 7 + 5, 8 + 4, 4 + 8).
+ *   <div class="grid-12"><div style="--span-lg: 7">…</div>…</div>
+ */
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+}
+.grid-12 > * {
+  grid-column: span var(--span, 12);
+}
+@media (min-width: 1024px) {
+  .grid-12 > * {
+    grid-column: span var(--span-lg, var(--span, 12));
+  }
+}
+
+/* Texto de abertura de seção. */
+.lead {
+  font-size: var(--text-lead);
+  line-height: var(--leading-lead);
+  color: var(--color-text-secondary);
+  max-inline-size: var(--measure-lead);
+}
+
+/* Visível só para leitor de tela. */
+.sr-only {
+  position: absolute !important;
+  inline-size: 1px !important;
+  block-size: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Skip link: primeiro elemento focável da página (BLUEPRINT §8.1). */
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: var(--z-skip-link);
+  padding: var(--space-3) var(--space-4);
+  min-block-size: var(--target-min);
+  border-radius: var(--radius-md);
+  background-color: var(--color-brand);
+  color: var(--color-text-on-brand);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible,
+.skip-link:focus {
+  transform: none;
+  color: var(--color-text-on-brand);
+}
+
+/* O <main> recebe foco do skip link sem mostrar anel no bloco inteiro. */
+main:focus {
+  outline: none;
+}

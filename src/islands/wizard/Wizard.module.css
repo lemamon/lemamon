@@ -1,0 +1,1223 @@
+/* Ilha do wizard (dono: conversion). CSS module + tokens de src/styles/tokens.css.
+   Nada de CSS-in-JS nem literal de cor, raio ou sombra.
+   Mobile primeiro: opções de largura total com alvo ≥ var(--target-option);
+   barra de ação fixa abaixo de 768px (some com o teclado aberto, respeita a
+   safe-area) e sticky no rodapé acima disso (F04). Seleção nunca só por cor: ícone de check + borda dupla + fundo (sem
+   negrito desde a auditoria F22: o texto em negrito quebrava em mais linhas e
+   a opção marcada crescia, empurrando as de baixo). */
+
+.root {
+  --wizard-measure: 44rem;
+  inline-size: 100%;
+}
+
+.root[data-view="focus"] {
+  padding-block: var(--space-8) var(--section-compact);
+}
+
+/* Antes da hidratação, com ?etapa= na URL, a casca já está em modo foco
+   (script inline da QuoteView): mostra "Carregando…" em vez de tela vazia. */
+.pending {
+  display: none;
+  padding-block: var(--space-12);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+:global(html[data-wizard-mode="focus"]) .pending {
+  display: block;
+}
+
+/* Modo foco (B238): a área do wizard ocupa pelo menos a tela abaixo do
+   header, ANTES e depois da hidratação. Sem isto, quem voltava a um passo
+   (?etapa=, o "Continuar meu pedido") via no SSR só o "Carregando…" com o
+   rodapé logo abaixo, e a pergunta empurrava o rodapé tela abaixo depois da
+   hidratação (CLS 0,17–0,28 no celular). Com a reserva, o rodapé já nasce
+   fora da tela e só desce mais. O data-wizard-mode vem do script do <head>
+   da QuoteView, antes da pintura. */
+:global(html[data-wizard-mode="focus"]) .root {
+  min-block-size: calc(100vh - var(--header-height));
+  min-block-size: calc(100svh - var(--header-height));
+}
+
+/* ------------------------------------------------------------------ *
+ * Tela (pergunta, resumo, contato)
+ * ------------------------------------------------------------------ */
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-inline-size: var(--wizard-measure);
+  margin-inline: auto;
+}
+
+.title,
+.question {
+  font-size: var(--text-h2);
+  line-height: var(--leading-h2);
+  letter-spacing: -0.015em;
+}
+
+/* O título de cada tela recebe foco por script (tabindex=-1) para o leitor de
+   tela anunciar a troca. Não é controle interativo: sem anel, nem quando o
+   navegador trata o foco programático como :focus-visible (recarga em
+   ?etapa=), o mesmo caso de main:focus em global.css. */
+.title:focus,
+.title:focus-visible,
+.question:focus,
+.question:focus-visible {
+  outline: none;
+}
+
+.lead {
+  font-size: var(--text-lead);
+  line-height: var(--leading-lead);
+  color: var(--color-text-secondary);
+}
+
+.context,
+.contextIntro {
+  padding: var(--space-3) var(--space-4);
+  border-inline-start: 3px solid var(--color-border-accent);
+  background-color: var(--color-accent-subtle);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+.contextIntro {
+  margin-block-start: var(--space-4);
+  max-inline-size: var(--measure-lead);
+}
+
+/* ------------------------------------------------------------------ *
+ * Pergunta: fieldset + legend + opções nativas em cartão
+ * ------------------------------------------------------------------ */
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-block-end: var(--space-2);
+}
+
+.helper,
+.hint,
+.help {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+.hint {
+  color: var(--color-text-tertiary);
+}
+
+.options {
+  display: grid;
+  gap: var(--space-3);
+  margin-block-start: var(--space-2);
+}
+
+.option,
+.choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--target-option);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: var(--transition-colors), var(--transition-shadow);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .option:hover,
+  .choice:hover {
+    background-color: var(--color-bg-surface-hover);
+    border-color: var(--color-border-strong);
+  }
+}
+
+/* Selecionada: borda dupla (sombra interna, sem mexer no layout), fundo da
+   marca, check visível e texto em negrito. */
+.option[data-checked="true"],
+.choice[data-checked="true"] {
+  border-color: var(--color-brand);
+  box-shadow: var(--ring-inset) var(--color-brand);
+  background-color: var(--color-brand-subtle);
+}
+
+/* O input nativo fica no lugar (acessível e focável), mas invisível: o
+   indicador desenha o estado. O anel de foco vai para o cartão inteiro. */
+.input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.option:has(.input:focus-visible),
+.choice:has(.input:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.option:has(.input[aria-invalid="true"]) {
+  border-color: var(--color-danger);
+}
+
+.indicator {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border: 2px solid var(--color-border-control);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-on-brand);
+}
+
+.indicator[data-shape="circle"] {
+  border-radius: var(--radius-full);
+}
+
+.indicator[data-shape="square"] {
+  border-radius: var(--radius-sm);
+}
+
+[data-checked="true"] > .indicator {
+  border-color: var(--color-brand);
+  background-color: var(--color-brand);
+}
+
+.optionText {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-sm);
+}
+
+.counter {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.error {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-danger);
+}
+
+/* ------------------------------------------------------------------ *
+ * Campos de texto
+ * ------------------------------------------------------------------ */
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Sugestão de e-mail (F07): região viva sempre no DOM; vazia, a margem
+   negativa anula o gap do .field e nada se move. */
+.suggestion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-2);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.suggestion:empty {
+  margin-block-start: calc(-1 * var(--space-2));
+}
+
+.suggestionFix {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-link);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.fieldsetCompact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.label {
+  padding: 0;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-primary);
+}
+
+.control {
+  inline-size: 100%;
+  min-block-size: var(--target-min);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  line-height: var(--leading-sm);
+}
+
+textarea.control {
+  min-block-size: 7rem;
+  resize: vertical;
+}
+
+.control::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.control[aria-invalid="true"] {
+  border-color: var(--color-danger);
+  box-shadow: var(--ring-inset) var(--color-danger);
+}
+
+.chipsChoice {
+  display: grid;
+  gap: var(--space-2);
+}
+
+@media (min-width: 640px) {
+  .chipsChoice {
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  }
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  min-block-size: var(--target-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-link);
+  font-weight: var(--font-weight-bold);
+  text-align: start;
+}
+
+.toggleIcon {
+  flex: none;
+  transition: var(--transition-transform);
+}
+
+.toggleIcon[data-open="true"] {
+  transform: rotate(45deg);
+}
+
+.detailsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.detailsPanel[hidden] {
+  display: none;
+}
+
+/* Honeypot: fora da tela, fora da ordem de tabulação, fora da árvore de acessibilidade. */
+.honeypot {
+  position: absolute;
+  inset-inline-start: -10000px;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+}
+
+.privacy {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ------------------------------------------------------------------ *
+ * Botões
+ * ------------------------------------------------------------------ */
+
+.primary,
+.secondary,
+.whatsapp,
+.back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: var(--target-cta);
+  padding-inline: var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  transition: var(--transition-colors), var(--transition-shadow);
+}
+
+.primary {
+  background-color: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+
+.primary:active {
+  background-color: var(--color-accent-active);
+}
+
+.primary[data-busy="true"] {
+  cursor: progress;
+}
+
+.secondary {
+  border-color: var(--color-border-control);
+  background-color: transparent;
+  color: var(--color-text-primary);
+}
+
+.secondary:active {
+  background-color: var(--color-bg-surface-hover);
+}
+
+.whatsapp {
+  background-color: var(--color-whatsapp);
+  color: var(--color-text-on-whatsapp);
+}
+
+.whatsapp:active {
+  background-color: var(--color-whatsapp-hover);
+}
+
+.back {
+  padding-inline: var(--space-3);
+  background: none;
+  color: var(--color-text-link);
+}
+
+
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  padding: 0 var(--space-2);
+  border: 0;
+  background: none;
+  color: var(--color-text-link);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Hover só com mouse (B192): no toque, o :hover fica preso depois do toque e o
+   botão parece marcado. O retorno ao toque é o :active de cada botão. */
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover {
+    background-color: var(--color-accent-hover);
+    color: var(--color-text-on-accent);
+  }
+
+  /* Pressionado com o mouse em cima: o :active continua vencendo o :hover. */
+  .primary:active {
+    background-color: var(--color-accent-active);
+  }
+
+  .secondary:hover {
+    background-color: var(--color-bg-surface-hover);
+    color: var(--color-text-primary);
+  }
+
+  .whatsapp:hover {
+    background-color: var(--color-whatsapp-hover);
+    color: var(--color-text-on-whatsapp);
+  }
+
+  .back:hover,
+  .linkButton:hover {
+    color: var(--color-text-link-hover);
+  }
+}
+
+/* "Voltar" do contato no fluxo: só no mobile, onde ele sai da barra fixa. */
+.backInline {
+  display: none;
+  align-self: flex-start;
+  margin-block-end: calc(-1 * var(--space-4));
+  text-decoration: none;
+}
+
+/* Barra de ação: no fluxo e grudada no rodapé (sticky) no desktop; fixa no
+   rodapé no mobile. */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Primário + nota logo abaixo dele, no mesmo alinhamento. */
+.primaryGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+  min-inline-size: 0;
+}
+
+.actions[data-back="none"] .primaryGroup {
+  align-items: flex-start;
+  margin-inline-start: 0;
+}
+
+.primaryGroup .primary {
+  min-inline-size: 12rem;
+}
+
+.barNote {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+  text-align: end;
+}
+
+.actions[data-back="none"] .barNote {
+  text-align: start;
+}
+
+/* Erro e aviso da pergunta na nota da barra (F05): a barra fixa (celular) e a
+   sticky (desktop, F04) cobriam o texto no fluxo. Erro em vermelho e negrito;
+   aviso ("Você já marcou 3") em negrito. Nunca só cor: o texto diz o que houve. */
+.barNote[data-tone="error"],
+.barNote[data-tone="notice"] {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.barNote[data-tone="error"] {
+  color: var(--color-danger);
+}
+
+/* Foco por Tab, campo inválido e scrollIntoView param ACIMA da barra de ação,
+   fixa no celular e sticky no desktop (WCAG 2.4.11; F04). A altura vem medida
+   pela ilha (--wizard-bar-height). */
+:global(html[data-wizard-mode="focus"]) {
+  scroll-padding-block-end: calc(var(--wizard-bar-height, 6rem) + var(--space-4));
+}
+
+/* Desktop com altura útil (F04): a barra gruda no rodapé enquanto a pergunta
+   rola, e o Continuar das P2–P5 não fica abaixo da dobra (1366×657: P3 com o
+   botão em y 869). No resumo e no contato ela fica dentro do bloco do fim, que
+   a limita: só gruda quando esse bloco chega à tela. Tela baixa (< 34em):
+   barra no fluxo, para não tomar a tela. */
+@media (min-width: 768px) and (min-height: 34em) {
+  .actions {
+    position: sticky;
+    inset-block-end: 0;
+    z-index: var(--z-floating);
+    padding-block: var(--space-3);
+    background-color: var(--color-bg-canvas);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+
+  /* No bloco do fim (resumo, contato) a divisória já é a do bloco. */
+  .closing > .actions {
+    padding-block-start: 0;
+    border-block-start: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .root[data-view="focus"] {
+    padding-block-end: var(--space-8);
+  }
+
+  .backInline {
+    display: inline-flex;
+  }
+
+  .actions {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--z-floating);
+    padding: var(--space-3) var(--gutter) calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    border-block-start: 1px solid var(--color-border-subtle);
+    background-color: var(--color-bg-canvas);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .actions[data-keyboard="open"],
+  .actions[data-state="error"] {
+    display: none;
+  }
+
+  .actions[data-back="desktop"] .back {
+    display: none;
+  }
+
+  /* Primário com ~70% (com "Voltar") ou a barra inteira (sozinho), numa linha. */
+  .primaryGroup {
+    flex: 1 1 70%;
+    align-items: stretch;
+  }
+
+  .actions[data-back="none"] .primaryGroup,
+  .actions[data-back="desktop"] .primaryGroup {
+    flex-basis: 100%;
+    align-items: stretch;
+  }
+
+  /* Padding curto: "Pide tu diagnóstico gratuito" cabe numa linha a 320px. Sem
+     nowrap: com fonte ampliada pela pessoa, o rótulo quebra em vez de vazar. */
+  .primaryGroup .primary {
+    min-inline-size: 0;
+    padding-inline: var(--space-2);
+  }
+
+  .back {
+    flex: none;
+  }
+
+  .barNote,
+  .actions[data-back="none"] .barNote {
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    text-align: center;
+  }
+}
+
+/* Tela baixa (notebook com zoom de 200%, ~640×350; celular deitado; F51):
+   a barra fica no fluxo, como no desktop baixo. Fixa, ela e o header ocupavam
+   35% a 47% da tela. Com o teclado aberto ela continua (é o único "Enviar"). */
+@media (max-height: 34em) {
+  .actions {
+    position: static;
+    padding-inline: 0;
+    box-shadow: none;
+  }
+
+  .actions[data-keyboard="open"]:not([data-state="error"]) {
+    display: flex;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Resumo
+ * ------------------------------------------------------------------ */
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-block-start: var(--space-6);
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+
+.blockTitle {
+  font-size: var(--text-h4);
+  line-height: var(--leading-h4);
+}
+
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: grid;
+  /* minmax(0, 1fr): um token sem quebra (URL, e-mail na data travante) não
+     alarga a coluna além da tela (B161). */
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-subtle);
+}
+
+.chipLabel {
+  grid-column: 1;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+}
+
+.chipValue {
+  grid-column: 1;
+  overflow-wrap: anywhere;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-sm);
+}
+
+.chip .linkButton {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+/* Chips compactos (F02): eco das respostas depois do que é do visitante, em 2
+   colunas quando cabe. Abertos, nunca num <details> fechado (§7.4a). */
+@media (min-width: 640px) {
+  .chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* "Para: tipo · prazo · faixa · Revisar respostas" (F02), logo abaixo da
+   intro. "Revisar respostas" é link dentro da frase (alvo em linha, WCAG 2.5.8),
+   para a linha não ganhar uma altura de botão. */
+.forLine {
+  margin-block-start: calc(-1 * var(--space-3));
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.noWrap {
+  white-space: nowrap;
+}
+
+.inlineLink {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-link);
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .inlineLink:hover {
+    color: var(--color-text-link-hover);
+  }
+}
+
+/* Pauta em 2 colunas a partir de 1024px (F02): 2 a 4 itens curtos. */
+@media (min-width: 1024px) {
+  .list.topics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-8);
+  }
+}
+
+/* Método compacto (F02): a etapa 1 e a realçada; as 4 etapas no <details>. */
+.stages {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+/* Etapa realçada: borda e fundo da marca, não só cor (o texto diz o nome e a tag). */
+.stage[data-highlight="true"] {
+  border-color: var(--color-brand);
+  box-shadow: var(--ring-inset) var(--color-brand);
+  background-color: var(--color-brand-subtle);
+}
+
+.stageIndex {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-tertiary);
+}
+
+.stageName {
+  font-weight: var(--font-weight-bold);
+}
+
+.stageBadge {
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent-subtle);
+  color: var(--color-text-primary);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.stageTag {
+  flex-basis: 100%;
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+.allStagesSummary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--target-min);
+  color: var(--color-text-link);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+/* O ícone "+" vira "×" com o <details> aberto (o mesmo do "Mais detalhes" do contato). */
+.allStages[open] .toggleIcon {
+  transform: rotate(45deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .allStagesSummary:hover {
+    color: var(--color-text-link-hover);
+  }
+}
+
+.allStagesBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-block-start: var(--space-3);
+}
+
+.timeline {
+  min-inline-size: 0;
+}
+
+.emphasis {
+  padding: var(--space-4);
+  border-inline-start: 3px solid var(--color-brand);
+  background-color: var(--color-brand-subtle);
+  color: var(--color-text-primary);
+}
+
+.terms {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-inline-start: var(--space-5);
+}
+
+.ranges {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .ranges {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+}
+
+.range {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.rangeLabel,
+.rangeUnit {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+.rangeValue {
+  font-size: var(--text-xl);
+  line-height: var(--leading-xl);
+}
+
+/* Cases do mesmo tipo no resumo (B379): 1 ou 2 cards, cada um um único link
+   (nome, tipo de sistema e "Ler o case" como indicação visual). Mesma moldura
+   das faixas (.range) e o mesmo ritmo do CaseCard (nome em mono, título forte). */
+.caseList {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .caseList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.caseCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  block-size: 100%;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.caseCard:active {
+  background-color: var(--color-bg-surface-hover);
+}
+
+.caseName {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-tertiary);
+  text-wrap: pretty;
+}
+
+.caseType {
+  font-size: var(--text-lg);
+  line-height: var(--leading-lg);
+  font-weight: var(--font-weight-bold);
+  text-wrap: balance;
+}
+
+.caseMore {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-block-start: auto;
+  padding-block-start: var(--space-2);
+  color: var(--color-text-link);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Hover só com ponteiro fino (B192): no toque ficaria preso. */
+@media (hover: hover) and (pointer: fine) {
+  .caseCard:hover {
+    border-color: var(--color-border-default);
+    background-color: var(--color-bg-surface-hover);
+    color: var(--color-text-primary);
+  }
+
+  .caseCard:hover .caseMore {
+    color: var(--color-text-link-hover);
+  }
+}
+
+.closing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-block-start: var(--space-6);
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+
+.note {
+  font-weight: var(--font-weight-bold);
+}
+
+.microcopy,
+.status {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+/* WhatsApp do resumo: secundário contornado, afastado do primário (§7.4f, §8.6). */
+.altChannel {
+  align-self: flex-start;
+  margin-block-start: var(--space-4);
+}
+
+/* Próximo passo logo depois do preço (F02): a nota do prazo (F09) e, no
+   desktop, a ação repetida do fim. No mobile, a barra fixa já leva o primário:
+   o CTA não existe para ninguém (display: none) e o invólucro some do layout
+   (display: contents), para a nota (quando há) ser só mais um item do fluxo.
+   No desktop, a linha de cima é a divisória; a de baixo é a do bloco seguinte. */
+.nextStep {
+  display: contents;
+}
+
+.earlyActions {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .nextStep {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-block-start: var(--space-6);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+
+  .earlyActions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+}
+
+.earlyRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.earlyRow .primary {
+  min-inline-size: 12rem;
+}
+
+.earlyNote {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-text-secondary);
+}
+
+.previewNotice {
+  padding: var(--space-3) var(--space-4);
+  border-inline-start: 3px solid var(--color-border-accent);
+  background-color: var(--color-accent-subtle);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+/* Prova (depoimento ou logos, when_data) abaixo do envio no contato (B140). */
+.proof {
+  padding-block-start: var(--space-6);
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+
+/* ------------------------------------------------------------------ *
+ * Erro de envio
+ * ------------------------------------------------------------------ */
+
+.errorPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--color-danger);
+  border-inline-start-width: 4px;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-danger-bg);
+}
+
+/* Recebe foco por script (tabindex=-1) para o leitor de tela ler o erro; não é
+   controle: sem anel (as ações dentro dele têm o anel normal). */
+.errorPanel:focus,
+.errorPanel:focus-visible {
+  outline: none;
+}
+
+.errorActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+@media (max-width: 639.98px) {
+  .errorActions > * {
+    flex: 1 1 100%;
+  }
+}
+
+.protocol,
+.emailLine {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+/* O código do pedido nunca quebra no hífen (é o que a pessoa vai citar). */
+.protocol strong {
+  white-space: nowrap;
+}
+
+.email {
+  font-family: var(--font-mono);
+  user-select: all;
+}
+
+/* ------------------------------------------------------------------ *
+ * Progresso (portal no WizardHeader) e banner de retomada (portal acima do H1)
+ * ------------------------------------------------------------------ */
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  max-inline-size: 20rem;
+  container-type: inline-size;
+}
+
+/* Rótulo curto ("6/6", "Resumo", "Contato") quando o texto não cabe numa
+   linha: com zoom ou a fonte do navegador ampliada, o longo quebrava em 2 ou 3
+   linhas e o header crescia (F51). Em em: acompanha a fonte da pessoa. */
+.progressShort {
+  display: none;
+}
+
+@container (max-width: 12em) {
+  .progressLong {
+    display: none;
+  }
+
+  .progressShort {
+    display: inline;
+  }
+}
+
+/* Quebra em vez de vazar: "Último paso: tus datos de contacto" não cabe numa
+   linha a 320px ao lado do logo e do "Dúvidas? WhatsApp" (empurrava a página
+   para 322px e a barra fixa junto). */
+.progressLabel {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.progressTrack {
+  position: relative;
+  block-size: 0.375rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-muted);
+  overflow: hidden;
+}
+
+.progressFill {
+  display: block;
+  block-size: 100%;
+  border-radius: var(--radius-full);
+  background-color: var(--color-brand);
+  transition: inline-size var(--duration-slow) var(--ease-in-out);
+}
+
+.banner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-end: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border-accent);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-accent-subtle);
+}
+
+.bannerText {
+  font-weight: var(--font-weight-bold);
+}
+
+.bannerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+@media (max-width: 639.98px) {
+  .bannerActions > * {
+    flex: 1 1 100%;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Falha de render (WizardBoundary, B234)
+ * ------------------------------------------------------------------ */
+
+.renderError {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-inline-size: var(--wizard-measure);
+  margin-block: var(--space-8) var(--section-compact);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-accent);
+  border-inline-start-width: 4px;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-accent-subtle);
+}
+
+.renderError:focus {
+  outline: none;
+}

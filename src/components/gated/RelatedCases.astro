@@ -1,0 +1,58 @@
+---
+/**
+ * Serviço §6.5 #7 `related_cases` — when_data: páginas de case no ar (hasCases)
+ * e ≥ 1 case publicado com a tag do serviço (features.casesByService).
+ * H2 "Cases de {serviço}", 1–3 cards e "Ver todos os cases" → /cases. Dono: gated.
+ *
+ * AUTO-GATED: sem dado não renderiza NADA. `data` existe só para os testes.
+ */
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { getFeatures, hasRelatedCases, LIMITS, type Features } from "@/config/features";
+import { anchorAlias, anchorId, ANCHORS, urlFor, type ServiceKey } from "@/config/routes";
+import { t, tDynamic, type Locale } from "@/i18n";
+import { relatedCaseItems, type CaseItem } from "@/lib/content";
+
+import CaseGrid from "./CaseGrid.astro";
+
+interface Props {
+  locale: Locale;
+  service: ServiceKey;
+  /** Só testes: flags e cases injetados (tests/fixtures/). */
+  data?: { features: Pick<Features, "hasCases" | "casesByService">; items: CaseItem[] };
+}
+
+const { locale, service, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const visible = hasRelatedCases(features, service);
+const items = visible
+  ? (data?.items.filter((item) => item.entry.data.servicos.includes(service)) ??
+      (await relatedCaseItems(locale, { service, limit: LIMITS.relatedCasesService }))
+    ).slice(0, LIMITS.relatedCasesService)
+  : [];
+const title =
+  service === "support"
+    ? t(locale, "services.support.related_cases_title")
+    : t(locale, "services.template.related_cases_title", {
+        servico_frase: tDynamic(locale, `services.${service}.name_in_sentence`),
+      });
+---
+
+{
+  visible && items.length > 0 && (
+    <Section id={anchorId(ANCHORS.relatedCases, locale)} aliasId={anchorAlias(ANCHORS.relatedCases, locale)} labelledby={`${ANCHORS.relatedCases}-title`}>
+      <SectionHeader id={`${ANCHORS.relatedCases}-title`} title={title} />
+      <CaseGrid locale={locale} items={items} />
+      <p class="related-more">
+        <ArrowLink href={urlFor("cases_hub", locale)} text={t(locale, "shared.cta.see_all_cases")} />
+      </p>
+    </Section>
+  )
+}
+
+<style>
+  .related-more {
+    margin-block-start: var(--space-8);
+  }
+</style>

@@ -1,0 +1,247 @@
+---
+/**
+ * Pedido enviado §7.8 #1 `confirmation`. Dono: conversion. ÚNICO H1.
+ *
+ * HTML estático com a versão GENÉRICA ("Pedido recebido."), que é também a
+ * versão sem storage. O script da página (QuoteSentView) lê o resumo do
+ * sessionStorage e troca para "Pedido recebido, {nome}." (só o primeiro nome),
+ * mostra o código do pedido e o canal escolhido no 2º passo, e põe o foco no H1.
+ * "O que acontece agora" em 3 passos, sem prazo numérico e sem "você recebeu
+ * um e-mail" (não há envio ao lead).
+ * Achado F10 da auditoria de conversão: o 2º passo confirma o contato deixado
+ * pelo canal escolhido ("A gente fala com você pelo WhatsApp {contato}…"; no
+ * e-mail, também o remetente {email} e o aviso do spam) e, logo abaixo, "Algum
+ * dado errado?" com o link para mandar o certo pelo WhatsApp com o código do
+ * pedido (sem WhatsApp: escrever para o e-mail). Os dois só com o resumo no
+ * sessionStorage e sem agenda. O número da Lemamon nunca aparece (§1.5).
+ * Ritmo vertical: <Section spacing="hero-compact"> (B211); as seções seguintes
+ * emendam nela com spacing="compact" trim="start".
+ * Grade (B222): os 3 passos são 4+4+4 a partir de 768px, calha var(--grid-gap).
+ */
+import Section from "@/components/ui/Section.astro";
+import { empresa } from "@/config/empresa";
+import { getFeatures } from "@/config/features";
+import { getSection, t, tRaw, type Locale } from "@/i18n";
+import { whatsappHref } from "@/lib/whatsapp";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+const steps = getSection(locale, "quote.sent.steps");
+// Com agenda, a variante "escolha um horário" substitui o passo de contato e as variantes por canal.
+const byChannel = features.hasAgenda
+  ? null
+  : {
+      // {contato} fica para o script da página (o contato do resumo no sessionStorage, F10).
+      whatsapp: t(locale, "quote.sent.steps.contact_by_channel.whatsapp", { contato: "{contato}" }),
+      email: t(locale, "quote.sent.steps.contact_by_channel.email", { contato: "{contato}", email: empresa.email }),
+      phone_call: t(locale, "quote.sent.steps.contact_by_channel.phone_call", { contato: "{contato}" }),
+    };
+// "Algum dado errado?" (F10): link do WhatsApp sem texto no HTML; o script põe a mensagem com o código.
+const wrong = getSection(locale, "quote.sent.wrong_contact");
+const fixHref = features.hasWhatsapp ? whatsappHref() : null;
+const emailMarker = "{email}";
+const [fixEmailBefore = "", fixEmailAfter = ""] = t(locale, "quote.sent.wrong_contact.text_no_whatsapp", {
+  email: emailMarker,
+}).split(emailMarker);
+---
+
+<Section spacing="hero-compact" labelledby="sent-title" class="sent-confirmation">
+  <div class="sent-confirmation__inner">
+    <h1
+      id="sent-title"
+      class="sent-confirmation__title"
+      tabindex="-1"
+      data-sent-title
+      data-template={tRaw(locale, "quote.sent.title_with_name")}
+    >
+      {t(locale, "quote.sent.title_generic")}
+    </h1>
+    <p class="sent-confirmation__protocol" data-sent-protocol hidden>
+      {t(locale, "quote.sent.protocol_label")}: <strong data-sent-protocol-value></strong>
+    </p>
+    <h2 class="sent-confirmation__subtitle">{t(locale, "quote.sent.what_now_title")}</h2>
+    <ol class="sent-confirmation__steps" role="list">
+      <li>
+        <span class="sent-confirmation__number" aria-hidden="true">01</span>
+        <span>{steps.read}</span>
+      </li>
+      <li>
+        <span class="sent-confirmation__number" aria-hidden="true">02</span>
+        <span
+          data-sent-contact={byChannel ? "" : undefined}
+          data-whatsapp={byChannel?.whatsapp}
+          data-email={byChannel?.email}
+          data-phone_call={byChannel?.phone_call}
+        >
+          {features.hasAgenda ? steps.contact_schedule_variant : steps.contact}
+        </span>
+        {
+          byChannel && (
+            <p class="sent-confirmation__fix" data-sent-fix hidden>
+              {fixHref ? (
+                <>
+                  {wrong.text}{" "}
+                  <a
+                    href={fixHref}
+                    target="_blank"
+                    rel="noopener"
+                    data-track="whatsapp_click"
+                    data-source="quote_sent_fix"
+                    data-sent-fix-whatsapp
+                    data-campaign-ref="off"
+                    data-template={tRaw(locale, "quote.whatsapp_messages.wrong_contact")}
+                  >
+                    {wrong.link}
+                    <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
+                  </a>
+                </>
+              ) : (
+                <>
+                  {fixEmailBefore}
+                  <span class="sent-confirmation__email">{empresa.email}</span>
+                  {fixEmailAfter}
+                </>
+              )}
+            </p>
+          )
+        }
+      </li>
+      <li>
+        <span class="sent-confirmation__number" aria-hidden="true">03</span>
+        <span>{steps.feedback}</span>
+      </li>
+    </ol>
+  </div>
+</Section>
+
+<style>
+  .sent-confirmation__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  /* O H1 recebe foco por script ao carregar (§7.8), só para o leitor de tela
+     anunciar a confirmação. Numa página nova o Chrome trata esse foco como
+     :focus-visible e desenhava a caixa azul em volta de "Pedido recebido" para
+     quem usa mouse. Título não é controle interativo: sem anel, o mesmo caso de
+     main:focus em global.css. */
+  .sent-confirmation__title:focus,
+  .sent-confirmation__title:focus-visible {
+    outline: none;
+  }
+
+  .sent-confirmation__protocol {
+    align-self: flex-start;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .sent-confirmation__subtitle {
+    margin-block-start: var(--space-4);
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  .sent-confirmation__steps {
+    display: grid;
+    gap: var(--grid-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .sent-confirmation__steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .sent-confirmation__steps li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-block-start: var(--space-3);
+    border-block-start: 2px solid var(--color-brand);
+  }
+
+  /* O código do pedido nunca quebra no hífen. */
+  .sent-confirmation__protocol strong {
+    white-space: nowrap;
+  }
+
+  .sent-confirmation__number {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-secondary);
+  }
+
+  /* "Algum dado errado?" (F10): linha de apoio, menor que o passo. */
+  .sent-confirmation__fix {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .sent-confirmation__fix[hidden] {
+    display: none;
+  }
+
+  .sent-confirmation__fix a {
+    color: var(--color-text-link);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .sent-confirmation__email {
+    font-family: var(--font-mono);
+    user-select: all;
+  }
+
+  /* F10: no celular, o "Mandar oi no WhatsApp" (seção seguinte) entra na 1ª
+     tela do iPhone 13 (390×664): número do passo na mesma linha do texto,
+     menos respiro entre os blocos e no fim da seção. O padding vem do
+     Section; esta folha carrega depois da dele, e o seletor tem o mesmo peso. */
+  @media (max-width: 767.98px) {
+    .sent-confirmation[data-spacing="hero-compact"] {
+      --section-pad-start: var(--space-4);
+      --section-pad-end: var(--space-6);
+    }
+
+    .sent-confirmation__inner {
+      gap: var(--space-3);
+    }
+
+    .sent-confirmation__subtitle {
+      margin-block-start: 0;
+    }
+
+    .sent-confirmation__steps {
+      gap: var(--space-2);
+    }
+
+    .sent-confirmation__steps li {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--space-1) var(--space-3);
+      padding-block-start: var(--space-2);
+    }
+
+    .sent-confirmation__number {
+      padding-block-start: 0.3em;
+    }
+
+    .sent-confirmation__fix {
+      grid-column: 2;
+    }
+  }
+</style>

@@ -1,0 +1,154 @@
+---
+/**
+ * Termo explicado — BLUEPRINT §5.9. Dono: home. API estável: `locale`, `term`
+ * (+ opcional `mode`). Explicação curta para o comprador não técnico na
+ * primeira menção de cada termo na página.
+ *
+ * mode="note" (padrão): a frase de apoio inteira, como texto (<span>), para a
+ * página posicionar logo depois da primeira menção:
+ *   <p class="nota"><Term locale={locale} term="prioritized_scope" /></p>
+ *
+ * mode="tip": toggletip acessível SEM JavaScript (Popover API nativa). O
+ * texto do slot é o termo visível (botão); a explicação abre num balão, fecha
+ * com Esc ou clique fora, funciona por teclado e toque. Com anchor positioning
+ * o balão fica junto do termo; sem ele, centralizado com fundo escurecido.
+ * Sem suporte a popover, o botão vira texto comum e a explicação fica oculta.
+ *   <Term locale={locale} term="mvp" mode="tip">MVPs</Term>
+ * Para achar o termo dentro de um texto do i18n, use <TermText>.
+ *
+ * written_feedback usa a variante com conteúdo só com confirmacoes.devolutivaConteudo
+ * preenchido nos 3 idiomas (shared._notes.terms).
+ */
+import { confirmacoes } from "@/config/confirmacoes";
+import { getFeatures } from "@/config/features";
+import { t, type Locale } from "@/i18n";
+
+import { termLabel, type TermId } from "./terms";
+
+interface Props {
+  locale: Locale;
+  term: TermId;
+  mode?: "note" | "tip";
+}
+
+const { locale, term, mode = "note" } = Astro.props;
+const features = await getFeatures();
+const content = confirmacoes.devolutivaConteudo;
+const text =
+  term === "written_feedback" && features.confirm.devolutivaConteudo && content
+    ? t(locale, "shared.terms.written_feedback_with_content", { conteudo_da_devolutiva: content[locale] })
+    : t(locale, `shared.terms.${term}`);
+
+const g = globalThis as { __lemamonTermSeq?: number };
+g.__lemamonTermSeq = (g.__lemamonTermSeq ?? 0) + 1;
+const uid = `term-${term}-${g.__lemamonTermSeq}`;
+const slotHtml = Astro.slots.has("default") ? await Astro.slots.render("default") : null;
+const label = termLabel(text);
+---
+
+{
+  mode === "note" ? (
+    <span class="term" data-term={term}>
+      {text}
+    </span>
+  ) : (
+    <span class="term-tip" data-term={term}>
+      <button
+        type="button"
+        class="term-tip__trigger"
+        popovertarget={uid}
+        aria-describedby={`${uid}-hint`}
+        style={`anchor-name: --${uid}`}
+      >
+        {slotHtml ? <Fragment set:html={slotHtml} /> : label}
+      </button>
+      <span hidden id={`${uid}-hint`}>
+        {t(locale, "shared.terms.tip_hint")}
+      </span>
+      <span id={uid} popover="auto" class="term-tip__bubble" style={`position-anchor: --${uid}`}>
+        {text}
+      </span>
+    </span>
+  )
+}
+
+<style>
+  .term-tip__trigger {
+    display: inline;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 1.5px;
+    text-decoration-color: var(--color-text-tertiary);
+    text-underline-offset: 0.22em;
+    cursor: help;
+    transition: var(--transition-colors);
+  }
+  /* Realce só com ponteiro fino (no toque ficaria preso, B192); no teclado,
+     o anel de foco global já marca o termo. */
+  @media (hover: hover) and (pointer: fine) {
+    .term-tip__trigger:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  .term-tip__bubble {
+    inline-size: min(22rem, calc(100vw - 2 * var(--gutter)));
+    margin: auto;
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-surface);
+    box-shadow: var(--shadow-lg);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: normal;
+    text-align: start;
+    text-transform: none;
+    white-space: normal;
+  }
+  .term-tip__bubble::backdrop {
+    background-color: var(--color-bg-overlay);
+  }
+
+  /* Sem Popover API: o atributo é desconhecido e o balão apareceria no meio
+     da frase. Esconde, e o termo fica como texto. */
+  @supports not selector(:popover-open) {
+    .term-tip__bubble {
+      display: none;
+    }
+    .term-tip__trigger {
+      cursor: text;
+      text-decoration: none;
+    }
+  }
+
+  /* Com anchor positioning: o balão nasce sob o termo, sem fundo escurecido. */
+  @supports (position-area: block-end) {
+    .term-tip__bubble {
+      position: fixed;
+      inset: auto;
+      margin: var(--space-2) 0 0;
+      position-area: block-end span-inline-end;
+      position-try-fallbacks: flip-block, flip-inline;
+    }
+    /* No celular, termo no fim da linha empurrava o balão até a borda da tela
+       (borda e canto direitos cortados): a margem lateral é o gutter. */
+    @media (max-width: 767.98px) {
+      .term-tip__bubble {
+        margin-inline: var(--gutter);
+      }
+    }
+    .term-tip__bubble::backdrop {
+      background-color: transparent;
+    }
+  }
+</style>

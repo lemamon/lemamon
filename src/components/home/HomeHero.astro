@@ -1,0 +1,249 @@
+---
+/**
+ * Home §6.1 #1 `hero` — always. Dono: home. ÚNICO H1 da página.
+ *
+ * Eyebrow (o que constrói + São Paulo; com confirmacoes.atendeExterior, D31,
+ * + "Atendemos o mundo todo": home.hero.eyebrow_with_abroad), H1 com a
+ * promessa do método, subtítulo, CTA primário (→ /orcamento?origem=home-hero)
+ * + WhatsApp em outline, microcopy "Sem compromisso · 45 minutos · devolutiva
+ * por escrito" (auditoria F41: "gratuito" já está no botão) e, ao
+ * lado (abaixo dos CTAs no mobile), o plano do método: a linha compacta com a
+ * etapa 1 em "Comece aqui". O cartão inteiro é um link para #como-trabalhamos
+ * (um único <a> esticado, para não haver 4 links iguais). O rótulo é
+ * home.hero.plan_link ("Ver como trabalhamos"), curto, porque o link fica na
+ * própria Home; shared.cta.see_how_we_work, que leva a /como-trabalhamos,
+ * ganhou a âncora descritiva da auditoria SEO (S06-10).
+ *
+ * LCP = o H1 em HTML estático: sem imagem, sem animação, sem fonte bloqueante
+ * (font-display: swap). Altura automática, nunca 100vh. Grid 7+5 no desktop,
+ * na grade de 12 colunas (.grid-12); ritmo de <Section spacing="hero">.
+ * Primeiras menções de termos (§5.9): "MVP" no subtítulo e "devolutiva por
+ * escrito" na microcopy viram toggletip nativo.
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import MethodTimeline from "@/components/shared/MethodTimeline.astro";
+import NoBreakText from "@/components/shared/NoBreakText.astro";
+import TermText from "@/components/shared/TermText.astro";
+import type { TermId } from "@/components/shared/terms";
+import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures } from "@/config/features";
+import { anchorId, ANCHORS } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  whatsappMessage: string;
+  /** Termos (§5.9) com 1ª menção no subtítulo e na microcopy (a HomeView decide). */
+  terms?: { subtitle?: readonly TermId[]; micro?: readonly TermId[] };
+}
+
+const { locale, whatsappMessage, terms = { subtitle: ["mvp"], micro: ["written_feedback"] } } = Astro.props;
+const planLabel = t(locale, "home.method.eyebrow");
+const features = await getFeatures();
+// D31: a mesma eyebrow + o atendimento fora do Brasil (home.hero.eyebrow fica igual ao do /orcamento e do OG).
+const eyebrow = t(locale, features.confirm.atendeExterior ? "home.hero.eyebrow_with_abroad" : "home.hero.eyebrow");
+---
+
+<Section id="inicio" spacing="hero" labelledby="hero-title" class="home-hero">
+  <div class="hero__grid grid-12">
+    <div class="hero__copy">
+      {/* Um único item flex, para a quebra cair antes do "·" (NoBreakText separator). */}
+      <p class="eyebrow">
+        <span><NoBreakText text={eyebrow} separator /></span>
+      </p>
+      <h1 id="hero-title" class="hero__title">{t(locale, "home.hero.title")}</h1>
+      <p class="hero__subtitle">
+        <TermText locale={locale} text={t(locale, "home.hero.subtitle")} terms={terms.subtitle ?? []} />
+      </p>
+      <div class="hero__actions">
+        <CtaDiagnosis locale={locale} origem="home-hero" />
+        <WhatsAppCta locale={locale} message={whatsappMessage} source="home-hero" variant="outline" />
+      </div>
+      <p class="hero__micro">
+        <Icon name="check" size={16} strokeWidth={2.5} />
+        <span>
+          <TermText locale={locale} text={t(locale, "shared.cta.microcopy_diagnosis")} terms={terms.micro ?? []} separator />
+        </span>
+      </p>
+    </div>
+
+    <div class="hero__visual">
+      <div class="plan">
+        <div class="plan__bar" aria-hidden="true">
+          <span class="plan__dots"><span></span><span></span><span></span></span>
+          <span class="plan__file">{planLabel}</span>
+        </div>
+        <div class="plan__body">
+          <MethodTimeline locale={locale} variant="compact" links="none" orientation="vertical" />
+        </div>
+        <a class="plan__link" href={`#${anchorId(ANCHORS.homeMethod, locale)}`}>
+          <span>{t(locale, "home.hero.plan_link")}</span>
+          <Icon name="arrow-down" size={18} />
+        </a>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<style>
+  /* Raiz = <Section spacing="hero"> (o ritmo vertical vem de lá). */
+  :global(.section.home-hero) {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  /* Papel milimetrado: grade de pontos que some nas bordas (03-ui §3.6). */
+  :global(.section.home-hero)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(
+      circle,
+      var(--pattern-dot-color) var(--pattern-dot-size),
+      transparent calc(var(--pattern-dot-size) + 0.5px)
+    );
+    background-size: var(--pattern-gap) var(--pattern-gap);
+    background-position: center top;
+    mask-image: radial-gradient(ellipse 80% 70% at 70% 30%, var(--mask-opaque), transparent 75%);
+  }
+
+  .hero__grid {
+    row-gap: var(--space-10);
+  }
+  .hero__copy {
+    display: grid;
+    justify-items: start;
+    align-content: start;
+    gap: var(--space-5);
+  }
+  .hero__title {
+    font-size: var(--text-hero);
+    line-height: var(--leading-hero);
+    letter-spacing: var(--tracking-hero);
+    max-inline-size: 18ch;
+  }
+  .hero__subtitle {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-lead);
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    inline-size: 100%;
+    margin-block-start: var(--space-2);
+  }
+  .hero__micro {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+  .hero__micro :global(svg) {
+    flex: none;
+    color: var(--color-brand);
+  }
+
+  /* ---------- Plano do método (cartão-diagrama) ---------- */
+  /* Exceção ao <Card> (B214): painel-diagrama do hero, com barra de janela e link esticado. */
+  .plan {
+    position: relative;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-xl);
+    background-color: var(--color-bg-surface);
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition-shadow), var(--transition-colors);
+  }
+  .plan__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-5);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .plan__dots {
+    display: inline-flex;
+    gap: var(--space-1);
+  }
+  .plan__dots span {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border-default);
+  }
+  .plan__file {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+  }
+  .plan__body {
+    padding: var(--space-6) var(--space-5) var(--space-4);
+  }
+  .plan__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-block-size: var(--target-option);
+    padding: var(--space-3) var(--space-5);
+    border-block-start: 1px solid var(--color-border-subtle);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-link);
+    text-decoration: none;
+  }
+  /* O link cobre o cartão inteiro: o visual todo é clicável (§6.1 #1). */
+  .plan__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .plan__link:focus-visible {
+    outline: none;
+  }
+  .plan:has(.plan__link:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--color-focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  /* Estado de hover só com ponteiro fino (no toque ficaria preso, B192);
+     no teclado, o mesmo realce vem do foco. */
+  .plan:has(.plan__link:focus-visible) {
+    border-color: var(--color-brand);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .plan:hover {
+      border-color: var(--color-brand);
+      box-shadow: var(--shadow-xl);
+    }
+    .plan:hover .plan__link {
+      color: var(--color-text-link-hover);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .hero__actions {
+      inline-size: auto;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero__grid {
+      align-items: center;
+    }
+    .hero__copy {
+      --span-lg: 7;
+      gap: var(--space-6);
+    }
+    .hero__visual {
+      --span-lg: 5;
+    }
+  }
+</style>

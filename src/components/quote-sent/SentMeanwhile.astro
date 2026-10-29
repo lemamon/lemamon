@@ -1,0 +1,144 @@
+---
+/**
+ * Pedido enviado §7.8 #6 `meanwhile` — "Enquanto isso": links para a Sprint de
+ * Descoberta e o método, 2 cases do serviço escolhido (when_data) e "Voltar ao
+ * início". Dono: conversion.
+ *
+ * Cases: com hasCases, os cards publicados saem no HTML ocultos, marcados com
+ * os serviços de cada um; o script da página mostra até 2 do serviço marcado na
+ * P2 (sessionStorage) e escolhe o título (cases_title com 2+, cases_title_one
+ * com 1). Sem case do serviço, o bloco inteiro continua oculto.
+ *
+ * Com hasCases, a lista de links ganha SEMPRE "Ver todos os cases" (hub), fora
+ * do bloco oculto: sem storage, ou com um serviço sem case (ex.: mvp), a
+ * confirmação continua com um caminho para os cases (backlog B149). O clique
+ * num card mede cta_click {cta_id: "case", origem: "enviado-cases"} (B379).
+ * Ritmo vertical: <Section spacing="compact" trim="start"> (B211).
+ * Primitivos (B214): a linha do topo é o <Divider> e cada link do bloco é um
+ * <ArrowLink> (degrau 0, BLUEPRINT §8.6), sem estilo de link próprio.
+ * Grade (B222): os cases são 6+6 a partir de 768px, calha var(--grid-gap).
+ */
+import CaseCard from "@/components/shared/CaseCard.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Divider from "@/components/ui/Divider.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures } from "@/config/features";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+import { caseItems } from "@/lib/content";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const features = await getFeatures();
+const cases = features.hasCases ? await caseItems(locale) : [];
+---
+
+<Section id="enquanto-isso" spacing="compact" trim="start" labelledby="sent-meanwhile-title" class="sent-meanwhile">
+  <Divider spacing="none" />
+  <div class="sent-meanwhile__inner">
+    <h2 id="sent-meanwhile-title" class="sent-meanwhile__title">{t(locale, "quote.sent.meanwhile.title")}</h2>
+    <ul class="sent-meanwhile__links" role="list">
+      <li>
+        <ArrowLink href={urlFor("discovery_sprint", locale)} text={t(locale, "quote.sent.meanwhile.discovery_link")} />
+      </li>
+      <li>
+        <ArrowLink href={urlFor("how_we_work", locale)} text={t(locale, "quote.sent.meanwhile.how_we_work_link")} />
+      </li>
+      {
+        features.hasCases && (
+          <li>
+            <ArrowLink
+              href={urlFor("cases_hub", locale)}
+              text={t(locale, "shared.cta.see_all_cases")}
+              data-track="cta_click"
+              data-cta-id="cases_hub"
+              data-origem="enviado-meanwhile"
+            />
+          </li>
+        )
+      }
+    </ul>
+    {
+      cases.length > 0 && (
+        <div class="sent-meanwhile__cases" data-sent-cases hidden>
+          <h3
+            class="sent-meanwhile__cases-title"
+            data-sent-cases-title
+            data-one={t(locale, "quote.sent.meanwhile.cases_title_one")}
+            data-many={t(locale, "quote.sent.meanwhile.cases_title")}
+          >
+            {t(locale, "quote.sent.meanwhile.cases_title")}
+          </h3>
+          <ul class="sent-meanwhile__case-list" role="list">
+            {cases.map(({ slug, entry }) => (
+              <li data-case-services={entry.data.servicos.join(" ")} hidden>
+                <CaseCard locale={locale} entry={entry} slug={slug} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+    <p>
+      <ArrowLink href={urlFor("home", locale)} text={t(locale, "quote.sent.meanwhile.back_home")} />
+    </p>
+  </div>
+</Section>
+
+<style>
+  /* A linha do topo é o <Divider spacing="none"> logo antes. */
+  .sent-meanwhile__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-block-start: var(--space-8);
+  }
+
+  .sent-meanwhile__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  .sent-meanwhile__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Título dos cases com respiro antes dos cards (sem isso, encostava). */
+  .sent-meanwhile__cases {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .sent-meanwhile__cases[hidden],
+  .sent-meanwhile__case-list li[hidden] {
+    display: none;
+  }
+
+  .sent-meanwhile__case-list {
+    display: grid;
+    gap: var(--grid-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .sent-meanwhile__case-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .sent-meanwhile__cases-title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+</style>

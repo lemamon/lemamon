@@ -1,0 +1,43 @@
+---
+/**
+ * Serviços (hub) §6.4 #3 `same_method` — always. Dono: pages.
+ * "Qualquer que seja o projeto, o mesmo método": linha do método compacta
+ * (home), link "Ver como trabalhamos" → /como-trabalhamos e o link de texto
+ * same_method.price_link → /quanto-custa, para "quanto custa?" ter caminho no
+ * hub mesmo sem hasPricing (services._notes.mid_page_ctas).
+ * A etapa "Sprint de Descoberta" da linha leva a /sprint-de-descoberta, como
+ * na Home (stageHref); as outras, a /como-trabalhamos#{etapa}.
+ */
+import MethodTimeline from "@/components/shared/MethodTimeline.astro";
+import Section from "@/components/ui/Section.astro";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<Section id="mesmo-metodo" labelledby="mesmo-metodo-title" surface="subtle">
+  <SectionHeader id="mesmo-metodo-title" title={t(locale, "services.hub.same_method.title")} />
+  <MethodTimeline locale={locale} variant="compact" stageHref={{ discovery: urlFor("discovery_sprint", locale) }} />
+  <div class="same-method__links">
+    {/* Rótulo curto: o vizinho (price_link → /quanto-custa) já fala de preço fechado. */}
+    <ArrowLink href={urlFor("how_we_work", locale)} text={t(locale, "shared.cta.see_how_we_work_short")} />
+    <ArrowLink href={urlFor("pricing", locale)} text={t(locale, "services.hub.same_method.price_link")} />
+  </div>
+</Section>
+
+<style>
+  .same-method__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-8);
+    margin-block-start: var(--space-8);
+  }
+</style>

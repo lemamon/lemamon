@@ -1,0 +1,31 @@
+---
+/**
+ * Quanto custa §6.6 #1 `hero` — always. Dono: pages. ÚNICO H1.
+ * Lead que responde pela afirmativa na primeira frase ("O preço sai fechado
+ * antes do desenvolvimento", auditoria de conversão F08), vale com e sem
+ * hasPricing (pricing._notes.hero_lead).
+ * CTA → /orcamento?origem=preco-hero; secundário: WhatsApp (§2.2).
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import WhatsAppCta from "@/components/shared/WhatsAppCta.astro";
+import PageHero from "@/components/services/kit/PageHero.astro";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  whatsappMessage: string;
+}
+
+const { locale, whatsappMessage } = Astro.props;
+---
+
+<PageHero
+  title={t(locale, "pricing.hero.title")}
+  subtitle={t(locale, "pricing.hero.lead")}
+  microcopy={t(locale, "shared.cta.microcopy_diagnosis")}
+>
+  <Fragment slot="actions">
+    <CtaDiagnosis locale={locale} origem="preco-hero" />
+    <WhatsAppCta locale={locale} message={whatsappMessage} source="preco-hero" />
+  </Fragment>
+</PageHero>

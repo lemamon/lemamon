@@ -1,0 +1,26 @@
+---
+/**
+ * Texto com "número + unidade" inseparável ("2 semanas", "45-minute"). Dono:
+ * home. Sem elemento próprio: devolve o texto e, só nos pares, um
+ * <span class="no-break"> (global.css). Ver ./typography.ts.
+ *
+ *   <h2><NoBreakText text={t(locale, "home.cta_final.title")} /></h2>
+ *
+ * `separator`: além disso, a quebra de " · " cai ANTES do "·" (eyebrow do
+ * hero e de /orcamento). Num pai flex (.eyebrow), envolva em <span> para o
+ * texto ser UM item flex:
+ *   <p class="eyebrow"><span><NoBreakText text={…} separator /></span></p>
+ */
+import { noBreakSegments, separatorSegments } from "./typography";
+
+interface Props {
+  text: string;
+  /** Quebra antes do "·" de " · ", nunca depois. */
+  separator?: boolean;
+}
+
+const { text, separator = false } = Astro.props;
+const segments = separator ? separatorSegments(text) : noBreakSegments(text);
+---
+
+{segments.map((segment) => (segment.keep ? <span class="no-break">{segment.text}</span> : segment.text))}

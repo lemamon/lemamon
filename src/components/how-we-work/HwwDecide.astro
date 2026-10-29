@@ -1,0 +1,86 @@
+---
+/**
+ * Como trabalhamos §6.2 #9 `decide` — always. Dono: pages.
+ * "Você decide com informação na mão": os 2 pontos de decisão em destaque e o
+ * CTA "Começar pelo diagnóstico gratuito" → /orcamento?origem=metodo-decide.
+ *
+ * Renderiza decide.title, decide.intro e SÓ shared.decision_points.after_feedback
+ * e after_plan; o título e a intro de shared.decision_points não aparecem nesta
+ * página (how_we_work._notes.decide), por isso o componente DecisionPoints do
+ * home (que sempre mostra os dois) não é usado aqui.
+ * Cada ponto é um <Card as="li"> (B214); gutter = --grid-gap (B222).
+ */
+import Card from "@/components/ui/Card.astro";
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const points = [t(locale, "shared.decision_points.after_feedback"), t(locale, "shared.decision_points.after_plan")];
+---
+
+<Section id="voce-decide" labelledby="voce-decide-title" surface="subtle">
+  <SectionHeader id="voce-decide-title" title={t(locale, "how_we_work.decide.title")} intro={t(locale, "how_we_work.decide.intro")} />
+  <ol role="list" class="decide">
+    {
+      points.map((point, index) => (
+        <Card as="li" class="decide__item">
+          <span class="decide__number" aria-hidden="true">
+            {index + 1}
+          </span>
+          <p>{point}</p>
+        </Card>
+      ))
+    }
+  </ol>
+  <div class="decide__cta">
+    <CtaDiagnosis locale={locale} origem="metodo-decide" label="method" />
+  </div>
+</Section>
+
+<style>
+  .decide {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+
+  /* Raiz = <Card as="li">: borda, raio, fundo e padding vêm de lá. */
+  .decide :global(.decide__item) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+  }
+
+  .decide p {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+  }
+
+  .decide__number {
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-accent);
+    color: var(--color-text-on-accent);
+    font-family: var(--font-mono);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .decide__cta {
+    margin-block-start: var(--space-8);
+  }
+
+  @media (min-width: 1024px) {
+    .decide {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+/**
+ * Post /blog/[slug] — só pt-BR; when_data hasPosts (≥ 3). Sem dado, nada é
+ * gerado (o netlify.toml manda /blog para / com 302 enquanto isso). Dono: gated.
+ */
+import type { CollectionEntry } from "astro:content";
+import type { GetStaticPaths } from "astro";
+
+import { getFeatures } from "@/config/features";
+import { postItems } from "@/lib/content";
+import BlogPostView from "@/views/BlogPostView.astro";
+
+export const getStaticPaths = (async () => {
+  const features = await getFeatures();
+  if (!features.hasPosts) return [];
+  const posts = await postItems();
+  return posts.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  entry: CollectionEntry<"posts">;
+}
+
+const { entry } = Astro.props;
+---
+
+<BlogPostView entry={entry} />

@@ -1,0 +1,30 @@
+---
+/**
+ * Texto do i18n com UM trecho virando link, sem quebrar a frase em chaves
+ * (ex.: "…do nosso pedido de diagnóstico terminam…"). Dono: pages.
+ *
+ * `phrase` é o trecho exato do link, por idioma, numa chave própria do i18n
+ * (*_link_phrase). Se o trecho não for encontrado no texto, ou se não houver
+ * href, o texto sai inteiro, sem link (degrada sem quebrar).
+ *
+ * O markup fica numa linha só de propósito: espaço entre o link e a pontuação
+ * vizinha apareceria na tela ("GitHub .").
+ */
+interface Props {
+  text: string;
+  phrase?: string;
+  href?: string | null;
+  target?: "_blank";
+  rel?: string;
+  /** Texto para leitor de tela anexado ao link (ex.: "(abre em nova aba)"). */
+  srSuffix?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+
+const { text, phrase, href, target, rel, srSuffix, ...data } = Astro.props;
+const at = href && phrase ? text.indexOf(phrase) : -1;
+const before = at >= 0 ? text.slice(0, at) : text;
+const after = at >= 0 && phrase ? text.slice(at + phrase.length) : "";
+---
+
+{at >= 0 && href && phrase ? <Fragment>{before}<a href={href} target={target} rel={rel} {...data}>{phrase}{srSuffix && <span class="sr-only"> {srSuffix}</span>}</a>{after}</Fragment> : text}

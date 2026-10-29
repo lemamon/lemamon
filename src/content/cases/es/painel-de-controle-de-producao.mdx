@@ -1,0 +1,53 @@
+---
+titulo: "Control de la producción con los datos de los productos fabricados registrados y mostrados en un panel"
+tipoDeSistema: "Sistema de control de producción"
+setor: "Industria"
+porte: "Fabricante"
+servicos: ["web_systems"]
+problema: "Un fabricante necesitaba controlar su producción a partir de los datos de los productos fabricados. Para eso, había que registrar esos datos y mostrarlos a quienes administran la producción."
+combinado:
+  escopo: "El proyecto abarcó las dos partes del sistema de control de producción: un back-end dedicado, la parte que corre en el servidor y atiende solo a este sistema, y un panel administrativo (dashboard), donde los datos sobre los productos fabricados se registran y se muestran."
+entregue: "La base para que el fabricante controle la producción: los datos de los productos fabricados, registrados y a la vista en un solo panel."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "Al inicio"
+    texto: "Conversación inicial para entender el pedido y el problema del cliente."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Se entendió el problema y se definió el alcance."
+  - etapa: "development"
+    quando: "Entre 2017 y 2019"
+    texto: "Construcción con entregas parciales a lo largo del proyecto, y no una sola entrega al final."
+  - etapa: "support"
+    quando: "Después del lanzamiento"
+    texto: "El sistema siguió con mantenimiento."
+fichaTecnica:
+  stack: ["AngularJS", "JavaScript", "LoopBack"]
+capa:
+  src: "../_imagens/painel-de-controle-de-producao/capa.png"
+  alt: "Ilustración de un panel administrativo con gráficos y una tabla de productos fabricados"
+relacionados: ["painel-de-testes-automatizados", "controle-de-producao-com-contagem-automatica"]
+ordem: 17
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Panel de control de producción"
+seoDescription: "Sistema de control de producción de un fabricante, con back-end dedicado y panel administrativo para registrar y mostrar datos de productos fabricados."
+slugUrl: "panel-de-control-de-produccion"
+---
+
+### Para quién
+
+El sistema se hizo para un fabricante y para quienes administran su producción.
+
+### Cómo funciona
+
+Quienes administran la producción trabajan en el panel. El back-end dedicado está detrás de él y da soporte al registro y a la visualización de los datos.
+
+### La tecnología, en palabras simples
+
+- **AngularJS**: framework de JavaScript para construir interfaces web que corren en el navegador; en el proyecto, es la base del panel administrativo.
+- **JavaScript**: el lenguaje de programación de la web, que le da comportamiento a las páginas en el navegador y también corre en servidores; en el proyecto, está en el panel y en el back-end.
+- **LoopBack**: framework de Node.js para crear APIs, las puertas por las que el panel pide y recibe datos del servidor; en el proyecto, es la base del back-end dedicado.

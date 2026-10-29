@@ -1,0 +1,31 @@
+---
+/**
+ * Case /cases/[slug] (pt) — when_data: um por case publicado nos 3 idiomas,
+ * e só com hasCases. Sem dado, getStaticPaths devolve [] e nada é gerado. Dono: gated.
+ * O parâmetro da URL é o slug deste idioma (urlSlug: `slugUrl` ou o nome do
+ * arquivo, S01-3); a view recebe a chave do case (nome do arquivo) em `caseKey`.
+ */
+import type { CollectionEntry } from "astro:content";
+import type { GetStaticPaths } from "astro";
+
+import { getFeatures } from "@/config/features";
+import { caseItems } from "@/lib/content";
+import CaseView from "@/views/CaseView.astro";
+
+export const getStaticPaths = (async () => {
+  const features = await getFeatures();
+  if (!features.hasCases) return [];
+  const items = await caseItems("pt");
+  return items.map((item) => ({ params: { slug: item.urlSlug }, props: { entry: item.entry, caseKey: item.slug } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  entry: CollectionEntry<"cases">;
+  /** Chave do case (nome do arquivo, igual nos 3 idiomas). */
+  caseKey: string;
+}
+
+const { entry, caseKey } = Astro.props;
+---
+
+<CaseView locale="pt" slug={caseKey} entry={entry} />

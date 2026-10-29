@@ -1,0 +1,137 @@
+---
+/**
+ * Como trabalhamos (BLUEPRINT §6.2) — view dos 3 idiomas. Dono: pages.
+ *
+ * Ordem: hero → agreement → why_this_order → timeline → 4 etapas (com o
+ * sumário lateral sticky a partir de 1024px) → decide → comparison → proof*
+ * → engineering* → investment* → faq → cta_final (* = when_data, auto-gated).
+ *
+ * FAQ (how_we_work._notes.faq_composition e COPY.md §14a), em
+ * components/how-we-work/hww-faq.ts: do banco pay_before_development · how_long ·
+ * wont_stall · diagnosis_commitment · need_tech_knowledge; condicionais
+ * diagnosis_format · scope_change · code_ownership · discovery_plan_ownership ·
+ * discovery_duration · skip_discovery · nda · other_cities · payment_terms;
+ * teto de 9 com a ordem de remoção da nota. wont_stall ("o projeto vai parar
+ * no meio?") entrou logo depois de how_long (painel de design, comercial): a
+ * objeção ganha resposta explícita na página do método. other_cities entrou
+ * logo depois do nda (auditoria SEO S05-7): a resposta para quem é de fora do
+ * Brasil, que só aparecia na Home (14 itens com todas as flags).
+ *
+ * engineering: só com hasEngineering (a seção "Como a gente constrói"). A linha
+ * de reserva "Perfil público: a Lemamon no GitHub" (profiles_fallback, que o
+ * gated/EngineeringSection desenha sem hasEngineering) NÃO entra aqui: logo
+ * depois da tabela "O que muda para quem contrata", o ponto que pede
+ * confiança, ela levava a uma organização sem repositório público, que passa
+ * a impressão de empresa de fachada (painel de design, comercial). O GitHub
+ * continua no rodapé, no /contato e na linha de perfis dos serviços (decisão
+ * 6 do dono). A linha volta quando o GitHub tiver repositório público: pedido
+ * ao gated de um sinal em dados/dono.json › perfis (ex.: github.destaque) que
+ * a condição abaixo passa a ler.
+ *
+ * Etapas + sumário lateral: grade de 12 colunas (.grid-12, gutter --grid-gap)
+ * em 4 + 8 a partir de 1024px (o 8 + 4 espelhado, 03-ui §3.5.4, B222). Abaixo
+ * disso o sumário some (o índice vira os chips do hero) e a lista ocupa as 12.
+ * Ritmo vertical: as etapas ficam num <Section spacing="compact" trim="start">
+ * (B211): cada etapa já traz o próprio respiro de topo, e o Section dá o de
+ * baixo. Nenhum padding-block próprio na view.
+ */
+import EngineeringSection from "@/components/gated/EngineeringSection.astro";
+import MethodProof from "@/components/gated/MethodProof.astro";
+import HwwAgreement from "@/components/how-we-work/HwwAgreement.astro";
+import HwwComparison from "@/components/how-we-work/HwwComparison.astro";
+import HwwDecide from "@/components/how-we-work/HwwDecide.astro";
+import HwwHero from "@/components/how-we-work/HwwHero.astro";
+import HwwStageDevelopment from "@/components/how-we-work/HwwStageDevelopment.astro";
+import HwwStageDiagnosis from "@/components/how-we-work/HwwStageDiagnosis.astro";
+import HwwStageDiscovery from "@/components/how-we-work/HwwStageDiscovery.astro";
+import HwwStageIndex from "@/components/how-we-work/HwwStageIndex.astro";
+import HwwStageSupport from "@/components/how-we-work/HwwStageSupport.astro";
+import HwwTimeline from "@/components/how-we-work/HwwTimeline.astro";
+import HwwWhyThisOrder from "@/components/how-we-work/HwwWhyThisOrder.astro";
+import { HWW_FAQ, HWW_FAQ_REMOVAL } from "@/components/how-we-work/hww-faq";
+import { orderedFaq } from "@/components/services/kit/faq-compose";
+import CtaFinal from "@/components/shared/CtaFinal.astro";
+import Faq from "@/components/shared/Faq.astro";
+import Investment from "@/components/shared/Investment.astro";
+import { getFeatures } from "@/config/features";
+import { PRICE_LINE_IDS } from "@/config/precos";
+import Section from "@/components/ui/Section.astro";
+import Base from "@/layouts/Base.astro";
+import { t, type Locale } from "@/i18n";
+import { pageMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const whatsappMessage = pageMessage(locale, t(locale, "shared.header.nav.how_we_work"));
+const features = await getFeatures();
+const faqItems = orderedFaq(locale, HWW_FAQ, features, { removalOrder: HWW_FAQ_REMOVAL });
+---
+
+<Base
+  locale={locale}
+  route="how_we_work"
+  title={t(locale, "meta.how_we_work.title")}
+  description={t(locale, "meta.how_we_work.description")}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="metodo-barra"
+>
+  <HwwHero locale={locale} whatsappMessage={whatsappMessage} />
+  <HwwAgreement locale={locale} />
+  <HwwWhyThisOrder locale={locale} />
+  <HwwTimeline locale={locale} />
+  <Section spacing="compact" trim="start" width="full" as="div">
+    <div class="container grid-12 hww-stages">
+      <div class="hww-stages__aside">
+        <HwwStageIndex locale={locale} variant="aside" />
+      </div>
+      <div class="hww-stages__list">
+        <HwwStageDiagnosis locale={locale} />
+        <HwwStageDiscovery locale={locale} />
+        <HwwStageDevelopment locale={locale} />
+        <HwwStageSupport locale={locale} />
+      </div>
+    </div>
+  </Section>
+  <HwwDecide locale={locale} />
+  <HwwComparison locale={locale} />
+  <MethodProof locale={locale} />
+  {features.hasEngineering && <EngineeringSection locale={locale} />}
+  <Investment locale={locale} lines={PRICE_LINE_IDS} origem="metodo" />
+  <Faq locale={locale} title={t(locale, "how_we_work.faq.title")} items={faqItems} />
+  <CtaFinal
+    locale={locale}
+    origem="metodo-final"
+    title={t(locale, "how_we_work.cta_final.title")}
+    text={t(locale, "how_we_work.cta_final.text")}
+    whatsappMessage={whatsappMessage}
+  />
+  <script>
+    // Leitura da página de entrada (auditoria F84): rolagem e FAQ aberto.
+    import { initScrollDepth, observeFaqOpen } from "@/components/shared/section-events";
+    initScrollDepth();
+    observeFaqOpen();
+  </script>
+</Base>
+
+<style>
+  .hww-stages__aside {
+    display: none;
+    --span-lg: 4;
+  }
+
+  .hww-stages__list {
+    --span-lg: 8;
+  }
+
+  /* O sumário começa na altura do título da 1ª etapa: o mesmo deslocamento do
+     respiro de topo da etapa (Section compact). É alinhamento, não ritmo de seção. */
+  @media (min-width: 1024px) {
+    .hww-stages__aside {
+      display: block;
+      margin-block-start: var(--section-compact);
+    }
+  }
+</style>

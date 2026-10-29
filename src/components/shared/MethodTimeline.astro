@@ -1,0 +1,521 @@
+---
+/**
+ * Linha do método — BLUEPRINT §5.1. Dono: home. API estável (pages usa).
+ *
+ * Um <ol> com as 4 etapas, desenhado como diagrama ("Engenharia visível",
+ * 03-ui §3.5): um trilho com um nó por etapa. O trilho codifica o método:
+ *   - diagnóstico → descoberta: traço contínuo;
+ *   - desenvolvimento: marcas de cadência (entregas a cada 2 semanas);
+ *   - sustentação: tracejado que se abre (contínua, sem fim);
+ *   - losangos opcionais entre 1→2 e 2→3: os 2 pontos de decisão (§6.1 #6).
+ * Nada no desenho sugere duração das etapas 2 a 4 (colunas iguais).
+ *
+ * Variantes (§5.1):
+ *   compact   — nome e tag (hero, serviços); com `notes`, + 1 linha por etapa
+ *   full      — + "Você recebe" (Home e Como trabalhamos); aceita `details`
+ *   highlight — uma etapa realçada (Sprint de Descoberta, resumo)
+ * A etapa 1 sempre leva o selo "Comece aqui" ou "Próximo passo".
+ * A tag é a mesma nas 3 variantes (stages.{id}.tag). Nenhuma etapa mostra
+ * duração: a da Descoberta é definida com o cliente no diagnóstico e não é
+ * publicada (decisão do dono de 21/10/2026, D44, que revoga a D42).
+ * Tags são texto com contraste AA (nunca só cor). O realce usa borda, fundo e
+ * aria-current="step", não só cor.
+ *
+ * Links (cada etapa vira âncora para /como-trabalhamos#{id}):
+ *   links="how_we_work" (padrão) · "local" (#id na própria página) · "none"
+ *   `linkStages={false}` (legado) = links="local".
+ *   `stageHref` sobrescreve o destino de uma etapa (ex.: discovery → /sprint-de-descoberta).
+ *
+ * Orientação: vertical em contêiner estreito, horizontal quando o contêiner
+ * comporta (container query, não viewport: funciona dentro de um painel de
+ * 5 colunas e numa seção cheia). orientation="vertical" força a vertical.
+ */
+import { anchorFor, anchorId, ANCHORS, type StageId } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+import NoBreakText from "./NoBreakText.astro";
+import TermText from "./TermText.astro";
+import type { TermId } from "./terms";
+
+export interface StageDetail {
+  /** Título-benefício de 1 linha (home.method.stages.*.benefit_title). */
+  title: string;
+  /** Até 2 frases. */
+  text: string;
+  /** Termos de §5.9 cuja 1ª menção na página está neste texto (viram toggletip). */
+  terms?: readonly TermId[];
+}
+
+interface Props {
+  locale: Locale;
+  variant: "compact" | "full" | "highlight";
+  /** Etapa realçada (variante highlight). */
+  highlight?: StageId;
+  /** Frase curta sob a etapa realçada (ex.: resumo do wizard). */
+  highlightNote?: string;
+  badge?: "start_here" | "next_step";
+  /** Legado: false = âncoras da própria página (dentro de /como-trabalhamos). */
+  linkStages?: boolean;
+  links?: "how_we_work" | "local" | "none";
+  stageHref?: Partial<Record<StageId, string>>;
+  /** Conteúdo extra por etapa (variante full da Home). */
+  details?: Partial<Record<StageId, StageDetail>>;
+  /**
+   * Uma linha contextual por etapa, em QUALQUER variante (sem título nem
+   * "Você recebe"): BLUEPRINT §6.5 how_it_works, "as 4 etapas em uma linha
+   * contextualizada cada" (services.{slug}.method_steps).
+   */
+  notes?: Partial<Record<StageId, string>>;
+  /** Nome da etapa como título (h3/h4). Sem isso, o nome é texto forte. */
+  headingLevel?: 3 | 4;
+  /** Losangos de decisão no trilho (casam com <DecisionPoints markers />). */
+  decisionMarkers?: boolean;
+  orientation?: "auto" | "vertical";
+  /** Sobrescreve o aria-label do <ol>. */
+  label?: string;
+  class?: string;
+}
+
+const {
+  locale,
+  variant,
+  highlight,
+  highlightNote,
+  badge = "start_here",
+  linkStages = true,
+  links: linksProp,
+  stageHref = {},
+  details = {},
+  notes = {},
+  headingLevel,
+  decisionMarkers = false,
+  orientation = "auto",
+  label,
+  class: className,
+} = Astro.props;
+
+const links = linksProp ?? (linkStages ? "how_we_work" : "local");
+const stages = getSection(locale, "shared.method_timeline.stages");
+const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
+const badgeText =
+  badge === "next_step"
+    ? t(locale, "shared.method_timeline.next_step_badge")
+    : t(locale, "shared.method_timeline.start_here_badge");
+const youGetLabel = t(locale, "shared.method_timeline.you_get_label");
+
+const tagOf = (id: StageId): string => stages[id].tag;
+
+const hrefOf = (id: StageId): string | null => {
+  if (stageHref[id]) return stageHref[id] ?? null;
+  if (links === "none") return null;
+  if (links === "local") return `#${anchorId(ANCHORS.stage[id], locale)}`;
+  return anchorFor("how_we_work", locale, ANCHORS.stage[id]);
+};
+
+/** Tipo de trilho que sai de cada etapa (ver comentário do topo). */
+const TRACK: Record<StageId, "plain" | "cadence" | "open"> = {
+  diagnosis: "plain",
+  discovery: "plain",
+  development: "cadence",
+  support: "open",
+};
+/** Ponto de decisão ao fim do trilho da etapa (1 = depois da devolutiva; 2 = depois do plano). */
+const DECISION_AFTER: Partial<Record<StageId, 1 | 2>> = { diagnosis: 1, discovery: 2 };
+
+const NameTag = headingLevel ? (`h${headingLevel}` as "h3" | "h4") : "p";
+---
+
+<div class:list={["mt-wrap", className]} data-variant={variant} data-orientation={orientation}>
+  <ol class="mt" aria-label={label ?? t(locale, "shared.method_timeline.aria_label")}>
+    {
+      order.map((id, index) => {
+        const href = hrefOf(id);
+        const isHighlight = variant === "highlight" && highlight === id;
+        const detail = details[id];
+        const note = notes[id];
+        const decision = decisionMarkers ? DECISION_AFTER[id] : undefined;
+        return (
+          <li
+            class="mt__stage"
+            data-stage={id}
+            data-first={index === 0 ? "true" : undefined}
+            data-highlight={isHighlight ? "true" : undefined}
+            aria-current={isHighlight ? "step" : undefined}
+          >
+            <div class="mt__rail" aria-hidden="true">
+              <span class="mt__node" />
+              <span class="mt__track" data-kind={TRACK[id]} />
+              {decision && (
+                <span class="mt__decision">
+                  <span>{decision}</span>
+                </span>
+              )}
+            </div>
+            <div class="mt__body">
+              <div class="mt__meta">
+                <span class="mt__index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                {index === 0 && <span class="mt__badge">{badgeText}</span>}
+              </div>
+              <NameTag class="mt__name">
+                {href ? <a href={href}>{stages[id].name}</a> : stages[id].name}
+              </NameTag>
+              <p class="mt__tag">
+                <NoBreakText text={tagOf(id)} />
+              </p>
+              {variant !== "compact" && detail && (
+                <>
+                  <p class="mt__benefit">
+                    <NoBreakText text={detail.title} />
+                  </p>
+                  <p class="mt__text">
+                    <TermText locale={locale} text={detail.text} terms={detail.terms ?? []} />
+                  </p>
+                </>
+              )}
+              {note && (
+                <p class="mt__line">
+                  <NoBreakText text={note} />
+                </p>
+              )}
+              {variant !== "compact" && (
+                <p class="mt__you-get">
+                  <span class="mt__you-get-label">{youGetLabel}</span> <NoBreakText text={stages[id].you_get} />
+                </p>
+              )}
+              {isHighlight && highlightNote && <p class="mt__note">{highlightNote}</p>}
+            </div>
+          </li>
+        );
+      })
+    }
+  </ol>
+</div>
+
+<style>
+  .mt-wrap {
+    container-type: inline-size;
+    --mt-line: var(--color-border-strong);
+    --mt-tick: var(--color-accent);
+    --mt-gap: var(--space-4);
+  }
+  .mt {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+  }
+
+  /* ---------- Vertical (padrão, contêiner estreito) ---------- */
+  .mt__stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--node-size) minmax(0, 1fr);
+    column-gap: var(--mt-gap);
+  }
+  .mt__rail {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-block-start: var(--offset-first-line); /* alinha o nó à primeira linha do texto */
+  }
+  .mt__node {
+    flex: none;
+    inline-size: var(--node-size);
+    block-size: var(--node-size);
+    border: var(--track-width) solid var(--mt-line);
+    border-radius: var(--radius-full);
+    background-color: var(--color-bg-canvas);
+  }
+  .mt__stage[data-first] .mt__node {
+    border-color: var(--color-accent);
+    background-color: var(--color-accent);
+  }
+  .mt__track {
+    flex: 1 1 auto;
+    inline-size: var(--track-width);
+    min-block-size: var(--space-6);
+    margin-block: var(--space-1);
+    background-color: var(--mt-line);
+  }
+  /* Trilhos desenhados (cadência e tracejado): a direção vem de --mt-flow e a
+     espessura do traço contínuo de --mt-rule, que a orientação horizontal
+     troca no .mt (uma troca só, nas duas faixas de largura, sem repetir os
+     gradientes). */
+  .mt__track[data-kind="cadence"] {
+    /* trilho + marcas curtas a cada 0.75rem: a cadência das entregas */
+    inline-size: 0.625rem;
+    background:
+      linear-gradient(var(--mt-line), var(--mt-line)) center / var(--mt-rule, var(--track-width) 100%) no-repeat,
+      repeating-linear-gradient(var(--mt-flow, to bottom), var(--mt-tick) 0 var(--track-width), transparent var(--track-width) 0.75rem) center / 100% 100% no-repeat;
+  }
+  .mt__track[data-kind="open"] {
+    background: repeating-linear-gradient(var(--mt-flow, to bottom), var(--mt-line) 0 0.375rem, transparent 0.375rem 0.75rem);
+    mask-image: linear-gradient(var(--mt-flow, to bottom), var(--mask-opaque) 30%, transparent);
+  }
+  .mt__decision {
+    position: absolute;
+    inset-block-end: var(--space-3);
+    inset-inline-start: 50%;
+    display: grid;
+    place-items: center;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    translate: -50% 0;
+    rotate: 45deg;
+    border: var(--track-width) solid var(--color-brand);
+    background-color: var(--color-bg-canvas);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    color: var(--color-text-primary);
+  }
+  .mt__decision > span {
+    rotate: -45deg;
+  }
+
+  .mt__body {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding-block-end: var(--space-8);
+    min-inline-size: 0;
+  }
+  .mt__stage:last-child .mt__body {
+    padding-block-end: 0;
+  }
+  .mt-wrap[data-variant="compact"] .mt__body {
+    gap: var(--space-1);
+    padding-block-end: var(--space-5);
+  }
+
+  .mt__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: 1.25rem;
+  }
+  .mt__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+  }
+  .mt__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-0-5) var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--color-accent);
+    color: var(--color-text-on-accent);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .mt__name {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    line-height: var(--leading-h4);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.01em;
+    color: var(--color-text-primary);
+    text-wrap: balance;
+  }
+  .mt-wrap[data-variant="compact"] .mt__name {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+  .mt-wrap:not([data-variant="compact"]) .mt__name {
+    font-size: var(--text-xl);
+    line-height: var(--leading-h4);
+  }
+  /* Alvo de toque ≥ 44px (B084, BLUEPRINT §11): o nome da etapa é o título
+     inteiro, não um link dentro de frase. padding-block cresce o alvo até
+     --target-min e a margem negativa igual devolve o espaço, então o layout
+     não se move: 1 linha = 1lh + 2·P ≥ 44px; ao quebrar, só cresce.
+     position/z-index: a etiqueta logo abaixo não cobre a borda do alvo. */
+  .mt__name a {
+    --mt-hit: max(0px, calc((var(--target-min) - 1lh) / 2));
+    position: relative;
+    z-index: var(--z-raised);
+    display: inline-block;
+    padding-block: var(--mt-hit);
+    margin-block: calc(-1 * var(--mt-hit));
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-border-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+  }
+  /* Hover só com ponteiro fino (no toque a cor ficaria presa, B192). */
+  @media (hover: hover) and (pointer: fine) {
+    .mt__name a:hover {
+      color: var(--color-text-link-hover);
+      text-decoration-color: currentColor;
+    }
+  }
+  /* O anel de foco contorna o nome, não a faixa de toque (que invade a
+     numeração e a etiqueta): mesmo anel global, desenhado no ::after. */
+  .mt__name a:focus-visible {
+    outline: none;
+  }
+  .mt__name a:focus-visible::after {
+    content: "";
+    position: absolute;
+    inset-block: calc(var(--mt-hit) - var(--focus-ring-offset));
+    inset-inline: calc(-1 * var(--focus-ring-offset));
+    outline: var(--focus-ring-width) solid var(--color-focus-ring);
+    pointer-events: none;
+  }
+
+  .mt__tag {
+    justify-self: start;
+    padding: var(--space-0-5) var(--space-2);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-brand-subtle);
+    color: var(--color-brand-on-subtle);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .mt__benefit {
+    margin-block-start: var(--space-2);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    text-wrap: balance;
+  }
+  .mt__text {
+    color: var(--color-text-secondary);
+  }
+  /* Linha contextual por etapa (prop `notes`), também na variante compacta. */
+  .mt__line {
+    margin-block-start: var(--space-1);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-prose);
+  }
+  .mt__you-get {
+    margin-block-start: var(--space-2);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--color-border-subtle);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-primary);
+  }
+  .mt__you-get-label {
+    display: block;
+    margin-block-end: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+  }
+  .mt__note {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-primary);
+  }
+
+  /* ---------- Realce (variante highlight) ---------- */
+  /* Exceção ao <Card> (B214): estado de realce da etapa (borda de 2px da marca), não um cartão. */
+  .mt__stage[data-highlight] .mt__body {
+    margin-block-end: var(--space-6);
+    padding: var(--space-4);
+    border: var(--track-width) solid var(--color-brand);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-brand-subtle);
+  }
+  .mt__stage[data-highlight] .mt__node {
+    border-color: var(--color-brand);
+    background-color: var(--color-brand);
+    box-shadow: var(--ring-halo) var(--color-brand-subtle);
+  }
+  :global([data-surface="inverse"]) .mt__stage[data-highlight] .mt__body,
+  :global([data-surface="inverse"]) .mt__stage[data-highlight] .mt__node,
+  :global([data-surface="inverse"]) .mt__decision {
+    border-color: var(--color-accent);
+  }
+
+  /* ---------- Horizontal (contêiner largo) ---------- */
+  /* compact vira horizontal a partir de 40rem; as outras variantes, de 56rem.
+     As duas faixas trocam a mesma coisa (grade de 4 colunas, trilho deitado e
+     a direção dos trilhos desenhados), para o tracejado e a cadência nunca
+     ficarem em pé num trilho deitado. */
+  @container (min-width: 40rem) {
+    .mt-wrap[data-variant="compact"]:not([data-orientation="vertical"]) .mt {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      --mt-flow: to right;
+      --mt-rule: 100% var(--track-width);
+    }
+    .mt-wrap[data-variant="compact"]:not([data-orientation="vertical"]) .mt__stage {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+      row-gap: var(--space-3);
+    }
+    .mt-wrap[data-variant="compact"]:not([data-orientation="vertical"]) .mt__rail {
+      flex-direction: row;
+      padding-block-start: 0;
+    }
+    .mt-wrap[data-variant="compact"]:not([data-orientation="vertical"]) .mt__track {
+      inline-size: auto;
+      block-size: var(--track-width);
+      min-block-size: 0;
+      margin-block: 0;
+      margin-inline: var(--space-1);
+    }
+    .mt-wrap[data-variant="compact"]:not([data-orientation="vertical"]) .mt__track[data-kind="cadence"] {
+      block-size: 0.625rem;
+    }
+    .mt-wrap[data-variant="compact"]:not([data-orientation="vertical"]) .mt__body {
+      padding-block-end: 0;
+      padding-inline-end: var(--space-4);
+    }
+  }
+
+  @container (min-width: 56rem) {
+    .mt-wrap:not([data-orientation="vertical"]) .mt {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      --mt-flow: to right;
+      --mt-rule: 100% var(--track-width);
+    }
+    .mt-wrap:not([data-orientation="vertical"]) .mt__stage {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+      row-gap: var(--space-4);
+    }
+    .mt-wrap:not([data-orientation="vertical"]) .mt__rail {
+      flex-direction: row;
+      padding-block-start: 0;
+    }
+    .mt-wrap:not([data-orientation="vertical"]) .mt__track {
+      inline-size: auto;
+      block-size: var(--track-width);
+      min-block-size: 0;
+      margin-block: 0;
+      margin-inline: var(--space-1);
+    }
+    .mt-wrap:not([data-orientation="vertical"]) .mt__track[data-kind="cadence"] {
+      block-size: 0.625rem;
+    }
+    .mt-wrap:not([data-orientation="vertical"]) .mt__decision {
+      inset-block-end: auto;
+      inset-block-start: 50%;
+      inset-inline-start: 60%;
+      translate: -50% -50%;
+    }
+    .mt-wrap:not([data-orientation="vertical"]) .mt__body {
+      padding-block-end: 0;
+      padding-inline-end: var(--space-6);
+    }
+    .mt-wrap:not([data-orientation="vertical"]) .mt__stage[data-highlight] .mt__body {
+      margin-block-end: 0;
+      margin-inline-end: var(--space-4);
+    }
+  }
+</style>

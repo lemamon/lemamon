@@ -1,0 +1,55 @@
+---
+titulo: "Un widget para sitios externos que muestra en gráficos la calidad del aire de la ciudad seleccionada"
+tipoDeSistema: "Widget de calidad del aire"
+setor: "Comercio minorista"
+porte: "Multinacional"
+servicos: ["web_systems", "integrations"]
+problema: "Una multinacional del comercio minorista necesitaba un componente que pudiera incorporarse en sitios externos para mostrar la calidad del aire de una ciudad seleccionada. La información tenía que aparecer en gráficos dinámicos, conectados a una API de datos ambientales, el servicio que provee esos datos."
+combinado:
+  escopo: "Componente en formato de acordeón (un bloque que se abre y se cierra), diseñado para incorporarse en sitios externos. En él, gráficos dinámicos muestran la calidad del aire de la ciudad seleccionada y están conectados a una API de datos ambientales, de donde viene la información."
+entregue: "Los sitios externos pueden incorporar el widget y mostrarles a sus visitantes la calidad del aire de la ciudad seleccionada."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "Al inicio"
+    texto: "Conversación inicial para entender el pedido y el problema del cliente."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Se entendió el problema y se definió el alcance."
+  - etapa: "development"
+    quando: "Entre 2019 y 2021"
+    texto: "Construcción con entregas parciales a lo largo del proyecto, y no una sola entrega al final."
+  - etapa: "support"
+    quando: "Después del lanzamiento"
+    texto: "El widget siguió con mantenimiento."
+fichaTecnica:
+  stack: ["React", "JavaScript", "Chart.js"]
+capa:
+  src: "../_imagens/widget-de-qualidade-do-ar/capa.png"
+  alt: "Ilustración de un widget en acordeón abierto, con elección de ciudad y gráficos de calidad del aire"
+relacionados: ["painel-de-qualidade-do-ar", "seletores-de-produtos-para-varejo"]
+ordem: 24
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Widget de calidad del aire para sitios"
+seoDescription: "Widget para sitios externos que muestra en gráficos dinámicos la calidad del aire de la ciudad seleccionada, con datos de una API."
+slugUrl: "widget-de-calidad-del-aire"
+---
+
+### Para quién
+
+Para los sitios externos que incorporan el widget y para quienes los visitan. El componente se desarrolló para una multinacional del comercio minorista.
+
+### Cómo funciona
+
+El acordeón se abre y se cierra dentro de la página del sitio que lo incorpora.
+
+Una API es la puerta por la que un sistema le entrega datos a otro: de la API de datos ambientales viene la información que muestran los gráficos.
+
+### La tecnología, en palabras simples
+
+- **React**: biblioteca de JavaScript para armar interfaces a partir de componentes reutilizables. Se empleó para construir el widget.
+- **JavaScript**: el lenguaje de programación de la web, que le da comportamiento a las páginas en el navegador y también corre en servidores. También se empleó en el widget.
+- **Chart.js**: biblioteca de JavaScript de código abierto para dibujar gráficos en páginas web. En el widget, es la tecnología de los gráficos de calidad del aire.

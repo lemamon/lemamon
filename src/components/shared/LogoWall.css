@@ -1,0 +1,62 @@
+/**
+ * Grade de logos (LogoWall.astro). Dono: home. Carregado só na página que
+ * renderiza a grade (ui/RenderedStyle.astro, B256): sem 4 logos autorizados,
+ * nada disto vai ao ar. Sem escopo automático: só classes .logo-wall*.
+ */
+.logo-wall {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-block-start: 1px solid var(--color-border-subtle);
+  border-inline-start: 1px solid var(--color-border-subtle);
+}
+.logo-wall li {
+  display: grid;
+  place-items: center;
+  min-block-size: 5rem;
+  padding: var(--space-4);
+  border-block-end: 1px solid var(--color-border-subtle);
+  border-inline-end: 1px solid var(--color-border-subtle);
+}
+.logo-wall img {
+  block-size: 2rem;
+  inline-size: auto;
+  max-inline-size: 100%;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition: var(--transition-opacity), filter var(--duration-normal) var(--ease-out);
+}
+.logo-wall a {
+  display: grid;
+  place-items: center;
+  min-block-size: var(--target-min);
+  min-inline-size: var(--target-min);
+  border-radius: var(--radius-sm);
+}
+@media (hover: hover) and (pointer: fine) {
+  .logo-wall li:hover img {
+    filter: none;
+    opacity: 1;
+  }
+}
+/* Fundo escuro (tema escuro, B208, ou seção inverse): o logo é monocromático
+   (schema: "logo monocromático, de preferência SVG") e, escuro sobre ink,
+   sumia. Vira silhueta clara, também no hover. */
+:root[data-theme="dark"] .logo-wall img,
+[data-surface="inverse"] .logo-wall img,
+:root[data-theme="dark"] .logo-wall li:hover img,
+[data-surface="inverse"] .logo-wall li:hover img {
+  filter: brightness(0) invert(1);
+}
+@media (min-width: 640px) {
+  .logo-wall {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .logo-wall {
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+}

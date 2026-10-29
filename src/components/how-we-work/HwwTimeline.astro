@@ -1,0 +1,38 @@
+---
+/**
+ * Como trabalhamos §6.2 #4 `timeline` — always. Dono: pages.
+ * Visão geral: linha do método completa (§5.1, componente do home), com cada
+ * etapa ancorada no bloco da própria página (linkStages=false → #diagnostico…).
+ * A primeira menção de "escopo priorizado" desta página está na linha do
+ * método (stages.discovery.you_get) e recebe a explicação
+ * shared.terms.prioritized_scope logo abaixo (§5.9; how_we_work._notes.you_get).
+ * "Protótipo" saiu em 21/10/2026 (D44): a Descoberta não entrega protótipo.
+ */
+import MethodTimeline from "@/components/shared/MethodTimeline.astro";
+import Term from "@/components/shared/Term.astro";
+import Section from "@/components/ui/Section.astro";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<Section id="etapas" label={t(locale, "how_we_work.hero.index_label")} spacing="compact">
+  <MethodTimeline locale={locale} variant="full" linkStages={false} />
+  <p class="timeline-term"><Term locale={locale} term="prioritized_scope" /></p>
+</Section>
+
+<style>
+  .timeline-term {
+    margin-block-start: var(--space-6);
+    padding-block-start: var(--space-4);
+    border-block-start: 1px solid var(--color-border-subtle);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+    max-inline-size: var(--measure-prose);
+  }
+</style>

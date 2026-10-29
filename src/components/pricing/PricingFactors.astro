@@ -1,0 +1,181 @@
+---
+/**
+ * Quanto custa §6.6 #3 `factors` — always. Dono: pages.
+ * "O que define o preço de um software": 7 fatores (título + 1 linha, sem
+ * nenhum valor); H3 "E quanto custa desenvolver um aplicativo?" com app_intro,
+ * 4 fatores e link → /servicos/aplicativos; fechamento com "pedir o
+ * diagnóstico" como link → /orcamento?origem=preco-fatores
+ * (pricing._notes.factors_closing, app_intro).
+ *
+ * Superfícies pelo <Card> (B214): a grade de fatores é um Card sem padding
+ * com "linhas de 1px" por dentro (o gap de 1px É a divisória, não um gutter);
+ * o bloco do aplicativo é um Card sutil.
+ */
+import LinkedText from "@/components/services/kit/LinkedText.astro";
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Card from "@/components/ui/Card.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import Section from "@/components/ui/Section.astro";
+import { quoteHref, urlFor } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const factors = Object.entries(getSection(locale, "pricing.factors.items"));
+const appItems = Object.entries(getSection(locale, "pricing.factors.app_items"));
+const origem = "preco-fatores";
+---
+
+<Section id="fatores" labelledby="fatores-title">
+  <SectionHeader id="fatores-title" title={t(locale, "pricing.factors.title")} intro={t(locale, "pricing.factors.intro")} />
+  <Card surface="subtle" padding="none">
+    <ol role="list" class="factors">
+      {
+        factors.map(([id, factor], index) => (
+          <li class="factors__item" data-id={id}>
+            <span class="factors__index" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h3 class="factors__title">{factor.title}</h3>
+            <p class="factors__text">{factor.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Card>
+
+  <div class="app">
+    <Card surface="subtle">
+      <div class="app__body">
+        <h3 class="app__title">{t(locale, "pricing.factors.app_subtitle")}</h3>
+        <p>{t(locale, "pricing.factors.app_intro")}</p>
+        <ul role="list" class="app__list">
+          {appItems.map(([id, text]) => <li data-id={id}>{text}</li>)}
+        </ul>
+        <ArrowLink href={urlFor("service_mobile_apps", locale)} text={t(locale, "pricing.factors.app_link")} />
+      </div>
+    </Card>
+  </div>
+
+  <p class="closing">
+    <LinkedText
+      text={t(locale, "pricing.factors.closing")}
+      phrase={t(locale, "pricing.factors.closing_link_phrase")}
+      href={quoteHref(locale, { origem })}
+      data-track="cta_click"
+      data-cta-id="diagnosis"
+      data-origem={origem}
+    />
+  </p>
+</Section>
+
+<style>
+  /* Dentro do <Card padding="none">: o fundo da lista é a cor da linha e o
+     gap de 1px desenha as divisórias entre as células. */
+  .factors {
+    display: grid;
+    gap: var(--space-px);
+    background-color: var(--color-border-subtle);
+  }
+
+  .factors__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-6);
+    background-color: var(--color-bg-surface);
+  }
+
+  .factors__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .factors__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .factors__text {
+    color: var(--color-text-secondary);
+  }
+
+  .app {
+    margin-block-start: var(--space-10);
+  }
+
+  .app__body {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+  }
+
+  .app__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  .app__list {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .app__list li {
+    position: relative;
+    padding-inline-start: var(--space-5);
+  }
+
+  .app__list li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0.6em;
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    background-color: var(--color-accent);
+  }
+
+  .closing {
+    margin-block-start: var(--space-8);
+    max-inline-size: var(--measure-prose);
+    color: var(--color-text-secondary);
+  }
+
+  .closing :global(a) {
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* A grade usa a cor da borda como "linha de 1px"; o último item ocupa o
+     resto da linha para não sobrar célula vazia. */
+  @media (min-width: 640px) {
+    .factors {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .factors__item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .factors {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .factors__item:last-child:nth-child(odd) {
+      grid-column: auto;
+    }
+
+    .factors__item:last-child:nth-child(3n + 1) {
+      grid-column: 1 / -1;
+    }
+
+    .factors__item:last-child:nth-child(3n + 2) {
+      grid-column: span 2;
+    }
+  }
+</style>

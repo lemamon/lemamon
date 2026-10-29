@@ -1,0 +1,76 @@
+---
+/**
+ * Sprint de Descoberta §6.3 #5 `where_it_fits` — always. Dono: pages.
+ * "Antes e depois da Descoberta": linha do método (home) com a etapa 2 em
+ * destaque e a etapa 1 marcada "Próximo passo"; antes (diagnóstico gratuito de
+ * 45 minutos, devolutiva por escrito) e depois (você decide se segue; se seguir,
+ * entregas a cada 2 semanas).
+ * Cada lado é um <Card> (B214); a grade usa o gutter do grid (--grid-gap, B222).
+ * Número e unidade não se separam na quebra ("45 / minutos", "2 / semanas"):
+ * NoBreakText (shared/typography.ts).
+ */
+import NoBreakText from "@/components/shared/NoBreakText.astro";
+import Card from "@/components/ui/Card.astro";
+import MethodTimeline from "@/components/shared/MethodTimeline.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import Section from "@/components/ui/Section.astro";
+import { t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const sides = [
+  { id: "antes", label: t(locale, "discovery_sprint.where_it_fits.before_label"), text: t(locale, "discovery_sprint.where_it_fits.before_text") },
+  { id: "depois", label: t(locale, "discovery_sprint.where_it_fits.after_label"), text: t(locale, "discovery_sprint.where_it_fits.after_text") },
+];
+---
+
+<Section id="antes-e-depois" labelledby="antes-e-depois-title" surface="subtle">
+  <SectionHeader id="antes-e-depois-title" title={t(locale, "discovery_sprint.where_it_fits.title")} />
+  <MethodTimeline locale={locale} variant="highlight" highlight="discovery" badge="next_step" />
+  <dl class="sides">
+    {
+      sides.map((side) => (
+        <Card class="sides__item" data-side={side.id}>
+          <dt>{side.label}</dt>
+          <dd>
+            <NoBreakText text={side.text} />
+          </dd>
+        </Card>
+      ))
+    }
+  </dl>
+</Section>
+
+<style>
+  .sides {
+    display: grid;
+    gap: var(--grid-gap);
+    margin-block-start: var(--space-8);
+  }
+
+  /* Raiz = <Card> (borda, raio, fundo e padding vêm de lá). */
+  .sides :global(.sides__item) {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .sides dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .sides dd {
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .sides {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

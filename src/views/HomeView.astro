@@ -1,0 +1,150 @@
+---
+/**
+ * Home (BLUEPRINT §6.1) — view compartilhada pelos 3 idiomas. Dono: home.
+ *
+ * Ordem das 14 seções; as when_data se auto-escondem (sem dado, nem título
+ * nem âncora: hoje vão ao ar 8). JSON-LD: Organization/ProfessionalService
+ * vem do SEO.astro (shell, por rota); FAQPage vem do <Faq> só com os itens
+ * visíveis (composição em components/home/home-faq.ts).
+ *
+ * Numeração e divisórias (B216): homeSectionPlan() numera só os capítulos
+ * que renderizam neste build ("01 /" …) e liga a linha de 1px entre vizinhas
+ * de mesma superfície. Medição (B327): scroll_depth 25/50/75/90.
+ *
+ * Termos explicados (§5.9): a 1ª menção de cada termo na página vira
+ * toggletip. A ordem dos textos abaixo é a ordem de leitura da página; o
+ * plano é calculado por idioma (o termo pode aparecer em lugares diferentes
+ * em pt, en e es).
+ */
+import CasesSection from "@/components/gated/CasesSection.astro";
+import LogosStrip from "@/components/gated/LogosStrip.astro";
+import TeamSection from "@/components/gated/TeamSection.astro";
+import TestimonialHighlight from "@/components/gated/TestimonialHighlight.astro";
+import HomeHero from "@/components/home/HomeHero.astro";
+import HomeMethod from "@/components/home/HomeMethod.astro";
+import HomeProblem from "@/components/home/HomeProblem.astro";
+import HomeRisks from "@/components/home/HomeRisks.astro";
+import HomeServices from "@/components/home/HomeServices.astro";
+import HomeTrustProfiles from "@/components/home/HomeTrustProfiles.astro";
+import Commitments from "@/components/shared/Commitments.astro";
+import CtaFinal from "@/components/shared/CtaFinal.astro";
+import { homeFaqItems } from "@/components/home/home-faq";
+import { riskAnswers } from "@/components/home/home-risks";
+import { homeSectionPlan, optionalText } from "@/components/home/home-sections";
+import Faq from "@/components/shared/Faq.astro";
+import Investment from "@/components/shared/Investment.astro";
+import { planFirstMentions, termLabel, type TermId } from "@/components/shared/terms";
+import { getFeatures } from "@/config/features";
+import { PRICE_LINE_IDS } from "@/config/precos";
+import { anchorId, ANCHORS, urlFor } from "@/config/routes";
+import Base from "@/layouts/Base.astro";
+import { getSection, t, type Locale } from "@/i18n";
+import { pageMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const whatsappMessage = pageMessage(locale);
+const features = await getFeatures();
+
+/* Capítulos visíveis neste build: número na eyebrow e divisória (B216). */
+const plan = homeSectionPlan(features);
+
+/* FAQ §6.1 #13: banco nesta ordem + condicionais liberadas pelo dono; teto de 9
+   com a ordem de remoção da Home (B039). */
+const faqItems = homeFaqItems(locale, {
+  features,
+  // O link de faixas só aponta para o bloco quando ele existe nesta página.
+  pricingHref: plan.investment.visible ? `#${anchorId(ANCHORS.investment, locale)}` : undefined,
+});
+
+/*
+ * Seções when_data do gated (cases, time): número e divisória vão como props
+ * `index`/`divider`, que o gated encaminha ao <SectionHeader>/<Section>
+ * (pedido B216). Até o gated declarar as duas props, o objeto vai sem tipo,
+ * para a Home não depender da ordem das entregas.
+ */
+const chapterOf = (key: "cases" | "team") =>
+  ({ index: plan[key].index, divider: plan[key].divider }) as Record<never, never>;
+
+/* Termos §5.9: onde fica a 1ª menção de cada um, na ordem de leitura. */
+const TERMS: TermId[] = ["mvp", "written_feedback", "prioritized_scope"];
+const risks = riskAnswers(locale, features);
+const method = getSection(locale, "home.method.stages");
+const termPlan = planFirstMentions(
+  [
+    ["hero.subtitle", t(locale, "home.hero.subtitle")],
+    ["hero.micro", t(locale, "shared.cta.microcopy_diagnosis")],
+    ...Object.entries(risks).map(([id, answer]) => [`risks.${id}`, answer] as const),
+    ...Object.entries(method).map(([id, stage]) => [`method.${id}`, stage.text] as const),
+  ],
+  TERMS.map((term) => ({ term, label: termLabel(t(locale, `shared.terms.${term}`)) })),
+);
+const pick = (prefix: string) =>
+  Object.fromEntries(
+    Object.entries(termPlan)
+      .filter(([slot]) => slot.startsWith(`${prefix}.`))
+      .map(([slot, terms]) => [slot.slice(prefix.length + 1), terms]),
+  );
+const heroTerms = pick("hero");
+---
+
+<Base
+  locale={locale}
+  route="home"
+  title={t(locale, "meta.home.title")}
+  description={t(locale, "meta.home.description")}
+  whatsappMessage={whatsappMessage}
+  ctaOrigin="home-barra"
+>
+  <HomeHero
+    locale={locale}
+    whatsappMessage={whatsappMessage}
+    terms={{ subtitle: heroTerms.subtitle ?? [], micro: heroTerms.micro ?? [] }}
+  />
+  <Commitments locale={locale} />
+  <LogosStrip locale={locale} />
+  <HomeProblem locale={locale} index={plan.problem.index} />
+  <HomeRisks locale={locale} terms={pick("risks")} index={plan.risks.index} />
+  <HomeMethod locale={locale} terms={pick("method")} index={plan.method.index} />
+  <TestimonialHighlight locale={locale} />
+  <HomeServices locale={locale} index={plan.services.index} divider={plan.services.divider} />
+  <CasesSection locale={locale} {...chapterOf("cases")} />
+  <Investment
+    locale={locale}
+    lines={PRICE_LINE_IDS}
+    origem="home"
+    eyebrow={optionalText(locale, "shared.investment.eyebrow")}
+    index={plan.investment.index}
+    divider={plan.investment.divider}
+  />
+  <TeamSection locale={locale} {...chapterOf("team")} />
+  <HomeTrustProfiles locale={locale} index={plan.trust_profiles.index} divider={plan.trust_profiles.divider} />
+  <Faq
+    locale={locale}
+    title={t(locale, "home.faq.title")}
+    eyebrow={optionalText(locale, "home.faq.eyebrow")}
+    index={plan.faq.index}
+    divider={plan.faq.divider}
+    items={faqItems}
+    closingLink={{ href: urlFor("pricing", locale), text: t(locale, "home.faq.closing_link") }}
+    surface="subtle"
+  />
+  <CtaFinal
+    locale={locale}
+    origem="home-final"
+    eyebrow={optionalText(locale, "home.cta_final.eyebrow")}
+    index={plan.cta_final.index}
+    title={t(locale, "home.cta_final.title")}
+    text={t(locale, "home.cta_final.text")}
+    whatsappMessage={whatsappMessage}
+    showHowItWorks
+  />
+  <script>
+    import { initScrollDepth, observeFaqOpen } from "@/components/shared/section-events";
+    initScrollDepth();
+    observeFaqOpen();
+  </script>
+</Base>

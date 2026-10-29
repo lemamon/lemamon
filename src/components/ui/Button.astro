@@ -1,0 +1,244 @@
+---
+/**
+ * Button — link (<a>) quando há href, <button> quando não há. Dono: home.
+ * API estável (outros agentes usam). Variantes de 03-ui §3.4.2; foco visível
+ * herdado do global. Nunca um <button> dentro de <a>.
+ *
+ * Variantes: primary (âmbar, o CTA de diagnóstico) · secondary (marca) ·
+ *   outline · ghost · whatsapp.
+ * Tamanhos: sm 36px · md 44px · lg 48px de altura mínima. Abaixo de 768px
+ *   TODO tamanho tem no mínimo 44px (alvo de toque, BLUEPRINT §11).
+ * Estados: default · hover (cor; elevação só com ponteiro fino) · active ·
+ *   focus-visible (anel global) · disabled · loading.
+ *   - disabled: <button disabled>; no link, <a> sem href com
+ *     aria-disabled="true" e tabindex="-1". Sem pointer-events: none (o
+ *     cursor not-allowed e um title continuam funcionando). Visual em cores
+ *     sólidas de token (fundo --color-bg-muted, borda --color-border-default,
+ *     texto --color-text-disabled ≥ 4.5:1 nos dois temas), sem opacity.
+ *   - loading: data-loading="true" + aria-busy="true" (+ aria-disabled).
+ *     Spinner no lugar do rótulo, sem mudar a largura. Script que envia um
+ *     formulário pode ligar/desligar os mesmos atributos em tempo de execução.
+ *
+ * Medição: atributos data-track/data-* são repassados (CONTRACT.md §8).
+ */
+type Variant = "primary" | "secondary" | "outline" | "ghost" | "whatsapp";
+type Size = "sm" | "md" | "lg";
+
+interface Props {
+  href?: string;
+  variant?: Variant;
+  size?: Size;
+  /** true = largura total; "mobile" = largura total só abaixo de 768px. */
+  full?: boolean | "mobile";
+  type?: "button" | "submit";
+  /** Desabilitado (no link: sem href, aria-disabled e fora da ordem de tab). */
+  disabled?: boolean;
+  /** Em andamento: spinner, aria-busy e aria-disabled. */
+  loading?: boolean;
+  id?: string;
+  class?: string;
+  title?: string;
+  target?: "_blank";
+  rel?: string;
+  hreflang?: string;
+  "aria-label"?: string;
+  "aria-describedby"?: string;
+  "aria-controls"?: string;
+  "aria-expanded"?: "true" | "false";
+  [key: `data-${string}`]: string | undefined;
+}
+
+const {
+  href,
+  variant = "primary",
+  size = "md",
+  full = false,
+  type = "button",
+  disabled = false,
+  loading = false,
+  class: className,
+  ...rest
+} = Astro.props;
+const classes = ["btn", className];
+const state = {
+  "data-loading": loading ? "true" : undefined,
+  "aria-busy": loading ? ("true" as const) : undefined,
+};
+const linkDisabled = Boolean(href) && disabled;
+---
+
+{
+  href ? (
+    <a
+      href={linkDisabled ? undefined : href}
+      role={linkDisabled ? "link" : undefined}
+      aria-disabled={linkDisabled || loading ? "true" : undefined}
+      tabindex={linkDisabled ? -1 : undefined}
+      class:list={classes}
+      data-variant={variant}
+      data-size={size}
+      data-full={String(full)}
+      {...state}
+      {...rest}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button
+      type={type}
+      disabled={disabled}
+      aria-disabled={loading && !disabled ? "true" : undefined}
+      class:list={classes}
+      data-variant={variant}
+      data-size={size}
+      data-full={String(full)}
+      {...state}
+      {...rest}
+    >
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    /* Cada variante só troca estas propriedades. */
+    --btn-bg: transparent;
+    --btn-bg-hover: var(--btn-bg);
+    --btn-bg-active: var(--btn-bg-hover);
+    --btn-fg: var(--color-text-primary);
+    --btn-fg-hover: var(--btn-fg);
+    --btn-border: transparent;
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-block-size: var(--target-min);
+    padding-inline: var(--space-5);
+    border: 1px solid var(--btn-border);
+    border-radius: var(--radius-md);
+    background-color: var(--btn-bg);
+    color: var(--btn-fg);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-base);
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    text-wrap: balance;
+    transition: var(--transition-colors), var(--transition-shadow), var(--transition-transform);
+  }
+  .btn :global(svg) {
+    flex: none;
+  }
+  .btn[data-size="sm"] {
+    min-block-size: 2.25rem;
+    padding-inline: var(--space-4);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+  .btn[data-size="lg"] {
+    min-block-size: var(--target-cta);
+    padding-inline: var(--space-6);
+    font-size: var(--text-lg);
+    line-height: 1.2;
+  }
+  @media (max-width: 767.98px) {
+    /* Alvo de toque: nenhum tamanho fica abaixo de 44px no mobile. */
+    .btn[data-size="sm"] {
+      min-block-size: var(--target-min);
+    }
+    .btn[data-full="mobile"] {
+      inline-size: 100%;
+    }
+  }
+  .btn[data-full="true"] {
+    inline-size: 100%;
+  }
+
+  .btn[data-variant="primary"] {
+    --btn-bg: var(--color-accent);
+    --btn-bg-hover: var(--color-accent-hover);
+    --btn-bg-active: var(--color-accent-active);
+    --btn-fg: var(--color-text-on-accent);
+  }
+  .btn[data-variant="secondary"] {
+    --btn-bg: var(--color-brand);
+    --btn-bg-hover: var(--color-brand-hover);
+    --btn-bg-active: var(--color-brand-active);
+    --btn-fg: var(--color-text-on-brand);
+  }
+  .btn[data-variant="outline"] {
+    --btn-border: var(--color-border-control);
+    --btn-bg-hover: var(--color-bg-surface-hover);
+  }
+  .btn[data-variant="ghost"] {
+    --btn-fg-hover: var(--color-text-link-hover);
+  }
+  .btn[data-variant="whatsapp"] {
+    --btn-bg: var(--color-whatsapp);
+    --btn-bg-hover: var(--color-whatsapp-hover);
+    --btn-fg: var(--color-text-on-whatsapp);
+  }
+
+  /* Hover/active só no botão utilizável (desabilitado e carregando ficam parados). */
+  .btn:not(:disabled, [aria-disabled="true"], [data-loading="true"]):hover {
+    background-color: var(--btn-bg-hover);
+    color: var(--btn-fg-hover);
+  }
+  .btn:not(:disabled, [aria-disabled="true"], [data-loading="true"]):active {
+    background-color: var(--btn-bg-active);
+  }
+  /* Elevação só com ponteiro fino (no toque, o hover ficaria preso). */
+  @media (hover: hover) and (pointer: fine) {
+    .btn[data-variant="primary"]:not(:disabled, [aria-disabled="true"], [data-loading="true"]):hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-glow-accent);
+    }
+    .btn:is([data-variant="secondary"], [data-variant="whatsapp"]):not(:disabled, [aria-disabled="true"], [data-loading="true"]):hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    .btn:active {
+      transform: none;
+    }
+  }
+
+  /* Desabilitado (B155): cores SÓLIDAS de token, nunca opacity (com 0.45 o
+     rótulo caía para 2.0–2.9:1). Texto --color-text-disabled sobre
+     --color-bg-muted: 4.88:1 no claro, 5.69:1 no escuro e em inverse, 4.90:1
+     em inverse no tema escuro. Igual em todas as variantes: o estado não
+     depende da cor da variante para ser lido. */
+  .btn:disabled,
+  .btn[aria-disabled="true"]:not([data-loading="true"]) {
+    --btn-bg: var(--color-bg-muted);
+    --btn-bg-hover: var(--color-bg-muted);
+    --btn-border: var(--color-border-default);
+    --btn-fg: var(--color-text-disabled);
+    cursor: not-allowed;
+  }
+
+  /* Carregando: o rótulo fica (largura estável), mas invisível; spinner no centro. */
+  .btn[data-loading="true"] {
+    color: transparent;
+    cursor: progress;
+  }
+  .btn[data-loading="true"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    border: var(--track-width) solid var(--btn-fg);
+    border-inline-end-color: transparent;
+    border-radius: var(--radius-full);
+    animation: btn-spin var(--duration-slower) linear infinite;
+  }
+  @keyframes btn-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+</style>

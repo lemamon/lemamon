@@ -1,0 +1,34 @@
+---
+/**
+ * Badge — pílula curta (03-ui §3.4.2, B212). Dono: home.
+ *
+ *   <Badge variant="solid">Sistemas web</Badge>              serviço do case (CaseCard)
+ *   <Badge variant="mono" icon={techIcon(nome)}>{nome}</Badge>  stack da ficha técnica
+ *
+ * variant: solid (fundo brand-subtle) · outline (borda) · mono (borda + fonte
+ * mono, para tecnologia). Ícone opcional de 16px em currentColor, decorativo.
+ * Tecnologia só entra com ícone quando o case REAL a lista (fichaTecnica.stack,
+ * validada na aprovação do case, playbook 09 §8): o ícone é um realce, nunca
+ * uma afirmação de competência por si só.
+ * CSS em ./Badge.css, carregado só na página que renderiza um badge
+ * (<RenderedStyle>, B256).
+ */
+import css from "./Badge.css?inline";
+import Icon, { type IconName } from "./Icon.astro";
+import RenderedStyle from "./RenderedStyle.astro";
+
+interface Props {
+  variant?: "solid" | "outline" | "mono";
+  icon?: IconName;
+  class?: string;
+}
+
+const { variant = "solid", icon, class: className } = Astro.props;
+---
+
+<RenderedStyle css={css} name="Badge" />
+<span class:list={["badge", className]} data-variant={variant}>
+  {icon && <Icon name={icon} size={16} class="badge__icon" />}
+  <slot />
+</span>
+

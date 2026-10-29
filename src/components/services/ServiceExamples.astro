@@ -1,0 +1,169 @@
+---
+/**
+ * Serviço §6.5 #3 `examples` — always. Dono: pages. "Exemplos do que dá para
+ * construir" (nunca "o que já construímos" sem case); em sustentação, o título
+ * é services.support.examples_title ("O que entra").
+ * Aplicativos: bloco "Recursos comuns em um app" (3 itens). A publicação nas
+ * lojas NÃO entra aqui (services._notes.mobile_store).
+ * Fecha com "Não viu o seu caso na lista? Pedir diagnóstico gratuito" →
+ * /orcamento?servico={slug}&origem={slug}-exemplos.
+ * Cada exemplo é um <Card as="li"> (B214); gutter = --grid-gap (B222).
+ * Integrações: o 1º exemplo que cita "API" (services._notes.integrations_examples,
+ * auditoria SEO S07-10) é a 1ª menção do termo na página, e ela vira o
+ * toggletip shared.terms.api (§5.9: jargão só com explicação curta).
+ * O exemplo de sensores cita um case publicado: o trecho
+ * services.integrations.examples_case_phrase vira link para o case (no idioma
+ * da página, só com o case no ar; sem ele, o texto sai sem link).
+ */
+import TermText from "@/components/shared/TermText.astro";
+import Card from "@/components/ui/Card.astro";
+import Section from "@/components/ui/Section.astro";
+import { getFeatures } from "@/config/features";
+import { SERVICE_PARAM, urlFor, type ServiceKey } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+import { caseItem } from "@/lib/content";
+
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import TextCta from "./kit/TextCta.astro";
+
+interface Props {
+  locale: Locale;
+  service: ServiceKey;
+}
+
+const { locale, service } = Astro.props;
+const title = service === "support" ? t(locale, "services.support.examples_title") : t(locale, "services.template.examples_title");
+const examples: readonly { title: string; text: string }[] = getSection(locale, `services.${service}.examples` as const);
+/** Índice do exemplo com a 1ª menção de "API" (só integrações; -1 = nenhum). */
+const apiExample = service === "integrations" ? examples.findIndex((example) => /\bAPI\b/.test(example.text)) : -1;
+/** Case citado no texto de um exemplo (chave do case → trecho que vira link). */
+const EXAMPLE_CASE: Partial<Record<ServiceKey, { slug: string; phrase: () => string }>> = {
+  integrations: { slug: "controle-de-producao-com-contagem-automatica", phrase: () => t(locale, "services.integrations.examples_case_phrase") },
+};
+const features = await getFeatures();
+const exampleCase = EXAMPLE_CASE[service];
+const linkedCase = exampleCase && features.hasCases ? await caseItem(locale, exampleCase.slug) : null;
+const casePhrase = linkedCase && exampleCase ? exampleCase.phrase() : "";
+const caseHref = linkedCase ? urlFor("case", locale, { slug: linkedCase.urlSlug }) : "";
+const caseExample = casePhrase ? examples.findIndex((example, index) => index !== apiExample && example.text.includes(casePhrase)) : -1;
+const caseText = examples[caseExample]?.text ?? "";
+const caseBefore = caseText.slice(0, caseText.indexOf(casePhrase));
+const caseAfter = caseText.slice(caseBefore.length + casePhrase.length);
+const common =
+  service === "mobile_apps"
+    ? {
+        title: t(locale, "services.mobile_apps.common_features_title"),
+        items: getSection(locale, "services.mobile_apps.common_features"),
+      }
+    : null;
+---
+
+<Section id="exemplos" labelledby="exemplos-title" surface="subtle">
+  <SectionHeader id="exemplos-title" title={title} />
+  <ul role="list" class="examples">
+    {
+      examples.map((example, index) => (
+        <Card as="li" class="examples__item">
+          <span class="examples__index" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <h3 class="examples__title">{example.title}</h3>
+          <p class="examples__text">
+            {index === apiExample ? (
+              <TermText locale={locale} text={example.text} terms={["api"]} />
+            ) : index === caseExample ? (
+              <Fragment>{caseBefore}<a href={caseHref}>{casePhrase}</a>{caseAfter}</Fragment>
+            ) : (
+              example.text
+            )}
+          </p>
+        </Card>
+      ))
+    }
+  </ul>
+  {
+    common && (
+      <div class="common">
+        <h3 class="common__title">{common.title}</h3>
+        <ul role="list" class="common__list">
+          {common.items.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+  <TextCta
+    locale={locale}
+    origem={`${SERVICE_PARAM[service]}-exemplos`}
+    servico={service}
+    lead={t(locale, "services.template.examples_cta_lead")}
+  />
+</Section>
+
+<style>
+  .examples {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+
+  /* Raiz = <Card as="li">: borda, raio, fundo e padding vêm de lá. */
+  .examples :global(.examples__item) {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .examples__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .examples__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .examples__text {
+    color: var(--color-text-secondary);
+  }
+
+  .common {
+    display: grid;
+    gap: var(--space-3);
+    margin-block-start: var(--space-8);
+  }
+
+  .common__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .common__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .common__list li {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background-color: var(--color-bg-surface);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  @media (min-width: 640px) {
+    .examples {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .examples {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,83 @@
+---
+/**
+ * Como trabalhamos §6.2 #5 `stage_diagnosis` (#diagnostico) — always. Dono: pages.
+ * Etapa 1, gratuita, 45 min: para quem, como é, "Você recebe", "Para
+ * aproveitar melhor, tenha à mão" e "Depois". CTA → /orcamento?origem=metodo-diagnostico.
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import { getSection, t, type Locale } from "@/i18n";
+
+import HwwFacts from "./HwwFacts.astro";
+import HwwStageBlock from "./HwwStageBlock.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const bring = getSection(locale, "how_we_work.stage_diagnosis.bring_items");
+---
+
+<HwwStageBlock locale={locale} stage="diagnosis" title={t(locale, "how_we_work.stage_diagnosis.title")}>
+  <HwwFacts
+    slot="intro"
+    items={[
+      { label: t(locale, "how_we_work.stage_diagnosis.for_whom_label"), text: t(locale, "how_we_work.stage_diagnosis.for_whom") },
+      { label: t(locale, "how_we_work.stage_diagnosis.how_label"), text: t(locale, "how_we_work.stage_diagnosis.how") },
+    ]}
+  />
+  <div class="bring">
+    <h3 class="bring__title">{t(locale, "how_we_work.stage_diagnosis.bring_title")}</h3>
+    <ul role="list" class="bring__list">
+      {bring.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+  <HwwFacts items={[{ label: t(locale, "how_we_work.stage_diagnosis.after_label"), text: t(locale, "how_we_work.stage_diagnosis.after") }]} />
+  <div>
+    <CtaDiagnosis locale={locale} origem="metodo-diagnostico" size="md" />
+  </div>
+</HwwStageBlock>
+
+<style>
+  .bring {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px dashed var(--color-border-default);
+    border-radius: var(--radius-lg);
+  }
+
+  .bring__title {
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+  }
+
+  .bring__list {
+    display: grid;
+    gap: var(--space-2);
+    counter-reset: bring;
+  }
+
+  .bring__list li {
+    position: relative;
+    padding-inline-start: var(--space-8);
+    counter-increment: bring;
+  }
+
+  .bring__list li::before {
+    content: counter(bring);
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0.1em;
+    display: grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-brand-subtle);
+    color: var(--color-brand-on-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-bold);
+  }
+</style>

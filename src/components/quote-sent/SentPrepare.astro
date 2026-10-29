@@ -1,0 +1,99 @@
+---
+/**
+ * Pedido enviado §7.8 #4 `prepare` — "Para aproveitar os 45 minutos". Dono: conversion.
+ * Itens na ordem do i18n. `decider` ganha destaque com P6 ∈ {recommend_to_decider,
+ * researching, not_defined}; `deadline` só aparece com P4 = asap ou data
+ * travante (i18n quote._notes.sent_prepare). Os dois dependem do resumo no
+ * sessionStorage: o script da página liga (data-sent-decider, data-sent-deadline).
+ * Ritmo vertical: <Section spacing="compact" trim="start"> (B211).
+ */
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const items = getSection(locale, "quote.sent.prepare.items");
+---
+
+<Section id="preparar" spacing="compact" trim="start" labelledby="sent-prepare-title" class="sent-prepare">
+  <div class="sent-prepare__inner">
+    <h2 id="sent-prepare-title" class="sent-prepare__title">{t(locale, "quote.sent.prepare.title")}</h2>
+    <ul class="sent-prepare__list" role="list">
+      <li data-sent-decider>
+        <Icon name="check" size={18} />
+        <span>{items.decider}</span>
+      </li>
+      <li>
+        <Icon name="check" size={18} />
+        <span>{items.examples}</span>
+      </li>
+      <li>
+        <Icon name="check" size={18} />
+        <span>{items.systems}</span>
+      </li>
+      <li>
+        <Icon name="check" size={18} />
+        <span>{items.tried}</span>
+      </li>
+      <li data-sent-deadline hidden>
+        <Icon name="check" size={18} />
+        <span>{items.deadline}</span>
+      </li>
+      <li>
+        <Icon name="check" size={18} />
+        <span>{items.success}</span>
+      </li>
+    </ul>
+  </div>
+</Section>
+
+<style>
+  .sent-prepare__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .sent-prepare__title {
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+  }
+
+  .sent-prepare__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-inline-size: var(--measure-prose);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sent-prepare__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .sent-prepare__list li[hidden] {
+    display: none;
+  }
+
+  .sent-prepare__list :global(svg) {
+    flex: none;
+    margin-block-start: var(--space-1);
+    color: var(--color-brand);
+  }
+
+  /* Destaque de "quem decide": borda, fundo e negrito, não só cor. */
+  .sent-prepare__list li[data-highlight="true"] {
+    padding: var(--space-3) var(--space-4);
+    border-inline-start: 3px solid var(--color-border-accent);
+    background-color: var(--color-accent-subtle);
+    font-weight: var(--font-weight-bold);
+  }
+</style>

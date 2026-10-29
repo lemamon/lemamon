@@ -1,0 +1,83 @@
+---
+/**
+ * Como trabalhamos §6.2 #12 `engineering` — "Como a gente constrói". when_data
+ * hasEngineering: uma linha por campo de engenharia.ts completo nos 3 idiomas
+ * (features.engineeringFields). Só rótulos e introdução vêm do copy; o texto de
+ * cada prática é do dono. Âncora: #como-construimos. Dono: gated.
+ *
+ * Sem hasEngineering e com perfis.github publicado, renderiza só a linha
+ * how_we_work.engineering.profiles_fallback (sem H2), com "a Lemamon no GitHub"
+ * como link (i18n how_we_work._notes.profiles_fallback). Sem as duas condições,
+ * não gera HTML.
+ *
+ * `data` existe só para os testes (flags e config injetados).
+ */
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { engenharia, type Engenharia } from "@/config/engenharia";
+import { getFeatures, type Features } from "@/config/features";
+import { perfis } from "@/config/perfis";
+import { getSection, t, type Locale } from "@/i18n";
+
+import FieldList from "./FieldList.astro";
+import { anchorAlias, anchorId, ANCHORS } from "@/config/routes";
+
+interface Props {
+  locale: Locale;
+  /** Só testes: flags e config injetados (tests/fixtures/). */
+  data?: { features: Pick<Features, "hasEngineering" | "engineeringFields" | "profiles">; engenharia: Engenharia };
+}
+
+const { locale, data } = Astro.props;
+const features = data?.features ?? (await getFeatures());
+const source = data?.engenharia ?? engenharia;
+const labels = getSection(locale, "how_we_work.engineering.fields");
+const items = features.hasEngineering
+  ? features.engineeringFields.flatMap((field) => {
+      const value = source[field]?.[locale]?.trim();
+      return value ? [{ label: labels[field], value }] : [];
+    })
+  : [];
+
+// "Para quem avalia a parte técnica: a Lemamon no GitHub." → texto + link (parte depois do primeiro ": ").
+const fallback = t(locale, "how_we_work.engineering.profiles_fallback");
+const split = fallback.indexOf(": ");
+const fallbackLead = split >= 0 ? fallback.slice(0, split + 2) : "";
+const fallbackLink = (split >= 0 ? fallback.slice(split + 2) : fallback).replace(/\.$/, "");
+const fallbackEnd = fallback.endsWith(".") ? "." : "";
+const showFallback = !features.hasEngineering && features.profiles.github;
+---
+
+{
+  features.hasEngineering && items.length > 0 && (
+    <Section id={anchorId(ANCHORS.engineering, locale)} aliasId={anchorAlias(ANCHORS.engineering, locale)} labelledby={`${ANCHORS.engineering}-title`}>
+      <SectionHeader
+        id={`${ANCHORS.engineering}-title`}
+        title={t(locale, "how_we_work.engineering.title")}
+        intro={t(locale, "how_we_work.engineering.intro")}
+      />
+      <FieldList items={items} />
+    </Section>
+  )
+}
+{
+  showFallback && (
+    <div class="container engineering-fallback">
+      <p>
+        {fallbackLead}
+        <a href={perfis.github.url} rel="noopener" target="_blank" data-track="profile_click" data-profile="github">
+          {fallbackLink}
+          <span class="sr-only"> {t(locale, "shared.a11y.opens_new_tab")}</span>
+        </a>
+        {fallbackEnd}
+      </p>
+    </div>
+  )
+}
+
+<style>
+  .engineering-fallback {
+    padding-block: var(--space-6);
+    color: var(--color-text-secondary);
+  }
+</style>

@@ -1,0 +1,110 @@
+---
+/**
+ * Breadcrumb + BreadcrumbList JSON-LD (BLUEPRINT §8.7). Dono: shell.
+ * API estável: { locale, items: Crumb[] }.
+ * Em /servicos/*, /sprint-de-descoberta, /cases/[slug] e /blog/[slug].
+ * O último item é a página atual (sem link, aria-current="page"); o separador
+ * "›" é decorativo (aria-hidden). Links internos sempre de urlFor().
+ * Links com alvo de 44×44 mesmo quando o texto é curto ("Início", "Blog"; B084).
+ * Abaixo de 768px o item atual some quando repete o H1 logo abaixo
+ * (`hideCurrentOnMobile`, padrão true): o título longo de um post não ocupa
+ * duas linhas da primeira dobra com o "›" sozinho. No case, o item atual é o
+ * nome do projeto (caseProjectName, S02-10), diferente do H1 orientado ao
+ * problema, e é o nome que a mensagem do WhatsApp cita: o CaseArticle passa
+ * false e ele continua visível no celular. O BreadcrumbList do JSON-LD
+ * continua completo nos dois casos.
+ */
+import { absoluteUrl } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+import JsonLd from "./JsonLd.astro";
+
+export interface Crumb {
+  label: string;
+  /** Caminho interno (urlFor). Ausente no item atual. */
+  href?: string;
+}
+
+interface Props {
+  locale: Locale;
+  items: Crumb[];
+  /** Esconde o item atual abaixo de 768px (só quando ele repete o H1). Padrão: true. */
+  hideCurrentOnMobile?: boolean;
+}
+
+const { locale, items, hideCurrentOnMobile = true } = Astro.props;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: items.map((item, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: item.label,
+    ...(item.href ? { item: absoluteUrl(item.href) } : {}),
+  })),
+};
+---
+
+<nav class="breadcrumb" data-hide-current={hideCurrentOnMobile ? "" : undefined} aria-label={t(locale, "shared.breadcrumb.aria_label")}>
+  <ol role="list">
+    {
+      items.map((item, index) => (
+        <li>
+          {index > 0 && (
+            <span class="breadcrumb__sep" aria-hidden="true">
+              ›
+            </span>
+          )}
+          {item.href ? <a href={item.href}>{item.label}</a> : <span aria-current="page">{item.label}</span>}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+<JsonLd data={jsonLd} />
+
+<style>
+  .breadcrumb {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+  .breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-1);
+  }
+  .breadcrumb li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-inline-size: 0;
+  }
+  .breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--target-min);
+    min-inline-size: var(--target-min);
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border-strong);
+  }
+  .breadcrumb a:hover {
+    color: var(--color-text-primary);
+    text-decoration-color: currentColor;
+  }
+  .breadcrumb [aria-current="page"] {
+    color: var(--color-text-primary);
+  }
+  .breadcrumb__sep {
+    color: var(--color-text-tertiary);
+  }
+
+  @media (max-width: 767.98px) {
+    .breadcrumb[data-hide-current] li:has(> [aria-current="page"]):not(:first-child) {
+      display: none;
+    }
+  }
+</style>

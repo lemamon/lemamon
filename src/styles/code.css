@@ -1,0 +1,43 @@
+/**
+ * code.css — painel dos blocos ``` de MDX (blog e cases). Dono: home.
+ *
+ * Fora do global.css de propósito (B256): só as páginas que renderizam MDX
+ * importam este arquivo (gated: PostArticle.astro e CaseArticle.astro,
+ * `import "@/styles/code.css";`), então as outras 40+ páginas não carregam
+ * regra de código. Sem ele o bloco continua legível: o Shiki ("css-variables",
+ * astro.config) já põe fundo e cores dos tokens --astro-code-* (tokens.css
+ * §6c) inline no <pre>; aqui vêm só o respiro, o raio, a fonte e a barra de
+ * janela (03-ui §3.5.3).
+ */
+
+pre.astro-code {
+  position: relative;
+  margin-block: var(--space-6);
+  padding: var(--space-10) var(--space-5) var(--space-5);
+  border: 1px solid var(--code-chrome-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--astro-code-background);
+  color: var(--astro-code-foreground);
+  font-family: var(--font-mono);
+  font-size: var(--text-code);
+  line-height: var(--leading-code);
+  overflow-x: auto;
+  tab-size: 2;
+}
+pre.astro-code::before {
+  content: "";
+  position: absolute;
+  inset-block-start: var(--space-4);
+  inset-inline-start: var(--space-4);
+  inline-size: var(--space-12); /* 3 pontos de 8px, a cada 16px */
+  block-size: var(--space-2);
+  background: radial-gradient(circle closest-side, var(--code-chrome-dot) 96%, transparent) 0 0 / var(--space-4) 100%
+    repeat-x;
+}
+pre.astro-code code {
+  font-size: inherit;
+  line-height: inherit;
+}
+pre.astro-code:focus-visible {
+  outline-color: var(--code-focus-ring);
+}

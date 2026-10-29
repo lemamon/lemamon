@@ -1,0 +1,68 @@
+---
+/**
+ * Header do wizard (/orcamento*) — BLUEPRINT §7.2, §8.4. Dono: shell.
+ *
+ * Antes de "Começar": logo + "Dúvidas? WhatsApp", sem menu e sem CTA.
+ * Modo foco: logo + "Pergunta N de 6" + "Dúvidas? WhatsApp". O progresso é
+ * desenhado pela ilha no alvo [data-wizard-progress] (contrato com o agente
+ * conversion); src/scripts/wizard-header.ts troca o nome do logo para
+ * "Lemamon, voltar à página inicial" no modo foco e liga o aviso "Suas
+ * respostas ficam salvas neste navegador." quando há rascunho.
+ * O link "Dúvidas? WhatsApp" leva [data-wizard-help]: a ilha troca a mensagem
+ * dele entre entry_direct (antes de "Começar") e wizard_question (modo foco).
+ * Estilo em ./wizard-chrome.css (o Base.astro o embute só nas páginas do
+ * wizard; fora do bundle global, backlog B094).
+ */
+import Icon from "@/components/ui/Icon.astro";
+import { urlFor } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+import { whatsappHref } from "@/lib/whatsapp";
+
+import Logo from "./Logo.astro";
+
+interface Props {
+  locale: Locale;
+  /** Mensagem do link "Dúvidas? WhatsApp" (quote.whatsapp_messages.wizard_question). */
+  whatsappMessage: string;
+}
+
+const { locale, whatsappMessage } = Astro.props;
+const wa = whatsappHref(whatsappMessage);
+---
+
+<header class="wizard-header" data-wizard-header data-mode="entry">
+  <div class="container wizard-header__inner">
+    <a
+      href={urlFor("home", locale)}
+      class="wizard-header__logo"
+      aria-label={t(locale, "shared.header.logo_label")}
+      data-wizard-logo
+      data-focus-label={t(locale, "shared.focus_header.logo_label_saved")}
+    >
+      <Logo locale={locale} size="sm" />
+    </a>
+    <span id="wizard-logo-hint" class="sr-only" data-wizard-logo-hint>{t(locale, "shared.focus_header.logo_saved_hint")}</span>
+    <div class="wizard-header__progress" data-wizard-progress></div>
+    {
+      wa && (
+        <a
+          class="wizard-header__help"
+          href={wa}
+          target="_blank"
+          rel="noopener"
+          data-track="whatsapp_click"
+          data-source="wizard_header"
+          data-wizard-help
+        >
+          <Icon name="whatsapp" size={18} />
+          <span>{t(locale, "shared.focus_header.help_whatsapp")}</span>
+          <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
+        </a>
+      )
+    }
+  </div>
+</header>
+
+<script>
+  import "@/scripts/wizard-header";
+</script>

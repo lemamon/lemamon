@@ -1,0 +1,235 @@
+---
+/**
+ * Tabela comparativa acessível "sem × com" (BLUEPRINT §6.2 comparison e §6.3
+ * why_start_here). Dono: pages.
+ *
+ * - HTML de tabela de verdade: <caption>, <th scope="col"> e <th scope="row">.
+ * - Mobile (< 768px): cada linha vira um cartão empilhado, SEM scroll
+ *   horizontal escondendo conteúdo. Como `display` diferente de table apaga a
+ *   semântica de tabela em alguns navegadores, os papéis ARIA são explícitos
+ *   (table/rowgroup/row/columnheader/rowheader/cell).
+ * - No cartão, cada célula mostra o nome da coluna num rótulo visível que é
+ *   aria-hidden: o leitor de tela já associa a célula ao cabeçalho da coluna.
+ * - "Com" se distingue por rótulo, ícone e borda, nunca só por cor.
+ * - Número e unidade não se separam na quebra ("a cada 2 / semanas", painel de
+ *   design): o texto das células passa por NoBreakText (shared/typography.ts).
+ */
+import NoBreakText from "@/components/shared/NoBreakText.astro";
+import Icon from "@/components/ui/Icon.astro";
+
+export interface ComparisonRow {
+  id: string;
+  dimension: string;
+  without: string;
+  with: string;
+}
+
+interface Props {
+  id: string;
+  caption: string;
+  colDimension: string;
+  colWithout: string;
+  colWith: string;
+  rows: ComparisonRow[];
+}
+
+const { id, caption, colDimension, colWithout, colWith, rows } = Astro.props;
+const captionId = `${id}-caption`;
+---
+
+<div class="comparison" id={id}>
+  <table role="table" aria-labelledby={captionId} class="comparison__table">
+    <caption id={captionId} class="sr-only">{caption}</caption>
+    <thead role="rowgroup" class="comparison__head">
+      <tr role="row">
+        <th role="columnheader" scope="col">{colDimension}</th>
+        <th role="columnheader" scope="col" class="comparison__col-without">{colWithout}</th>
+        <th role="columnheader" scope="col" class="comparison__col-with">{colWith}</th>
+      </tr>
+    </thead>
+    <tbody role="rowgroup">
+      {
+        rows.map((row) => (
+          <tr role="row" data-row={row.id}>
+            <th role="rowheader" scope="row" class="comparison__dimension">
+              <NoBreakText text={row.dimension} />
+            </th>
+            <td role="cell" class="comparison__without">
+              <span class="comparison__label" aria-hidden="true">
+                {colWithout}
+              </span>
+              <span class="comparison__value">
+                <Icon name="close" size={16} class="comparison__icon" />
+                <span>
+                  <NoBreakText text={row.without} />
+                </span>
+              </span>
+            </td>
+            <td role="cell" class="comparison__with">
+              <span class="comparison__label" aria-hidden="true">
+                {colWith}
+              </span>
+              <span class="comparison__value">
+                <Icon name="check" size={16} class="comparison__icon" />
+                <span>
+                  <NoBreakText text={row.with} />
+                </span>
+              </span>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .comparison__table {
+    inline-size: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: start;
+  }
+
+  .comparison__table th {
+    text-align: start;
+  }
+
+  .comparison__value {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .comparison :global(.comparison__icon) {
+    flex: none;
+    margin-block-start: var(--offset-first-line);
+  }
+
+  .comparison__without {
+    color: var(--color-text-secondary);
+  }
+
+  .comparison__without :global(.comparison__icon) {
+    color: var(--color-text-tertiary);
+  }
+
+  .comparison__with {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .comparison__with :global(.comparison__icon) {
+    color: var(--color-success);
+  }
+
+  .comparison__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-tertiary);
+  }
+
+  /* ---------- Mobile: cartões empilhados ---------- */
+  @media (max-width: 767.98px) {
+    .comparison__table,
+    .comparison__table tbody,
+    .comparison__table tr,
+    .comparison__table th,
+    .comparison__table td {
+      display: block;
+    }
+
+    /* Cabeçalho fica no DOM (semântica), fora da tela. */
+    .comparison__head {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    .comparison__table tbody {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .comparison__table tr {
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-lg);
+      background-color: var(--color-bg-surface);
+      overflow: hidden;
+    }
+
+    .comparison__dimension {
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--text-base);
+      line-height: var(--leading-base);
+      border-block-end: 1px solid var(--color-border-subtle);
+      background-color: var(--color-bg-subtle);
+    }
+
+    .comparison__without,
+    .comparison__with {
+      display: grid;
+      gap: var(--space-1);
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .comparison__with {
+      border-inline-start: 3px solid var(--color-accent);
+      background-color: var(--color-accent-subtle);
+    }
+  }
+
+  /* ---------- Tablet e desktop: tabela ---------- */
+  @media (min-width: 768px) {
+    .comparison__label {
+      display: none;
+    }
+
+    .comparison__table th,
+    .comparison__table td {
+      padding: var(--space-4) var(--space-5);
+      vertical-align: top;
+      border-block-end: 1px solid var(--color-border-subtle);
+    }
+
+    .comparison__head th {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      line-height: var(--leading-xs);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-secondary);
+      border-block-end: 1px solid var(--color-border-strong);
+    }
+
+    .comparison__head .comparison__col-with {
+      color: var(--color-text-primary);
+      border-block-start: 3px solid var(--color-accent);
+      background-color: var(--color-accent-subtle);
+      border-start-start-radius: var(--radius-md);
+      border-start-end-radius: var(--radius-md);
+    }
+
+    .comparison__dimension {
+      inline-size: 22%;
+      font-size: var(--text-base);
+    }
+
+    .comparison__without {
+      inline-size: 36%;
+    }
+
+    .comparison__with {
+      background-color: var(--color-accent-subtle);
+    }
+
+    .comparison__table tbody tr:last-child .comparison__with {
+      border-end-start-radius: var(--radius-md);
+      border-end-end-radius: var(--radius-md);
+    }
+  }
+</style>

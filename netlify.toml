@@ -1,0 +1,267 @@
+# Netlify — build e deploy do site estático (Astro). Dono: shell.
+# Ver docs/arquitetura/CONTRACT.md (§2 política de URL, §10 Netlify).
+# A configuração de deploy vive AQUI, não na UI do Netlify.
+
+[build]
+  command = "yarn build"
+  publish = "dist"
+
+[build.environment]
+  # Astro 7 exige Node >= 22.22; "22" instala o 22.x mais recente.
+  NODE_VERSION = "22"
+  # package.json fixa "packageManager": "yarn@1.22.22" (yarn.lock v1).
+  YARN_VERSION = "1.22.22"
+  # Install congelado (backlog B255): yarn.lock fora de sincronia com o
+  # package.json derruba o deploy em vez de ser reescrito em silêncio. A CI
+  # (.github/workflows/ci.yml) usa a mesma flag.
+  YARN_FLAGS = "--frozen-lockfile"
+  # O "prepare" do package.json (scripts/git-hooks.mjs) liga o pre-commit do
+  # lint (B251) no `yarn install` de quem desenvolve; no Netlify não há commit.
+  # O script já sai sem fazer nada com NETLIFY/CI; esta variável é a trava explícita.
+  LEMAMON_HOOKS = "0"
+  # NODE_ENV fica SEM valor aqui de propósito: com NODE_ENV=production o Yarn
+  # pula as devDependencies, e astro check, typescript e os @types são
+  # devDependencies (backlog B249).
+  # PUBLIC_WHATSAPP_NUMBER e PUBLIC_GA4_ID ficam no painel (Site configuration >
+  # Environment variables). Vazias, o recurso some. O Netlify também define
+  # CONTEXT (production / deploy-preview / branch-deploy): src/config/site.ts
+  # só liga as tags de medição de produção com CONTEXT = production.
+  # PUBLIC_DADOS_FICTICIOS (camada de dados fictícios) NUNCA vale em produção:
+  # com CONTEXT = production ela é ignorada e o build avisa
+  # (src/integrations/dados-ficticios.ts). Os dados do dono ficam em dados/dono.json.
+  # Build LOCAL com a camada vai para dist-ficticio/, nunca para este publish
+  # dir. Produção sai só deste build: deploy manual de pasta local é proibido.
+
+# Netlify Functions: só o coletor dos relatórios de violação da CSP
+# (netlify/functions/csp-report.mjs, backlog B254), em
+# /.netlify/functions/csp-report. Sem dependências: o arquivo vai como está.
+[functions]
+  directory = "netlify/functions"
+
+# ---------------------------------------------------------------------------
+# REDIRECTS — BLUEPRINT §10.1. Ficam ANTES de qualquer outra regra (o Netlify
+# aplica a primeira que casar). NÃO existe catch-all de SPA: o Astro gera uma
+# página por rota e a 404.html, e um "/* /index.html 200" mascararia todo 404.
+# ---------------------------------------------------------------------------
+
+# Host do Netlify (auditoria SEO, S01-1): boring-shockley-7c50b2.netlify.app
+# serve a produção com 200 e "index, follow", uma cópia rastreável do
+# lemamon.dev (o Netlify só manda `Link: rel=canonical`). Regra de DOMÍNIO: casa
+# só com este host exato, então só vale no deploy de produção. O deploy preview
+# (deploy-preview-N--boring-shockley-7c50b2.netlify.app) e o branch deploy
+# (<branch>--boring-shockley-7c50b2.netlify.app) são outros hosts e continuam
+# 200, com o noindex do próprio Netlify. Conferir depois do merge (playbook 08 §1):
+#   curl -sI https://boring-shockley-7c50b2.netlify.app/servicos/mvp
+#   → 301 para https://lemamon.dev/servicos/mvp
+[[redirects]]
+  from = "https://boring-shockley-7c50b2.netlify.app/*"
+  to = "https://lemamon.dev/:splat"
+  status = 301
+  force = true
+
+# Wizard antigo. A conversão "Solicitar cotação" do Google Ads é por evento e
+# sobrevive à troca de rota; o 301 é obrigatório (BLUEPRINT §1.6). O Netlify
+# repassa a query string (gclid, utm_*) para o destino.
+[[redirects]]
+  from = "/projects"
+  to = "/orcamento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/projects/*"
+  to = "/orcamento"
+  status = 301
+  force = true
+
+# URL curta para bio e WhatsApp (usar com ?utm_source=).
+[[redirects]]
+  from = "/diagnostico"
+  to = "/orcamento"
+  status = 301
+  force = true
+
+# URL curta do método no texto de "Copiar resumo" do pós-envio (i18n
+# quote._notes.sent_copy). O decisor que recebe o resumo não vê parâmetro de
+# rastreamento; o redirect acrescenta a atribuição. Pares em
+# src/config/routes.ts (METHOD_SHORT_PATH), conferidos por tests/unit/routes.test.ts.
+[[redirects]]
+  from = "/metodo"
+  to = "/como-trabalhamos?utm_source=resumo_copiado&utm_medium=compartilhamento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/method"
+  to = "/en/how-we-work?utm_source=resumo_copiado&utm_medium=compartilhamento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/es/metodo"
+  to = "/es/como-trabajamos?utm_source=resumo_copiado&utm_medium=compartilhamento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/lemamon"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home"
+  to = "/"
+  status = 301
+  force = true
+
+# Posts falsos antigos (/post/1..3).
+[[redirects]]
+  from = "/post/*"
+  to = "/"
+  status = 301
+  force = true
+
+# Detector de idioma antigo (?lng=). Casa pela query; force porque "/" existe.
+[[redirects]]
+  from = "/"
+  to = "/en/"
+  status = 301
+  force = true
+  query = { lng = "en" }
+
+[[redirects]]
+  from = "/"
+  to = "/es/"
+  status = 301
+  force = true
+  query = { lng = "es" }
+
+# Blog: 302 para a Home enquanto hasPosts for falso. SEM force de propósito:
+# quando o blog existir, o arquivo /blog.html sombreia esta regra e ela deixa
+# de valer sozinha (conferir com curl -sI no deploy preview ao publicar o blog).
+[[redirects]]
+  from = "/blog"
+  to = "/"
+  status = 302
+
+# Endereços prováveis que davam 404 (auditoria SEO S01-4, conversão F90): quem
+# digita a URL em inglês, a do wizard antigo com outra grafia ou o sitemap no
+# nome padrão. force: nenhum desses arquivos existe, mas a regra não depende disso.
+[[redirects]]
+  from = "/contact"
+  to = "/contato"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/quote"
+  to = "/orcamento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/Diagnostico"
+  to = "/orcamento"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/servicos/sistema-web"
+  to = "/servicos/sistemas-web"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/projects"
+  to = "/en/quote"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/es/projects"
+  to = "/es/cotizacion"
+  status = 301
+  force = true
+
+# O @astrojs/sitemap gera sitemap-index.xml (o que o robots.txt e o Search
+# Console usam); /sitemap.xml é o nome que ferramentas e pessoas tentam primeiro.
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap-index.xml"
+  status = 301
+  force = true
+
+# /index.html por idioma (S01-5, opcional): SEM regra de propósito. O arquivo
+# responde 200, mas o canonical já aponta a raiz de cada idioma. Um 301 forçado
+# de /index.html para / arrisca loop na Home se o Netlify casar a regra com o
+# arquivo servido em "/", e o ganho é quase nulo. Para tentar de novo, só com
+# o teste em um deploy preview que já tenha a regra:
+#   curl -sI <preview>/ → 200 e curl -sI <preview>/index.html → 301 para /.
+
+# 404 por idioma. Sem force: só vale quando nenhum arquivo casa. Fora de
+# /en/ e /es/, o Netlify serve /404.html automaticamente.
+[[redirects]]
+  from = "/en/*"
+  to = "/en/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/es/*"
+  to = "/es/404.html"
+  status = 404
+
+# ---------------------------------------------------------------------------
+# HEADERS
+# ---------------------------------------------------------------------------
+
+# Segurança, em todas as respostas.
+# A CSP NÃO mora aqui: src/integrations/csp.ts a gera no build e grava
+# dist/_headers (o Netlify aplica os dois arquivos), com o 'sha256-…' de cada
+# script inline daquele build e sem 'unsafe-inline' em script-src (backlog
+# B254). Hash escrito à mão envelhece: o snippet do gtag muda com PUBLIC_GA4_ID,
+# o runtime de ilha muda com o Astro. Duas políticas (aqui e no _headers)
+# valeriam as duas ao mesmo tempo; por isso esta tabela não tem nenhuma.
+# Ela sai em Report-Only até a promoção: o shell troca CSP_ENFORCE para true em
+# csp.ts depois de tests/e2e/shell-csp.spec.ts passar com 0 violação contra
+# PRODUÇÃO (E2E_NETLIFY_URL=https://lemamon.dev), onde GA4, Google Ads e New
+# Relic carregam, e de 7 dias sem relatório nos logs da função csp-report
+# (report-uri/report-to + Reporting-Endpoints no mesmo _headers); o evento
+# securitypolicyviolation dispara também em Report-Only.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Cross-Origin-Opener-Policy = "same-origin"
+
+# Assets com hash de conteúdo no nome: nunca ficam velhos, cache de 1 ano
+# imutável. São DUAS pastas:
+#  - /_astro/: JS, CSS, fontes e imagens processadas pelo Astro;
+#  - /_midia/: vídeo e legendas do depoimento (src/content/midia.ts, nome
+#    <base>.<sha256 de 10 dígitos>.<ext>, copiados pela integração
+#    dados-ficticios só quando o HTML cita). O MP4 é o maior arquivo do site:
+#    sem esta regra, todo visitante que volta revalida o vídeo (backlog B236).
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/_midia/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# /llms.txt (auditoria SEO S05-10): texto para ferramentas de IA, que repete os
+# titles e as descriptions do site. noindex tira o arquivo do índice da busca
+# (seria uma página fina) sem impedir que quem o pede o leia.
+[[headers]]
+  for = "/llms.txt"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
+# HTML e arquivos de public/ (sem hash) ficam no padrão do Netlify
+# (public, max-age=0, must-revalidate): deploy novo vale na hora.

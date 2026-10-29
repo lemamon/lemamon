@@ -1,0 +1,1687 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lemamon.dev/dados/dono.schema.json",
+  "title": "Dados do dono — Lemamon",
+  "description": "TUDO que vem do dono da Lemamon. O site lê este arquivo no build (src/config/*.ts). Vazio = a seção não existe no site; parcial (faltou um idioma) = não aparece; malformado = o build falha com a mensagem do campo. Guia campo a campo: docs/playbooks/00-DADOS-DO-DONO.md. Dado fictício NUNCA vai aqui (vai em dados/dono.ficticio.json).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "empresa",
+    "privacidade",
+    "time",
+    "perfis",
+    "confirmacoes",
+    "qualificacao",
+    "precos",
+    "agenda",
+    "descoberta",
+    "sustentacao",
+    "engenharia",
+    "depoimentos",
+    "logos"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Aponta para este schema (autocompletar no editor)."
+    },
+    "empresa": {
+      "type": "object",
+      "description": "Dados da empresa (BLUEPRINT §1.5, §4, §6.11). Razão social + CNPJ válido liberam CNPJ no rodapé, controlador na Política e o bloco \"Dados da empresa\" em /sobre.",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "E-mail público. Trocar aqui troca nos 3 idiomas."
+        },
+        "razaoSocial": {
+          "type": "string",
+          "maxLength": 160,
+          "description": "Razão social exatamente como no cartão CNPJ. Libera hasCompanyData junto com o CNPJ."
+        },
+        "cnpj": {
+          "type": "string",
+          "pattern": "^$|^\\d{2}\\.?\\d{3}\\.?\\d{3}/?\\d{4}-?\\d{2}$",
+          "description": "\"00.000.000/0000-00\" ou só os 14 dígitos. Os dígitos verificadores são conferidos no build."
+        },
+        "anoFundacao": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1900,
+          "description": "Opcional (ex.: 2021). null = não publicar."
+        },
+        "responsavel": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Sem pessoa jurídica: nome da pessoa responsável (controlador na Política)."
+        },
+        "apresentacao": {
+          "description": "Subtítulo de /sobre: 1 frase com \"a gente\", para quem a Lemamon trabalha e por que combina escopo, prazo e preço antes, citando a cidade como no resto do site: pt \"São Paulo, SP\", en \"São Paulo, Brazil\", es \"São Paulo, Brasil\" (nunca \"SP\" em en/es). Sem número e sem superlativo. Libera hasAboutIntro.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado160"
+            }
+          ]
+        },
+        "historia": {
+          "description": "\"Por que a gente trabalha assim\" em /sobre: 1 a 4 parágrafos por idioma. Libera hasAboutStory.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/listaLocalizada4x600"
+            }
+          ]
+        }
+      },
+      "required": [
+        "email",
+        "razaoSocial",
+        "cnpj",
+        "anoFundacao",
+        "responsavel"
+      ],
+      "additionalProperties": false
+    },
+    "privacidade": {
+      "type": "object",
+      "description": "Decisões jurídicas da Política de Privacidade (escolhem variantes JÁ ESCRITAS no i18n). Enquanto faltar algo obrigatório, o build de PRODUÇÃO falha (launch blockers).",
+      "properties": {
+        "baseAnuncios": {
+          "enum": [
+            "legitimo_interesse",
+            "consentimento",
+            null
+          ],
+          "description": "Base legal da medição de anúncios. \"consentimento\" liga o aviso de cookies (Aceitar/Recusar) e é obrigatório para remarketing e para os pixels (privacidade.pixels)."
+        },
+        "encarregado": {
+          "description": "\"pequeno_porte\" (sem encarregado publicado) ou { nome, email } do encarregado (DPO).",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "const": "pequeno_porte"
+            },
+            {
+              "type": "object",
+              "description": "Encarregado (DPO).",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "maxLength": 120
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                }
+              },
+              "required": [
+                "nome",
+                "email"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "mecanismoTransferencia": {
+          "description": "Mecanismo de transferência internacional. Vazio usa a frase padrão.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado200"
+            }
+          ]
+        },
+        "prazos": {
+          "type": "object",
+          "description": "Prazos de retenção por idioma (ex.: \"12 meses\").",
+          "properties": {
+            "retencaoPedidos": {
+              "description": "Pedidos do wizard e do contato.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/localizado80"
+                }
+              ]
+            },
+            "ga4": {
+              "description": "Google Analytics 4.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/localizado80"
+                }
+              ]
+            },
+            "googleAds": {
+              "description": "Google Ads.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/localizado80"
+                }
+              ]
+            },
+            "conversoesGoogleAds": {
+              "description": "Conversões do Google Ads.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/localizado80"
+                }
+              ]
+            },
+            "newRelic": {
+              "description": "New Relic.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/localizado80"
+                }
+              ]
+            },
+            "logsHospedagem": {
+              "description": "Logs da hospedagem.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/localizado80"
+                }
+              ]
+            }
+          },
+          "required": [
+            "retencaoPedidos",
+            "ga4",
+            "googleAds",
+            "conversoesGoogleAds",
+            "newRelic",
+            "logsHospedagem"
+          ],
+          "additionalProperties": false
+        },
+        "atualizadaEm": {
+          "type": "string",
+          "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Data da última mudança da Política (AAAA-MM-DD)."
+        },
+        "remarketing": {
+          "type": "boolean",
+          "description": "Remarketing ligado no Google Ads. Exige baseAnuncios = \"consentimento\"."
+        },
+        "provedorEmail": {
+          "type": "string",
+          "enum": ["gmail", "google_workspace", "microsoft_365"],
+          "description": "Onde está o e-mail da Lemamon: \"gmail\" (Gmail pessoal), \"google_workspace\" (só com o aditivo de tratamento assinado) ou \"microsoft_365\" (contratado pela GoDaddy). Escolhe o fornecedor de e-mail da Política (playbook 11)."
+        },
+        "classificacaoDefineAtendimento": {
+          "type": "boolean",
+          "description": "A classificação automática também define a forma de atendimento (variantes *_with_routing)."
+        },
+        "naoVendemosConfirmado": {
+          "type": "boolean",
+          "description": "\"Não vendemos dados pessoais.\" só com a confirmação do dono E do advogado."
+        },
+        "exclusaoAlcancaBackups": {
+          "type": "boolean",
+          "description": "A exclusão dos pedidos alcança a lixeira e os backups (retention.items.requests_with_backups), só com a confirmação do dono (período de Itens Recuperáveis do M365, ciclo de backup, backup do WhatsApp). false por padrão."
+        },
+        "ferramentas": {
+          "type": "object",
+          "description": "Ferramentas opcionais que tratam dados dos pedidos (precisam estar na Política antes de entrar no ar).",
+          "properties": {
+            "agenda": {
+              "$ref": "#/definitions/ferramenta"
+            },
+            "crm": {
+              "$ref": "#/definitions/ferramenta"
+            },
+            "emailAcompanhamento": {
+              "$ref": "#/definitions/ferramenta"
+            },
+            "automacao": {
+              "$ref": "#/definitions/ferramenta"
+            },
+            "chatEquipe": {
+              "$ref": "#/definitions/ferramenta"
+            }
+          },
+          "required": [
+            "agenda",
+            "crm",
+            "emailAcompanhamento",
+            "automacao",
+            "chatEquipe"
+          ],
+          "additionalProperties": false
+        },
+        "pixels": {
+          "type": "object",
+          "description": "Pixels de anúncio opcionais (LinkedIn Insight Tag, Meta Pixel; decisão D12 do playbook 15). null ou ausente = desligado. Com o ID: exige baseAnuncios = \"consentimento\", só carrega em produção e DEPOIS do \"Aceitar\", e entra na Política (operadores e retenção) com o prazo. Sem os textos da Política no site, o build de produção falha.",
+          "properties": {
+            "linkedin": {
+              "description": "LinkedIn Insight Tag (remarketing e medição de campanha no LinkedIn). null = desligado.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/pixelDeclarado"
+                }
+              ]
+            },
+            "meta": {
+              "description": "Meta Pixel, só para remarketing (revisão trimestral, playbook 12 §9). null = desligado.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/pixelDeclarado"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "baseAnuncios",
+        "encarregado",
+        "mecanismoTransferencia",
+        "prazos",
+        "atualizadaEm",
+        "remarketing",
+        "provedorEmail",
+        "classificacaoDefineAtendimento",
+        "naoVendemosConfirmado",
+        "exclusaoAlcancaBackups",
+        "ferramentas"
+      ],
+      "additionalProperties": false
+    },
+    "time": {
+      "type": "array",
+      "description": "Pessoas do time (BLUEPRINT §5.7). ≥ 1 pessoa completa que atua em projetos libera /sobre e a seção Time (hasTeam).",
+      "items": {
+        "type": "object",
+        "description": "Uma pessoa real.",
+        "properties": {
+          "id": {
+            "$ref": "#/definitions/slug"
+          },
+          "nome": {
+            "$ref": "#/definitions/nomeCompleto"
+          },
+          "foto": {
+            "$ref": "#/definitions/imagem",
+            "description": "Foto REAL da pessoa, relativa a dados/ (ex.: \"imagens/ana-souza.jpg\")."
+          },
+          "papel": {
+            "$ref": "#/definitions/localizado60",
+            "description": "Papel por idioma (ex.: \"Desenvolvedora\")."
+          },
+          "linha": {
+            "$ref": "#/definitions/localizado160",
+            "description": "1 linha escrita pela própria pessoa, por idioma."
+          },
+          "linkedin": {
+            "type": "string",
+            "pattern": "^https://([a-z]+\\.)?linkedin\\.com/",
+            "description": "Perfil do LinkedIn (opcional)."
+          },
+          "github": {
+            "type": "string",
+            "pattern": "^https://([a-z]+\\.)?github\\.com/",
+            "description": "Perfil do GitHub (opcional)."
+          },
+          "atuaEmProjetos": {
+            "type": "boolean",
+            "description": "Atua em projetos de cliente. Só quem atua entra na seção Time e liga hasTeam."
+          },
+          "ordem": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Ordem (menor primeiro)."
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "foto",
+          "papel",
+          "linha",
+          "atuaEmProjetos"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "perfis": {
+      "type": "object",
+      "description": "Perfis públicos (BLUEPRINT §5.8). publicar = true libera a seção \"Confira antes de conversar\" e o bloco de perfis.",
+      "properties": {
+        "github": {
+          "type": "object",
+          "description": "GitHub.",
+          "properties": {
+            "url": {
+              "type": "string",
+              "pattern": "^https://(www\\.)?github\\.com/"
+            },
+            "publicar": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "url",
+            "publicar"
+          ],
+          "additionalProperties": false
+        },
+        "linkedin": {
+          "type": "object",
+          "description": "LinkedIn.",
+          "properties": {
+            "url": {
+              "type": "string",
+              "pattern": "^https://(www\\.)?linkedin\\.com/"
+            },
+            "publicar": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "url",
+            "publicar"
+          ],
+          "additionalProperties": false
+        },
+        "medium": {
+          "type": "object",
+          "description": "Medium.",
+          "properties": {
+            "url": {
+              "type": "string",
+              "pattern": "^https://(www\\.)?medium\\.com/"
+            },
+            "publicar": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "url",
+            "publicar"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "github",
+        "linkedin",
+        "medium"
+      ],
+      "additionalProperties": false
+    },
+    "confirmacoes": {
+      "type": "object",
+      "description": "Promessas que o site só faz depois que o dono confirma que valem para TODO cliente (BLUEPRINT §4 e §14). true = publica o FAQ/variante correspondente.",
+      "properties": {
+        "escopoMudanca": {
+          "type": "boolean",
+          "description": "FAQ \"E se eu mudar o escopo no meio?\" + régua de /quanto-custa."
+        },
+        "codigoProprietario": {
+          "enum": [
+            false,
+            "answer_draft",
+            "answer_draft_alt"
+          ],
+          "description": "Qual resposta do FAQ \"De quem é o código?\" foi aprovada (só uma é publicada)."
+        },
+        "notaFiscal": {
+          "type": "boolean",
+          "description": "FAQ \"Vocês emitem nota fiscal?\"."
+        },
+        "outrasCidades": {
+          "type": "boolean",
+          "description": "FAQ \"Atendem fora de São Paulo?\"."
+        },
+        "atendeExterior": {
+          "type": "boolean",
+          "description": "Atende empresas de qualquer país, a distância (D31): variante \"…ou de fora do Brasil?\" do FAQ de outras cidades e linha da Home. Exige outrasCidades = true."
+        },
+        "nda": {
+          "type": "boolean",
+          "description": "FAQ \"Vocês assinam NDA?\"."
+        },
+        "sistemaTerceiros": {
+          "type": "boolean",
+          "description": "FAQ \"Cuidam de sistema feito por outra empresa?\"."
+        },
+        "semDescoberta": {
+          "type": "boolean",
+          "description": "FAQ \"Posso começar direto pelo desenvolvimento?\" (texto alinhado à D44: a necessidade da Descoberta é definida com você no diagnóstico; ligar = aprovar o texto)."
+        },
+        "duracaoDescoberta": {
+          "type": "boolean",
+          "description": "FAQ \"Quanto dura a Descoberta?\" com resposta sem número (D44, 21/10/2026, revoga a D42): a necessidade e a duração são definidas com você no diagnóstico."
+        },
+        "planoDoCliente": {
+          "type": "boolean",
+          "description": "FAQ \"O plano da Descoberta é meu se eu não seguir?\"."
+        },
+        "migracaoDados": {
+          "type": "boolean",
+          "description": "FAQ \"Vocês migram os dados da planilha/sistema atual?\"."
+        },
+        "ligacao": {
+          "type": "boolean",
+          "description": "Opção \"Ligação\" no canal de contato do wizard."
+        },
+        "valoresNoDiagnostico": {
+          "type": "boolean",
+          "description": "Variante do resumo do wizard que fala de valores no diagnóstico."
+        },
+        "timeDoCliente": {
+          "type": "boolean",
+          "description": "Variantes que citam a equipe do cliente."
+        },
+        "scoreDRecebeDiagnostico": {
+          "type": "boolean",
+          "description": "Todo pedido fora de perfil também recebe os 45 min e a devolutiva (trava do score D)."
+        },
+        "devolutivaConteudo": {
+          "description": "O que vem na devolutiva, por idioma (completa \"…com {conteudo_da_devolutiva}\").",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado240"
+            }
+          ]
+        },
+        "formatoDiagnostico": {
+          "description": "Formato e participantes dos 45 minutos (só o papel de quem conduz).",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "description": "Formato do diagnóstico.",
+              "properties": {
+                "formato": {
+                  "$ref": "#/definitions/localizado120"
+                },
+                "participantes": {
+                  "$ref": "#/definitions/localizado120"
+                }
+              },
+              "required": [
+                "formato",
+                "participantes"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "pagamento": {
+          "description": "Condições de pagamento, por idioma, sem valores.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado240"
+            }
+          ]
+        }
+      },
+      "required": [
+        "escopoMudanca",
+        "codigoProprietario",
+        "notaFiscal",
+        "outrasCidades",
+        "atendeExterior",
+        "nda",
+        "sistemaTerceiros",
+        "semDescoberta",
+        "duracaoDescoberta",
+        "planoDoCliente",
+        "migracaoDados",
+        "ligacao",
+        "valoresNoDiagnostico",
+        "timeDoCliente",
+        "scoreDRecebeDiagnostico",
+        "devolutivaConteudo",
+        "formatoDiagnostico",
+        "pagamento"
+      ],
+      "additionalProperties": false
+    },
+    "qualificacao": {
+      "type": "object",
+      "description": "Faixas da P5 do wizard (qualificação, BLUEPRINT §7.3 e §7.9). NÃO é preço publicado: as faixas só existem dentro do wizard. Moeda + 4 faixas + corteMql ligam a P5 com faixas.",
+      "properties": {
+        "moeda": {
+          "type": "string",
+          "pattern": "^$|^[A-Z]{3}$",
+          "description": "Código ISO da moeda (ex.: \"BRL\"). Obrigatório com faixas."
+        },
+        "faixas": {
+          "$ref": "#/definitions/faixas"
+        },
+        "faixasMensais": {
+          "$ref": "#/definitions/faixas",
+          "description": "Opcional: 4 faixas mensais (P1 = manter/evoluir um sistema)."
+        },
+        "corteMql": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/tier"
+            }
+          ],
+          "description": "Menor faixa que conta como \"orçamento OK\" (lead qualificado)."
+        },
+        "corteMqlMensal": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/tier"
+            }
+          ],
+          "description": "Corte das faixas mensais."
+        },
+        "scoreD": {
+          "type": "object",
+          "description": "Score D (fora de perfil). Ligar exige confirmacoes.scoreDRecebeDiagnostico.",
+          "properties": {
+            "ativo": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "ativo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "moeda",
+        "faixas",
+        "faixasMensais",
+        "corteMql",
+        "scoreD"
+      ],
+      "additionalProperties": false
+    },
+    "precos": {
+      "type": "object",
+      "description": "Faixas de investimento publicadas (BLUEPRINT §4 e §5.4). null = não publicar a linha. Linha completa libera a seção \"Investimento\" nas páginas dela. A Sprint de Descoberta é gratuita (D44, 21/10/2026) e não tem linha.",
+      "properties": {
+        "desenvolvimento": {
+          "type": "object",
+          "description": "Desenvolvimento, por tipo (unidade \"projeto\").",
+          "properties": {
+            "sistemas": {
+              "description": "Sistemas web.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/linhaDePreco"
+                }
+              ]
+            },
+            "aplicativos": {
+              "description": "Aplicativos.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/linhaDePreco"
+                }
+              ]
+            },
+            "integracoes": {
+              "description": "Integrações.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/linhaDePreco"
+                }
+              ]
+            },
+            "mvp": {
+              "description": "MVP.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/linhaDePreco"
+                }
+              ]
+            }
+          },
+          "required": [
+            "sistemas",
+            "aplicativos",
+            "integracoes",
+            "mvp"
+          ],
+          "additionalProperties": false
+        },
+        "sustentacao": {
+          "description": "Sustentação (unidade \"mes\").",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/linhaDePreco"
+            }
+          ]
+        }
+      },
+      "required": [
+        "desenvolvimento",
+        "sustentacao"
+      ],
+      "additionalProperties": false
+    },
+    "agenda": {
+      "type": "object",
+      "description": "Agenda online de diagnósticos. URL https libera \"Escolha um horário agora\" no pós-envio (exige declarar privacidade.ferramentas.agenda).",
+      "properties": {
+        "url": {
+          "type": "string",
+          "pattern": "^$|^https://\\S+$",
+          "description": "Link público da agenda (https://...). \"\" = sem agenda."
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "descoberta": {
+      "type": "object",
+      "description": "Formato da Sprint de Descoberta (§6.3). formato, participantes e ritmo nos 3 idiomas liberam \"Como a Descoberta acontece\"; naoInclui (1 a 5 itens nos 3 idiomas) libera \"O que a Descoberta não inclui\". A duração não é publicada (D44).",
+      "properties": {
+        "formato": {
+          "description": "Como a Descoberta é organizada.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "participantes": {
+          "description": "Quem participa (só papéis).",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "ritmo": {
+          "description": "Cadência dos encontros.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "duracao": {
+          "description": "Sempre null (D44, 21/10/2026, revoga a D42): a duração da Descoberta é definida com o cliente no diagnóstico e não é publicada.",
+          "type": "null"
+        },
+        "naoInclui": {
+          "description": "O que a Sprint de Descoberta NÃO inclui (ex.: desenvolvimento, hospedagem), 1 a 5 itens curtos por idioma, sem valor em dinheiro. null = o bloco não aparece. Libera hasDiscoveryExclusions.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/listaLocalizada5x120"
+            }
+          ]
+        }
+      },
+      "required": [
+        "formato",
+        "participantes",
+        "ritmo",
+        "duracao"
+      ],
+      "additionalProperties": false
+    },
+    "sustentacao": {
+      "type": "object",
+      "description": "Formato da sustentação (§6.5). inclui + contratacao + canais liberam \"Formato e contratação\". Sem SLA numérico que não valha para todo cliente.",
+      "properties": {
+        "inclui": {
+          "description": "O que a sustentação inclui.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "contratacao": {
+          "description": "Como é contratada.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "canais": {
+          "description": "Por onde o cliente pede e acompanha.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "urgencias": {
+          "description": "Opcional: como erros urgentes são tratados.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        }
+      },
+      "required": [
+        "inclui",
+        "contratacao",
+        "canais",
+        "urgencias"
+      ],
+      "additionalProperties": false
+    },
+    "engenharia": {
+      "type": "object",
+      "description": "Práticas de engenharia (§6.2 #12). ≥ 1 campo nos 3 idiomas libera \"Como a gente constrói\".",
+      "properties": {
+        "tests": {
+          "description": "Como o código é testado.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "ci_cd": {
+          "description": "Como o código chega ao ar.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "code_review": {
+          "description": "Revisão de código.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "repository": {
+          "description": "Onde fica o código e de quem ele é.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "documentation": {
+          "description": "O que é documentado.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "handover": {
+          "description": "Passagem de conhecimento no fim.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "people": {
+          "description": "Quem trabalha no projeto (papéis).",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        },
+        "security": {
+          "description": "Segurança e acesso aos dados do cliente.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado300"
+            }
+          ]
+        }
+      },
+      "required": [
+        "tests",
+        "ci_cd",
+        "code_review",
+        "repository",
+        "documentation",
+        "handover",
+        "people",
+        "security"
+      ],
+      "additionalProperties": false
+    },
+    "depoimentos": {
+      "type": "array",
+      "description": "Depoimentos NOMINAIS com autorização por escrito. ≥ 1 libera o depoimento em destaque (hasTestimonials).",
+      "items": {
+        "type": "object",
+        "description": "Um depoimento real.",
+        "properties": {
+          "id": {
+            "$ref": "#/definitions/slug"
+          },
+          "citacao": {
+            "$ref": "#/definitions/localizado360",
+            "description": "Citação de 2–3 linhas, por idioma."
+          },
+          "nome": {
+            "$ref": "#/definitions/nomeCompleto"
+          },
+          "cargo": {
+            "$ref": "#/definitions/localizado80",
+            "description": "Cargo por idioma."
+          },
+          "empresa": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Empresa da pessoa."
+          },
+          "foto": {
+            "type": "object",
+            "description": "Foto opcional: só com autorizacao.foto = true.",
+            "properties": {
+              "src": {
+                "$ref": "#/definitions/imagem"
+              },
+              "alt": {
+                "$ref": "#/definitions/localizado160"
+              }
+            },
+            "required": [
+              "src",
+              "alt"
+            ],
+            "additionalProperties": false
+          },
+          "video": {
+            "type": "object",
+            "description": "Depoimento em VÍDEO opcional (até 90 s), só com autorizacao.video = true. Carrega só o pôster até a pessoa apertar o play; legenda em português obrigatória.",
+            "properties": {
+              "src": {
+                "$ref": "#/definitions/video"
+              },
+              "poster": {
+                "$ref": "#/definitions/imagem",
+                "description": "Quadro do vídeo mostrado antes do play (imagem relativa a dados/)."
+              },
+              "legendas": {
+                "type": "object",
+                "description": "Legendas WebVTT por idioma: pt obrigatória, en e es opcionais.",
+                "properties": {
+                  "pt": {
+                    "$ref": "#/definitions/legenda"
+                  },
+                  "en": {
+                    "$ref": "#/definitions/legenda"
+                  },
+                  "es": {
+                    "$ref": "#/definitions/legenda"
+                  }
+                },
+                "required": [
+                  "pt"
+                ],
+                "additionalProperties": false
+              },
+              "duracaoSegundos": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 90,
+                "description": "Duração do vídeo em segundos (no máximo 90)."
+              }
+            },
+            "required": [
+              "src",
+              "poster",
+              "legendas",
+              "duracaoSegundos"
+            ],
+            "additionalProperties": false
+          },
+          "caseSlug": {
+            "$ref": "#/definitions/slug",
+            "description": "Case ligado (o link só aparece com o case publicado)."
+          },
+          "sobreProcesso": {
+            "type": "boolean",
+            "description": "Fala sobre previsibilidade/processo (preferido depois do método)."
+          },
+          "ordem": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Ordem (menor primeiro)."
+          },
+          "autorizacao": {
+            "description": "Autorização do depoimento.",
+            "type": "object",
+            "properties": {
+              "porEscrito": {
+                "const": true,
+                "description": "Tem que ser true: existe autorização por escrito (e-mail, contrato, termo assinado)."
+              },
+              "autorizadoPor": {
+                "type": "string",
+                "maxLength": 120,
+                "description": "Quem autorizou: cargo e empresa (o nome fica no documento arquivado)."
+              },
+              "data": {
+                "$ref": "#/definitions/data",
+                "description": "Data da autorização (AAAA-MM-DD, não pode estar no futuro)."
+              },
+              "registro": {
+                "type": "string",
+                "maxLength": 240,
+                "description": "Onde está a prova (ex.: \"e-mail de 12/03/2026 arquivado em Autorizações/2026\")."
+              },
+              "foto": {
+                "type": "boolean",
+                "description": "A pessoa autorizou a foto."
+              },
+              "video": {
+                "type": "boolean",
+                "description": "A pessoa autorizou o uso da imagem e da voz em vídeo (campo video). Sem este campo = não autorizado."
+              }
+            },
+            "required": [
+              "porEscrito",
+              "autorizadoPor",
+              "data",
+              "registro",
+              "foto"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id",
+          "citacao",
+          "nome",
+          "cargo",
+          "empresa",
+          "autorizacao"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "logos": {
+      "type": "array",
+      "description": "Logos de clientes com autorização por escrito. ≥ 4 empresas diferentes liberam a faixa de logos (hasLogos).",
+      "items": {
+        "type": "object",
+        "description": "Um logo autorizado.",
+        "properties": {
+          "id": {
+            "$ref": "#/definitions/slug"
+          },
+          "empresa": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Nome da empresa (vira o alt do logo)."
+          },
+          "arquivo": {
+            "$ref": "#/definitions/imagem",
+            "description": "Logo monocromático, de preferência SVG, relativo a dados/."
+          },
+          "caseSlug": {
+            "$ref": "#/definitions/slug",
+            "description": "Link opcional para o case da empresa."
+          },
+          "ordem": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Ordem (menor primeiro)."
+          },
+          "autorizacao": {
+            "$ref": "#/definitions/autorizacao"
+          }
+        },
+        "required": [
+          "id",
+          "empresa",
+          "arquivo",
+          "autorizacao"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "definitions": {
+    "localizado60": {
+      "type": "object",
+      "description": "Texto nos 3 idiomas (pt, en, es), até 60 caracteres cada. Faltou um idioma = o item não aparece.",
+      "properties": {
+        "pt": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "Português (pt-BR)."
+        },
+        "en": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "English."
+        },
+        "es": {
+          "type": "string",
+          "maxLength": 60,
+          "description": "Español (neutro latino-americano, com \"tú\")."
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "localizado80": {
+      "type": "object",
+      "description": "Texto nos 3 idiomas (pt, en, es), até 80 caracteres cada. Faltou um idioma = o item não aparece.",
+      "properties": {
+        "pt": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Português (pt-BR)."
+        },
+        "en": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "English."
+        },
+        "es": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Español (neutro latino-americano, com \"tú\")."
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "localizado120": {
+      "type": "object",
+      "description": "Texto nos 3 idiomas (pt, en, es), até 120 caracteres cada. Faltou um idioma = o item não aparece.",
+      "properties": {
+        "pt": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Português (pt-BR)."
+        },
+        "en": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "English."
+        },
+        "es": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Español (neutro latino-americano, com \"tú\")."
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "localizado160": {
+      "type": "object",
+      "description": "Texto nos 3 idiomas (pt, en, es), até 160 caracteres cada. Faltou um idioma = o item não aparece.",
+      "properties": {
+        "pt": {
+          "type": "string",
+          "maxLength": 160,
+          "description": "Português (pt-BR)."
+        },
+        "en": {
+          "type": "string",
+          "maxLength": 160,
+          "description": "English."
+        },
+        "es": {
+          "type": "string",
+          "maxLength": 160,
+          "description": "Español (neutro latino-americano, com \"tú\")."
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "localizado200": {
+      "type": "object",
+      "description": "Texto nos 3 idiomas (pt, en, es), até 200 caracteres cada. Faltou um idioma = o item não aparece.",
+      "properties": {
+        "pt": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Português (pt-BR)."
+        },
+        "en": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "English."
+        },
+        "es": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Español (neutro latino-americano, com \"tú\")."
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "localizado240": {
+      "type": "object",
+      "description": "Texto nos 3 idiomas (pt, en, es), até 240 caracteres cada. Faltou um idioma = o item não aparece.",
+      "properties": {
+        "pt": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "Português (pt-BR)."
+        },
+        "en": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "English."
+        },
+        "es": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "Español (neutro latino-americano, com \"tú\")."
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "localizado300": {
+      "type": "object",
+      "description": "Texto nos 3 idiomas (pt, en, es), até 300 caracteres cada. Faltou um idioma = o item não aparece.",
+      "properties": {
+        "pt": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Português (pt-BR)."
+        },
+        "en": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "English."
+        },
+        "es": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Español (neutro latino-americano, com \"tú\")."
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "localizado360": {
+      "type": "object",
+      "description": "Texto nos 3 idiomas (pt, en, es), até 360 caracteres cada. Faltou um idioma = o item não aparece.",
+      "properties": {
+        "pt": {
+          "type": "string",
+          "maxLength": 360,
+          "description": "Português (pt-BR)."
+        },
+        "en": {
+          "type": "string",
+          "maxLength": 360,
+          "description": "English."
+        },
+        "es": {
+          "type": "string",
+          "maxLength": 360,
+          "description": "Español (neutro latino-americano, com \"tú\")."
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Identificador: minúsculas, números e hífen (ex.: \"ana-souza\")."
+    },
+    "imagem": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*\\.\\.)(?![a-z]+:).+\\.(png|jpe?g|webp|avif|svg)$",
+      "description": "Caminho da imagem RELATIVO à pasta dados/ (ex.: \"imagens/ana-souza.jpg\"). O arquivo tem de existir. Foto real, nunca banco de imagem."
+    },
+    "data": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Data AAAA-MM-DD."
+    },
+    "nomeCompleto": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 80,
+      "description": "Nome completo (nome e sobrenome), sem abreviar e nunca um cargo no lugar do nome."
+    },
+    "linhaDePreco": {
+      "type": "object",
+      "description": "Uma linha de investimento. null = não publicar esta linha.",
+      "properties": {
+        "faixa": {
+          "$ref": "#/definitions/localizado80",
+          "description": "Texto da faixa, já com a moeda, por idioma. ÚNICO lugar (com qualificacao) onde valor em dinheiro é aceito."
+        },
+        "unidade": {
+          "enum": [
+            "projeto",
+            "mes"
+          ],
+          "description": "\"projeto\" (desenvolvimento) ou \"mes\" (sustentação)."
+        },
+        "fatores": {
+          "$ref": "#/definitions/listaLocalizada3x120",
+          "description": "\"O que move o valor\": de 1 a 3 itens curtos por idioma."
+        }
+      },
+      "required": [
+        "faixa",
+        "unidade",
+        "fatores"
+      ],
+      "additionalProperties": false
+    },
+    "listaLocalizada3x120": {
+      "type": "object",
+      "description": "Lista por idioma (pt, en, es): até 3 itens de até 120 caracteres.",
+      "properties": {
+        "pt": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "en": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "es": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "listaLocalizada4x600": {
+      "type": "object",
+      "description": "Lista por idioma (pt, en, es): até 4 itens de até 600 caracteres.",
+      "properties": {
+        "pt": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "maxLength": 600
+          }
+        },
+        "en": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "maxLength": 600
+          }
+        },
+        "es": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "maxLength": 600
+          }
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "faixaDeOrcamento": {
+      "type": "object",
+      "description": "Faixa da P5 do wizard (qualificação, NÃO é preço publicado: só existe dentro do wizard).",
+      "properties": {
+        "id": {
+          "enum": [
+            "tier_1",
+            "tier_2",
+            "tier_3",
+            "tier_4"
+          ],
+          "description": "tier_1 … tier_4, da menor para a maior, nesta ordem."
+        },
+        "rotulo": {
+          "$ref": "#/definitions/localizado60",
+          "description": "Rótulo da opção por idioma, já com a moeda."
+        }
+      },
+      "required": [
+        "id",
+        "rotulo"
+      ],
+      "additionalProperties": false
+    },
+    "faixas": {
+      "type": "array",
+      "description": "Exatamente 4 faixas (tier_1…tier_4, em ordem) ou nenhuma.",
+      "items": {
+        "$ref": "#/definitions/faixaDeOrcamento"
+      },
+      "anyOf": [
+        {
+          "maxItems": 0
+        },
+        {
+          "minItems": 4,
+          "maxItems": 4
+        }
+      ]
+    },
+    "tier": {
+      "enum": [
+        "tier_1",
+        "tier_2",
+        "tier_3",
+        "tier_4"
+      ]
+    },
+    "autorizacao": {
+      "type": "object",
+      "description": "Registro da autorização POR ESCRITO. Nunca é publicado; sem ele o build falha.",
+      "properties": {
+        "porEscrito": {
+          "const": true,
+          "description": "Tem que ser true: existe autorização por escrito (e-mail, contrato, termo assinado)."
+        },
+        "autorizadoPor": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Quem autorizou: cargo e empresa (o nome fica no documento arquivado)."
+        },
+        "data": {
+          "$ref": "#/definitions/data",
+          "description": "Data da autorização (AAAA-MM-DD, não pode estar no futuro)."
+        },
+        "registro": {
+          "type": "string",
+          "maxLength": 240,
+          "description": "Onde está a prova (ex.: \"e-mail de 12/03/2026 arquivado em Autorizações/2026\")."
+        }
+      },
+      "required": [
+        "porEscrito",
+        "autorizadoPor",
+        "data",
+        "registro"
+      ],
+      "additionalProperties": false
+    },
+    "ferramenta": {
+      "description": "Ferramenta opcional que trata dados dos pedidos. null = inativa. Declarada = entra na Política (operadores e retenção).",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/ferramentaDeclarada"
+        }
+      ]
+    },
+    "ferramentaDeclarada": {
+      "type": "object",
+      "description": "Ferramenta declarada na Política.",
+      "properties": {
+        "fornecedor": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Nome do serviço como aparece na Política (ex.: \"Calendly\")."
+        },
+        "prazo": {
+          "description": "Prazo de retenção nessa ferramenta, por idioma.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado80"
+            }
+          ]
+        }
+      },
+      "required": [
+        "fornecedor",
+        "prazo"
+      ],
+      "additionalProperties": false
+    },
+    "listaLocalizada5x120": {
+      "type": "object",
+      "description": "Lista por idioma (pt, en, es): até 5 itens de até 120 caracteres.",
+      "properties": {
+        "pt": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "en": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "es": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        }
+      },
+      "required": [
+        "pt",
+        "en",
+        "es"
+      ],
+      "additionalProperties": false
+    },
+    "video": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*\\.\\.)(?![a-z]+:).+\\.(mp4|webm)$",
+      "description": "Caminho do vídeo RELATIVO à pasta dados/ (ex.: \"videos/marina-souza.mp4\"), mp4 ou webm. O arquivo tem de existir."
+    },
+    "legenda": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*\\.\\.)(?![a-z]+:).+\\.vtt$",
+      "description": "Legenda WebVTT RELATIVA à pasta dados/ (ex.: \"videos/marina-souza.pt.vtt\"). O arquivo tem de existir."
+    },
+    "pixelDeclarado": {
+      "type": "object",
+      "description": "Pixel declarado na Política.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^\\d{4,20}$",
+          "description": "ID da conta, só dígitos: o partner ID do LinkedIn (Campaign Manager) ou o pixel ID da Meta (Events Manager)."
+        },
+        "prazo": {
+          "description": "Prazo de retenção nesse operador, por idioma (ex.: \"180 dias\").",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/localizado80"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "prazo"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

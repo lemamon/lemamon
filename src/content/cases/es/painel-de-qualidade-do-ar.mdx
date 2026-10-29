@@ -1,0 +1,53 @@
+---
+titulo: "Un panel informativo que muestra los índices de calidad del aire en tiempo real"
+tipoDeSistema: "Panel de calidad del aire"
+setor: "Industria"
+porte: "Multinacional"
+servicos: ["web_systems", "integrations"]
+problema: "Una multinacional de la industria quería un panel informativo que mostrara los índices de calidad del aire en tiempo real. Para que los números en pantalla siguieran las mediciones, el panel tenía que tomar los datos directamente de una API de monitoreo del aire, el servicio que provee esas mediciones."
+combinado:
+  escopo: "Desarrollo de la interfaz front-end del panel informativo, la parte que aparece en pantalla, e integración directa de esa interfaz con una API de monitoreo del aire."
+entregue: "Quien consulta el panel ve los índices de calidad del aire en tiempo real."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "Al inicio"
+    texto: "Conversación inicial para entender el pedido y el problema del cliente."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Se entendió el problema y se definió el alcance."
+  - etapa: "development"
+    quando: "Entre 2019 y 2021"
+    texto: "Construcción con entregas parciales a lo largo del proyecto, y no una sola entrega al final."
+  - etapa: "support"
+    quando: "Después del lanzamiento"
+    texto: "El panel siguió con mantenimiento."
+fichaTecnica:
+  stack: ["HTML", "SCSS", "JavaScript"]
+capa:
+  src: "../_imagens/painel-de-qualidade-do-ar/capa.png"
+  alt: "Ilustración de un panel con índices de calidad del aire e indicadores de colores"
+relacionados: ["widget-de-qualidade-do-ar", "seletores-de-produtos-para-varejo"]
+ordem: 25
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "Panel de calidad del aire en tiempo real"
+seoDescription: "Panel informativo que muestra índices de calidad del aire en tiempo real, integrado directamente con una API de monitoreo del aire."
+slugUrl: "panel-de-calidad-del-aire"
+---
+
+### Para quién
+
+El panel se creó para una multinacional de la industria y es para quien quiere saber cómo está la calidad del aire.
+
+### Cómo funciona
+
+Una API es la puerta por la que un sistema le entrega datos a otro; aquí, la API de monitoreo provee las mediciones. Como la interfaz se conecta directamente a ella, lo que aparece en pantalla sigue esos datos.
+
+### La tecnología, en palabras simples
+
+- **HTML**: lenguaje que organiza el contenido de una página web, como textos, imágenes y botones. Se empleó en la interfaz del panel.
+- **SCSS**: forma de escribir CSS, el lenguaje que define el aspecto de las páginas, con funciones extra como variables; se convierte en CSS común antes de llegar al navegador. Se empleó en la interfaz del panel.
+- **JavaScript**: el lenguaje de programación de la web, que le da comportamiento a las páginas en el navegador y también corre en servidores. De las tres tecnologías del proyecto, es la que conecta el panel con la API de monitoreo del aire.

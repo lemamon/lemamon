@@ -1,0 +1,57 @@
+---
+titulo: "Una app que permite a la placa Micro:bit intercambiar datos con dispositivos Android, por cable o por Bluetooth"
+tipoDeSistema: "App Android de conexión con la Micro:bit"
+setor: "Educación"
+porte: "Gran empresa"
+servicos: ["integrations", "mobile_apps"]
+problema: "Una gran empresa del área de educación necesitaba que la placa Micro:bit y los dispositivos Android se comunicaran y transfirieran datos entre sí. La conexión tenía que funcionar de dos formas: por cable MicroUSB y de forma inalámbrica, por Bluetooth Low Energy (BLE), la versión de Bluetooth hecha para gastar poca energía."
+combinado:
+  escopo: "Arquitectura y desarrollo de una app Android que establece la comunicación y la transferencia de datos con la placa Micro:bit. El alcance cubrió las dos vías de conexión: el cable MicroUSB, que une la placa con el dispositivo, y el Bluetooth Low Energy (BLE), inalámbrico."
+entregue: "La placa Micro:bit y los dispositivos Android pueden comunicarse y transferir datos entre sí, por cable o de forma inalámbrica, con una app Android diseñada y desarrollada para eso."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "Al inicio"
+    texto: "Conversación inicial para entender el pedido y el problema del cliente."
+  - etapa: "discovery"
+    quando: "Antes de construir"
+    texto: "Se entendió el problema y se definió el alcance."
+  - etapa: "development"
+    quando: "Entre 2017 y 2019"
+    texto: "Construcción con entregas parciales a lo largo del proyecto, y no una sola entrega al final."
+  - etapa: "support"
+    quando: "Después del lanzamiento"
+    texto: "La app siguió con mantenimiento."
+fichaTecnica:
+  stack: ["Android", "Java", "C++", "Bluetooth Low Energy (BLE)", "Micro:bit"]
+capa:
+  src: "../_imagens/app-android-para-placa-educativa/capa.png"
+  alt: "Ilustración de una placa Micro:bit conectada a un dispositivo Android por cable y por señal Bluetooth"
+relacionados: ["sensores-em-epis-com-app", "controle-de-producao-com-contagem-automatica"]
+ordem: 20
+semTermo:
+  decididoPor: "dono"
+  data: "2026-10-21"
+  registro: "D45 em docs/playbooks/15-registro-de-decisoes.md: publicado sem o nome do cliente e sem termo, por decisão do dono"
+publicado: true
+seoTitle: "App Android para la placa Micro:bit"
+seoDescription: "App Android que se comunica con la placa Micro:bit y transfiere datos por cable MicroUSB o por Bluetooth Low Energy (BLE)."
+slugUrl: "app-android-para-placa-educativa"
+---
+
+### Para quién
+
+Para quien usa la placa Micro:bit junto con un dispositivo Android. El proyecto se creó para una gran empresa del área de educación.
+
+### Cómo funciona
+
+En la vía por cable, la placa queda conectada físicamente al dispositivo; en la inalámbrica, los dos intercambian datos sin conexión física.
+
+Además de la app, el proyecto definió la arquitectura de esa comunicación, es decir, la forma en que las partes se organizan para comunicarse por las dos vías.
+
+### La tecnología, en palabras simples
+
+- **Android**: sistema operativo de Google para celulares y tabletas. Es la plataforma de la app del proyecto.
+- **Java**: lenguaje de programación de uso general, durante muchos años el lenguaje principal para crear apps Android. Con él se desarrolló la app.
+- **C++**: lenguaje de programación común en software que trabaja cerca del hardware, como el de placas y dispositivos electrónicos. Fue parte del desarrollo del proyecto.
+- **Bluetooth Low Energy (BLE)**: versión de Bluetooth hecha para intercambiar pequeñas cantidades de datos gastando poca energía. Es la vía inalámbrica entre la placa y el dispositivo Android.
+- **Micro:bit**: pequeña placa programable creada para enseñar programación, con botones, luces LED y sensores. Es la placa que la app conecta con Android.

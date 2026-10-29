@@ -1,0 +1,42 @@
+---
+/**
+ * CTA primário "Pedir diagnóstico gratuito" (BLUEPRINT §2.2, §8.6). Dono: home.
+ * API estável. Todo CTA de diagnóstico leva ?origem={pagina-secao}.
+ * label="method" usa shared.cta.primary_method (só em seções de método).
+ * Com agenda online (hasAgenda), TODO CTA de diagnóstico vira "Agendar
+ * diagnóstico gratuito", inclusive o de método (B167: um rótulo primário só
+ * por página, BLUEPRINT §8.6).
+ */
+import Button from "@/components/ui/Button.astro";
+import { getFeatures } from "@/config/features";
+import { quoteHref, type QuoteAttribution } from "@/config/routes";
+import { t, type Locale } from "@/i18n";
+
+import { diagnosisCtaKey } from "./cta-label";
+
+interface Props extends QuoteAttribution {
+  locale: Locale;
+  origem: string;
+  label?: "primary" | "method";
+  size?: "md" | "lg";
+  full?: boolean | "mobile";
+  variant?: "primary" | "secondary";
+}
+
+const { locale, origem, servico, entrada, ref, label = "primary", size = "lg", full = "mobile", variant = "primary" } =
+  Astro.props;
+const features = await getFeatures();
+const text = t(locale, diagnosisCtaKey(features, label));
+---
+
+<Button
+  href={quoteHref(locale, { origem, servico, entrada, ref })}
+  variant={variant}
+  size={size}
+  full={full}
+  data-track="cta_click"
+  data-cta-id="diagnosis"
+  data-origem={origem}
+>
+  {text}
+</Button>

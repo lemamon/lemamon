@@ -1,0 +1,198 @@
+---
+/**
+ * Índice das 4 etapas de /como-trabalhamos (BLUEPRINT §6.2, notas de UI).
+ * Dono: pages.
+ *
+ * - variant="chips": no hero. Abaixo de 1024px, fila de chips rolável; a
+ *   partir de 1024px, a lista das 4 etapas na coluna da direita do hero
+ *   (auditoria F47: a metade direita do hero ficava vazia no notebook).
+ * - variant="aside": ao lado das etapas, só a partir de 1024px — sumário
+ *   lateral sticky com a etapa ativa em aria-current="location". Com as duas
+ *   <nav> na página a partir de 1024px, o aside tem nome próprio
+ *   (how_we_work.hero.index_label_aside), para os landmarks não repetirem.
+ * O realce da etapa ativa é progressivo: sem JS ou sem IntersectionObserver,
+ * o índice continua funcionando.
+ *
+ * Foco nos chips (B075, WCAG 2.4.7/2.4.11): a fila rola sozinha até o chip
+ * focado (focusin → scrollIntoView "nearest"), o respiro interno da fila
+ * (--space-2) comporta o anel de foco inteiro (3px + 2px de offset) e o snap
+ * desliga enquanto há foco dentro, para não puxar o chip focado de volta para
+ * fora da área visível.
+ */
+import { anchorId, ANCHORS, type StageId } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  variant: "chips" | "aside";
+}
+
+const { locale, variant } = Astro.props;
+const stages = getSection(locale, "shared.method_timeline.stages");
+const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
+---
+
+<nav
+  class="stage-index"
+  data-variant={variant}
+  data-stage-index
+  aria-label={t(locale, variant === "aside" ? "how_we_work.hero.index_label_aside" : "how_we_work.hero.index_label")}
+>
+  <p class="stage-index__label" aria-hidden="true">{t(locale, "how_we_work.hero.index_label")}</p>
+  <ol role="list" class="stage-index__list">
+    {
+      order.map((id, index) => (
+        <li>
+          <a href={`#${anchorId(ANCHORS.stage[id], locale)}`} class="stage-index__link">
+            <span class="stage-index__number" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span>{stages[id].name}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<script>
+  // Chips (< 1024px): o chip focado por teclado entra na área visível da fila
+  // rolável, para o anel de foco não ficar escondido (B075).
+  document.querySelectorAll<HTMLElement>('.stage-index[data-variant="chips"] .stage-index__list').forEach((list) =>
+    list.addEventListener("focusin", (event) => {
+      const target = event.target;
+      if (target instanceof HTMLElement) target.scrollIntoView({ block: "nearest", inline: "nearest" });
+    }),
+  );
+
+  // Realce da etapa visível no sumário lateral (aria-current="location").
+  const navs = document.querySelectorAll<HTMLElement>("[data-stage-index]");
+  if (navs.length && "IntersectionObserver" in window) {
+    const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-stage-index] a[href^='#']")];
+    const targets = [...new Set(links.map((link) => link.hash.slice(1)))]
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    const visible = new Map<string, number>();
+    const mark = () => {
+      let active: string | null = null;
+      for (const el of targets) {
+        if ((visible.get(el.id) ?? 0) > 0) {
+          active = el.id;
+          break;
+        }
+      }
+      for (const link of links) {
+        if (active && link.hash === `#${active}`) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      }
+    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) visible.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
+        mark();
+      },
+      { rootMargin: "-30% 0px -55% 0px", threshold: [0, 0.01] },
+    );
+    targets.forEach((el) => observer.observe(el));
+  }
+</script>
+
+<style>
+  .stage-index__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+    margin-block-end: var(--space-2);
+  }
+
+  .stage-index__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--target-min);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    transition: var(--transition-colors);
+  }
+
+  .stage-index__number {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  /* ---------- chips (hero, < 1024px) ---------- */
+  @media (max-width: 1023.98px) {
+    /* Respiro de --space-2 (8px) em volta dos chips: o anel de foco precisa de
+       3px + 2px de offset e era cortado pelo overflow com --space-1 (B075). */
+    .stage-index[data-variant="chips"] .stage-index__list {
+      display: flex;
+      gap: var(--space-2);
+      overflow-x: auto;
+      padding: var(--space-2);
+      margin-inline: calc(-1 * var(--space-2));
+      scroll-padding-inline: var(--space-2);
+      scroll-snap-type: x proximity;
+      scrollbar-width: thin;
+    }
+
+    .stage-index[data-variant="chips"] .stage-index__list:focus-within {
+      scroll-snap-type: none;
+    }
+
+    .stage-index[data-variant="chips"] li {
+      flex: none;
+      scroll-snap-align: start;
+    }
+
+    .stage-index[data-variant="chips"] .stage-index__link {
+      padding-inline: var(--space-4);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-full);
+      background-color: var(--color-bg-surface);
+      white-space: nowrap;
+    }
+
+    .stage-index[data-variant="chips"] .stage-index__link:hover {
+      border-color: var(--color-border-control);
+      background-color: var(--color-bg-surface-hover);
+    }
+
+    .stage-index[data-variant="aside"] {
+      display: none;
+    }
+  }
+
+  /* ---------- lista (≥ 1024px): o sumário lateral sticky e, no hero, o mapa
+     das 4 etapas na coluna da direita (auditoria F47) ---------- */
+  @media (min-width: 1024px) {
+    .stage-index__list {
+      display: grid;
+      border-inline-start: 1px solid var(--color-border-subtle);
+    }
+
+    .stage-index__link {
+      padding-inline: var(--space-4) var(--space-2);
+      margin-inline-start: -1px;
+      border-inline-start: 2px solid transparent;
+      color: var(--color-text-secondary);
+    }
+
+    .stage-index__link:hover {
+      color: var(--color-text-primary);
+    }
+
+    .stage-index__link[aria-current="location"] {
+      border-inline-start-color: var(--color-accent);
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .stage-index[data-variant="aside"] {
+      position: sticky;
+      inset-block-start: calc(var(--header-height) + var(--space-8));
+    }
+  }
+</style>

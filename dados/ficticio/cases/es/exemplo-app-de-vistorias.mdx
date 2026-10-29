@@ -1,0 +1,57 @@
+---
+titulo: "Ejemplo: las inspecciones en papel se volvieron una app que funciona sin internet"
+tipoDeSistema: "App de inspecciones (ejemplo)"
+setor: "Agronegocio (ejemplo)"
+porte: "Cooperativa regional (ejemplo)"
+servicos: ["mobile_apps", "integrations"]
+periodo: "may–sep/2026 (ejemplo)"
+problema: "Caso de ejemplo: las inspecciones se hacían en papel en el campo y se digitaban después en la oficina, con fotos perdidas y retrabajo cada semana."
+combinado:
+  escopo: "Ejemplo: app de inspección con fotos y uso sin internet, que envía los datos al sistema de la cooperativa."
+  foraDoEscopo: "Ejemplo: los informes gerenciales quedaron para después de la primera cosecha con la app."
+entregue: "Ejemplo: una app para el técnico de campo y una integración que lleva cada inspección al sistema de la cooperativa."
+comoFoi:
+  - etapa: "diagnosis"
+    quando: "may/2026 (ejemplo)"
+    texto: "Ejemplo: conversación de 45 minutos con la coordinación técnica y conclusiones por escrito."
+  - etapa: "discovery"
+    quando: "jun/2026 (ejemplo)"
+    texto: "Ejemplo: visita al campo, mapa de la integración y plan con plazo y precio."
+  - etapa: "development"
+    quando: "jul–sep/2026 (ejemplo)"
+    texto: "Ejemplo: entregas cada 2 semanas, probadas por técnicos de campo."
+  - etapa: "support"
+    quando: "desde oct/2026 (ejemplo)"
+    texto: "Ejemplo: soporte mensual con mejoras acordadas cada mes."
+resultado:
+  - metrica: "Ejemplo: tiempo entre la inspección y el dato en el sistema"
+    antes: "2 días (ejemplo)"
+    depois: "1 hora (ejemplo)"
+    fonte: "Dado fictício da camada de exemplo"
+fichaTecnica:
+  stack: ["TypeScript", "React Native", "SQLite", "Node.js"]
+capa:
+  src: "../../imagens/capa-exemplo-app-de-vistorias.png"
+  alt: "Pantalla de ejemplo de una app de inspecciones, con la franja EXEMPLO"
+imagens:
+  - src: "../../imagens/tela-exemplo-app-de-vistorias.png"
+    alt: "Pantalla de ejemplo con la lista de inspecciones del día, con la franja EXEMPLO"
+relacionados: ["exemplo-sistema-de-fretes"]
+ordem: 1
+autorizacao:
+  porEscrito: true
+  autorizadoPor: "Exemplo: nenhuma empresa real autorizou"
+  data: "2026-01-15"
+  registro: "Dado fictício da camada de exemplo; não existe autorização"
+  escopo:
+    nomeDoCliente: false
+    resultados: true
+    prazoEPreco: false
+publicado: true
+---
+
+**Contenido de ejemplo.** Este caso es ficticio y solo aparece con la capa de datos ficticios activada.
+
+El técnico abre la app, elige la propiedad y completa la inspección con fotos, incluso sin señal. Cuando el celular vuelve a tener internet, la inspección llega sola al sistema de la cooperativa.
+
+El Descubrimiento empezó en el campo: ahí apareció la regla de guardar todo en el dispositivo antes de enviar.

@@ -1,0 +1,41 @@
+---
+/**
+ * <CtaMeio /> — o CTA contextual do meio do post (BLUEPRINT §6.12). Dono: gated.
+ * O autor escreve `<CtaMeio />` no ponto do texto em que ele faz sentido (sem
+ * props); a BlogPostView liga o nome a este componente e deixa em
+ * Astro.locals o texto do post (`midCtaText` do frontmatter, validado no schema)
+ * e a origem. Sem `<CtaMeio />` no corpo, o build falha (lib/content.ts).
+ * O botão é sempre o diagnóstico gratuito.
+ */
+import CtaDiagnosis from "@/components/shared/CtaDiagnosis.astro";
+import { t } from "@/i18n";
+
+import { POST_MID_CTA_LOCAL, type PostMidCtaContext } from "./blog";
+
+const context = (Astro.locals as Record<string, unknown>)[POST_MID_CTA_LOCAL] as PostMidCtaContext | undefined;
+const text = context?.text ?? t("pt", "blog.post.mid_cta.text");
+const origem = context?.origem ?? "blog-meio";
+---
+
+<aside class="post-mid-cta">
+  <p class="post-mid-cta__text">{text}</p>
+  <CtaDiagnosis locale="pt" origem={origem} size="md" />
+</aside>
+
+<style>
+  .post-mid-cta {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    margin-block: var(--space-10);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border-subtle);
+    border-inline-start: var(--space-1) solid var(--color-accent);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-subtle);
+  }
+  .post-mid-cta__text {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+</style>

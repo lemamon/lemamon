@@ -1,0 +1,104 @@
+/**
+ * Card de case (CaseCard.astro). Dono: home. Carregado só na página que
+ * renderiza um card (ui/RenderedStyle.astro, B256): sem case publicado, nenhum
+ * byte disto vai ao ar. Sem escopo automático: só classes .case-card*.
+ *
+ * Raiz = <Card as="a" padding="none" interactive>: borda, raio, fundo e hover
+ * (só ponteiro fino) vêm de lá.
+ */
+a.card.case-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  block-size: 100%;
+}
+.case-card__media {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-block-end: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg-muted);
+}
+.case-card__media img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  transition: var(--transition-transform);
+}
+.case-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+}
+.case-card__meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-tertiary);
+}
+.case-card__title {
+  font-size: var(--text-xl);
+  line-height: var(--leading-h4);
+  text-wrap: balance;
+}
+.case-card__label {
+  display: block;
+  margin-block-end: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-text-tertiary);
+}
+/* <span> fora de <p>: sem palavra sozinha na última linha. */
+.case-card__meta,
+.case-card__problem,
+.case-card__metric {
+  text-wrap: pretty;
+}
+.case-card__problem {
+  color: var(--color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.case-card__metric {
+  display: block;
+  color: var(--color-text-secondary);
+}
+/* Valores de métrica (antes → depois) na mono, decisão B385 (tokens.css §3). */
+.case-card__delta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  line-height: var(--leading-lg);
+  font-variant-numeric: tabular-nums;
+}
+.case-card__delta strong {
+  font-size: var(--text-xl);
+  line-height: var(--leading-xl);
+}
+.case-card__services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.case-card__body .case-card__more {
+  margin-block-start: auto;
+  padding-block-start: var(--space-2);
+}
+/* Hover só com ponteiro fino (no toque ficaria preso, B192). */
+@media (hover: hover) and (pointer: fine) {
+  .case-card:hover .case-card__body .case-card__more {
+    color: var(--color-text-link-hover);
+  }
+  .case-card:hover .case-card__body .arrow-link__icon {
+    transform: translateX(var(--space-1));
+  }
+  .case-card:hover .case-card__media img {
+    transform: scale(1.03);
+  }
+}

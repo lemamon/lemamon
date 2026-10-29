@@ -1,0 +1,59 @@
+---
+/**
+ * Home §6.1 #12 `trust_profiles` — when_data hasProfiles. Dono: home.
+ * "Confira antes de conversar": a forma de o comprador (e o sócio dele)
+ * checar que a empresa existe e trabalha em público, enquanto não há cases.
+ * Um card por perfil marcado `publicar` em perfis.ts (<Profiles>, §5.8).
+ *
+ * Auditoria de conversão F14: os perfis são uma linha de links (<Profiles
+ * variant="inline">, ícone + nome), porque perfil ainda sem conteúdo não
+ * merece 1,6 tela entre Serviços e FAQ no celular; e, com hasCompanyData, a
+ * frase de apoio é a prova de existência verificável (razão social · CNPJ ·
+ * praça; em en/es o CNPJ vem explicado, F70). A linha vale em todas as
+ * larguras (a auditoria pedia só abaixo de 768px): a Home não tem folga no
+ * orçamento de CSS (verify-build, 15 KiB) para uma variante só do celular, e
+ * a variante inline já existe. Quando os perfis tiverem conteúdo recente, os
+ * cards podem voltar no desktop (home._notes.trust_profiles_text).
+ *
+ * AUTO-GATED: sem perfil publicado, não renderiza NADA (nem título, nem
+ * âncora): um perfil vazio prova o contrário.
+ */
+import Profiles from "@/components/shared/Profiles.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { empresa } from "@/config/empresa";
+import { getFeatures } from "@/config/features";
+import { t, type Locale } from "@/i18n";
+
+import { optionalText } from "./home-sections";
+
+interface Props {
+  locale: Locale;
+  /** Posição do capítulo na Home (eyebrow "05 /"). */
+  index?: number;
+  /** Linha de 1px no topo (vizinha de mesma superfície). */
+  divider?: boolean;
+}
+
+const { locale, index, divider = false } = Astro.props;
+const features = await getFeatures();
+const intro = features.hasCompanyData
+  ? t(locale, "home.trust_profiles.text_with_company", { razao_social: empresa.razaoSocial, cnpj: empresa.cnpj })
+  : t(locale, "home.trust_profiles.text");
+---
+
+{
+  features.hasProfiles && (
+    <Section id="confira" spacing="compact" labelledby="confira-title" divider={divider}>
+      <SectionHeader
+        id="confira-title"
+        eyebrow={optionalText(locale, "home.trust_profiles.eyebrow")}
+        index={index}
+        title={t(locale, "home.trust_profiles.title")}
+        intro={intro}
+        layout="split"
+      />
+      <Profiles locale={locale} variant="inline" />
+    </Section>
+  )
+}

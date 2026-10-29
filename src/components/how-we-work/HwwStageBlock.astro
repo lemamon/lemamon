@@ -1,0 +1,124 @@
+---
+/**
+ * Bloco de uma etapa em /como-trabalhamos (§6.2 #5–#8). Dono: pages.
+ * Mesmo padrão visual nas 4 etapas (notas de UI do §6.2): número em mono,
+ * tag da etapa (texto, nunca só cor), título (h2), introdução, o bloco
+ * "Você recebe:" e o resto do conteúdo.
+ *
+ * "Você recebe" lê shared.method_timeline.stages.{id}.you_get, a fonte única
+ * (how_we_work._notes.you_get; o check-i18n garante que é igual à cópia
+ * how_we_work.stage_*.you_get).
+ *
+ * Tag da etapa: a mesma da linha do método (stages.{id}.tag), sem duração
+ * (a da Descoberta é definida com o cliente no diagnóstico; D44).
+ *
+ * Slots: "intro" (antes do "Você recebe") e o padrão (depois dele).
+ *
+ * Ritmo vertical e divisória do topo: <Section spacing="compact" divider>
+ * (B211); a raiz não declara padding-block nem borda própria.
+ */
+import Section from "@/components/ui/Section.astro";
+import { anchorAlias, anchorId, ANCHORS, type StageId } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  stage: StageId;
+  title: string;
+}
+
+const { locale, stage, title } = Astro.props;
+const stages = getSection(locale, "shared.method_timeline.stages");
+const order: StageId[] = ["diagnosis", "discovery", "development", "support"];
+const number = String(order.indexOf(stage) + 1).padStart(2, "0");
+const data = stages[stage];
+const tag = data.tag;
+const id = anchorId(ANCHORS.stage[stage], locale);
+const titleId = `${ANCHORS.stage[stage]}-title`;
+---
+
+<Section
+  id={id}
+  aliasId={anchorAlias(ANCHORS.stage[stage], locale)}
+  spacing="compact"
+  width="full"
+  divider
+  labelledby={titleId}
+  data-stage={stage}
+  class="stage"
+>
+  <header class="stage__header">
+    <div class="stage__meta">
+      <span class="stage__number" aria-hidden="true">{number}</span>
+      <p class="stage__tag">{tag}</p>
+    </div>
+    <h2 id={titleId} class="stage__title">{title}</h2>
+  </header>
+  <div class="stage__body">
+    <slot name="intro" />
+    <div class="stage__you-get">
+      <p><strong>{t(locale, "shared.method_timeline.you_get_label")}</strong>{" "}{data.you_get}</p>
+    </div>
+    <slot />
+  </div>
+</Section>
+
+<style>
+  .stage {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .stage__header {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .stage__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .stage__number {
+    font-family: var(--font-mono);
+    font-size: var(--text-h3);
+    line-height: 1;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-tertiary);
+  }
+
+  .stage__tag {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-secondary);
+    background-color: var(--color-bg-surface);
+  }
+
+  .stage__body {
+    display: grid;
+    gap: var(--space-6);
+    max-inline-size: 48rem;
+  }
+
+  .stage__body :global(p) {
+    max-inline-size: var(--measure-prose);
+  }
+
+  .stage__you-get {
+    padding: var(--space-4) var(--space-5);
+    border-inline-start: 4px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    background-color: var(--color-accent-subtle);
+  }
+
+  .stage__you-get p {
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+  }
+</style>

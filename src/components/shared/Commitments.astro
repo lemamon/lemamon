@@ -1,0 +1,216 @@
+---
+/**
+ * Faixa de compromissos — BLUEPRINT §5.3. Dono: home. API estável: `locale`
+ * (+ opcionais `items`, `variant`).
+ *
+ * 4 itens curtos, sem título (a seção é nomeada por aria-label) e sem CTA,
+ * mais o selo "São Paulo, SP", que abre a faixa (onde + o que se
+ * combina). Logos (when_data) entram ABAIXO desta faixa, nunca no lugar dela.
+ * 4 colunas no desktop, 2×2 no tablet, lista no mobile (§6.1 #2).
+ *
+ * - `items`: subconjunto, na ordem pedida. Padrão: os 4 do método, e o 4º é
+ *   `code_owned` ("O código é da sua empresa, por contrato") quando o dono
+ *   aprovou o rascunho answer_draft de confirmacoes.codigoProprietario
+ *   (auditoria de conversão F01); sem ele (ou com answer_draft_alt, em que a
+ *   propriedade passa conforme os pagamentos), `after_launch`. Nunca 5 itens
+ *   (a faixa tem de 1 a 4 colunas). Em /servicos/sustentacao só `after_launch`
+ *   (services._notes.hero_trust): os outros descrevem o método de projeto.
+ * - `variant="compact"`: linha compacta, sem faixa nem contêiner, para dentro
+ *   de outra seção (/orcamento after_send, quote._notes.entry_placement).
+ */
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { confirmacoes } from "@/config/confirmacoes";
+import { getFeatures } from "@/config/features";
+import { getSection, t, type Locale, type Messages } from "@/i18n";
+
+import NoBreakText from "./NoBreakText.astro";
+
+export type CommitmentId = keyof Messages["shared"]["commitments"]["items"];
+
+interface Props {
+  locale: Locale;
+  items?: readonly CommitmentId[];
+  variant?: "band" | "compact";
+}
+
+const { locale, items: only, variant = "band" } = Astro.props;
+const features = await getFeatures();
+const all = getSection(locale, "shared.commitments.items");
+const codeOwned = features.confirm.codigoProprietario && confirmacoes.codigoProprietario === "answer_draft";
+const defaults: CommitmentId[] = ["scope_price_closed", "every_two_weeks", "you_decide", codeOwned ? "code_owned" : "after_launch"];
+const ids = (only ?? defaults).filter((id) => id in all);
+const items = ids.map((id) => [id, all[id]] as const);
+const label = t(locale, "shared.commitments.aria_label");
+const seal = t(locale, "shared.commitments.location_seal");
+---
+
+{
+  variant === "compact" ? (
+    <ul class="commitments-line" role="list" aria-label={label}>
+      <li class="commitments-line__seal">
+        <Icon name="map-pin" size={14} strokeWidth={1.75} />
+        {seal}
+      </li>
+      {items.map(([id, text]) => (
+        <li data-id={id}>
+          <Icon name="check" size={14} strokeWidth={2.5} />
+          <span><NoBreakText text={text} /></span>
+        </li>
+      ))}
+    </ul>
+  ) : (
+<Section spacing="strip" surface="subtle" label={label} class="commitments">
+  <div class="commitments__inner" data-count={items.length}>
+    <p class="commitments__seal">
+      <Icon name="map-pin" size={16} strokeWidth={1.75} />
+      {seal}
+    </p>
+    <ul class="commitments__list" role="list">
+      {
+        items.map(([id, text]) => (
+          <li data-id={id}>
+            <span class="commitments__mark">
+              <Icon name="check" size={14} strokeWidth={2.5} />
+            </span>
+            <span>
+              <NoBreakText text={text} />
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Section>
+  )
+}
+
+<style>
+  /* Raiz = <Section spacing="strip" surface="subtle">: o ritmo e o fundo vêm
+     de lá; aqui só as linhas de 1px que emolduram a faixa. */
+  :global(.section.commitments) {
+    border-block: 1px solid var(--color-border-subtle);
+  }
+  .commitments__inner {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .commitments__list {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .commitments__list li {
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    color: var(--color-text-primary);
+    /* <li> curto em coluna estreita, fora do p { text-wrap: pretty } global:
+       balance evita "antes do / desenvolvimento" (o pretty do Chromium não age). */
+    text-wrap: balance;
+  }
+  .commitments__mark {
+    display: grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    margin-block-start: var(--space-px);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-brand);
+    color: var(--color-text-on-brand);
+  }
+  .commitments__seal {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    justify-self: start;
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    background-color: var(--color-bg-canvas);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-secondary);
+  }
+  .commitments__seal :global(svg) {
+    color: var(--color-brand);
+  }
+
+  /* Linha compacta (variant="compact"). */
+  .commitments-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+  .commitments-line li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    text-wrap: pretty;
+  }
+  .commitments-line :global(svg) {
+    flex: none;
+    align-self: center;
+    color: var(--color-brand);
+  }
+  .commitments-line__seal {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+  }
+
+  @media (min-width: 768px) {
+    .commitments__inner[data-count="1"] .commitments__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .commitments__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--space-8);
+      row-gap: var(--space-5);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    /* Uma linha com uma coluna por item (1 a 4), sem contar no CSS. */
+    .commitments__list {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+      column-gap: 0;
+    }
+    .commitments__list li {
+      padding-inline: var(--space-5);
+      border-inline-start: 1px solid var(--color-border-default);
+      font-size: var(--text-sm);
+      line-height: var(--leading-sm);
+    }
+    .commitments__list li:first-child {
+      padding-inline-start: 0;
+      border-inline-start: 0;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .commitments__inner {
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      column-gap: var(--space-5);
+    }
+    .commitments__list li:first-child {
+      padding-inline-start: var(--space-5);
+      border-inline-start: 1px solid var(--color-border-default);
+    }
+  }
+</style>

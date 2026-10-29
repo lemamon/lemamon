@@ -1,0 +1,46 @@
+---
+/**
+ * Pedido enviado /orcamento/enviado (BLUEPRINT §6.8, §7.8) — noindex (routes.ts).
+ * Dono: conversion. Página estática; um script lê o resumo do sessionStorage e
+ * personaliza (nome, código, canal, WhatsApp com o código, "quem decide",
+ * resumo copiável, cases do serviço). Sem storage, a versão genérica vale.
+ * Ponto de medição por URL da conversão (§10.2). Layout "wizard": sem barra
+ * fixa nem WhatsApp flutuante.
+ */
+import SentConfirmation from "@/components/quote-sent/SentConfirmation.astro";
+import SentMeanwhile from "@/components/quote-sent/SentMeanwhile.astro";
+import SentPrepare from "@/components/quote-sent/SentPrepare.astro";
+import SentSchedule from "@/components/quote-sent/SentSchedule.astro";
+import SentSummary from "@/components/quote-sent/SentSummary.astro";
+import SentWhatsappNow from "@/components/quote-sent/SentWhatsappNow.astro";
+import Base from "@/layouts/Base.astro";
+import { t, type Locale } from "@/i18n";
+import { postSubmitGenericMessage } from "@/lib/whatsapp-messages";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<Base
+  locale={locale}
+  route="quote_sent"
+  title={t(locale, "meta.quote_sent.title")}
+  description={t(locale, "meta.quote_sent.description")}
+  whatsappMessage={postSubmitGenericMessage(locale)}
+>
+  <SentConfirmation locale={locale} />
+  <SentSchedule locale={locale} />
+  <SentWhatsappNow locale={locale} />
+  <SentPrepare locale={locale} />
+  <SentSummary locale={locale} />
+  <SentMeanwhile locale={locale} />
+</Base>
+
+<script>
+  import { initSentPage } from "@/components/quote-sent/sent-page";
+
+  initSentPage();
+</script>

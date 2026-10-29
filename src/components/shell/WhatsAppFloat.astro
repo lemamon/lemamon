@@ -1,0 +1,94 @@
+---
+/**
+ * WhatsApp flutuante — desktop/tablet ≥ 768px (BLUEPRINT §8.3). Dono: shell.
+ * Canto inferior direito, todas as rotas exceto /orcamento* (Base.astro); no
+ * mobile a barra fixa o substitui. Mensagem pré-preenchida pela página (§7.7).
+ * Some sem PUBLIC_WHATSAPP_NUMBER (sem link morto) e enquanto o rodapé está na
+ * tela (src/scripts/whatsapp-float.ts), para não cobrir o seletor de idioma.
+ * @media em `em` (48em), igual à barra fixa: com a fonte do navegador ampliada,
+ * os dois trocam de lugar na mesma largura (F13).
+ */
+import Icon from "@/components/ui/Icon.astro";
+import { t, type Locale } from "@/i18n";
+import { whatsappHref } from "@/lib/whatsapp";
+
+interface Props {
+  locale: Locale;
+  message: string;
+}
+
+const { locale, message } = Astro.props;
+const href = whatsappHref(message);
+---
+
+{
+  href && (
+    <a
+      class="whatsapp-float"
+      href={href}
+      target="_blank"
+      rel="noopener"
+      aria-label={t(locale, "shared.whatsapp.floating_label")}
+      data-track="whatsapp_click"
+      data-source="floating"
+      data-whatsapp-float
+      data-state="visible"
+    >
+      <Icon name="whatsapp" size={28} />
+    </a>
+  )
+}
+
+<script>
+  import "@/scripts/whatsapp-float";
+</script>
+
+<style>
+  .whatsapp-float {
+    position: fixed;
+    inset-block-end: calc(var(--space-6) + env(safe-area-inset-bottom));
+    inset-inline-end: calc(var(--space-6) + env(safe-area-inset-right));
+    z-index: var(--z-floating);
+    display: none;
+    place-items: center;
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-whatsapp);
+    color: var(--color-text-on-whatsapp);
+    box-shadow: var(--shadow-lg);
+    transition:
+      var(--transition-colors),
+      var(--transition-transform),
+      opacity var(--duration-normal) var(--ease-out),
+      visibility 0s;
+  }
+  .whatsapp-float[data-state="hidden"] {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(var(--space-4));
+    transition:
+      opacity var(--duration-normal) var(--ease-out),
+      transform var(--duration-normal) var(--ease-out),
+      visibility 0s linear var(--duration-normal);
+  }
+  .whatsapp-float:hover {
+    background-color: var(--color-whatsapp-hover);
+    color: var(--color-text-on-whatsapp);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .whatsapp-float:hover {
+      transform: translateY(-2px);
+    }
+  }
+  @media (min-width: 48em) {
+    .whatsapp-float {
+      display: grid;
+    }
+  }
+  @media print {
+    .whatsapp-float {
+      display: none;
+    }
+  }
+</style>

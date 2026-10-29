@@ -1,0 +1,155 @@
+/*
+ * Chrome do wizard (/orcamento*) — WizardHeader.astro e WizardFooter.astro.
+ * Dono: shell. BLUEPRINT §7.2, §8.4.
+ *
+ * Por que um .css e não <style> nos componentes (backlog B094): o CSS de um
+ * componente que o layout importa vai para /_astro/Base.*.css, o arquivo que
+ * TODA página baixa, mesmo as 42 que nunca desenham o wizard. Este arquivo é
+ * importado com ?inline pelo src/layouts/Base.astro e vira um <style> no
+ * <head> SÓ das páginas com layout "wizard".
+ *
+ * Sem o escopo automático do Astro, cada seletor começa pela raiz do bloco
+ * (.wizard-header[data-wizard-header], .wizard-footer[data-wizard-footer]):
+ * a especificidade fica ≥ 0,2,0, como antes com [data-astro-cid-…], e nenhuma
+ * regra global (a, a:hover, .container) passa a vencer. Classes BEM únicas;
+ * nada aqui alcança os componentes filhos, exceto o que já era :global
+ * (.logo__name do Logo e o svg do Icon).
+ */
+
+/* ---------------------------------------------------------------- header */
+.wizard-header[data-wizard-header] {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-header);
+  border-block-end: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg-canvas);
+}
+.wizard-header .wizard-header__inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--header-height);
+}
+.wizard-header .wizard-header__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--target-min);
+  /* Só o símbolo (28px) no modo foco e abaixo de 380px: o alvo continua 44×44 (B084). */
+  min-inline-size: var(--target-min);
+  text-decoration: none;
+}
+.wizard-header .wizard-header__progress {
+  min-inline-size: 0;
+}
+.wizard-header .wizard-header__help {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: var(--target-min);
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-sm);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.wizard-header .wizard-header__help:hover {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+}
+.wizard-header .wizard-header__help svg {
+  color: var(--color-whatsapp);
+}
+
+/* Tela baixa (zoom de 200% no notebook, celular deitado; auditoria F51): o
+   header sai do sticky e rola com a página; preso, ele e a barra de ação
+   ocupavam até 47% da tela. */
+@media (max-height: 34em) {
+  .wizard-header[data-wizard-header] {
+    position: static;
+  }
+}
+
+/* Abaixo de 380px (ex.: 320px), logo + "Dúvidas? WhatsApp" não cabem numa
+   linha (em inglês sobram ~36px): o logo fica só com o símbolo. O nome
+   acessível do link continua "Lemamon…" (aria-label). */
+@media (max-width: 379.98px) {
+  .wizard-header[data-wizard-header] .logo__name {
+    display: none;
+  }
+}
+
+/* Modo foco abaixo de 640px (escala de breakpoints, B079): o texto "Dúvidas?
+   WhatsApp" vira só o ícone (o nome acessível continua o texto) e o logo fica
+   só com o símbolo, para "Pergunta N de 6" + barra caberem numa linha. Medido
+   em pt/en/es: com o texto e o nome do logo visíveis, a 480px o progresso
+   ficava com 86px em inglês; assim fica com 223–487px de 375 a 639px. */
+@media (max-width: 639.98px) {
+  .wizard-header[data-mode="focus"] .wizard-header__help > span:not(.sr-only) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+  .wizard-header[data-mode="focus"] .wizard-header__help {
+    min-inline-size: var(--target-min);
+    justify-content: center;
+  }
+  .wizard-header[data-mode="focus"] .logo__name {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- footer */
+.wizard-footer[data-wizard-footer] {
+  margin-block-start: var(--section-compact);
+  border-block-start: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+.wizard-footer .wizard-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding-block: var(--space-6) calc(var(--space-6) + env(safe-area-inset-bottom));
+}
+.wizard-footer .wizard-footer__link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-min);
+  color: var(--color-text-primary);
+}
+.wizard-footer .wizard-footer__sep {
+  color: var(--color-text-tertiary);
+}
+/* Abaixo de 640px (escala de breakpoints, B079) o e-mail pode descer para a
+   linha de baixo, e o "·" ficava pendurado no fim da linha da Política (F49);
+   sem ele, o respiro entre os dois é o gap da linha. */
+@media (max-width: 639.98px) {
+  .wizard-footer .wizard-footer__sep {
+    display: none;
+  }
+}
+.wizard-footer .wizard-footer__company {
+  flex-basis: 100%;
+  margin: 0;
+}
+/* Seletor de idioma numa linha própria (F31); o recuo de -space-1 alinha o
+   texto do 1º link com a política, apesar do respiro do alvo de toque. */
+.wizard-footer .wizard-footer__languages {
+  flex-basis: 100%;
+  margin-inline-start: calc(-1 * var(--space-1));
+}
+/* Aviso de idioma (LanguageSuggestion) só na entrada: no modo foco, some (F31). */
+html[data-wizard-mode="focus"] .lang-suggest {
+  display: none !important;
+}

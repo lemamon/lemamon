@@ -1,0 +1,263 @@
+---
+/**
+ * Orçamento §6.7 #1 `entry` (+ #0 resume_banner) — always. Dono: conversion.
+ *
+ * ÚNICO H1 (honesto: dali sai um diagnóstico, não um preço). Ordem: [banner de
+ * retomada] · eyebrow · H1 · subtítulo · 3 marcadores · [prova compacta,
+ * when_data: 1 depoimento ou logos, backlog B140] · promessa "você vê o resumo
+ * antes de deixar qualquer contato" · "Começar" + "Prefere conversar direto?
+ * Falar no WhatsApp" · [linha de contexto do ?servico=]. A linha de contexto
+ * vem DEPOIS do botão (auditoria F03): antes dele, ela empurrava o "Começar"
+ * para baixo da dobra no celular (y 681–729 numa tela de 664) justamente no
+ * tráfego dos anúncios (página de serviço → ?servico=).
+ *
+ * Dois alvos são preenchidos pela ilha (portal), porque dependem do
+ * navegador: [data-wizard-resume] (rascunho no localStorage) e
+ * [data-wizard-context] (?servico= / ?ref= da URL).
+ *
+ * Banner de retomada sem layout shift (backlog B238): o banner só nasce na
+ * hidratação, e empurrava o H1 ~300px para baixo. Agora o alvo traz no HTML
+ * uma CÓPIA INVISÍVEL do banner (mesmas classes do CSS module da ilha, mesmos
+ * textos, uma data longa de exemplo), inerte e fora da árvore de
+ * acessibilidade. Ela só ocupa espaço quando o script do <head> achou um
+ * rascunho válido (html[data-draft-step], antes da pintura); o banner de
+ * verdade entra na MESMA célula do grid, por cima dela, e o H1 não se move. A
+ * ilha marca data-state="closed" quando não há banner (rascunho recusado,
+ * "Começar de novo", volta da P1), e o espaço some. O botão "Começar" é
+ * [data-wizard-start]: a ilha escuta o clique (e o script inline do <head>
+ * guarda o clique feito antes da hidratação).
+ *
+ * Modo foco: só o H1 fica, visualmente oculto (a página nunca perde o H1).
+ * A regra que esconde o resto vale para QUALQUER filho de .entry__inner,
+ * inclusive os que vêm de outro componente (a prova do QuoteProof tem outro
+ * data-astro-cid): sem o :global, o depoimento ficava acima das perguntas e
+ * aparecia duas vezes no contato (backlog B140).
+ *
+ * Ritmo vertical: <Section spacing="hero-compact"> (B211); a raiz não declara
+ * padding-block próprio.
+ *
+ * Eyebrow: cada lado do "·" num span sem quebra; se não couber numa linha, a
+ * quebra acontece ANTES do "·" (i18n quote._notes.entry_placement).
+ */
+import QuoteProof from "@/components/quote/QuoteProof.astro";
+import Button from "@/components/ui/Button.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import { getSection, t, type Locale } from "@/i18n";
+import { LOCALE_META } from "@/i18n/locales";
+import banner from "@/islands/wizard/Wizard.module.css";
+import { fillTemplate, whatsappHref } from "@/lib/whatsapp";
+
+interface Props {
+  locale: Locale;
+  /** quote.whatsapp_messages.entry_direct. */
+  whatsappMessage: string;
+}
+
+const { locale, whatsappMessage } = Astro.props;
+const markers = getSection(locale, "quote.entry.markers");
+const wa = whatsappHref(whatsappMessage);
+const EYEBROW_SEPARATOR = " · ";
+const [eyebrowFor, ...eyebrowRest] = t(locale, "quote.entry.eyebrow").split(EYEBROW_SEPARATOR);
+const eyebrowWhere = eyebrowRest.join(EYEBROW_SEPARATOR);
+
+/**
+ * Cópia invisível do banner de retomada (B238). Data de exemplo com o mês mais
+ * longo (setembro/September/septiembre) e dia de 2 dígitos: a cópia nunca fica
+ * mais baixa que o banner de verdade, então o H1 não desce quando ele entra.
+ */
+const resume = getSection(locale, "quote.entry.resume_banner");
+const ghostDate = new Intl.DateTimeFormat(LOCALE_META[locale].htmlLang, {
+  day: "numeric",
+  month: "long",
+  timeZone: "UTC",
+}).format(new Date(Date.UTC(2026, 8, 30)));
+---
+
+<Section id="inicio" spacing="hero-compact" labelledby="quote-title" class="entry" data-keep-in-focus="">
+  <div class="entry__inner">
+    <div class="entry__resume" data-wizard-resume>
+      <div class:list={[banner.banner, "entry__resume-ghost"]} aria-hidden="true" inert data-resume-ghost>
+        <p class={banner.bannerText}>{fillTemplate(resume.text, { data: ghostDate })}</p>
+        <div class={banner.bannerActions}>
+          <button type="button" class={banner.primary} tabindex="-1">{resume.continue}</button>
+          <button type="button" class={banner.secondary} tabindex="-1">{resume.restart}</button>
+        </div>
+        <p class={banner.help}>{resume.restart_hint}</p>
+      </div>
+    </div>
+    <p class="eyebrow">
+      <span class="entry__eyebrow" data-quote-eyebrow>
+        {
+          eyebrowWhere ? (
+            <>
+              <span class="no-break">{eyebrowFor}</span> <span class="no-break">· {eyebrowWhere}</span>
+            </>
+          ) : (
+            eyebrowFor
+          )
+        }
+      </span>
+    </p>
+    <h1 id="quote-title" class="entry__title">{t(locale, "quote.entry.title")}</h1>
+    <p class="lead entry__subtitle">{t(locale, "quote.entry.subtitle")}</p>
+    <ul class="entry__markers" role="list">
+      {
+        [markers.free, markers.duration, markers.written_feedback].map((marker) => (
+          <li>
+            <span class="entry__mark">
+              <Icon name="check" size={16} />
+            </span>
+            {marker}
+          </li>
+        ))
+      }
+    </ul>
+    <QuoteProof locale={locale} placement="entry" />
+    <p class="entry__promise">{t(locale, "quote.entry.summary_promise")}</p>
+    <div class="entry__actions">
+      <Button type="button" size="lg" full="mobile" data-wizard-start="">
+        {t(locale, "quote.entry.start")}
+      </Button>
+      {
+        wa && (
+          <a class="entry__whatsapp" href={wa} target="_blank" rel="noopener" data-track="whatsapp_click" data-source="wizard_entry">
+            <Icon name="whatsapp" size={18} />
+            <span>{t(locale, "quote.entry.whatsapp_link")}</span>
+            <span class="sr-only">{t(locale, "shared.a11y.opens_new_tab")}</span>
+          </a>
+        )
+      }
+    </div>
+    <div data-wizard-context></div>
+  </div>
+</Section>
+
+<style>
+  .entry__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  [data-wizard-context]:empty {
+    display: none;
+  }
+
+  /* Banner de retomada (B238): a cópia invisível e o banner da ilha na mesma
+     célula do grid. Sem rascunho (html sem data-draft-step) ou sem banner
+     (data-state="closed", marcado pela ilha), o espaço não existe. */
+  .entry__resume {
+    display: grid;
+    inline-size: 100%;
+    max-inline-size: var(--measure-prose);
+  }
+
+  .entry__resume > :global(*) {
+    grid-area: 1 / 1;
+    min-inline-size: 0;
+  }
+
+  .entry__resume-ghost {
+    visibility: hidden;
+  }
+
+  :global(html:not([data-draft-step])) .entry__resume,
+  .entry__resume[data-state="closed"] {
+    display: none;
+  }
+
+  :global(html) .entry__resume[data-state="open"] {
+    display: grid;
+  }
+
+  .entry__title {
+    max-inline-size: 22ch;
+  }
+
+  .entry__markers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .entry__markers li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .entry__mark {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-brand-subtle);
+    color: var(--color-brand);
+  }
+
+  .entry__promise {
+    color: var(--color-text-secondary);
+  }
+
+  .entry__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    inline-size: 100%;
+    margin-block-start: var(--space-2);
+  }
+
+  .entry__whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--target-min);
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Texto da eyebrow: um só item do inline-flex (o marcador é o ::before), com
+     a quebra natural entre os dois spans sem quebra, isto é, antes do "·". */
+  .entry__eyebrow {
+    min-inline-size: 0;
+  }
+
+  /* Em duas linhas, o marcador fica na altura da 1ª linha (não no meio das duas). */
+  .entry__inner > .eyebrow {
+    align-items: flex-start;
+  }
+
+  .entry__inner > .eyebrow::before {
+    margin-block-start: calc((1lh - var(--space-2)) / 2);
+  }
+
+  /* Modo foco: só o H1 fica, para leitor de tela. A Section perde o ritmo
+     vertical; todo filho de .entry__inner que não é o H1 some, venha de onde
+     vier (:global no filho: a prova do QuoteProof tem outro escopo, B140). */
+  :global(html[data-wizard-mode="focus"] .section.entry) {
+    padding: 0;
+  }
+
+  :global(html[data-wizard-mode="focus"]) .entry__inner > :global(:not(h1)) {
+    display: none;
+  }
+
+  :global(html[data-wizard-mode="focus"]) .entry__title {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

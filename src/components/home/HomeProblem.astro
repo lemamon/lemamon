@@ -1,0 +1,175 @@
+---
+/**
+ * Home §6.1 #4 `problem` — always. Dono: home. Identificação.
+ *
+ * O visitante se reconhece na dor operacional antes de ouvir a solução: 4
+ * cenários da operação em grade de células (2×2 no desktop) e, separado, o
+ * cenário do fundador (ideia de produto), que é outro ponto de partida.
+ * Nenhuma estatística de mercado. Lista no mobile, grade no desktop.
+ * CTA: link de texto → /orcamento?origem=home-problema (degrau 2, sem botão:
+ * o primário da página fica no hero, no método e no CTA final). Mesmo padrão
+ * do TextCta dos serviços: a pergunta fica num <span> à parte e o link leva só
+ * o rótulo do CTA primário (primaryCtaKey: com agenda, "Agendar…"). Assim o
+ * rótulo nunca quebra no meio ("Request / a free assessment" em 375px).
+ * Desktop: grade de 12 colunas, 8 (operação) + 4 (fundador).
+ */
+import ArrowLink from "@/components/ui/ArrowLink.astro";
+import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/ui/Icon.astro";
+import Section from "@/components/ui/Section.astro";
+import SectionHeader from "@/components/ui/SectionHeader.astro";
+import { optionalText } from "@/components/home/home-sections";
+import { getFeatures, primaryCtaKey } from "@/config/features";
+import { quoteHref } from "@/config/routes";
+import { getSection, t, type Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  /** Posição do capítulo na Home (eyebrow "01 /"). */
+  index?: number;
+}
+
+const { locale, index } = Astro.props;
+const cards = getSection(locale, "home.problem.cards");
+const { founder_idea: founder, ...operational } = cards;
+const origem = "home-problema";
+const features = await getFeatures();
+// Pergunta antes do link. home.problem.link_lead é a chave da Home; até ela
+// existir nos 3 idiomas, vale a mesma frase dos serviços (signals_cta_lead).
+const linkLead = optionalText(locale, "home.problem.link_lead") ?? t(locale, "services.template.signals_cta_lead");
+const linkText = t(locale, primaryCtaKey(features));
+---
+
+<Section id="problema" labelledby="problema-title">
+  <SectionHeader
+    id="problema-title"
+    eyebrow={t(locale, "home.problem.eyebrow")}
+    index={index}
+    title={t(locale, "home.problem.title")}
+    intro={t(locale, "home.problem.intro")}
+    layout="split"
+  />
+
+  <div class="problem grid-12">
+    <ul class="problem__ops" role="list">
+      {
+        Object.entries(operational).map(([id, card]) => (
+          <li class="problem__item" data-id={id}>
+            <h3 class="problem__title">{card.title}</h3>
+            <p class="problem__text">{card.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <Card surface="brand" padding="lg" class="problem__founder" data-id="founder_idea">
+      <span class="problem__founder-mark" aria-hidden="true">
+        <Icon name="mvp" size={28} strokeWidth={1.5} />
+      </span>
+      <h3 class="problem__title">{founder.title}</h3>
+      <p class="problem__text">{founder.text}</p>
+    </Card>
+  </div>
+
+  <p class="problem__cta">
+    <span class="problem__cta-lead">{linkLead}</span>
+    <ArrowLink
+      href={quoteHref(locale, { origem })}
+      text={linkText}
+      size="lg"
+      data-track="cta_click"
+      data-cta-id="diagnosis"
+      data-origem={origem}
+    />
+  </p>
+</Section>
+
+<style>
+  .problem {
+    row-gap: var(--space-4);
+  }
+  .problem__ops {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border-block-start: 1px solid var(--color-border-default);
+  }
+  .problem__item {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    padding-block: var(--space-5);
+    border-block-end: 1px solid var(--color-border-default);
+  }
+  .problem__title {
+    font-size: var(--text-lg);
+    line-height: var(--leading-h4); /* título curto: 1.3, não o 1.56 do texto */
+    letter-spacing: -0.005em;
+  }
+  .problem__text {
+    color: var(--color-text-secondary);
+    max-inline-size: 46ch;
+  }
+  /* Raiz = <Card surface="brand" padding="lg">: fundo, raio e padding vêm de lá. */
+  .problem :global(.problem__founder) {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    margin-block-start: var(--space-4);
+  }
+  .problem__founder-mark {
+    display: grid;
+    place-items: center;
+    justify-self: start;
+    inline-size: 3rem;
+    block-size: 3rem;
+    margin-block-end: var(--space-3);
+    border: 1px solid var(--color-brand);
+    border-radius: var(--radius-md);
+    color: var(--color-brand);
+    background-color: var(--color-bg-canvas);
+  }
+  .problem__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--space-2);
+    margin-block-start: var(--space-8);
+  }
+  .problem__cta-lead {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 768px) {
+    .problem__ops {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-inline-start: 1px solid var(--color-border-default);
+    }
+    .problem__item {
+      padding: var(--space-6);
+      border-inline-end: 1px solid var(--color-border-default);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .problem {
+      align-items: stretch;
+    }
+    .problem__ops {
+      --span-lg: 8;
+    }
+    .problem :global(.problem__founder) {
+      --span-lg: 4;
+      display: flex;
+      flex-direction: column;
+      margin-block-start: 0;
+    }
+    .problem__founder-mark {
+      margin-block-end: auto;
+    }
+    .problem__founder-mark ~ .problem__title {
+      margin-block-start: var(--space-8);
+    }
+  }
+</style>

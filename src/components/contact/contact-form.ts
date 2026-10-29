@@ -1,0 +1,323 @@
+/**
+ * Aprimoramento do formulário de /contato (BLUEPRINT §6.9) — dono: conversion.
+ * Vanilla. Sem este script o form continua funcionando (POST nativo para o
+ * Netlify, validação nativa). Com ele: validação no blur e no envio, mensagem
+ * por campo, máscara de telefone, envio por fetch (timeout, 3 tentativas,
+ * honeypot, tempo mínimo) e confirmação/erro na mesma página, com os dados
+ * preservados. Mensagens vêm do HTML (data-*), nunca hardcoded.
+ *
+ * Medição sem valor digitado: form_field_complete (campo preenchido e deixado,
+ * B337) e form_validation_error (erro exibido, B338), uma vez por campo/tipo.
+ * Telefone: em pt, BR com DDD (máscara) ou internacional com "+"; em /en e /es,
+ * só com "+" e o código do país, sem a máscara BR (lib/forms formatPhone).
+ * Deploy preview (data-preview-submit, B277): sem POST e sem contact_submitted.
+ * Falha sem rede (B340): lead_failed espera a conexão voltar (trackWhenOnline)
+ * em vez de se perder junto com o hit do GA4.
+ *
+ * Da auditoria de conversão:
+ *  - F07: e-mail com erro de digitação ganha "Você quis dizer …? [Corrigir]"
+ *    (lib/forms suggestEmail) numa região aria-live, sem bloquear o envio.
+ *  - F11: o envio leva `attribution` e `gclid` com as mesmas regras do wizard
+ *    (lib/attribution): utm_*, ids de clique, referrer, página de entrada e o
+ *    ?origem=; no modo consentimento (data-ads-consent-required), sem o aceite
+ *    do aviso de cookies, nenhum id de clique.
+ *  - F40: o Assunto é o 1º campo (a dica do wizard aparece antes de digitar);
+ *    a ordem de validação segue a da tela.
+ *  - F23: antes do 1º envio, o blur só mostra (e mede) erro de formato num
+ *    campo preenchido; "obrigatório" aparece e é medido só depois do envio.
+ *  - F83: form_field_complete só com o campo preenchido E válido.
+ * Este módulo sai do JS inicial da página (orçamento de peso do verify-build):
+ * o ContactForm.astro o importa no ocioso ou no 1º toque/foco no formulário, e
+ * um envio feito antes disso espera o módulo (initContactForm + requestSubmit).
+ */
+
+import { createOnce, flushPendingEvents, readSessionTouch, track, trackWhenOnline } from "@/lib/analytics";
+import { attributionFields, buildAttribution, gclidAllowed } from "@/lib/attribution";
+import {
+  formatPhone,
+  HONEYPOT_FIELD,
+  isFilled,
+  isValidEmail,
+  isValidPhone,
+  previewSubmitActive,
+  submitNetlifyForm,
+  suggestEmail,
+  type FormFields,
+  type PhoneLocale,
+} from "@/lib/forms";
+
+type FieldName = "name" | "email" | "phone" | "subject" | "message";
+/** Ordem da tela (F40: Assunto primeiro): o foco vai para o 1º campo inválido nesta ordem. */
+const ORDER: FieldName[] = ["subject", "name", "email", "phone", "message"];
+
+/** Idioma do formulário (campo oculto `lang`); qualquer outro valor vale como pt. */
+export function phoneLocaleOf(lang: string | null | undefined): PhoneLocale {
+  return lang === "en" || lang === "es" ? lang : "pt";
+}
+
+/** Mensagem de erro de um campo ("" = válido). Pura, para os testes. */
+export function contactFieldError(
+  name: FieldName,
+  value: string,
+  messages: { required?: string; invalid?: string },
+  locale: PhoneLocale = "pt",
+): string {
+  const filled = isFilled(value);
+  switch (name) {
+    case "name":
+    case "subject":
+    case "message":
+      return filled ? "" : (messages.required ?? "");
+    case "email":
+      if (!filled) return messages.required ?? "";
+      return isValidEmail(value) ? "" : (messages.invalid ?? "");
+    case "phone":
+      return !filled || isValidPhone(value, locale) ? "" : (messages.invalid ?? "");
+  }
+}
+
+/** Origem do contato: ?origem= do link que trouxe, senão a página anterior do site, senão o site de fora. */
+export function contactOrigin(search: string, referrer: string, host: string): string {
+  const origem = new URLSearchParams(search).get("origem");
+  if (origem) return origem.slice(0, 120);
+  try {
+    const url = new URL(referrer);
+    return (url.host === host ? url.pathname : url.origin).slice(0, 200);
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Atribuição do envio de /contato (F11): a mesma montagem do wizard, com o
+ * toque da sessão e a URL desta página; sem permissão (gclidAllowed), nenhum
+ * id de clique vai em `attribution` nem em `gclid`.
+ */
+export function contactAttribution(
+  location: Pick<Location, "pathname" | "search" | "host">,
+  referrer: string,
+  allowed: boolean,
+  sessionTouch = readSessionTouch(),
+): { attribution: string; gclid: string } {
+  return attributionFields(
+    buildAttribution({ pathname: location.pathname, search: location.search, host: location.host, referrer, sessionTouch }),
+    allowed,
+  );
+}
+
+function localStore(): Storage | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Sugestão de e-mail (F07) na região viva [data-email-suggestion]: texto
+ * "Você quis dizer {email}?" (data-template) e o botão "Corrigir" (data-fix).
+ * Só reescreve quando a sugestão muda, para o leitor de tela não repetir.
+ */
+function renderEmailSuggestion(slot: HTMLElement, suggestion: string | null, onFix: (value: string) => void): void {
+  if ((slot.dataset.value ?? "") === (suggestion ?? "")) return;
+  slot.dataset.value = suggestion ?? "";
+  if (!suggestion) {
+    slot.replaceChildren();
+    return;
+  }
+  const text = document.createElement("span");
+  // Sem o fillTemplate de lib/whatsapp: aqui ele traria o módulo inteiro para o JS da página.
+  text.textContent = (slot.dataset.template ?? "").replace("{email}", suggestion);
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = slot.dataset.fix ?? "";
+  // O foco fica no e-mail: o blur dele não mexe na tela entre o toque e o clique.
+  button.addEventListener("mousedown", (event) => event.preventDefault());
+  button.addEventListener("click", () => onFix(suggestion));
+  slot.replaceChildren(text, " ", button);
+}
+
+/**
+ * Liga o aprimoramento no formulário. `startedAt`: quando o formulário
+ * apareceu (o tempo mínimo de preenchimento, MIN_FILL_MS, conta dali); o
+ * ContactForm.astro carrega este módulo depois da 1ª pintura e passa a hora em
+ * que a página abriu. data-enhanced marca o formulário já ligado.
+ */
+export function initContactForm(form: HTMLFormElement, startedAt: number = Date.now()): void {
+  if (form.dataset.enhanced !== undefined) return;
+  form.dataset.enhanced = "";
+  // Falha guardada offline numa página anterior desta aba (B340).
+  void flushPendingEvents();
+  form.noValidate = true;
+  const section = form.closest("section") ?? document;
+  const success = section.querySelector<HTMLElement>("[data-contact-success]");
+  const errorPanel = form.querySelector<HTMLElement>("[data-contact-error]");
+  const status = form.querySelector<HTMLElement>("[data-contact-status]");
+  const origin = form.querySelector<HTMLInputElement>("[data-contact-origin]");
+  const locale = phoneLocaleOf(form.querySelector<HTMLInputElement>('input[name="lang"]')?.value);
+  if (origin) origin.value = contactOrigin(window.location.search, document.referrer, window.location.host);
+
+  const touched = new Set<FieldName>();
+  const once = createOnce();
+  /** Já houve tentativa de envio: a partir daí o "obrigatório" aparece (F23). */
+  let submitted = false;
+  const preview = previewSubmitActive(form.hasAttribute("data-preview-submit"));
+  // Modo consentimento do Google Ads (B342): o gclid só vai com o aceite do aviso de cookies.
+  const adsConsentRequired = form.hasAttribute("data-ads-consent-required");
+  let sending = false;
+
+  const control = (name: FieldName) =>
+    name === "subject"
+      ? form.querySelector<HTMLElement>('[data-group="subject"]')
+      : form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`);
+
+  const valueOf = (name: FieldName): string => {
+    if (name === "subject") return form.querySelector<HTMLInputElement>('input[name="topic"]:checked')?.value ?? "";
+    return form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`)?.value ?? "";
+  };
+
+  const check = (name: FieldName, show: boolean): string => {
+    const element = control(name);
+    const value = valueOf(name);
+    const message = contactFieldError(
+      name,
+      value,
+      { required: element?.dataset.required, invalid: element?.dataset.invalid },
+      locale,
+    );
+    // Antes do 1º envio, só o erro de formato de um campo preenchido (F23).
+    const visible = show && (submitted || isFilled(value)) ? message : "";
+    if (visible) {
+      const error = isFilled(value) ? "invalid" : "required";
+      if (once(`error:${name}:${error}`)) track("form_validation_error", { form: "contato", field_name: name, error });
+    }
+    if (show) {
+      const slot = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      if (slot) slot.textContent = visible;
+      const targets =
+        name === "subject" ? [...form.querySelectorAll<HTMLInputElement>('input[name="topic"]')] : element ? [element] : [];
+      for (const target of targets) {
+        if (visible) target.setAttribute("aria-invalid", "true");
+        else target.removeAttribute("aria-invalid");
+      }
+    }
+    return message;
+  };
+
+  for (const name of ORDER) {
+    if (name === "subject") {
+      form.querySelectorAll('input[name="topic"]').forEach((radio) =>
+        radio.addEventListener("change", () => {
+          touched.add("subject");
+          check("subject", true);
+          if (once("complete:subject")) track("form_field_complete", { form: "contato", field_name: "subject" });
+        }),
+      );
+      continue;
+    }
+    const element = control(name);
+    element?.addEventListener("blur", () => {
+      touched.add(name);
+      const message = check(name, true);
+      if (isFilled(valueOf(name)) && !message && once(`complete:${name}`)) {
+        track("form_field_complete", { form: "contato", field_name: name });
+      }
+    });
+    element?.addEventListener("input", () => {
+      if (touched.has(name)) check(name, true);
+    });
+  }
+
+  // O mousedown no "Enviar" tiraria o foco do campo; o blur mostra a mensagem de
+  // erro, o botão desce e o clique cai fora dele (o envio não acontecia). Sem
+  // trocar o foco no mousedown, o clique chega ao botão; o teclado não muda.
+  form.querySelectorAll<HTMLButtonElement>('button[type="submit"]').forEach((button) =>
+    button.addEventListener("mousedown", (event) => event.preventDefault()),
+  );
+
+  const phone = form.querySelector<HTMLInputElement>('[name="phone"]');
+  phone?.addEventListener("input", () => {
+    phone.value = formatPhone(phone.value, locale);
+  });
+
+  // F07: sugestão depois do 1º blur do e-mail, atualizada enquanto a pessoa corrige.
+  const email = form.querySelector<HTMLInputElement>('[name="email"]');
+  const suggestionSlot = form.querySelector<HTMLElement>("[data-email-suggestion]");
+  const updateSuggestion = () => {
+    if (!email || !suggestionSlot) return;
+    renderEmailSuggestion(suggestionSlot, touched.has("email") ? suggestEmail(email.value) : null, (value) => {
+      email.value = value;
+      updateSuggestion();
+      check("email", true);
+      email.focus();
+    });
+  };
+  email?.addEventListener("blur", updateSuggestion);
+  email?.addEventListener("input", updateSuggestion);
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (sending) return;
+
+    submitted = true;
+    const invalid = ORDER.filter((name) => check(name, true) !== "");
+    ORDER.forEach((name) => touched.add(name));
+    if (invalid.length > 0) {
+      const first = invalid[0] as FieldName;
+      const target =
+        first === "subject" ? form.querySelector<HTMLInputElement>('input[name="topic"]') : (control(first) as HTMLElement | null);
+      target?.focus();
+      return;
+    }
+
+    sending = true;
+    if (status) status.textContent = form.dataset.sending ?? "";
+    const data = new FormData(form);
+    const fields: FormFields<"contato"> = {
+      name: String(data.get("name") ?? "").trim(),
+      email: String(data.get("email") ?? "").trim(),
+      phone: formatPhone(String(data.get("phone") ?? ""), locale).trim(),
+      // topic = id do assunto; subject = assunto legível do e-mail ao comercial (lib/forms contactSubject).
+      topic: valueOf("subject"),
+      subject:
+        form.querySelector<HTMLInputElement>('input[name="topic"]:checked')?.dataset.subjectLine ??
+        String(data.get("subject") ?? ""),
+      message: String(data.get("message") ?? "").trim(),
+      lang: String(data.get("lang") ?? ""),
+      origin: String(data.get("origin") ?? ""),
+      ...contactAttribution(window.location, document.referrer, gclidAllowed(adsConsentRequired, localStore())),
+      [HONEYPOT_FIELD]: String(data.get(HONEYPOT_FIELD) ?? ""),
+    };
+    const result = await submitNetlifyForm("contato", fields, { startedAt, preview });
+    sending = false;
+    if (status) status.textContent = "";
+
+    if (result.ok || result.reason === "spam") {
+      if (result.ok && !result.preview) {
+        track("contact_submitted", { subject: fields.topic ?? "" });
+        // O POST passou: a conexão está provada, e uma falha guardada offline sai agora.
+        void flushPendingEvents({ reachable: true });
+      }
+      if (success) {
+        const text = success.querySelector<HTMLElement>("[data-contact-success-text]");
+        if (text && fields.phone && text.dataset.withPhone) text.textContent = text.dataset.withPhone;
+        const project = success.querySelector<HTMLElement>("[data-contact-success-project]");
+        if (project) project.hidden = !(fields.topic === "new_project" || fields.topic === "existing_system");
+        success.dataset.visible = "true";
+        success.focus();
+      }
+      return;
+    }
+
+    if (errorPanel) {
+      errorPanel.hidden = false;
+      errorPanel.focus();
+      if (status) status.textContent = errorPanel.querySelector("h3")?.textContent ?? "";
+    }
+    trackWhenOnline(
+      "lead_failed",
+      { reason: result.reason, attempts: result.attempts, form: "contato" },
+      { reason: result.reason, attempts: result.attempts, status: result.status ?? 0, form: "contato" },
+    );
+  });
+}

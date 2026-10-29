@@ -1,0 +1,77 @@
+---
+/**
+ * Wordmark "lemamon.dev" — PROTÓTIPO para a decisão D34 do dono (playbook 15;
+ * backlog B221, 03-ui §3.5.3 e §3.5.5). Dono: shell.
+ *
+ * NÃO é importado por nenhuma página até a D34 ser registrada. Mora num
+ * componente próprio (e não como variante do Logo.astro) de propósito: o CSS
+ * de um componente importado pelo layout vai para o bundle de TODAS as páginas
+ * (/_astro/Base.*.css), e o protótipo não pode pesar no site (backlog B094).
+ * Logo.test.ts confere que ninguém o importa.
+ *
+ * "lemamon" em fonte mono + ".dev" na cor de acento (âmbar em fundo escuro;
+ * --color-accent-on-subtle em fundo claro, porque âmbar como texto em fundo
+ * claro reprova AA) e, com cursor, um bloco de terminal piscando (1,06s,
+ * steps(2)). O texto vem do domínio de SITE_URL (nada escrito à mão).
+ * Regras do cursor: no máximo 1 por viewport, só ao lado do CTA final (nunca
+ * no H1, BLUEPRINT §6.1); com prefers-reduced-motion o global.css zera a
+ * animação e o cursor fica parado, aceso. Decorativo (aria-hidden): o nome
+ * acessível vem do link que o envolve, como no Logo.
+ */
+import { SITE_URL } from "@/config/routes";
+
+interface Props {
+  /** Superfície escura: ".dev" em âmbar. */
+  surface?: "light" | "dark";
+  size?: "md" | "sm";
+  /** Cursor de terminal depois do ".dev". */
+  cursor?: boolean;
+}
+
+const { surface = "light", size = "md", cursor = false } = Astro.props;
+const host = new URL(SITE_URL).hostname;
+const dot = host.indexOf(".");
+const [hostName, hostTld] = dot > 0 ? [host.slice(0, dot), host.slice(dot)] : [host, ""];
+---
+
+<span class="wordmark" data-surface={surface} data-size={size} aria-hidden="true">
+  <span class="wordmark__name">{hostName}</span>
+  <span class="wordmark__tld">{hostTld}</span>
+  {cursor && <span class="wordmark__cursor" />}
+</span>
+
+<style>
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .wordmark[data-size="sm"] {
+    font-size: var(--text-lg);
+    line-height: 1;
+  }
+  .wordmark__tld {
+    color: var(--color-accent-on-subtle);
+  }
+  .wordmark[data-surface="dark"] .wordmark__tld {
+    color: var(--color-accent);
+  }
+  .wordmark__cursor {
+    display: inline-block;
+    inline-size: 0.55em;
+    block-size: 1em;
+    margin-inline-start: 0.12em;
+    background-color: var(--color-accent);
+    animation: wordmark-blink 1.06s steps(2, jump-none) infinite;
+  }
+  @keyframes wordmark-blink {
+    to {
+      opacity: 0;
+    }
+  }
+</style>
