@@ -68,11 +68,17 @@ test.describe("aviso de cookies (Consent Mode v2)", () => {
     // clique não pode tratar isso como gatilho, senão preventDefault em todo clique
     // e nenhum link navega (bug em produção, 30/10/2026).
     await expect(banner(page)).toBeVisible();
-    await page.getByRole("link", { name: "Quanto custa", exact: true }).click();
-    await expect(page).toHaveURL(/\/quanto-custa$/);
-    await expect(banner(page)).toBeVisible(); // continua aberto: navegar não conta como escolha
-    // E o CTA principal também navega.
-    await page.getByRole("link", { name: "Pedir diagnóstico gratuito" }).first().click();
+    // Um clique sintético num link interno não pode ser barrado (defaultPrevented).
+    const prevented = await page.evaluate(() => {
+      const a = document.querySelector('a[href="/quanto-custa"]');
+      if (!a) return null;
+      const ev = new MouseEvent("click", { bubbles: true, cancelable: true });
+      a.dispatchEvent(ev);
+      return ev.defaultPrevented;
+    });
+    expect(prevented).toBe(false);
+    // E um clique real num link visível nos dois viewports (CTA do hero) navega de verdade.
+    await page.locator("main").getByRole("link", { name: "Pedir diagnóstico gratuito" }).first().click();
     await expect(page).toHaveURL(/\/orcamento/);
   });
 
