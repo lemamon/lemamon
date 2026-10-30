@@ -63,6 +63,19 @@ test.describe("aviso de cookies (Consent Mode v2)", () => {
     expect(names.filter((name) => /^(_ga|_gcl_au|_gcl_aw)/.test(name))).toEqual([]);
   });
 
+  test("com o aviso ABERTO, os links da página continuam navegando (regressão: handler não barra tudo)", async ({ page }) => {
+    // Com o aviso aberto, o <html> tem data-consent-open (estado). O handler de
+    // clique não pode tratar isso como gatilho, senão preventDefault em todo clique
+    // e nenhum link navega (bug em produção, 30/10/2026).
+    await expect(banner(page)).toBeVisible();
+    await page.getByRole("link", { name: "Quanto custa", exact: true }).click();
+    await expect(page).toHaveURL(/\/quanto-custa$/);
+    await expect(banner(page)).toBeVisible(); // continua aberto: navegar não conta como escolha
+    // E o CTA principal também navega.
+    await page.getByRole("link", { name: "Pedir diagnóstico gratuito" }).first().click();
+    await expect(page).toHaveURL(/\/orcamento/);
+  });
+
   test("Recusar persiste ao navegar; 'Preferências de cookies' reabre o aviso", async ({ page }) => {
     await banner(page).locator('[data-consent-choice="decline"]').click();
     await expect(banner(page)).toBeHidden();

@@ -16,7 +16,8 @@ const BANNER = `
     <button type="button" data-consent-choice="accept">Aceitar</button>
   </div>
   <footer><button type="button" data-consent-open>Preferências de cookies</button></footer>
-  <p><a href="#preferencias-de-cookies">preferências de cookies</a></p>`;
+  <p><a href="#preferencias-de-cookies">preferências de cookies</a></p>
+  <a href="/quanto-custa" id="nav-link">Quanto custa</a>`;
 
 let gtag: ReturnType<typeof vi.fn>;
 
@@ -64,6 +65,28 @@ describe("aviso de cookies", () => {
     expect(banner.hidden).toBe(false);
     expect(document.documentElement.hasAttribute("data-consent-open")).toBe(true);
     expect(newRelic()).toBeNull();
+  });
+
+  it("com o aviso aberto, um clique em link normal navega (não é barrado); o rodapé e a Política reabrem", async () => {
+    await load();
+    expect(document.documentElement.hasAttribute("data-consent-open")).toBe(true);
+    // Regressão: o <html> carrega data-consent-open (estado); o handler NÃO pode
+    // tratá-lo como gatilho, senão todo link fica com preventDefault e nada navega.
+    const link = document.querySelector<HTMLAnchorElement>("#nav-link")!;
+    const navClick = new MouseEvent("click", { bubbles: true, cancelable: true });
+    link.dispatchEvent(navClick);
+    expect(navClick.defaultPrevented).toBe(false);
+    // O botão do rodapé reabre (e barra o default dele mesmo).
+    document.querySelector<HTMLElement>("[data-consent-banner]")!.hidden = true;
+    document.documentElement.removeAttribute("data-consent-open");
+    const reopen = new MouseEvent("click", { bubbles: true, cancelable: true });
+    document.querySelector<HTMLButtonElement>("footer [data-consent-open]")!.dispatchEvent(reopen);
+    expect(reopen.defaultPrevented).toBe(true);
+    expect(document.documentElement.hasAttribute("data-consent-open")).toBe(true);
+    // O link da Política também reabre.
+    const prefClick = new MouseEvent("click", { bubbles: true, cancelable: true });
+    document.querySelector<HTMLAnchorElement>('a[href="#preferencias-de-cookies"]')!.dispatchEvent(prefClick);
+    expect(prefClick.defaultPrevented).toBe(true);
   });
 
   it("Aceitar: grava, consent update granted, carrega o New Relic e some", async () => {

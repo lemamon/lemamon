@@ -182,7 +182,10 @@ function setupConsent(): void {
 
   document.addEventListener("click", (event) => {
     const opener = (event.target as Element | null)?.closest(`[data-consent-open], a[href="${PREFERENCES_HASH}"]`);
-    if (!opener) return;
+    // O <html> (root) carrega data-consent-open como ESTADO (aviso aberto), não é
+    // gatilho: com o aviso aberto, closest() subiria até ele em QUALQUER clique e
+    // barraria todos os links. Só o botão do rodapé e o link da Política reabrem.
+    if (!opener || opener === root) return;
     event.preventDefault();
     show(true);
   });
