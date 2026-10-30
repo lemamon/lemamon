@@ -7,8 +7,8 @@
  * Com consent = true (dados/dono.json › privacidade.baseAnuncios =
  * "consentimento", backlog B344), ANTES de gtag("js") e de qualquer config:
  *   consent default = denied em ad_storage, ad_user_data, ad_personalization e
- *   analytics_storage (wait_for_update 500), ads_data_redaction e
- *   url_passthrough ligados; e, na mesma ordem síncrona, a escolha salva
+ *   analytics_storage (wait_for_update 500) e ads_data_redaction ligado
+ *   (url_passthrough NÃO: sujava todo link com ?_gl=…, D50); e, na mesma ordem síncrona, a escolha salva
  *   ("aceito" em localStorage CONSENT_KEY) vira consent update granted. Sem
  *   escolha ou com "recusado", tudo fica denied (o aviso de cookies,
  *   ConsentBanner.astro + consent.ts, pergunta).
@@ -56,7 +56,11 @@ export function gtagInlineScript({ adsId, sendTo, ga4Id, consent, personalizatio
     "window.dataLayer=window.dataLayer||[];var gtag=window.gtag=function(){window.dataLayer.push(arguments)};",
     consent
       ? `gtag("consent","default",${q({ ...DENIED_SIGNALS, wait_for_update: 500 })});` +
-        'gtag("set","ads_data_redaction",true);gtag("set","url_passthrough",true);' +
+        // ads_data_redaction (redige o identificador de anúncio sem consentimento) sim; url_passthrough
+        // NÃO (D50): ele decora todo link interno com ?_gl=…*_up*… (gclid/_ga pela URL enquanto o cookie
+        // está negado), sujando a navegação. A atribuição do lead não depende disso — o site guarda
+        // gclid/gbraid/wbraid no sessionStorage na chegada e os leva ao CRM; sem ele, as URLs ficam limpas.
+        'gtag("set","ads_data_redaction",true);' +
         `try{if(localStorage.getItem(${q(CONSENT_KEY)})===${q(CONSENT_ACCEPTED)})gtag("consent","update",${q(grantedSignals(personalize))})}catch(e){}`
       : "",
     'gtag("js",new Date());',

@@ -65,7 +65,8 @@ describe("Analytics.astro com Consent Mode v2 (B344)", () => {
     expect(consentAt).toBeLessThan(html.indexOf('gtag("config"'));
     expect(html).toMatch(/"ad_storage":"denied","ad_user_data":"denied","ad_personalization":"denied","analytics_storage":"denied","wait_for_update":500/);
     expect(html).toContain('gtag("set","ads_data_redaction",true)');
-    expect(html).toContain('gtag("set","url_passthrough",true)');
+    // url_passthrough NÃO: ele decorava todo link interno com ?_gl=… (D50).
+    expect(html).not.toContain("url_passthrough");
     // O agente do New Relic não vai no <head>: src/scripts/consent.ts o injeta depois do "Aceitar".
     expect(html).not.toContain("/scripts/newrelic.js");
     // Sem remarketing, personalização continua desligada mesmo com consentimento.
